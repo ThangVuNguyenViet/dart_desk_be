@@ -1,0 +1,16 @@
+document:
+  - getDocuments:
+  - getDocument:
+  - getDocumentByType:
+  - createDocument:
+  - updateDocument:
+  - updateDocumentByType:
+  - deleteDocument:
+  - deleteDocumentByType:
+  - getDocumentTypes:
+media:
+  - uploadImage:
+  - uploadFile:
+  - deleteMedia:
+  - getMedia:
+  - listMedia:

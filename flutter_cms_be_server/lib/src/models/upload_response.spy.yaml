@@ -1,0 +1,5 @@
+class: UploadResponse
+fields:
+  url: String
+  id: String
+  fileName: String?

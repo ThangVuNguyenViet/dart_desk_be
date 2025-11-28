@@ -1,0 +1,6 @@
+class: DocumentListResponse
+fields:
+  documents: List<protocol:CmsDocument>
+  total: int
+  page: int
+  pageSize: int

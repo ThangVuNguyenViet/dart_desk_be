@@ -1,0 +1,15 @@
+class: MediaFile
+table: media_files
+fields:
+  fileName: String
+  fileType: String
+  fileSize: int
+  storagePath: String
+  publicUrl: String
+  uploadedByUserId: int?
+  createdAt: DateTime?, default=now
+indexes:
+  media_files_uploaded_by_idx:
+    fields: uploadedByUserId
+  media_files_created_at_idx:
+    fields: createdAt
