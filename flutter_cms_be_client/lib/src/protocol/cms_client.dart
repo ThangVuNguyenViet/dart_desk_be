@@ -11,43 +11,39 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class CmsUser implements _i1.SerializableModel {
-  CmsUser._({
+abstract class CmsClient implements _i1.SerializableModel {
+  CmsClient._({
     this.id,
-    required this.clientId,
-    required this.email,
-    this.name,
-    String? role,
+    required this.name,
+    required this.slug,
+    this.description,
     bool? isActive,
-    this.serverpodUserId,
+    this.settings,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : role = role ?? 'viewer',
-        isActive = isActive ?? true,
+  })  : isActive = isActive ?? true,
         createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
 
-  factory CmsUser({
+  factory CmsClient({
     int? id,
-    required int clientId,
-    required String email,
-    String? name,
-    String? role,
+    required String name,
+    required String slug,
+    String? description,
     bool? isActive,
-    int? serverpodUserId,
+    String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) = _CmsUserImpl;
+  }) = _CmsClientImpl;
 
-  factory CmsUser.fromJson(Map<String, dynamic> jsonSerialization) {
-    return CmsUser(
+  factory CmsClient.fromJson(Map<String, dynamic> jsonSerialization) {
+    return CmsClient(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int,
-      email: jsonSerialization['email'] as String,
-      name: jsonSerialization['name'] as String?,
-      role: jsonSerialization['role'] as String,
+      name: jsonSerialization['name'] as String,
+      slug: jsonSerialization['slug'] as String,
+      description: jsonSerialization['description'] as String?,
       isActive: jsonSerialization['isActive'] as bool,
-      serverpodUserId: jsonSerialization['serverpodUserId'] as int?,
+      settings: jsonSerialization['settings'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -62,33 +58,30 @@ abstract class CmsUser implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int clientId;
+  String name;
 
-  String email;
+  String slug;
 
-  String? name;
-
-  String role;
+  String? description;
 
   bool isActive;
 
-  int? serverpodUserId;
+  String? settings;
 
   DateTime? createdAt;
 
   DateTime? updatedAt;
 
-  /// Returns a shallow copy of this [CmsUser]
+  /// Returns a shallow copy of this [CmsClient]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CmsUser copyWith({
+  CmsClient copyWith({
     int? id,
-    int? clientId,
-    String? email,
     String? name,
-    String? role,
+    String? slug,
+    String? description,
     bool? isActive,
-    int? serverpodUserId,
+    String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -96,12 +89,11 @@ abstract class CmsUser implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'clientId': clientId,
-      'email': email,
-      if (name != null) 'name': name,
-      'role': role,
+      'name': name,
+      'slug': slug,
+      if (description != null) 'description': description,
       'isActive': isActive,
-      if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
+      if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
     };
@@ -115,53 +107,48 @@ abstract class CmsUser implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _CmsUserImpl extends CmsUser {
-  _CmsUserImpl({
+class _CmsClientImpl extends CmsClient {
+  _CmsClientImpl({
     int? id,
-    required int clientId,
-    required String email,
-    String? name,
-    String? role,
+    required String name,
+    required String slug,
+    String? description,
     bool? isActive,
-    int? serverpodUserId,
+    String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super._(
           id: id,
-          clientId: clientId,
-          email: email,
           name: name,
-          role: role,
+          slug: slug,
+          description: description,
           isActive: isActive,
-          serverpodUserId: serverpodUserId,
+          settings: settings,
           createdAt: createdAt,
           updatedAt: updatedAt,
         );
 
-  /// Returns a shallow copy of this [CmsUser]
+  /// Returns a shallow copy of this [CmsClient]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  CmsUser copyWith({
+  CmsClient copyWith({
     Object? id = _Undefined,
-    int? clientId,
-    String? email,
-    Object? name = _Undefined,
-    String? role,
+    String? name,
+    String? slug,
+    Object? description = _Undefined,
     bool? isActive,
-    Object? serverpodUserId = _Undefined,
+    Object? settings = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
   }) {
-    return CmsUser(
+    return CmsClient(
       id: id is int? ? id : this.id,
-      clientId: clientId ?? this.clientId,
-      email: email ?? this.email,
-      name: name is String? ? name : this.name,
-      role: role ?? this.role,
+      name: name ?? this.name,
+      slug: slug ?? this.slug,
+      description: description is String? ? description : this.description,
       isActive: isActive ?? this.isActive,
-      serverpodUserId:
-          serverpodUserId is int? ? serverpodUserId : this.serverpodUserId,
+      settings: settings is String? ? settings : this.settings,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
     );

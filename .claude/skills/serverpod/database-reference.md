@@ -224,31 +224,117 @@ where: (t) => t.date.isBefore(DateTime.now())
 where: (t) => t.date.isAfter(DateTime(2024, 1, 1))
 ```
 
-## Relationships
+## Relationships & Eager Loading
 
-Serverpod supports database relationships between models.
+Serverpod supports database relationships between models. See [Models Reference](./models-reference.md) for relation syntax details.
 
-### One-to-Many
+### Querying with Relations (Include)
 
-```yaml
-class: User
-table: users
-fields:
-  name: String
-  posts: List<Post>?, relation(parent=user)
+Use the `include` parameter to eager load related objects:
+
+```dart
+// Fetch employee with their company
+final employee = await Employee.db.findById(
+  session,
+  employeeId,
+  include: Employee.include(
+    company: Company.include(),
+  ),
+);
+
+// Access related data
+print(employee?.company?.name);
 ```
 
-```yaml
-class: Post
-table: posts
-fields:
-  title: String
-  userId: int, relation(parent=user)
+### Nested Includes
+
+Load multiple levels of relations:
+
+```dart
+final employee = await Employee.db.findById(
+  session,
+  employeeId,
+  include: Employee.include(
+    company: Company.include(
+      ceo: User.include(),
+    ),
+  ),
+);
 ```
 
-### Many-to-Many
+### Include with Find (Multiple Records)
 
-Use a join table for many-to-many relationships.
+```dart
+final employees = await Employee.db.find(
+  session,
+  where: (t) => t.companyId.equals(companyId),
+  include: Employee.include(
+    company: Company.include(),
+  ),
+);
+```
+
+## Transactions
+
+Use transactions for atomic operations:
+
+```dart
+await session.db.transaction((transaction) async {
+  // All operations in this block are atomic
+  final company = await Company.db.insertRow(
+    session,
+    Company(name: 'Acme Inc'),
+    transaction: transaction,
+  );
+
+  await Employee.db.insertRow(
+    session,
+    Employee(name: 'John', companyId: company.id!),
+    transaction: transaction,
+  );
+});
+```
+
+If any operation fails, all changes are rolled back.
+
+## Pagination
+
+Combine `limit` and `offset` for pagination:
+
+```dart
+Future<List<Document>> getDocuments({
+  required int page,
+  int pageSize = 20,
+}) async {
+  return await Document.db.find(
+    session,
+    limit: pageSize,
+    offset: page * pageSize,
+    orderBy: (t) => t.createdAt,
+    orderDescending: true,
+  );
+}
+```
+
+## Counting Records
+
+```dart
+final count = await Document.db.count(
+  session,
+  where: (t) => t.clientId.equals(clientId),
+);
+```
+
+## Raw SQL Queries
+
+For complex queries not supported by the ORM:
+
+```dart
+final results = await session.db.query(
+  'SELECT * FROM documents WHERE client_id = @clientId',
+  parameters: QueryParameters.named({'clientId': clientId}),
+);
+```
 
 ## Best Practices
 

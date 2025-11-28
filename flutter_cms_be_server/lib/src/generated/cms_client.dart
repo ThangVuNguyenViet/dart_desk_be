@@ -11,44 +11,40 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class CmsUser
+abstract class CmsClient
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  CmsUser._({
+  CmsClient._({
     this.id,
-    required this.clientId,
-    required this.email,
-    this.name,
-    String? role,
+    required this.name,
+    required this.slug,
+    this.description,
     bool? isActive,
-    this.serverpodUserId,
+    this.settings,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : role = role ?? 'viewer',
-        isActive = isActive ?? true,
+  })  : isActive = isActive ?? true,
         createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
 
-  factory CmsUser({
+  factory CmsClient({
     int? id,
-    required int clientId,
-    required String email,
-    String? name,
-    String? role,
+    required String name,
+    required String slug,
+    String? description,
     bool? isActive,
-    int? serverpodUserId,
+    String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) = _CmsUserImpl;
+  }) = _CmsClientImpl;
 
-  factory CmsUser.fromJson(Map<String, dynamic> jsonSerialization) {
-    return CmsUser(
+  factory CmsClient.fromJson(Map<String, dynamic> jsonSerialization) {
+    return CmsClient(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int,
-      email: jsonSerialization['email'] as String,
-      name: jsonSerialization['name'] as String?,
-      role: jsonSerialization['role'] as String,
+      name: jsonSerialization['name'] as String,
+      slug: jsonSerialization['slug'] as String,
+      description: jsonSerialization['description'] as String?,
       isActive: jsonSerialization['isActive'] as bool,
-      serverpodUserId: jsonSerialization['serverpodUserId'] as int?,
+      settings: jsonSerialization['settings'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -58,24 +54,22 @@ abstract class CmsUser
     );
   }
 
-  static final t = CmsUserTable();
+  static final t = CmsClientTable();
 
-  static const db = CmsUserRepository._();
+  static const db = CmsClientRepository._();
 
   @override
   int? id;
 
-  int clientId;
+  String name;
 
-  String email;
+  String slug;
 
-  String? name;
-
-  String role;
+  String? description;
 
   bool isActive;
 
-  int? serverpodUserId;
+  String? settings;
 
   DateTime? createdAt;
 
@@ -84,17 +78,16 @@ abstract class CmsUser
   @override
   _i1.Table<int?> get table => t;
 
-  /// Returns a shallow copy of this [CmsUser]
+  /// Returns a shallow copy of this [CmsClient]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CmsUser copyWith({
+  CmsClient copyWith({
     int? id,
-    int? clientId,
-    String? email,
     String? name,
-    String? role,
+    String? slug,
+    String? description,
     bool? isActive,
-    int? serverpodUserId,
+    String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -102,12 +95,11 @@ abstract class CmsUser
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'clientId': clientId,
-      'email': email,
-      if (name != null) 'name': name,
-      'role': role,
+      'name': name,
+      'slug': slug,
+      if (description != null) 'description': description,
       'isActive': isActive,
-      if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
+      if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
     };
@@ -117,37 +109,36 @@ abstract class CmsUser
   Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
-      'clientId': clientId,
-      'email': email,
-      if (name != null) 'name': name,
-      'role': role,
+      'name': name,
+      'slug': slug,
+      if (description != null) 'description': description,
       'isActive': isActive,
-      if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
+      if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
     };
   }
 
-  static CmsUserInclude include() {
-    return CmsUserInclude._();
+  static CmsClientInclude include() {
+    return CmsClientInclude._();
   }
 
-  static CmsUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+  static CmsClientIncludeList includeList({
+    _i1.WhereExpressionBuilder<CmsClientTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsUserTable>? orderBy,
+    _i1.OrderByBuilder<CmsClientTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsUserTable>? orderByList,
-    CmsUserInclude? include,
+    _i1.OrderByListBuilder<CmsClientTable>? orderByList,
+    CmsClientInclude? include,
   }) {
-    return CmsUserIncludeList._(
+    return CmsClientIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(CmsUser.t),
+      orderBy: orderBy?.call(CmsClient.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(CmsUser.t),
+      orderByList: orderByList?.call(CmsClient.t),
       include: include,
     );
   }
@@ -160,85 +151,75 @@ abstract class CmsUser
 
 class _Undefined {}
 
-class _CmsUserImpl extends CmsUser {
-  _CmsUserImpl({
+class _CmsClientImpl extends CmsClient {
+  _CmsClientImpl({
     int? id,
-    required int clientId,
-    required String email,
-    String? name,
-    String? role,
+    required String name,
+    required String slug,
+    String? description,
     bool? isActive,
-    int? serverpodUserId,
+    String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super._(
           id: id,
-          clientId: clientId,
-          email: email,
           name: name,
-          role: role,
+          slug: slug,
+          description: description,
           isActive: isActive,
-          serverpodUserId: serverpodUserId,
+          settings: settings,
           createdAt: createdAt,
           updatedAt: updatedAt,
         );
 
-  /// Returns a shallow copy of this [CmsUser]
+  /// Returns a shallow copy of this [CmsClient]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  CmsUser copyWith({
+  CmsClient copyWith({
     Object? id = _Undefined,
-    int? clientId,
-    String? email,
-    Object? name = _Undefined,
-    String? role,
+    String? name,
+    String? slug,
+    Object? description = _Undefined,
     bool? isActive,
-    Object? serverpodUserId = _Undefined,
+    Object? settings = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
   }) {
-    return CmsUser(
+    return CmsClient(
       id: id is int? ? id : this.id,
-      clientId: clientId ?? this.clientId,
-      email: email ?? this.email,
-      name: name is String? ? name : this.name,
-      role: role ?? this.role,
+      name: name ?? this.name,
+      slug: slug ?? this.slug,
+      description: description is String? ? description : this.description,
       isActive: isActive ?? this.isActive,
-      serverpodUserId:
-          serverpodUserId is int? ? serverpodUserId : this.serverpodUserId,
+      settings: settings is String? ? settings : this.settings,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
     );
   }
 }
 
-class CmsUserTable extends _i1.Table<int?> {
-  CmsUserTable({super.tableRelation}) : super(tableName: 'cms_users') {
-    clientId = _i1.ColumnInt(
-      'clientId',
-      this,
-    );
-    email = _i1.ColumnString(
-      'email',
-      this,
-    );
+class CmsClientTable extends _i1.Table<int?> {
+  CmsClientTable({super.tableRelation}) : super(tableName: 'cms_clients') {
     name = _i1.ColumnString(
       'name',
       this,
     );
-    role = _i1.ColumnString(
-      'role',
+    slug = _i1.ColumnString(
+      'slug',
       this,
-      hasDefault: true,
+    );
+    description = _i1.ColumnString(
+      'description',
+      this,
     );
     isActive = _i1.ColumnBool(
       'isActive',
       this,
       hasDefault: true,
     );
-    serverpodUserId = _i1.ColumnInt(
-      'serverpodUserId',
+    settings = _i1.ColumnString(
+      'settings',
       this,
     );
     createdAt = _i1.ColumnDateTime(
@@ -253,17 +234,15 @@ class CmsUserTable extends _i1.Table<int?> {
     );
   }
 
-  late final _i1.ColumnInt clientId;
-
-  late final _i1.ColumnString email;
-
   late final _i1.ColumnString name;
 
-  late final _i1.ColumnString role;
+  late final _i1.ColumnString slug;
+
+  late final _i1.ColumnString description;
 
   late final _i1.ColumnBool isActive;
 
-  late final _i1.ColumnInt serverpodUserId;
+  late final _i1.ColumnString settings;
 
   late final _i1.ColumnDateTime createdAt;
 
@@ -272,30 +251,29 @@ class CmsUserTable extends _i1.Table<int?> {
   @override
   List<_i1.Column> get columns => [
         id,
-        clientId,
-        email,
         name,
-        role,
+        slug,
+        description,
         isActive,
-        serverpodUserId,
+        settings,
         createdAt,
         updatedAt,
       ];
 }
 
-class CmsUserInclude extends _i1.IncludeObject {
-  CmsUserInclude._();
+class CmsClientInclude extends _i1.IncludeObject {
+  CmsClientInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => CmsUser.t;
+  _i1.Table<int?> get table => CmsClient.t;
 }
 
-class CmsUserIncludeList extends _i1.IncludeList {
-  CmsUserIncludeList._({
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+class CmsClientIncludeList extends _i1.IncludeList {
+  CmsClientIncludeList._({
+    _i1.WhereExpressionBuilder<CmsClientTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -303,20 +281,20 @@ class CmsUserIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(CmsUser.t);
+    super.where = where?.call(CmsClient.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => CmsUser.t;
+  _i1.Table<int?> get table => CmsClient.t;
 }
 
-class CmsUserRepository {
-  const CmsUserRepository._();
+class CmsClientRepository {
+  const CmsClientRepository._();
 
-  /// Returns a list of [CmsUser]s matching the given query parameters.
+  /// Returns a list of [CmsClient]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -338,20 +316,20 @@ class CmsUserRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<CmsUser>> find(
+  Future<List<CmsClient>> find(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+    _i1.WhereExpressionBuilder<CmsClientTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsUserTable>? orderBy,
+    _i1.OrderByBuilder<CmsClientTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsUserTable>? orderByList,
+    _i1.OrderByListBuilder<CmsClientTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<CmsUser>(
-      where: where?.call(CmsUser.t),
-      orderBy: orderBy?.call(CmsUser.t),
-      orderByList: orderByList?.call(CmsUser.t),
+    return session.db.find<CmsClient>(
+      where: where?.call(CmsClient.t),
+      orderBy: orderBy?.call(CmsClient.t),
+      orderByList: orderByList?.call(CmsClient.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -359,7 +337,7 @@ class CmsUserRepository {
     );
   }
 
-  /// Returns the first matching [CmsUser] matching the given query parameters.
+  /// Returns the first matching [CmsClient] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -376,136 +354,136 @@ class CmsUserRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<CmsUser?> findFirstRow(
+  Future<CmsClient?> findFirstRow(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+    _i1.WhereExpressionBuilder<CmsClientTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CmsUserTable>? orderBy,
+    _i1.OrderByBuilder<CmsClientTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsUserTable>? orderByList,
+    _i1.OrderByListBuilder<CmsClientTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<CmsUser>(
-      where: where?.call(CmsUser.t),
-      orderBy: orderBy?.call(CmsUser.t),
-      orderByList: orderByList?.call(CmsUser.t),
+    return session.db.findFirstRow<CmsClient>(
+      where: where?.call(CmsClient.t),
+      orderBy: orderBy?.call(CmsClient.t),
+      orderByList: orderByList?.call(CmsClient.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
     );
   }
 
-  /// Finds a single [CmsUser] by its [id] or null if no such row exists.
-  Future<CmsUser?> findById(
+  /// Finds a single [CmsClient] by its [id] or null if no such row exists.
+  Future<CmsClient?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<CmsUser>(
+    return session.db.findById<CmsClient>(
       id,
       transaction: transaction,
     );
   }
 
-  /// Inserts all [CmsUser]s in the list and returns the inserted rows.
+  /// Inserts all [CmsClient]s in the list and returns the inserted rows.
   ///
-  /// The returned [CmsUser]s will have their `id` fields set.
+  /// The returned [CmsClient]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
-  Future<List<CmsUser>> insert(
+  Future<List<CmsClient>> insert(
     _i1.Session session,
-    List<CmsUser> rows, {
+    List<CmsClient> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<CmsUser>(
+    return session.db.insert<CmsClient>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Inserts a single [CmsUser] and returns the inserted row.
+  /// Inserts a single [CmsClient] and returns the inserted row.
   ///
-  /// The returned [CmsUser] will have its `id` field set.
-  Future<CmsUser> insertRow(
+  /// The returned [CmsClient] will have its `id` field set.
+  Future<CmsClient> insertRow(
     _i1.Session session,
-    CmsUser row, {
+    CmsClient row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<CmsUser>(
+    return session.db.insertRow<CmsClient>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [CmsUser]s in the list and returns the updated rows. If
+  /// Updates all [CmsClient]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<CmsUser>> update(
+  Future<List<CmsClient>> update(
     _i1.Session session,
-    List<CmsUser> rows, {
-    _i1.ColumnSelections<CmsUserTable>? columns,
+    List<CmsClient> rows, {
+    _i1.ColumnSelections<CmsClientTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<CmsUser>(
+    return session.db.update<CmsClient>(
       rows,
-      columns: columns?.call(CmsUser.t),
+      columns: columns?.call(CmsClient.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [CmsUser]. The row needs to have its id set.
+  /// Updates a single [CmsClient]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<CmsUser> updateRow(
+  Future<CmsClient> updateRow(
     _i1.Session session,
-    CmsUser row, {
-    _i1.ColumnSelections<CmsUserTable>? columns,
+    CmsClient row, {
+    _i1.ColumnSelections<CmsClientTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<CmsUser>(
+    return session.db.updateRow<CmsClient>(
       row,
-      columns: columns?.call(CmsUser.t),
+      columns: columns?.call(CmsClient.t),
       transaction: transaction,
     );
   }
 
-  /// Deletes all [CmsUser]s in the list and returns the deleted rows.
+  /// Deletes all [CmsClient]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<CmsUser>> delete(
+  Future<List<CmsClient>> delete(
     _i1.Session session,
-    List<CmsUser> rows, {
+    List<CmsClient> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<CmsUser>(
+    return session.db.delete<CmsClient>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [CmsUser].
-  Future<CmsUser> deleteRow(
+  /// Deletes a single [CmsClient].
+  Future<CmsClient> deleteRow(
     _i1.Session session,
-    CmsUser row, {
+    CmsClient row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<CmsUser>(
+    return session.db.deleteRow<CmsClient>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<CmsUser>> deleteWhere(
+  Future<List<CmsClient>> deleteWhere(
     _i1.Session session, {
-    required _i1.WhereExpressionBuilder<CmsUserTable> where,
+    required _i1.WhereExpressionBuilder<CmsClientTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<CmsUser>(
-      where: where(CmsUser.t),
+    return session.db.deleteWhere<CmsClient>(
+      where: where(CmsClient.t),
       transaction: transaction,
     );
   }
@@ -514,12 +492,12 @@ class CmsUserRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+    _i1.WhereExpressionBuilder<CmsClientTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<CmsUser>(
-      where: where?.call(CmsUser.t),
+    return session.db.count<CmsClient>(
+      where: where?.call(CmsClient.t),
       limit: limit,
       transaction: transaction,
     );

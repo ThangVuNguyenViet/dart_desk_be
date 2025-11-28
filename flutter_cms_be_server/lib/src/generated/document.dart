@@ -11,105 +11,110 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class CmsUser
+abstract class Document
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  CmsUser._({
+  Document._({
     this.id,
     required this.clientId,
-    required this.email,
-    this.name,
-    String? role,
-    bool? isActive,
-    this.serverpodUserId,
+    required this.documentType,
+    required this.title,
+    this.slug,
+    this.currentVersionId,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : role = role ?? 'viewer',
-        isActive = isActive ?? true,
-        createdAt = createdAt ?? DateTime.now(),
+    required this.createdByUserId,
+    this.updatedByUserId,
+  })  : createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
 
-  factory CmsUser({
+  factory Document({
     int? id,
     required int clientId,
-    required String email,
-    String? name,
-    String? role,
-    bool? isActive,
-    int? serverpodUserId,
+    required String documentType,
+    required String title,
+    String? slug,
+    int? currentVersionId,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) = _CmsUserImpl;
+    required int createdByUserId,
+    int? updatedByUserId,
+  }) = _DocumentImpl;
 
-  factory CmsUser.fromJson(Map<String, dynamic> jsonSerialization) {
-    return CmsUser(
+  factory Document.fromJson(Map<String, dynamic> jsonSerialization) {
+    return Document(
       id: jsonSerialization['id'] as int?,
       clientId: jsonSerialization['clientId'] as int,
-      email: jsonSerialization['email'] as String,
-      name: jsonSerialization['name'] as String?,
-      role: jsonSerialization['role'] as String,
-      isActive: jsonSerialization['isActive'] as bool,
-      serverpodUserId: jsonSerialization['serverpodUserId'] as int?,
+      documentType: jsonSerialization['documentType'] as String,
+      title: jsonSerialization['title'] as String,
+      slug: jsonSerialization['slug'] as String?,
+      currentVersionId: jsonSerialization['currentVersionId'] as int?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
+      createdByUserId: jsonSerialization['createdByUserId'] as int,
+      updatedByUserId: jsonSerialization['updatedByUserId'] as int?,
     );
   }
 
-  static final t = CmsUserTable();
+  static final t = DocumentTable();
 
-  static const db = CmsUserRepository._();
+  static const db = DocumentRepository._();
 
   @override
   int? id;
 
   int clientId;
 
-  String email;
+  String documentType;
 
-  String? name;
+  String title;
 
-  String role;
+  String? slug;
 
-  bool isActive;
-
-  int? serverpodUserId;
+  int? currentVersionId;
 
   DateTime? createdAt;
 
   DateTime? updatedAt;
 
+  int createdByUserId;
+
+  int? updatedByUserId;
+
   @override
   _i1.Table<int?> get table => t;
 
-  /// Returns a shallow copy of this [CmsUser]
+  /// Returns a shallow copy of this [Document]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CmsUser copyWith({
+  Document copyWith({
     int? id,
     int? clientId,
-    String? email,
-    String? name,
-    String? role,
-    bool? isActive,
-    int? serverpodUserId,
+    String? documentType,
+    String? title,
+    String? slug,
+    int? currentVersionId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? createdByUserId,
+    int? updatedByUserId,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
       'clientId': clientId,
-      'email': email,
-      if (name != null) 'name': name,
-      'role': role,
-      'isActive': isActive,
-      if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
+      'documentType': documentType,
+      'title': title,
+      if (slug != null) 'slug': slug,
+      if (currentVersionId != null) 'currentVersionId': currentVersionId,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
+      'createdByUserId': createdByUserId,
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
     };
   }
 
@@ -118,36 +123,37 @@ abstract class CmsUser
     return {
       if (id != null) 'id': id,
       'clientId': clientId,
-      'email': email,
-      if (name != null) 'name': name,
-      'role': role,
-      'isActive': isActive,
-      if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
+      'documentType': documentType,
+      'title': title,
+      if (slug != null) 'slug': slug,
+      if (currentVersionId != null) 'currentVersionId': currentVersionId,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
+      'createdByUserId': createdByUserId,
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
     };
   }
 
-  static CmsUserInclude include() {
-    return CmsUserInclude._();
+  static DocumentInclude include() {
+    return DocumentInclude._();
   }
 
-  static CmsUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+  static DocumentIncludeList includeList({
+    _i1.WhereExpressionBuilder<DocumentTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsUserTable>? orderBy,
+    _i1.OrderByBuilder<DocumentTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsUserTable>? orderByList,
-    CmsUserInclude? include,
+    _i1.OrderByListBuilder<DocumentTable>? orderByList,
+    DocumentInclude? include,
   }) {
-    return CmsUserIncludeList._(
+    return DocumentIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(CmsUser.t),
+      orderBy: orderBy?.call(Document.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(CmsUser.t),
+      orderByList: orderByList?.call(Document.t),
       include: include,
     );
   }
@@ -160,85 +166,84 @@ abstract class CmsUser
 
 class _Undefined {}
 
-class _CmsUserImpl extends CmsUser {
-  _CmsUserImpl({
+class _DocumentImpl extends Document {
+  _DocumentImpl({
     int? id,
     required int clientId,
-    required String email,
-    String? name,
-    String? role,
-    bool? isActive,
-    int? serverpodUserId,
+    required String documentType,
+    required String title,
+    String? slug,
+    int? currentVersionId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    required int createdByUserId,
+    int? updatedByUserId,
   }) : super._(
           id: id,
           clientId: clientId,
-          email: email,
-          name: name,
-          role: role,
-          isActive: isActive,
-          serverpodUserId: serverpodUserId,
+          documentType: documentType,
+          title: title,
+          slug: slug,
+          currentVersionId: currentVersionId,
           createdAt: createdAt,
           updatedAt: updatedAt,
+          createdByUserId: createdByUserId,
+          updatedByUserId: updatedByUserId,
         );
 
-  /// Returns a shallow copy of this [CmsUser]
+  /// Returns a shallow copy of this [Document]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  CmsUser copyWith({
+  Document copyWith({
     Object? id = _Undefined,
     int? clientId,
-    String? email,
-    Object? name = _Undefined,
-    String? role,
-    bool? isActive,
-    Object? serverpodUserId = _Undefined,
+    String? documentType,
+    String? title,
+    Object? slug = _Undefined,
+    Object? currentVersionId = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
+    int? createdByUserId,
+    Object? updatedByUserId = _Undefined,
   }) {
-    return CmsUser(
+    return Document(
       id: id is int? ? id : this.id,
       clientId: clientId ?? this.clientId,
-      email: email ?? this.email,
-      name: name is String? ? name : this.name,
-      role: role ?? this.role,
-      isActive: isActive ?? this.isActive,
-      serverpodUserId:
-          serverpodUserId is int? ? serverpodUserId : this.serverpodUserId,
+      documentType: documentType ?? this.documentType,
+      title: title ?? this.title,
+      slug: slug is String? ? slug : this.slug,
+      currentVersionId:
+          currentVersionId is int? ? currentVersionId : this.currentVersionId,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
+      createdByUserId: createdByUserId ?? this.createdByUserId,
+      updatedByUserId:
+          updatedByUserId is int? ? updatedByUserId : this.updatedByUserId,
     );
   }
 }
 
-class CmsUserTable extends _i1.Table<int?> {
-  CmsUserTable({super.tableRelation}) : super(tableName: 'cms_users') {
+class DocumentTable extends _i1.Table<int?> {
+  DocumentTable({super.tableRelation}) : super(tableName: 'documents') {
     clientId = _i1.ColumnInt(
       'clientId',
       this,
     );
-    email = _i1.ColumnString(
-      'email',
+    documentType = _i1.ColumnString(
+      'documentType',
       this,
     );
-    name = _i1.ColumnString(
-      'name',
+    title = _i1.ColumnString(
+      'title',
       this,
     );
-    role = _i1.ColumnString(
-      'role',
+    slug = _i1.ColumnString(
+      'slug',
       this,
-      hasDefault: true,
     );
-    isActive = _i1.ColumnBool(
-      'isActive',
-      this,
-      hasDefault: true,
-    );
-    serverpodUserId = _i1.ColumnInt(
-      'serverpodUserId',
+    currentVersionId = _i1.ColumnInt(
+      'currentVersionId',
       this,
     );
     createdAt = _i1.ColumnDateTime(
@@ -251,51 +256,62 @@ class CmsUserTable extends _i1.Table<int?> {
       this,
       hasDefault: true,
     );
+    createdByUserId = _i1.ColumnInt(
+      'createdByUserId',
+      this,
+    );
+    updatedByUserId = _i1.ColumnInt(
+      'updatedByUserId',
+      this,
+    );
   }
 
   late final _i1.ColumnInt clientId;
 
-  late final _i1.ColumnString email;
+  late final _i1.ColumnString documentType;
 
-  late final _i1.ColumnString name;
+  late final _i1.ColumnString title;
 
-  late final _i1.ColumnString role;
+  late final _i1.ColumnString slug;
 
-  late final _i1.ColumnBool isActive;
-
-  late final _i1.ColumnInt serverpodUserId;
+  late final _i1.ColumnInt currentVersionId;
 
   late final _i1.ColumnDateTime createdAt;
 
   late final _i1.ColumnDateTime updatedAt;
 
+  late final _i1.ColumnInt createdByUserId;
+
+  late final _i1.ColumnInt updatedByUserId;
+
   @override
   List<_i1.Column> get columns => [
         id,
         clientId,
-        email,
-        name,
-        role,
-        isActive,
-        serverpodUserId,
+        documentType,
+        title,
+        slug,
+        currentVersionId,
         createdAt,
         updatedAt,
+        createdByUserId,
+        updatedByUserId,
       ];
 }
 
-class CmsUserInclude extends _i1.IncludeObject {
-  CmsUserInclude._();
+class DocumentInclude extends _i1.IncludeObject {
+  DocumentInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => CmsUser.t;
+  _i1.Table<int?> get table => Document.t;
 }
 
-class CmsUserIncludeList extends _i1.IncludeList {
-  CmsUserIncludeList._({
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+class DocumentIncludeList extends _i1.IncludeList {
+  DocumentIncludeList._({
+    _i1.WhereExpressionBuilder<DocumentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -303,20 +319,20 @@ class CmsUserIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(CmsUser.t);
+    super.where = where?.call(Document.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => CmsUser.t;
+  _i1.Table<int?> get table => Document.t;
 }
 
-class CmsUserRepository {
-  const CmsUserRepository._();
+class DocumentRepository {
+  const DocumentRepository._();
 
-  /// Returns a list of [CmsUser]s matching the given query parameters.
+  /// Returns a list of [Document]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -338,20 +354,20 @@ class CmsUserRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<CmsUser>> find(
+  Future<List<Document>> find(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+    _i1.WhereExpressionBuilder<DocumentTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsUserTable>? orderBy,
+    _i1.OrderByBuilder<DocumentTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsUserTable>? orderByList,
+    _i1.OrderByListBuilder<DocumentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<CmsUser>(
-      where: where?.call(CmsUser.t),
-      orderBy: orderBy?.call(CmsUser.t),
-      orderByList: orderByList?.call(CmsUser.t),
+    return session.db.find<Document>(
+      where: where?.call(Document.t),
+      orderBy: orderBy?.call(Document.t),
+      orderByList: orderByList?.call(Document.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -359,7 +375,7 @@ class CmsUserRepository {
     );
   }
 
-  /// Returns the first matching [CmsUser] matching the given query parameters.
+  /// Returns the first matching [Document] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -376,136 +392,136 @@ class CmsUserRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<CmsUser?> findFirstRow(
+  Future<Document?> findFirstRow(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+    _i1.WhereExpressionBuilder<DocumentTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CmsUserTable>? orderBy,
+    _i1.OrderByBuilder<DocumentTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsUserTable>? orderByList,
+    _i1.OrderByListBuilder<DocumentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<CmsUser>(
-      where: where?.call(CmsUser.t),
-      orderBy: orderBy?.call(CmsUser.t),
-      orderByList: orderByList?.call(CmsUser.t),
+    return session.db.findFirstRow<Document>(
+      where: where?.call(Document.t),
+      orderBy: orderBy?.call(Document.t),
+      orderByList: orderByList?.call(Document.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
     );
   }
 
-  /// Finds a single [CmsUser] by its [id] or null if no such row exists.
-  Future<CmsUser?> findById(
+  /// Finds a single [Document] by its [id] or null if no such row exists.
+  Future<Document?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<CmsUser>(
+    return session.db.findById<Document>(
       id,
       transaction: transaction,
     );
   }
 
-  /// Inserts all [CmsUser]s in the list and returns the inserted rows.
+  /// Inserts all [Document]s in the list and returns the inserted rows.
   ///
-  /// The returned [CmsUser]s will have their `id` fields set.
+  /// The returned [Document]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
-  Future<List<CmsUser>> insert(
+  Future<List<Document>> insert(
     _i1.Session session,
-    List<CmsUser> rows, {
+    List<Document> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<CmsUser>(
+    return session.db.insert<Document>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Inserts a single [CmsUser] and returns the inserted row.
+  /// Inserts a single [Document] and returns the inserted row.
   ///
-  /// The returned [CmsUser] will have its `id` field set.
-  Future<CmsUser> insertRow(
+  /// The returned [Document] will have its `id` field set.
+  Future<Document> insertRow(
     _i1.Session session,
-    CmsUser row, {
+    Document row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<CmsUser>(
+    return session.db.insertRow<Document>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [CmsUser]s in the list and returns the updated rows. If
+  /// Updates all [Document]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<CmsUser>> update(
+  Future<List<Document>> update(
     _i1.Session session,
-    List<CmsUser> rows, {
-    _i1.ColumnSelections<CmsUserTable>? columns,
+    List<Document> rows, {
+    _i1.ColumnSelections<DocumentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<CmsUser>(
+    return session.db.update<Document>(
       rows,
-      columns: columns?.call(CmsUser.t),
+      columns: columns?.call(Document.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [CmsUser]. The row needs to have its id set.
+  /// Updates a single [Document]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<CmsUser> updateRow(
+  Future<Document> updateRow(
     _i1.Session session,
-    CmsUser row, {
-    _i1.ColumnSelections<CmsUserTable>? columns,
+    Document row, {
+    _i1.ColumnSelections<DocumentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<CmsUser>(
+    return session.db.updateRow<Document>(
       row,
-      columns: columns?.call(CmsUser.t),
+      columns: columns?.call(Document.t),
       transaction: transaction,
     );
   }
 
-  /// Deletes all [CmsUser]s in the list and returns the deleted rows.
+  /// Deletes all [Document]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<CmsUser>> delete(
+  Future<List<Document>> delete(
     _i1.Session session,
-    List<CmsUser> rows, {
+    List<Document> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<CmsUser>(
+    return session.db.delete<Document>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [CmsUser].
-  Future<CmsUser> deleteRow(
+  /// Deletes a single [Document].
+  Future<Document> deleteRow(
     _i1.Session session,
-    CmsUser row, {
+    Document row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<CmsUser>(
+    return session.db.deleteRow<Document>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<CmsUser>> deleteWhere(
+  Future<List<Document>> deleteWhere(
     _i1.Session session, {
-    required _i1.WhereExpressionBuilder<CmsUserTable> where,
+    required _i1.WhereExpressionBuilder<DocumentTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<CmsUser>(
-      where: where(CmsUser.t),
+    return session.db.deleteWhere<Document>(
+      where: where(Document.t),
       transaction: transaction,
     );
   }
@@ -514,12 +530,12 @@ class CmsUserRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+    _i1.WhereExpressionBuilder<DocumentTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<CmsUser>(
-      where: where?.call(CmsUser.t),
+    return session.db.count<Document>(
+      where: where?.call(Document.t),
       limit: limit,
       transaction: transaction,
     );

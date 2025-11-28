@@ -3,6 +3,7 @@ import 'package:serverpod/serverpod.dart';
 import '../generated/protocol.dart';
 
 /// Endpoint for managing CMS documents
+/// All write operations require authentication
 class DocumentEndpoint extends Endpoint {
   /// Get all documents for a specific document type with pagination
   Future<DocumentListResponse> getDocuments(
@@ -70,16 +71,21 @@ class DocumentEndpoint extends Endpoint {
     String documentType,
     Map<String, dynamic> data,
   ) async {
-    // TODO: Add user authentication and get user ID from session
-    // final userId = await session.authenticated?.userId;
+    // Require authentication
+    final authInfo = await session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to create documents');
+    }
+
+    final userId = authInfo.userId;
 
     final document = CmsDocument(
       documentType: documentType,
       data: jsonEncode(data),
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
-      // createdByUserId: userId,
-      // updatedByUserId: userId,
+      createdByUserId: userId,
+      updatedByUserId: userId,
     );
 
     final created = await CmsDocument.db.insertRow(session, document);
@@ -92,19 +98,24 @@ class DocumentEndpoint extends Endpoint {
     int documentId,
     Map<String, dynamic> data,
   ) async {
+    // Require authentication
+    final authInfo = await session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to update documents');
+    }
+
+    final userId = authInfo.userId;
+
     final existing = await CmsDocument.db.findById(session, documentId);
 
     if (existing == null) {
       return null;
     }
 
-    // TODO: Add user authentication and get user ID from session
-    // final userId = await session.authenticated?.userId;
-
     final updated = existing.copyWith(
       data: jsonEncode(data),
       updatedAt: DateTime.now(),
-      // updatedByUserId: userId,
+      updatedByUserId: userId,
     );
 
     await CmsDocument.db.updateRow(session, updated);
@@ -118,19 +129,24 @@ class DocumentEndpoint extends Endpoint {
     int documentId,
     Map<String, dynamic> data,
   ) async {
+    // Require authentication
+    final authInfo = await session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to update documents');
+    }
+
+    final userId = authInfo.userId;
+
     final existing = await getDocumentByType(session, documentType, documentId);
 
     if (existing == null) {
       return null;
     }
 
-    // TODO: Add user authentication and get user ID from session
-    // final userId = await session.authenticated?.userId;
-
     final updated = existing.copyWith(
       data: jsonEncode(data),
       updatedAt: DateTime.now(),
-      // updatedByUserId: userId,
+      updatedByUserId: userId,
     );
 
     await CmsDocument.db.updateRow(session, updated);

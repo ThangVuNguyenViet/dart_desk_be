@@ -1,11 +1,21 @@
 class: CmsUser
 table: cms_users
 fields:
+  clientId: int, relation(parent=cms_clients, onDelete=Restrict)
   email: String
   name: String?
   role: String, default='viewer'
+  isActive: bool, default=true
+  serverpodUserId: int?
   createdAt: DateTime?, default=now
+  updatedAt: DateTime?, default=now
 indexes:
-  cms_users_email_idx:
-    fields: email
+  cms_users_client_email_idx:
+    fields: clientId, email
     unique: true
+  cms_users_client_id_idx:
+    fields: clientId
+  cms_users_serverpod_user_id_idx:
+    fields: serverpodUserId
+  cms_users_is_active_idx:
+    fields: isActive

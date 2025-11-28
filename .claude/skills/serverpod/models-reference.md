@@ -19,6 +19,177 @@ fields:
   employees: List<Employee>
 ```
 
+## Database Models
+
+Add the `table` keyword to persist models in the database:
+
+```yaml
+class: Company
+table: companies
+fields:
+  name: String
+  foundedDate: DateTime?
+```
+
+When a model has a `table`, Serverpod automatically adds an `id` field of type `int?`.
+
+## Relations
+
+### Foreign Key Syntax
+
+Use `relation(parent=table_name)` to create foreign key relationships:
+
+```yaml
+class: Employee
+table: employees
+fields:
+  name: String
+  companyId: int, relation(parent=companies)
+```
+
+**IMPORTANT**: The `parent` value must be the **table name** (e.g., `companies`), NOT the class name (e.g., `Company`).
+
+### One-to-One Relations
+
+For one-to-one, add optional: true to ensure uniqueness:
+
+```yaml
+class: User
+table: users
+fields:
+  name: String
+
+class: Profile
+table: profiles
+fields:
+  bio: String
+  userId: int?, relation(parent=users, optional=true)
+```
+
+### One-to-Many Relations
+
+The "many" side holds the foreign key:
+
+```yaml
+class: Company
+table: companies
+fields:
+  name: String
+
+class: Employee
+table: employees
+fields:
+  name: String
+  companyId: int, relation(parent=companies)
+```
+
+### Many-to-Many Relations
+
+Use a junction/join table:
+
+```yaml
+class: Student
+table: students
+fields:
+  name: String
+
+class: Course
+table: courses
+fields:
+  title: String
+
+class: Enrollment
+table: enrollments
+fields:
+  studentId: int, relation(parent=students)
+  courseId: int, relation(parent=courses)
+indexes:
+  enrollment_unique_idx:
+    fields: studentId, courseId
+    unique: true
+```
+
+### Referential Actions
+
+Control what happens when referenced rows are deleted or updated:
+
+```yaml
+fields:
+  companyId: int, relation(parent=companies, onDelete=Cascade)
+  managerId: int?, relation(parent=users, onDelete=SetNull)
+```
+
+**Available Actions:**
+
+| Action | Description |
+|--------|-------------|
+| `NoAction` | Default. No action; may cause foreign key violation errors |
+| `Restrict` | Prevents deletion of referenced row |
+| `Cascade` | Deletes/updates dependent rows automatically |
+| `SetNull` | Sets foreign key to NULL (field must be nullable) |
+| `SetDefault` | Sets foreign key to default value |
+
+**Common Patterns:**
+- `onDelete=Cascade` - Child records deleted with parent (e.g., comments when post deleted)
+- `onDelete=Restrict` - Prevent deletion if children exist (e.g., can't delete client with documents)
+- `onDelete=SetNull` - Keep record but clear reference (e.g., keep document but clear deleted user)
+
+### Object Relations (Eager Loading)
+
+Add an object field to enable eager loading of related data:
+
+```yaml
+class: Employee
+table: employees
+fields:
+  name: String
+  companyId: int, relation(parent=companies)
+  company: Company?, relation(name=company)
+```
+
+The `name` in the object relation must match a relation field name.
+
+## Indexes
+
+Add indexes to improve query performance:
+
+```yaml
+class: User
+table: users
+fields:
+  email: String
+  name: String
+  createdAt: DateTime?, default=now
+indexes:
+  user_email_idx:
+    fields: email
+    unique: true
+  user_name_idx:
+    fields: name
+  user_created_idx:
+    fields: createdAt
+```
+
+### Index Options
+
+```yaml
+indexes:
+  my_index:
+    fields: field1, field2    # Comma-separated field list
+    unique: true              # Enforce uniqueness (default: false)
+    type: btree               # Index type: btree (default), hash, gin, gist, spgist, brin
+```
+
+### Composite Indexes
+
+For queries filtering on multiple columns:
+
+```yaml
+indexes:
+  client_type_idx:
+    fields: clientId, documentType
+```
+
 ## Key Elements
 
 - **class**: Defines the serializable class name

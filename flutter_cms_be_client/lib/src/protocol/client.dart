@@ -17,7 +17,8 @@ import 'package:flutter_cms_be_client/src/protocol/cms_document.dart' as _i4;
 import 'package:flutter_cms_be_client/src/protocol/upload_response.dart' as _i5;
 import 'dart:typed_data' as _i6;
 import 'package:flutter_cms_be_client/src/protocol/media_file.dart' as _i7;
-import 'protocol.dart' as _i8;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i8;
+import 'protocol.dart' as _i9;
 
 /// Endpoint for managing CMS documents
 /// {@category Endpoint}
@@ -210,6 +211,14 @@ class EndpointMedia extends _i1.EndpointRef {
       );
 }
 
+class Modules {
+  Modules(Client client) {
+    auth = _i8.Caller(client);
+  }
+
+  late final _i8.Caller auth;
+}
+
 class Client extends _i1.ServerpodClientShared {
   Client(
     String host, {
@@ -226,7 +235,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i8.Protocol(),
+          _i9.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -238,11 +247,14 @@ class Client extends _i1.ServerpodClientShared {
         ) {
     document = EndpointDocument(this);
     media = EndpointMedia(this);
+    modules = Modules(this);
   }
 
   late final EndpointDocument document;
 
   late final EndpointMedia media;
+
+  late final Modules modules;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
@@ -251,5 +263,6 @@ class Client extends _i1.ServerpodClientShared {
       };
 
   @override
-  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};
+  Map<String, _i1.ModuleEndpointCaller> get moduleLookup =>
+      {'auth': modules.auth};
 }

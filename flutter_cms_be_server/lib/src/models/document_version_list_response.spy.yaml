@@ -1,0 +1,6 @@
+class: DocumentVersionListResponse
+fields:
+  versions: List<protocol:DocumentVersion>
+  total: int
+  page: int
+  pageSize: int

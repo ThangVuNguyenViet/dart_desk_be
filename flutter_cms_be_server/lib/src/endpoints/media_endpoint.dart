@@ -3,6 +3,7 @@ import 'package:serverpod/serverpod.dart';
 import '../generated/protocol.dart';
 
 /// Endpoint for managing media files and uploads
+/// All operations require authentication
 class MediaEndpoint extends Endpoint {
   /// Upload an image file
   /// Returns the public URL and file ID
@@ -58,8 +59,13 @@ class MediaEndpoint extends Endpoint {
       throw Exception('File size exceeds maximum allowed size of 10MB');
     }
 
-    // TODO: Add user authentication
-    // final userId = await session.authenticated?.userId;
+    // Require authentication
+    final authInfo = await session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to upload files');
+    }
+
+    final userId = authInfo.userId;
 
     // Generate unique filename
     final timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -86,14 +92,25 @@ class MediaEndpoint extends Endpoint {
 
       final publicUrl = publicUri.toString();
 
+      // Get the CMS user to find their clientId
+      final cmsUser = await CmsUser.db.findFirstRow(
+        session,
+        where: (t) => t.serverpodUserId.equals(userId),
+      );
+
+      if (cmsUser == null) {
+        throw Exception('CMS user not found for authenticated user');
+      }
+
       // Save file metadata to database
       final mediaFile = MediaFile(
+        clientId: cmsUser.clientId,
         fileName: fileName,
         fileType: extension,
         fileSize: fileData.lengthInBytes,
         storagePath: storagePath,
         publicUrl: publicUrl,
-        // uploadedByUserId: userId,
+        uploadedByUserId: cmsUser.id!,
         createdAt: DateTime.now(),
       );
 

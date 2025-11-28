@@ -53,6 +53,13 @@ storage:
     path: storage/public
     publicUrl: http://localhost:8082/files
 
+# Authentication configuration
+modules:
+  serverpod_auth:
+    sendValidationEmail: false
+    extraSaltyHash: true
+    minPasswordLength: 8
+
 sessionLogs:
   persistentEnabled: true
   consoleEnabled: true

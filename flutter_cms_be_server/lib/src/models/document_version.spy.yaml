@@ -1,0 +1,27 @@
+class: DocumentVersion
+table: document_versions
+fields:
+  documentId: int, relation(parent=documents, onDelete=Cascade)
+  versionNumber: int
+  status: String
+  data: String
+  changeLog: String?
+  publishedAt: DateTime?
+  scheduledAt: DateTime?
+  archivedAt: DateTime?
+  createdAt: DateTime?, default=now
+  createdByUserId: int, relation(parent=cms_users, onDelete=SetNull)
+indexes:
+  document_versions_document_id_idx:
+    fields: documentId
+  document_versions_document_version_idx:
+    fields: documentId, versionNumber
+    unique: true
+  document_versions_status_idx:
+    fields: status
+  document_versions_published_at_idx:
+    fields: publishedAt
+  document_versions_scheduled_at_idx:
+    fields: scheduledAt
+  document_versions_created_at_idx:
+    fields: createdAt
