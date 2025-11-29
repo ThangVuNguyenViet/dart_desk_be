@@ -17,20 +17,30 @@ import 'cms_client_user.dart' as _i5;
 import 'cms_document.dart' as _i6;
 import 'cms_document_data.dart' as _i7;
 import 'cms_user.dart' as _i8;
-import 'document_list.dart' as _i9;
-import 'document_version.dart' as _i10;
-import 'document_version_list.dart' as _i11;
-import 'media_file.dart' as _i12;
-import 'upload_response.dart' as _i13;
-import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i14;
+import 'crdt_operation_type.dart' as _i9;
+import 'document_crdt_operation.dart' as _i10;
+import 'document_crdt_snapshot.dart' as _i11;
+import 'document_list.dart' as _i12;
+import 'document_version.dart' as _i13;
+import 'document_version_list.dart' as _i14;
+import 'document_version_status.dart' as _i15;
+import 'media_file.dart' as _i16;
+import 'upload_response.dart' as _i17;
+import 'package:flutter_cms_be_server/src/generated/document_crdt_operation.dart'
+    as _i18;
+import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i19;
 export 'cms_client.dart';
 export 'cms_client_user.dart';
 export 'cms_document.dart';
 export 'cms_document_data.dart';
 export 'cms_user.dart';
+export 'crdt_operation_type.dart';
+export 'document_crdt_operation.dart';
+export 'document_crdt_snapshot.dart';
 export 'document_list.dart';
 export 'document_version.dart';
 export 'document_version_list.dart';
+export 'document_version_status.dart';
 export 'media_file.dart';
 export 'upload_response.dart';
 
@@ -325,7 +335,19 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'false',
         ),
         _i2.ColumnDefinition(
-          name: 'activeVersionData',
+          name: 'data',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'crdtNodeId',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'crdtHlc',
           columnType: _i2.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
@@ -443,7 +465,7 @@ class Protocol extends _i1.SerializationManagerServer {
             ),
           ],
           type: 'btree',
-          isUnique: false,
+          isUnique: true,
           isPrimary: false,
         ),
         _i2.IndexDefinition(
@@ -490,12 +512,25 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'cms_documents_active_data_idx',
+          indexName: 'cms_documents_data_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'activeVersionData',
+              definition: 'data',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'cms_documents_crdt_node_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'crdtNodeId',
             )
           ],
           type: 'btree',
@@ -792,6 +827,257 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'document_crdt_operations',
+      dartName: 'DocumentCrdtOperation',
+      schema: 'public',
+      module: 'flutter_cms_be',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'document_crdt_operations_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'documentId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'hlc',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'nodeId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'operationType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:CrdtOperationType',
+        ),
+        _i2.ColumnDefinition(
+          name: 'fieldPath',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'fieldValue',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdByUserId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'document_crdt_operations_fk_0',
+          columns: ['documentId'],
+          referenceTable: 'cms_documents',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'document_crdt_operations_fk_1',
+          columns: ['createdByUserId'],
+          referenceTable: 'cms_users',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.setNull,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'document_crdt_operations_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'document_crdt_operations_document_hlc_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'hlc',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'document_crdt_operations_document_id_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentId',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'document_crdt_operations_created_at_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'createdAt',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'document_crdt_snapshots',
+      dartName: 'DocumentCrdtSnapshot',
+      schema: 'public',
+      module: 'flutter_cms_be',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'document_crdt_snapshots_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'documentId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'snapshotHlc',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'snapshotData',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'operationCountAtSnapshot',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'document_crdt_snapshots_fk_0',
+          columns: ['documentId'],
+          referenceTable: 'cms_documents',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'document_crdt_snapshots_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'document_crdt_snapshots_document_hlc_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'snapshotHlc',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'document_crdt_snapshots_document_id_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentId',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'document_versions',
       dartName: 'DocumentVersion',
       schema: 'public',
@@ -820,13 +1106,20 @@ class Protocol extends _i1.SerializationManagerServer {
           name: 'status',
           columnType: _i2.ColumnType.text,
           isNullable: false,
-          dartType: 'String',
+          dartType: 'protocol:DocumentVersionStatus',
         ),
         _i2.ColumnDefinition(
-          name: 'data',
+          name: 'snapshotHlc',
           columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'operationCount',
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
-          dartType: 'String',
+          dartType: 'int',
+          columnDefault: '0',
         ),
         _i2.ColumnDefinition(
           name: 'changeLog',
@@ -930,6 +1223,23 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'document_versions_snapshot_hlc_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'snapshotHlc',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
           isPrimary: false,
         ),
         _i2.IndexDefinition(
@@ -1178,20 +1488,32 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i8.CmsUser) {
       return _i8.CmsUser.fromJson(data) as T;
     }
-    if (t == _i9.DocumentList) {
-      return _i9.DocumentList.fromJson(data) as T;
+    if (t == _i9.CrdtOperationType) {
+      return _i9.CrdtOperationType.fromJson(data) as T;
     }
-    if (t == _i10.DocumentVersion) {
-      return _i10.DocumentVersion.fromJson(data) as T;
+    if (t == _i10.DocumentCrdtOperation) {
+      return _i10.DocumentCrdtOperation.fromJson(data) as T;
     }
-    if (t == _i11.DocumentVersionList) {
-      return _i11.DocumentVersionList.fromJson(data) as T;
+    if (t == _i11.DocumentCrdtSnapshot) {
+      return _i11.DocumentCrdtSnapshot.fromJson(data) as T;
     }
-    if (t == _i12.MediaFile) {
-      return _i12.MediaFile.fromJson(data) as T;
+    if (t == _i12.DocumentList) {
+      return _i12.DocumentList.fromJson(data) as T;
     }
-    if (t == _i13.UploadResponse) {
-      return _i13.UploadResponse.fromJson(data) as T;
+    if (t == _i13.DocumentVersion) {
+      return _i13.DocumentVersion.fromJson(data) as T;
+    }
+    if (t == _i14.DocumentVersionList) {
+      return _i14.DocumentVersionList.fromJson(data) as T;
+    }
+    if (t == _i15.DocumentVersionStatus) {
+      return _i15.DocumentVersionStatus.fromJson(data) as T;
+    }
+    if (t == _i16.MediaFile) {
+      return _i16.MediaFile.fromJson(data) as T;
+    }
+    if (t == _i17.UploadResponse) {
+      return _i17.UploadResponse.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.CmsClient?>()) {
       return (data != null ? _i4.CmsClient.fromJson(data) : null) as T;
@@ -1208,40 +1530,71 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i8.CmsUser?>()) {
       return (data != null ? _i8.CmsUser.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.DocumentList?>()) {
-      return (data != null ? _i9.DocumentList.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i9.CrdtOperationType?>()) {
+      return (data != null ? _i9.CrdtOperationType.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.DocumentVersion?>()) {
-      return (data != null ? _i10.DocumentVersion.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.DocumentVersionList?>()) {
-      return (data != null ? _i11.DocumentVersionList.fromJson(data) : null)
+    if (t == _i1.getType<_i10.DocumentCrdtOperation?>()) {
+      return (data != null ? _i10.DocumentCrdtOperation.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i12.MediaFile?>()) {
-      return (data != null ? _i12.MediaFile.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i11.DocumentCrdtSnapshot?>()) {
+      return (data != null ? _i11.DocumentCrdtSnapshot.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i13.UploadResponse?>()) {
-      return (data != null ? _i13.UploadResponse.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i12.DocumentList?>()) {
+      return (data != null ? _i12.DocumentList.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i13.DocumentVersion?>()) {
+      return (data != null ? _i13.DocumentVersion.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i14.DocumentVersionList?>()) {
+      return (data != null ? _i14.DocumentVersionList.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i15.DocumentVersionStatus?>()) {
+      return (data != null ? _i15.DocumentVersionStatus.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i16.MediaFile?>()) {
+      return (data != null ? _i16.MediaFile.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i17.UploadResponse?>()) {
+      return (data != null ? _i17.UploadResponse.fromJson(data) : null) as T;
     }
     if (t == List<_i6.CmsDocument>) {
       return (data as List).map((e) => deserialize<_i6.CmsDocument>(e)).toList()
           as T;
     }
-    if (t == List<_i10.DocumentVersion>) {
+    if (t == List<_i13.DocumentVersion>) {
       return (data as List)
-          .map((e) => deserialize<_i10.DocumentVersion>(e))
+          .map((e) => deserialize<_i13.DocumentVersion>(e))
+          .toList() as T;
+    }
+    if (t == List<_i18.DocumentCrdtOperation>) {
+      return (data as List)
+          .map((e) => deserialize<_i18.DocumentCrdtOperation>(e))
           .toList() as T;
     }
     if (t == Map<String, dynamic>) {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<dynamic>(v))) as T;
     }
+    if (t == List<Map<String, dynamic>>) {
+      return (data as List)
+          .map((e) => deserialize<Map<String, dynamic>>(e))
+          .toList() as T;
+    }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i14.MediaFile>) {
-      return (data as List).map((e) => deserialize<_i14.MediaFile>(e)).toList()
+    if (t == _i1.getType<Map<String, dynamic>?>()) {
+      return (data != null
+          ? (data as Map).map((k, v) =>
+              MapEntry(deserialize<String>(k), deserialize<dynamic>(v)))
+          : null) as T;
+    }
+    if (t == List<_i19.MediaFile>) {
+      return (data as List).map((e) => deserialize<_i19.MediaFile>(e)).toList()
           as T;
     }
     try {
@@ -1272,19 +1625,31 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i8.CmsUser) {
       return 'CmsUser';
     }
-    if (data is _i9.DocumentList) {
+    if (data is _i9.CrdtOperationType) {
+      return 'CrdtOperationType';
+    }
+    if (data is _i10.DocumentCrdtOperation) {
+      return 'DocumentCrdtOperation';
+    }
+    if (data is _i11.DocumentCrdtSnapshot) {
+      return 'DocumentCrdtSnapshot';
+    }
+    if (data is _i12.DocumentList) {
       return 'DocumentList';
     }
-    if (data is _i10.DocumentVersion) {
+    if (data is _i13.DocumentVersion) {
       return 'DocumentVersion';
     }
-    if (data is _i11.DocumentVersionList) {
+    if (data is _i14.DocumentVersionList) {
       return 'DocumentVersionList';
     }
-    if (data is _i12.MediaFile) {
+    if (data is _i15.DocumentVersionStatus) {
+      return 'DocumentVersionStatus';
+    }
+    if (data is _i16.MediaFile) {
       return 'MediaFile';
     }
-    if (data is _i13.UploadResponse) {
+    if (data is _i17.UploadResponse) {
       return 'UploadResponse';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1319,20 +1684,32 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'CmsUser') {
       return deserialize<_i8.CmsUser>(data['data']);
     }
+    if (dataClassName == 'CrdtOperationType') {
+      return deserialize<_i9.CrdtOperationType>(data['data']);
+    }
+    if (dataClassName == 'DocumentCrdtOperation') {
+      return deserialize<_i10.DocumentCrdtOperation>(data['data']);
+    }
+    if (dataClassName == 'DocumentCrdtSnapshot') {
+      return deserialize<_i11.DocumentCrdtSnapshot>(data['data']);
+    }
     if (dataClassName == 'DocumentList') {
-      return deserialize<_i9.DocumentList>(data['data']);
+      return deserialize<_i12.DocumentList>(data['data']);
     }
     if (dataClassName == 'DocumentVersion') {
-      return deserialize<_i10.DocumentVersion>(data['data']);
+      return deserialize<_i13.DocumentVersion>(data['data']);
     }
     if (dataClassName == 'DocumentVersionList') {
-      return deserialize<_i11.DocumentVersionList>(data['data']);
+      return deserialize<_i14.DocumentVersionList>(data['data']);
+    }
+    if (dataClassName == 'DocumentVersionStatus') {
+      return deserialize<_i15.DocumentVersionStatus>(data['data']);
     }
     if (dataClassName == 'MediaFile') {
-      return deserialize<_i12.MediaFile>(data['data']);
+      return deserialize<_i16.MediaFile>(data['data']);
     }
     if (dataClassName == 'UploadResponse') {
-      return deserialize<_i13.UploadResponse>(data['data']);
+      return deserialize<_i17.UploadResponse>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1370,10 +1747,14 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i7.CmsDocumentData.t;
       case _i8.CmsUser:
         return _i8.CmsUser.t;
-      case _i10.DocumentVersion:
-        return _i10.DocumentVersion.t;
-      case _i12.MediaFile:
-        return _i12.MediaFile.t;
+      case _i10.DocumentCrdtOperation:
+        return _i10.DocumentCrdtOperation.t;
+      case _i11.DocumentCrdtSnapshot:
+        return _i11.DocumentCrdtSnapshot.t;
+      case _i13.DocumentVersion:
+        return _i13.DocumentVersion.t;
+      case _i16.MediaFile:
+        return _i16.MediaFile.t;
     }
     return null;
   }

@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'document_version_status.dart' as _i2;
 
 abstract class DocumentVersion
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -18,21 +19,24 @@ abstract class DocumentVersion
     required this.documentId,
     required this.versionNumber,
     required this.status,
-    required this.data,
+    this.snapshotHlc,
+    int? operationCount,
     this.changeLog,
     this.publishedAt,
     this.scheduledAt,
     this.archivedAt,
     DateTime? createdAt,
     required this.createdByUserId,
-  }) : createdAt = createdAt ?? DateTime.now();
+  })  : operationCount = operationCount ?? 0,
+        createdAt = createdAt ?? DateTime.now();
 
   factory DocumentVersion({
     int? id,
     required int documentId,
     required int versionNumber,
-    required String status,
-    required String data,
+    required _i2.DocumentVersionStatus status,
+    String? snapshotHlc,
+    int? operationCount,
     String? changeLog,
     DateTime? publishedAt,
     DateTime? scheduledAt,
@@ -46,8 +50,10 @@ abstract class DocumentVersion
       id: jsonSerialization['id'] as int?,
       documentId: jsonSerialization['documentId'] as int,
       versionNumber: jsonSerialization['versionNumber'] as int,
-      status: jsonSerialization['status'] as String,
-      data: jsonSerialization['data'] as String,
+      status: _i2.DocumentVersionStatus.fromJson(
+          (jsonSerialization['status'] as String)),
+      snapshotHlc: jsonSerialization['snapshotHlc'] as String?,
+      operationCount: jsonSerialization['operationCount'] as int,
       changeLog: jsonSerialization['changeLog'] as String?,
       publishedAt: jsonSerialization['publishedAt'] == null
           ? null
@@ -78,9 +84,11 @@ abstract class DocumentVersion
 
   int versionNumber;
 
-  String status;
+  _i2.DocumentVersionStatus status;
 
-  String data;
+  String? snapshotHlc;
+
+  int operationCount;
 
   String? changeLog;
 
@@ -104,8 +112,9 @@ abstract class DocumentVersion
     int? id,
     int? documentId,
     int? versionNumber,
-    String? status,
-    String? data,
+    _i2.DocumentVersionStatus? status,
+    String? snapshotHlc,
+    int? operationCount,
     String? changeLog,
     DateTime? publishedAt,
     DateTime? scheduledAt,
@@ -119,8 +128,9 @@ abstract class DocumentVersion
       if (id != null) 'id': id,
       'documentId': documentId,
       'versionNumber': versionNumber,
-      'status': status,
-      'data': data,
+      'status': status.toJson(),
+      if (snapshotHlc != null) 'snapshotHlc': snapshotHlc,
+      'operationCount': operationCount,
       if (changeLog != null) 'changeLog': changeLog,
       if (publishedAt != null) 'publishedAt': publishedAt?.toJson(),
       if (scheduledAt != null) 'scheduledAt': scheduledAt?.toJson(),
@@ -136,8 +146,9 @@ abstract class DocumentVersion
       if (id != null) 'id': id,
       'documentId': documentId,
       'versionNumber': versionNumber,
-      'status': status,
-      'data': data,
+      'status': status.toJson(),
+      if (snapshotHlc != null) 'snapshotHlc': snapshotHlc,
+      'operationCount': operationCount,
       if (changeLog != null) 'changeLog': changeLog,
       if (publishedAt != null) 'publishedAt': publishedAt?.toJson(),
       if (scheduledAt != null) 'scheduledAt': scheduledAt?.toJson(),
@@ -184,8 +195,9 @@ class _DocumentVersionImpl extends DocumentVersion {
     int? id,
     required int documentId,
     required int versionNumber,
-    required String status,
-    required String data,
+    required _i2.DocumentVersionStatus status,
+    String? snapshotHlc,
+    int? operationCount,
     String? changeLog,
     DateTime? publishedAt,
     DateTime? scheduledAt,
@@ -197,7 +209,8 @@ class _DocumentVersionImpl extends DocumentVersion {
           documentId: documentId,
           versionNumber: versionNumber,
           status: status,
-          data: data,
+          snapshotHlc: snapshotHlc,
+          operationCount: operationCount,
           changeLog: changeLog,
           publishedAt: publishedAt,
           scheduledAt: scheduledAt,
@@ -214,8 +227,9 @@ class _DocumentVersionImpl extends DocumentVersion {
     Object? id = _Undefined,
     int? documentId,
     int? versionNumber,
-    String? status,
-    String? data,
+    _i2.DocumentVersionStatus? status,
+    Object? snapshotHlc = _Undefined,
+    int? operationCount,
     Object? changeLog = _Undefined,
     Object? publishedAt = _Undefined,
     Object? scheduledAt = _Undefined,
@@ -228,7 +242,8 @@ class _DocumentVersionImpl extends DocumentVersion {
       documentId: documentId ?? this.documentId,
       versionNumber: versionNumber ?? this.versionNumber,
       status: status ?? this.status,
-      data: data ?? this.data,
+      snapshotHlc: snapshotHlc is String? ? snapshotHlc : this.snapshotHlc,
+      operationCount: operationCount ?? this.operationCount,
       changeLog: changeLog is String? ? changeLog : this.changeLog,
       publishedAt: publishedAt is DateTime? ? publishedAt : this.publishedAt,
       scheduledAt: scheduledAt is DateTime? ? scheduledAt : this.scheduledAt,
@@ -250,13 +265,19 @@ class DocumentVersionTable extends _i1.Table<int?> {
       'versionNumber',
       this,
     );
-    status = _i1.ColumnString(
+    status = _i1.ColumnEnum(
       'status',
       this,
+      _i1.EnumSerialization.byName,
     );
-    data = _i1.ColumnString(
-      'data',
+    snapshotHlc = _i1.ColumnString(
+      'snapshotHlc',
       this,
+    );
+    operationCount = _i1.ColumnInt(
+      'operationCount',
+      this,
+      hasDefault: true,
     );
     changeLog = _i1.ColumnString(
       'changeLog',
@@ -289,9 +310,11 @@ class DocumentVersionTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt versionNumber;
 
-  late final _i1.ColumnString status;
+  late final _i1.ColumnEnum<_i2.DocumentVersionStatus> status;
 
-  late final _i1.ColumnString data;
+  late final _i1.ColumnString snapshotHlc;
+
+  late final _i1.ColumnInt operationCount;
 
   late final _i1.ColumnString changeLog;
 
@@ -311,7 +334,8 @@ class DocumentVersionTable extends _i1.Table<int?> {
         documentId,
         versionNumber,
         status,
-        data,
+        snapshotHlc,
+        operationCount,
         changeLog,
         publishedAt,
         scheduledAt,

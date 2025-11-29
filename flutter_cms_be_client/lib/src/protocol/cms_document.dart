@@ -19,7 +19,9 @@ abstract class CmsDocument implements _i1.SerializableModel {
     required this.title,
     this.slug,
     bool? isDefault,
-    this.activeVersionData,
+    this.data,
+    this.crdtNodeId,
+    this.crdtHlc,
     DateTime? createdAt,
     DateTime? updatedAt,
     required this.createdByUserId,
@@ -35,7 +37,9 @@ abstract class CmsDocument implements _i1.SerializableModel {
     required String title,
     String? slug,
     bool? isDefault,
-    String? activeVersionData,
+    String? data,
+    String? crdtNodeId,
+    String? crdtHlc,
     DateTime? createdAt,
     DateTime? updatedAt,
     required int createdByUserId,
@@ -50,7 +54,9 @@ abstract class CmsDocument implements _i1.SerializableModel {
       title: jsonSerialization['title'] as String,
       slug: jsonSerialization['slug'] as String?,
       isDefault: jsonSerialization['isDefault'] as bool,
-      activeVersionData: jsonSerialization['activeVersionData'] as String?,
+      data: jsonSerialization['data'] as String?,
+      crdtNodeId: jsonSerialization['crdtNodeId'] as String?,
+      crdtHlc: jsonSerialization['crdtHlc'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -77,7 +83,11 @@ abstract class CmsDocument implements _i1.SerializableModel {
 
   bool isDefault;
 
-  String? activeVersionData;
+  String? data;
+
+  String? crdtNodeId;
+
+  String? crdtHlc;
 
   DateTime? createdAt;
 
@@ -97,7 +107,9 @@ abstract class CmsDocument implements _i1.SerializableModel {
     String? title,
     String? slug,
     bool? isDefault,
-    String? activeVersionData,
+    String? data,
+    String? crdtNodeId,
+    String? crdtHlc,
     DateTime? createdAt,
     DateTime? updatedAt,
     int? createdByUserId,
@@ -112,7 +124,9 @@ abstract class CmsDocument implements _i1.SerializableModel {
       'title': title,
       if (slug != null) 'slug': slug,
       'isDefault': isDefault,
-      if (activeVersionData != null) 'activeVersionData': activeVersionData,
+      if (data != null) 'data': data,
+      if (crdtNodeId != null) 'crdtNodeId': crdtNodeId,
+      if (crdtHlc != null) 'crdtHlc': crdtHlc,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
       'createdByUserId': createdByUserId,
@@ -136,7 +150,9 @@ class _CmsDocumentImpl extends CmsDocument {
     required String title,
     String? slug,
     bool? isDefault,
-    String? activeVersionData,
+    String? data,
+    String? crdtNodeId,
+    String? crdtHlc,
     DateTime? createdAt,
     DateTime? updatedAt,
     required int createdByUserId,
@@ -148,7 +164,9 @@ class _CmsDocumentImpl extends CmsDocument {
           title: title,
           slug: slug,
           isDefault: isDefault,
-          activeVersionData: activeVersionData,
+          data: data,
+          crdtNodeId: crdtNodeId,
+          crdtHlc: crdtHlc,
           createdAt: createdAt,
           updatedAt: updatedAt,
           createdByUserId: createdByUserId,
@@ -166,7 +184,9 @@ class _CmsDocumentImpl extends CmsDocument {
     String? title,
     Object? slug = _Undefined,
     bool? isDefault,
-    Object? activeVersionData = _Undefined,
+    Object? data = _Undefined,
+    Object? crdtNodeId = _Undefined,
+    Object? crdtHlc = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
     int? createdByUserId,
@@ -179,9 +199,9 @@ class _CmsDocumentImpl extends CmsDocument {
       title: title ?? this.title,
       slug: slug is String? ? slug : this.slug,
       isDefault: isDefault ?? this.isDefault,
-      activeVersionData: activeVersionData is String?
-          ? activeVersionData
-          : this.activeVersionData,
+      data: data is String? ? data : this.data,
+      crdtNodeId: crdtNodeId is String? ? crdtNodeId : this.crdtNodeId,
+      crdtHlc: crdtHlc is String? ? crdtHlc : this.crdtHlc,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
       createdByUserId: createdByUserId ?? this.createdByUserId,

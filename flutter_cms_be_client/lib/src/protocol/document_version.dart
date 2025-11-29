@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'document_version_status.dart' as _i2;
 
 abstract class DocumentVersion implements _i1.SerializableModel {
   DocumentVersion._({
@@ -17,21 +18,24 @@ abstract class DocumentVersion implements _i1.SerializableModel {
     required this.documentId,
     required this.versionNumber,
     required this.status,
-    required this.data,
+    this.snapshotHlc,
+    int? operationCount,
     this.changeLog,
     this.publishedAt,
     this.scheduledAt,
     this.archivedAt,
     DateTime? createdAt,
     required this.createdByUserId,
-  }) : createdAt = createdAt ?? DateTime.now();
+  })  : operationCount = operationCount ?? 0,
+        createdAt = createdAt ?? DateTime.now();
 
   factory DocumentVersion({
     int? id,
     required int documentId,
     required int versionNumber,
-    required String status,
-    required String data,
+    required _i2.DocumentVersionStatus status,
+    String? snapshotHlc,
+    int? operationCount,
     String? changeLog,
     DateTime? publishedAt,
     DateTime? scheduledAt,
@@ -45,8 +49,10 @@ abstract class DocumentVersion implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       documentId: jsonSerialization['documentId'] as int,
       versionNumber: jsonSerialization['versionNumber'] as int,
-      status: jsonSerialization['status'] as String,
-      data: jsonSerialization['data'] as String,
+      status: _i2.DocumentVersionStatus.fromJson(
+          (jsonSerialization['status'] as String)),
+      snapshotHlc: jsonSerialization['snapshotHlc'] as String?,
+      operationCount: jsonSerialization['operationCount'] as int,
       changeLog: jsonSerialization['changeLog'] as String?,
       publishedAt: jsonSerialization['publishedAt'] == null
           ? null
@@ -75,9 +81,11 @@ abstract class DocumentVersion implements _i1.SerializableModel {
 
   int versionNumber;
 
-  String status;
+  _i2.DocumentVersionStatus status;
 
-  String data;
+  String? snapshotHlc;
+
+  int operationCount;
 
   String? changeLog;
 
@@ -98,8 +106,9 @@ abstract class DocumentVersion implements _i1.SerializableModel {
     int? id,
     int? documentId,
     int? versionNumber,
-    String? status,
-    String? data,
+    _i2.DocumentVersionStatus? status,
+    String? snapshotHlc,
+    int? operationCount,
     String? changeLog,
     DateTime? publishedAt,
     DateTime? scheduledAt,
@@ -113,8 +122,9 @@ abstract class DocumentVersion implements _i1.SerializableModel {
       if (id != null) 'id': id,
       'documentId': documentId,
       'versionNumber': versionNumber,
-      'status': status,
-      'data': data,
+      'status': status.toJson(),
+      if (snapshotHlc != null) 'snapshotHlc': snapshotHlc,
+      'operationCount': operationCount,
       if (changeLog != null) 'changeLog': changeLog,
       if (publishedAt != null) 'publishedAt': publishedAt?.toJson(),
       if (scheduledAt != null) 'scheduledAt': scheduledAt?.toJson(),
@@ -137,8 +147,9 @@ class _DocumentVersionImpl extends DocumentVersion {
     int? id,
     required int documentId,
     required int versionNumber,
-    required String status,
-    required String data,
+    required _i2.DocumentVersionStatus status,
+    String? snapshotHlc,
+    int? operationCount,
     String? changeLog,
     DateTime? publishedAt,
     DateTime? scheduledAt,
@@ -150,7 +161,8 @@ class _DocumentVersionImpl extends DocumentVersion {
           documentId: documentId,
           versionNumber: versionNumber,
           status: status,
-          data: data,
+          snapshotHlc: snapshotHlc,
+          operationCount: operationCount,
           changeLog: changeLog,
           publishedAt: publishedAt,
           scheduledAt: scheduledAt,
@@ -167,8 +179,9 @@ class _DocumentVersionImpl extends DocumentVersion {
     Object? id = _Undefined,
     int? documentId,
     int? versionNumber,
-    String? status,
-    String? data,
+    _i2.DocumentVersionStatus? status,
+    Object? snapshotHlc = _Undefined,
+    int? operationCount,
     Object? changeLog = _Undefined,
     Object? publishedAt = _Undefined,
     Object? scheduledAt = _Undefined,
@@ -181,7 +194,8 @@ class _DocumentVersionImpl extends DocumentVersion {
       documentId: documentId ?? this.documentId,
       versionNumber: versionNumber ?? this.versionNumber,
       status: status ?? this.status,
-      data: data ?? this.data,
+      snapshotHlc: snapshotHlc is String? ? snapshotHlc : this.snapshotHlc,
+      operationCount: operationCount ?? this.operationCount,
       changeLog: changeLog is String? ? changeLog : this.changeLog,
       publishedAt: publishedAt is DateTime? ? publishedAt : this.publishedAt,
       scheduledAt: scheduledAt is DateTime? ? scheduledAt : this.scheduledAt,

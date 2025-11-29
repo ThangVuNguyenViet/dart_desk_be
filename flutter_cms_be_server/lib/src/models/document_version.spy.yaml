@@ -3,8 +3,9 @@ table: document_versions
 fields:
   documentId: int, relation(parent=cms_documents, onDelete=Cascade)
   versionNumber: int
-  status: String
-  data: String  # JSON string containing the actual document data
+  status: DocumentVersionStatus
+  snapshotHlc: String?  # HLC timestamp for this version snapshot
+  operationCount: int, default=0  # Number of operations up to this version
   changeLog: String?
   publishedAt: DateTime?
   scheduledAt: DateTime?
@@ -17,6 +18,8 @@ indexes:
   document_versions_document_version_idx:
     fields: documentId, versionNumber
     unique: true
+  document_versions_snapshot_hlc_idx:
+    fields: documentId, snapshotHlc
   document_versions_status_idx:
     fields: status
   document_versions_published_at_idx:

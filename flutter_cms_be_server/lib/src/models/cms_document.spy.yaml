@@ -6,7 +6,9 @@ fields:
   title: String
   slug: String?
   isDefault: bool, default=false
-  activeVersionData: String?  # Computed/cached from active DocumentVersion
+  data: String?  # Latest CRDT-merged document state (JSON)
+  crdtNodeId: String?  # CRDT node identifier
+  crdtHlc: String?  # Hybrid Logical Clock timestamp
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
   createdByUserId: int, relation(parent=cms_users, onDelete=SetNull)
@@ -18,14 +20,17 @@ indexes:
     fields: documentType
   cms_documents_client_type_idx:
     fields: clientId, documentType
+    unique: true
   cms_documents_slug_idx:
     fields: slug
   cms_documents_is_default_idx:
     fields: isDefault
   cms_documents_type_default_idx:
     fields: documentType, isDefault
-  cms_documents_active_data_idx:
-    fields: activeVersionData
+  cms_documents_data_idx:
+    fields: data
+  cms_documents_crdt_node_idx:
+    fields: crdtNodeId
   cms_documents_created_at_idx:
     fields: createdAt
   cms_documents_updated_at_idx:

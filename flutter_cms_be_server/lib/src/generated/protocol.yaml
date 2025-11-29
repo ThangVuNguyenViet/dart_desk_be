@@ -1,16 +1,24 @@
+documentCollaboration:
+  - getOperationsSince:
+  - submitEdit:
+  - getActiveEditors:
+  - getCurrentHlc:
+  - getOperationCount:
+  - compactOperations:
 document:
   - getDocuments:
   - getDocument:
   - getDocumentBySlug:
   - getDefaultDocument:
   - createDocument:
+  - updateDocumentData:
   - updateDocument:
   - deleteDocument:
   - getDocumentTypes:
   - getDocumentVersions:
   - getDocumentVersion:
+  - getDocumentVersionData:
   - createDocumentVersion:
-  - updateDocumentVersion:
   - publishDocumentVersion:
   - archiveDocumentVersion:
   - deleteDocumentVersion:

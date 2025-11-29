@@ -1,0 +1,5 @@
+enum: CrdtOperationType
+serialized: byName
+values:
+  - put
+  - delete

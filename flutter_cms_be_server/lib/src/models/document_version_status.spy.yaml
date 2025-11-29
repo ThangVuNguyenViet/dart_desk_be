@@ -1,0 +1,7 @@
+enum: DocumentVersionStatus
+serialized: byName
+values:
+  - draft
+  - published
+  - scheduled
+  - archived

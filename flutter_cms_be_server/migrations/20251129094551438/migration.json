@@ -1,0 +1,431 @@
+{
+  "actions": [
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "cms_documents",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "data",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          },
+          {
+            "name": "crdtNodeId",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          },
+          {
+            "name": "crdtHlc",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          }
+        ],
+        "deleteColumns": [
+          "activeVersionData"
+        ],
+        "modifyColumns": [],
+        "addIndexes": [
+          {
+            "indexName": "cms_documents_data_idx",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "data"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "indexName": "cms_documents_crdt_node_idx",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "crdtNodeId"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "deleteIndexes": [
+          "cms_documents_active_data_idx"
+        ],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "type": "columnDropped",
+            "message": "Column \"activeVersionData\" of table \"cms_documents\" will be dropped.",
+            "table": "cms_documents",
+            "columns": [
+              "activeVersionData"
+            ],
+            "destrucive": true
+          },
+          {
+            "type": "columnDropped",
+            "message": "Column \"data\" of table \"document_versions\" will be dropped.",
+            "table": "document_versions",
+            "columns": [
+              "data"
+            ],
+            "destrucive": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "document_crdt_operations",
+        "dartName": "DocumentCrdtOperation",
+        "module": "flutter_cms_be",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('document_crdt_operations_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "documentId",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "hlc",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "nodeId",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "operationType",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "fieldPath",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "fieldValue",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          },
+          {
+            "name": "createdAt",
+            "columnType": 4,
+            "isNullable": true,
+            "columnDefault": "CURRENT_TIMESTAMP",
+            "dartType": "DateTime?"
+          },
+          {
+            "name": "createdByUserId",
+            "columnType": 6,
+            "isNullable": true,
+            "dartType": "int?"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "document_crdt_operations_fk_0",
+            "columns": [
+              "documentId"
+            ],
+            "referenceTable": "cms_documents",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          },
+          {
+            "constraintName": "document_crdt_operations_fk_1",
+            "columns": [
+              "createdByUserId"
+            ],
+            "referenceTable": "cms_users",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 0
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "document_crdt_operations_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "document_crdt_operations_document_hlc_idx",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "documentId"
+              },
+              {
+                "type": 0,
+                "definition": "hlc"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "indexName": "document_crdt_operations_document_id_idx",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "documentId"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "indexName": "document_crdt_operations_created_at_idx",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "createdAt"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "document_crdt_snapshots",
+        "dartName": "DocumentCrdtSnapshot",
+        "module": "flutter_cms_be",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('document_crdt_snapshots_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "documentId",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "snapshotHlc",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "snapshotData",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "operationCountAtSnapshot",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "createdAt",
+            "columnType": 4,
+            "isNullable": true,
+            "columnDefault": "CURRENT_TIMESTAMP",
+            "dartType": "DateTime?"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "document_crdt_snapshots_fk_0",
+            "columns": [
+              "documentId"
+            ],
+            "referenceTable": "cms_documents",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "document_crdt_snapshots_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "document_crdt_snapshots_document_hlc_idx",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "documentId"
+              },
+              {
+                "type": 0,
+                "definition": "snapshotHlc"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": false
+          },
+          {
+            "indexName": "document_crdt_snapshots_document_id_idx",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "documentId"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "document_versions",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "snapshotHlc",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          },
+          {
+            "name": "operationCount",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "0",
+            "dartType": "int"
+          }
+        ],
+        "deleteColumns": [
+          "data"
+        ],
+        "modifyColumns": [],
+        "addIndexes": [
+          {
+            "indexName": "document_versions_snapshot_hlc_idx",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "documentId"
+              },
+              {
+                "type": 0,
+                "definition": "snapshotHlc"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "type": "columnDropped",
+            "message": "Column \"activeVersionData\" of table \"cms_documents\" will be dropped.",
+            "table": "cms_documents",
+            "columns": [
+              "activeVersionData"
+            ],
+            "destrucive": true
+          },
+          {
+            "type": "columnDropped",
+            "message": "Column \"data\" of table \"document_versions\" will be dropped.",
+            "table": "document_versions",
+            "columns": [
+              "data"
+            ],
+            "destrucive": true
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "type": "columnDropped",
+      "message": "Column \"activeVersionData\" of table \"cms_documents\" will be dropped.",
+      "table": "cms_documents",
+      "columns": [
+        "activeVersionData"
+      ],
+      "destrucive": true
+    },
+    {
+      "type": "columnDropped",
+      "message": "Column \"data\" of table \"document_versions\" will be dropped.",
+      "table": "document_versions",
+      "columns": [
+        "data"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}

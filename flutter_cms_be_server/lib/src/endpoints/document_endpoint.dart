@@ -1,49 +1,11 @@
 import 'dart:convert';
 import 'package:serverpod/serverpod.dart';
 import '../generated/protocol.dart';
+import '../../../server.dart' as server;
 
 /// Endpoint for managing CMS documents
 /// All write operations require authentication
 class DocumentEndpoint extends Endpoint {
-  /// Helper method to sync activeVersionData with the published version
-  Future<void> _syncActiveVersionData(
-    Session session,
-    int documentId,
-  ) async {
-    // Find the published version (or latest draft if no published version)
-    final publishedVersions = await DocumentVersion.db.find(
-      session,
-      where: (t) => t.documentId.equals(documentId) & t.status.equals('published'),
-      orderBy: (t) => t.versionNumber,
-      orderDescending: true,
-      limit: 1,
-    );
-
-    String? activeData;
-    if (publishedVersions.isNotEmpty) {
-      activeData = publishedVersions.first.data;
-    } else {
-      // If no published version, use the latest version
-      final latestVersions = await DocumentVersion.db.find(
-        session,
-        where: (t) => t.documentId.equals(documentId),
-        orderBy: (t) => t.versionNumber,
-        orderDescending: true,
-        limit: 1,
-      );
-      activeData = latestVersions.isNotEmpty ? latestVersions.first.data : null;
-    }
-
-    // Update the document's activeVersionData
-    final document = await CmsDocument.db.findById(session, documentId);
-    if (document != null) {
-      final updatedDoc = document.copyWith(
-        activeVersionData: activeData,
-        updatedAt: DateTime.now(),
-      );
-      await CmsDocument.db.updateRow(session, updatedDoc);
-    }
-  }
 
   /// Get all documents for a specific document type with pagination
   Future<DocumentList> getDocuments(
@@ -65,10 +27,10 @@ class DocumentEndpoint extends Endpoint {
       where: (t) {
         var expr = t.documentType.equals(documentType);
         if (search != null && search.isNotEmpty) {
-          // Search in title and activeVersionData (cached from published version)
+          // Search in title and data (cached latest version)
           expr = expr &
               (t.title.like('%$search%') |
-                  t.activeVersionData.like('%$search%'));
+                  t.data.like('%$search%'));
         }
         return expr;
       },
@@ -147,7 +109,9 @@ class DocumentEndpoint extends Endpoint {
       title: title,
       slug: slug,
       isDefault: isDefault,
-      activeVersionData: encodedData, // Cache the initial data
+      data: encodedData, // Cache the initial data
+      crdtNodeId: null, // Will be set when CRDT is initialized
+      crdtHlc: null, // Will be set when CRDT is initialized
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       createdByUserId: userId,
@@ -156,25 +120,70 @@ class DocumentEndpoint extends Endpoint {
 
     final created = await CmsDocument.db.insertRow(session, document);
 
-    // Create the initial version
+    // Initialize CRDT for this document
     if (created.id != null) {
+      await server.documentCrdtService.initializeCrdt(
+        session,
+        created.id!,
+        data,
+      );
+
+      // Get the HLC that was set during initialization
+      final updatedDoc = await CmsDocument.db.findById(session, created.id!);
+      final currentHlc = updatedDoc?.crdtHlc;
+
+      // Create initial version pointing to initial HLC
+      final opCount = await server.documentCrdtService.getOperationCount(
+        session,
+        created.id!,
+      );
+
       final version = DocumentVersion(
         documentId: created.id!,
         versionNumber: 1,
-        status: 'draft',
-        data: encodedData,
+        status: DocumentVersionStatus.draft,
+        snapshotHlc: currentHlc,
+        operationCount: opCount,
         changeLog: 'Initial version',
         createdAt: DateTime.now(),
         createdByUserId: userId,
       );
       await DocumentVersion.db.insertRow(session, version);
+
+      return updatedDoc ?? created;
     }
 
     return created;
   }
 
+  /// Update document data using CRDT operations (partial updates)
+  /// Only changed fields need to be provided - they will be merged automatically
+  Future<CmsDocument> updateDocumentData(
+    Session session,
+    int documentId,
+    Map<String, dynamic> updates, {
+    String? sessionId,
+  }) async {
+    // Require authentication
+    final authInfo = await session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to update documents');
+    }
+
+    // Use user ID as session ID if not provided
+    final editSessionId = sessionId ?? 'user-${authInfo.userId}';
+
+    // Apply CRDT operations
+    return await server.documentCrdtService.applyOperations(
+      session,
+      documentId,
+      updates,
+      editSessionId,
+    );
+  }
+
   /// Update document metadata (title, slug, isDefault)
-  /// To update document data, use createDocumentVersion instead
+  /// To update document data, use updateDocumentData instead
   Future<CmsDocument?> updateDocument(
     Session session,
     int documentId, {
@@ -276,13 +285,34 @@ class DocumentEndpoint extends Endpoint {
     return await DocumentVersion.db.findById(session, versionId);
   }
 
+  /// Get the document data for a specific version
+  /// Reconstructs the data from CRDT operations at the version's HLC snapshot
+  Future<Map<String, dynamic>?> getDocumentVersionData(
+    Session session,
+    int versionId,
+  ) async {
+    final version = await DocumentVersion.db.findById(session, versionId);
+    if (version == null) return null;
+
+    // If version has no HLC snapshot, return empty data
+    if (version.snapshotHlc == null) {
+      return {};
+    }
+
+    // Reconstruct document state at this version's HLC
+    return await server.documentCrdtService.getStateAtHlc(
+      session,
+      version.documentId,
+      version.snapshotHlc!,
+    );
+  }
+
   /// Create a new version for a document
-  /// If status is 'published', updates the document's activeVersionData
+  /// Captures the current CRDT state as a version snapshot
   Future<DocumentVersion> createDocumentVersion(
     Session session,
-    int documentId,
-    Map<String, dynamic> data, {
-    String status = 'draft',
+    int documentId, {
+    DocumentVersionStatus status = DocumentVersionStatus.draft,
     String? changeLog,
   }) async {
     // Require authentication
@@ -305,11 +335,22 @@ class DocumentEndpoint extends Endpoint {
     final nextVersionNumber =
         existingVersions.isEmpty ? 1 : existingVersions.first.versionNumber + 1;
 
+    // Get current CRDT HLC and operation count for version snapshot
+    final currentHlc = await server.documentCrdtService.getCurrentHlc(
+      session,
+      documentId,
+    );
+    final opCount = await server.documentCrdtService.getOperationCount(
+      session,
+      documentId,
+    );
+
     final version = DocumentVersion(
       documentId: documentId,
       versionNumber: nextVersionNumber,
       status: status,
-      data: jsonEncode(data),
+      snapshotHlc: currentHlc,
+      operationCount: opCount,
       changeLog: changeLog,
       createdAt: DateTime.now(),
       createdByUserId: userId,
@@ -317,51 +358,10 @@ class DocumentEndpoint extends Endpoint {
 
     final created = await DocumentVersion.db.insertRow(session, version);
 
-    // Sync activeVersionData if this is a published version
-    if (status == 'published') {
-      await _syncActiveVersionData(session, documentId);
-    }
-
     return created;
   }
 
-  /// Update an existing version
-  /// If the version is published, updates the document's activeVersionData
-  Future<DocumentVersion?> updateDocumentVersion(
-    Session session,
-    int versionId,
-    Map<String, dynamic> data, {
-    String? changeLog,
-  }) async {
-    // Require authentication
-    final authInfo = await session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to update versions');
-    }
-
-    final existing = await DocumentVersion.db.findById(session, versionId);
-
-    if (existing == null) {
-      return null;
-    }
-
-    final updated = existing.copyWith(
-      data: jsonEncode(data),
-      changeLog: changeLog ?? existing.changeLog,
-    );
-
-    await DocumentVersion.db.updateRow(session, updated);
-
-    // Sync activeVersionData if this is a published version
-    if (updated.status == 'published') {
-      await _syncActiveVersionData(session, updated.documentId);
-    }
-
-    return updated;
-  }
-
   /// Publish a version (set status to 'published' and set publishedAt timestamp)
-  /// Also updates the document's activeVersionData cache
   Future<DocumentVersion?> publishDocumentVersion(
     Session session,
     int versionId,
@@ -379,20 +379,16 @@ class DocumentEndpoint extends Endpoint {
     }
 
     final updated = existing.copyWith(
-      status: 'published',
+      status: DocumentVersionStatus.published,
       publishedAt: DateTime.now(),
     );
 
     await DocumentVersion.db.updateRow(session, updated);
 
-    // Sync activeVersionData
-    await _syncActiveVersionData(session, existing.documentId);
-
     return updated;
   }
 
   /// Archive a version (set status to 'archived' and set archivedAt timestamp)
-  /// If archiving the published version, updates activeVersionData to next published version or null
   Future<DocumentVersion?> archiveDocumentVersion(
     Session session,
     int versionId,
@@ -409,25 +405,17 @@ class DocumentEndpoint extends Endpoint {
       return null;
     }
 
-    final wasPublished = existing.status == 'published';
-
     final updated = existing.copyWith(
-      status: 'archived',
+      status: DocumentVersionStatus.archived,
       archivedAt: DateTime.now(),
     );
 
     await DocumentVersion.db.updateRow(session, updated);
 
-    // Sync activeVersionData if we archived a published version
-    if (wasPublished) {
-      await _syncActiveVersionData(session, existing.documentId);
-    }
-
     return updated;
   }
 
   /// Delete a version
-  /// If deleting the published version, updates activeVersionData to next published version or null
   Future<bool> deleteDocumentVersion(
     Session session,
     int versionId,
@@ -444,15 +432,7 @@ class DocumentEndpoint extends Endpoint {
       return false;
     }
 
-    final wasPublished = existing.status == 'published';
-    final documentId = existing.documentId;
-
     await DocumentVersion.db.deleteRow(session, existing);
-
-    // Sync activeVersionData if we deleted a published version
-    if (wasPublished) {
-      await _syncActiveVersionData(session, documentId);
-    }
 
     return true;
   }

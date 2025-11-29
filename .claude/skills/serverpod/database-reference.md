@@ -327,13 +327,426 @@ final count = await Document.db.count(
 
 ## Raw SQL Queries
 
-For complex queries not supported by the ORM:
+For complex queries not supported by the ORM, Serverpod provides multiple methods for raw SQL access.
+
+### Query Methods
+
+**1. `unsafeQuery` - Execute SELECT queries with results**
+
+Uses extended query protocol with parameter binding (secure):
 
 ```dart
-final results = await session.db.query(
-  'SELECT * FROM documents WHERE client_id = @clientId',
-  parameters: QueryParameters.named({'clientId': clientId}),
+// Named parameters (@ prefix)
+final results = await session.db.unsafeQuery(
+  r'SELECT * FROM documents WHERE client_id = @clientId AND status = @status',
+  parameters: QueryParameters.named({'clientId': clientId, 'status': status}),
 );
+
+// Positional parameters ($1, $2) - Recommended for most cases
+final results = await session.db.unsafeQuery(
+  r'SELECT * FROM documents WHERE client_id = $1 AND status = $2',
+  parameters: QueryParameters.positional([clientId, status]),
+);
+
+// No parameters
+final results = await session.db.unsafeQuery(
+  'SELECT DISTINCT document_type FROM documents ORDER BY document_type',
+);
+```
+
+**2. `unsafeExecute` - Execute INSERT/UPDATE/DELETE**
+
+Returns the number of affected rows:
+
+```dart
+final rowsAffected = await session.db.unsafeExecute(
+  r'DELETE FROM old_records WHERE created_at < $1',
+  parameters: QueryParameters.positional([cutoffDate]),
+);
+
+session.log('Deleted $rowsAffected rows');
+```
+
+**3. `unsafeSimpleQuery` - Simple protocol (multi-statement)**
+
+Uses simple query protocol without parameter binding. Use only when needed for:
+- Multiple statements in one query
+- Proxy environments like PGBouncer
+- Compatibility requirements
+
+```dart
+final results = await session.db.unsafeSimpleQuery(
+  'SELECT * FROM table1; SELECT * FROM table2;'
+);
+```
+
+**⚠️ Warning**: Cannot use parameter binding - manually sanitize input!
+
+**4. `unsafeSimpleExecute` - Simple protocol execute**
+
+Similar to `unsafeSimpleQuery` but for non-SELECT statements:
+
+```dart
+await session.db.unsafeSimpleExecute(
+  'CREATE INDEX idx_name ON table(column)'
+);
+```
+
+### Parameter Binding
+
+**Named Parameters** (Use @ prefix):
+
+```dart
+final results = await session.db.unsafeQuery(
+  r'SELECT * FROM users WHERE age > @minAge AND city = @city',
+  parameters: QueryParameters.named({
+    'minAge': 18,
+    'city': 'Stockholm',
+  }),
+);
+```
+
+**Positional Parameters** (Use $1, $2 - Recommended):
+
+```dart
+final results = await session.db.unsafeQuery(
+  r'SELECT * FROM users WHERE age > $1 AND city = $2',
+  parameters: QueryParameters.positional([18, 'Stockholm']),
+);
+```
+
+### Working with Results
+
+```dart
+final results = await session.db.unsafeQuery(
+  r'SELECT id, name, email FROM users WHERE active = $1',
+  parameters: QueryParameters.positional([true]),
+);
+
+// Iterate over rows
+for (var row in results) {
+  final id = row[0] as int;
+  final name = row[1] as String;
+  final email = row[2] as String?;
+
+  // Or use toColumnMap
+  final map = row.toColumnMap();
+  final userId = map['id'];
+  final userName = map['name'];
+}
+
+// Map to custom objects
+final users = results.map((row) {
+  return User(
+    id: row[0] as int,
+    name: row[1] as String,
+    email: row[2] as String?,
+  );
+}).toList();
+
+// Convert to protocol objects
+final entities = results.map((row) {
+  return MyEntity.fromJson(row.toColumnMap());
+}).toList();
+```
+
+### Security Best Practices
+
+**✅ DO: Use Parameter Binding**
+
+```dart
+// Safe - parameters are properly escaped
+await session.db.unsafeQuery(
+  r'SELECT * FROM users WHERE username = $1',
+  parameters: QueryParameters.positional([userInput]),
+);
+```
+
+**❌ DON'T: Concatenate User Input**
+
+```dart
+// DANGEROUS - SQL injection vulnerability!
+await session.db.unsafeQuery(
+  'SELECT * FROM users WHERE username = \'$userInput\'',
+);
+```
+
+**Always Sanitize**: Even with "safe" methods, validate and sanitize user input before database operations.
+
+### When to Use Raw SQL
+
+Use raw SQL queries when:
+- Complex joins not well-supported by ORM
+- Aggregations and window functions
+- PostgreSQL-specific features (full-text search, JSON operations)
+- Performance-critical queries needing optimization
+- Database administration tasks
+
+**Prefer ORM when possible** for:
+- Simple CRUD operations
+- Standard queries with where/orderBy
+- Type safety and code maintainability
+- Automatic serialization
+
+### Example: Complex Query with CRDT
+
+```dart
+// Get CRDT operations since a timestamp with HLC comparison
+final operations = await session.db.unsafeQuery(
+  r'''
+  SELECT o.*, u.username
+  FROM document_crdt_operations o
+  LEFT JOIN users u ON o.created_by_user_id = u.id
+  WHERE o.document_id = $1
+    AND o.hlc > $2
+  ORDER BY o.hlc ASC
+  LIMIT $3
+  ''',
+  parameters: QueryParameters.positional([documentId, sinceHlc, limit]),
+);
+
+// Convert to protocol objects
+final ops = operations.map((row) {
+  return DocumentCrdtOperation.fromJson(row.toColumnMap());
+}).toList();
+```
+
+## Database Indexing
+
+Indexes improve query performance by allowing faster data retrieval. Define indexes in your `.spy.yaml` model files.
+
+### Basic Index Definition
+
+```yaml
+class: User
+table: users
+fields:
+  email: String
+  username: String
+  age: int
+indexes:
+  users_email_idx:
+    fields: email
+  users_username_idx:
+    fields: username
+```
+
+### Composite (Multi-field) Indexes
+
+Combine multiple fields into a single index for queries that filter on multiple columns:
+
+```yaml
+indexes:
+  users_age_city_idx:
+    fields: age, city
+```
+
+**Index order matters**: Place the most selective field first for optimal performance.
+
+### Unique Indexes
+
+Enforce uniqueness constraints at the database level:
+
+```yaml
+indexes:
+  users_email_unique_idx:
+    fields: email
+    unique: true
+  users_username_unique_idx:
+    fields: username
+    unique: true
+```
+
+**Composite unique indexes** ensure the combination of fields is unique:
+
+```yaml
+indexes:
+  documents_client_type_idx:
+    fields: clientId, documentType
+    unique: true  # Each client can only have one document of each type
+```
+
+### Index Types
+
+PostgreSQL supports various index algorithms:
+
+```yaml
+indexes:
+  # B-tree (default) - Best for general purpose, equality and range queries
+  users_age_idx:
+    fields: age
+    type: btree
+
+  # Hash - Only for equality comparisons
+  users_status_idx:
+    fields: status
+    type: hash
+
+  # BRIN - Block Range Index, for very large tables with natural ordering
+  logs_timestamp_idx:
+    fields: timestamp
+    type: brin
+
+  # GIN - Generalized Inverted Index, for full-text search and JSON
+  documents_tags_idx:
+    fields: tags
+    type: gin
+
+  # GiST - Generalized Search Tree, for geometric and full-text data
+  locations_coords_idx:
+    fields: coordinates
+    type: gist
+```
+
+### Vector Indexes (pgvector)
+
+For AI/ML vector similarity search:
+
+```yaml
+indexes:
+  # HNSW - Fast approximate nearest neighbor search
+  embeddings_vector_idx:
+    fields: embedding
+    type: hnsw
+    distanceFunction: cosine
+    m: 16  # Max connections per layer
+    ef_construction: 64  # Size of candidate list
+
+  # IVFFLAT - For large datasets
+  embeddings_large_idx:
+    fields: embedding
+    type: ivfflat
+    distanceFunction: l2
+    lists: 100  # Number of clusters
+```
+
+**Distance functions**: `l2`, `innerProduct`, `cosine`, `l1`, `hamming`, `jaccard`
+
+**Limitations**:
+- Vector indexes require single field only
+- SparseVector only supports HNSW
+- HalfVector has L1 limitations with IVFFLAT
+- Bit types only support hamming/jaccard
+
+### Index Naming Conventions
+
+**Recommended pattern**: `{table}_{fields}_{type}_idx`
+
+```yaml
+indexes:
+  users_email_idx:          # Single field
+  users_age_city_idx:       # Composite
+  users_email_unique_idx:   # Unique constraint
+  logs_timestamp_brin_idx:  # Specific type
+```
+
+### When to Add Indexes
+
+**DO index**:
+- Fields used in WHERE clauses frequently
+- Foreign key columns
+- Fields used in JOIN conditions
+- Fields used in ORDER BY
+- Composite keys for common multi-field queries
+- Unique constraints for data integrity
+
+**DON'T over-index**:
+- Small tables (< 1000 rows)
+- Rarely queried fields
+- Fields with low cardinality (few distinct values)
+- Every column "just in case"
+
+**Trade-offs**:
+- ✅ Faster SELECT queries
+- ❌ Slower INSERT/UPDATE/DELETE operations
+- ❌ Increased storage space
+
+### Index Examples
+
+**E-commerce product search**:
+```yaml
+class: Product
+table: products
+fields:
+  category: String
+  price: double
+  inStock: bool
+  createdAt: DateTime
+indexes:
+  products_category_idx:
+    fields: category
+  products_price_idx:
+    fields: price
+  products_category_price_idx:
+    fields: category, price  # For category browsing sorted by price
+  products_created_at_idx:
+    fields: createdAt
+  products_in_stock_idx:
+    fields: inStock
+```
+
+**Multi-tenant application**:
+```yaml
+class: Document
+table: documents
+fields:
+  clientId: int
+  documentType: String
+  title: String
+  createdAt: DateTime
+indexes:
+  documents_client_idx:
+    fields: clientId
+  documents_client_type_idx:
+    fields: clientId, documentType
+    unique: true  # One document per type per client
+  documents_client_created_idx:
+    fields: clientId, createdAt  # Pagination within client
+```
+
+**Full-text search**:
+```yaml
+class: Article
+table: articles
+fields:
+  title: String
+  content: String
+  tags: String  # JSON array
+indexes:
+  articles_content_idx:
+    fields: content
+    type: gin  # For full-text search
+  articles_tags_idx:
+    fields: tags
+    type: gin  # For JSON array searches
+```
+
+### Monitoring Index Usage
+
+Check which indexes are actually being used:
+
+```sql
+-- Find unused indexes
+SELECT
+  schemaname,
+  tablename,
+  indexname,
+  idx_scan as index_scans
+FROM pg_stat_user_indexes
+WHERE idx_scan = 0
+  AND indexname NOT LIKE '%pkey%'
+ORDER BY tablename;
+
+-- Find most used indexes
+SELECT
+  schemaname,
+  tablename,
+  indexname,
+  idx_scan as scans,
+  idx_tup_read as tuples_read,
+  idx_tup_fetch as tuples_fetched
+FROM pg_stat_user_indexes
+ORDER BY idx_scan DESC;
 ```
 
 ## Best Practices
@@ -341,13 +754,17 @@ final results = await session.db.query(
 1. **Always use migrations** - Never manually modify the database schema
 2. **Use transactions** for multiple related operations
 3. **Index frequently queried fields** for better performance
-4. **Validate data** before inserting into database
-5. **Use typed queries** to maintain type safety
-6. **Handle null values** appropriately
-7. **Close database connections** properly (Serverpod handles this automatically)
-8. **Use batch operations** for multiple inserts/updates
-9. **Optimize queries** with proper where clauses and limits
-10. **Test migrations** in development before applying to production
+4. **Don't over-index** - Each index has overhead for writes
+5. **Use composite indexes** for common multi-field queries
+6. **Add unique constraints** via unique indexes for data integrity
+7. **Monitor index usage** - Remove unused indexes
+8. **Validate data** before inserting into database
+9. **Use typed queries** to maintain type safety
+10. **Handle null values** appropriately
+11. **Close database connections** properly (Serverpod handles this automatically)
+12. **Use batch operations** for multiple inserts/updates
+13. **Optimize queries** with proper where clauses and limits
+14. **Test migrations** in development before applying to production
 
 ## Configuration
 

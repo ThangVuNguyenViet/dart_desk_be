@@ -180,6 +180,7 @@ class CloudDataSource implements CmsDataSource {
     try {
       final response = await _client.document.getDocumentVersion(versionId);
       if (response == null) return null;
+
       return _toDocumentVersion(response);
     } catch (e) {
       throw CmsDataSourceException('Failed to get document version', e);
@@ -187,51 +188,37 @@ class CloudDataSource implements CmsDataSource {
   }
 
   @override
-  Future<DocumentVersion> createDocumentVersion(
-    int documentId,
-    Map<String, dynamic> data, {
-    String status = 'draft',
-    String? changeLog,
-  }) async {
+  Future<Map<String, dynamic>?> getDocumentVersionData(int versionId) async {
     try {
-      final response = await _client.document.createDocumentVersion(
-        documentId,
-        data,
-        status: status,
-        changeLog: changeLog,
-      );
-      return _toDocumentVersion(response);
-    } on serverpod.ServerpodClientException catch (e) {
-      if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
-      }
-      throw CmsDataSourceException('Failed to create document version', e);
+      return await _client.document.getDocumentVersionData(versionId);
     } catch (e) {
-      throw CmsDataSourceException('Failed to create document version', e);
+      throw CmsDataSourceException('Failed to get document version data', e);
     }
   }
 
   @override
-  Future<DocumentVersion?> updateDocumentVersion(
-    int versionId,
-    Map<String, dynamic> data, {
+  Future<DocumentVersion> createDocumentVersion(
+    int documentId, {
+    String status = 'draft',
     String? changeLog,
   }) async {
     try {
-      final response = await _client.document.updateDocumentVersion(
-        versionId,
-        data,
+      // Convert string status to enum
+      final enumStatus = _parseDocumentVersionStatus(status);
+
+      final response = await _client.document.createDocumentVersion(
+        documentId,
+        status: enumStatus,
         changeLog: changeLog,
       );
-      if (response == null) return null;
       return _toDocumentVersion(response);
     } on serverpod.ServerpodClientException catch (e) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to update document version', e);
+      throw CmsDataSourceException('Failed to create document version', e);
     } catch (e) {
-      throw CmsDataSourceException('Failed to update document version', e);
+      throw CmsDataSourceException('Failed to create document version', e);
     }
   }
 
@@ -367,11 +354,12 @@ class CloudDataSource implements CmsDataSource {
 
   /// Converts a Serverpod CmsDocument to a platform-agnostic CmsDocument.
   CmsDocument _toCmsDocument(serverpod.CmsDocument doc) {
-    // Parse the activeVersionData JSON string into a map if present
+    // Parse the data JSON string into a map if present
+    // Note: 'data' now contains the latest CRDT-merged document state
     Map<String, dynamic>? parsedData;
-    if (doc.activeVersionData != null && doc.activeVersionData!.isNotEmpty) {
+    if (doc.data != null && doc.data!.isNotEmpty) {
       try {
-        parsedData = jsonDecode(doc.activeVersionData!) as Map<String, dynamic>;
+        parsedData = jsonDecode(doc.data!) as Map<String, dynamic>;
       } catch (_) {
         parsedData = null;
       }
@@ -384,7 +372,8 @@ class CloudDataSource implements CmsDataSource {
       title: doc.title,
       slug: doc.slug,
       isDefault: doc.isDefault,
-      activeVersionData: parsedData,
+      activeVersionData:
+          parsedData, // Frontend still uses activeVersionData name
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
       createdByUserId: doc.createdByUserId,
@@ -418,20 +407,11 @@ class CloudDataSource implements CmsDataSource {
 
   /// Converts a Serverpod DocumentVersion to a platform-agnostic DocumentVersion.
   DocumentVersion _toDocumentVersion(serverpod.DocumentVersion version) {
-    // Parse the JSON data string into a map
-    Map<String, dynamic> parsedData;
-    try {
-      parsedData = jsonDecode(version.data) as Map<String, dynamic>;
-    } catch (_) {
-      parsedData = {};
-    }
-
     return DocumentVersion(
       id: version.id,
       documentId: version.documentId,
       versionNumber: version.versionNumber,
-      status: version.status,
-      data: parsedData,
+      status: version.status.name, // Convert enum to string
       changeLog: version.changeLog,
       publishedAt: version.publishedAt,
       scheduledAt: version.scheduledAt,
@@ -439,5 +419,116 @@ class CloudDataSource implements CmsDataSource {
       createdAt: version.createdAt,
       createdByUserId: version.createdByUserId,
     );
+  }
+
+  /// Helper to parse string status to DocumentVersionStatus enum
+  serverpod.DocumentVersionStatus _parseDocumentVersionStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'draft':
+        return serverpod.DocumentVersionStatus.draft;
+      case 'published':
+        return serverpod.DocumentVersionStatus.published;
+      case 'scheduled':
+        return serverpod.DocumentVersionStatus.scheduled;
+      case 'archived':
+        return serverpod.DocumentVersionStatus.archived;
+      default:
+        return serverpod.DocumentVersionStatus.draft;
+    }
+  }
+
+  // ============================================================
+  // CRDT Collaboration Operations (NEW)
+  // ============================================================
+
+  @override
+  Future<CmsDocument> updateDocumentData(
+    int documentId,
+    Map<String, dynamic> updates, {
+    String? sessionId,
+  }) async {
+    try {
+      final response = await _client.document.updateDocumentData(
+        documentId,
+        updates,
+        sessionId: sessionId,
+      );
+      return _toCmsDocument(response);
+    } on serverpod.ServerpodClientException catch (e) {
+      if (e.statusCode == 401) {
+        throw const CmsAuthenticationException();
+      }
+      throw CmsDataSourceException('Failed to update document data', e);
+    } catch (e) {
+      throw CmsDataSourceException('Failed to update document data', e);
+    }
+  }
+
+  /// Get CRDT operations since a specific HLC timestamp
+  /// Used for polling updates from other users
+  Future<List<serverpod.DocumentCrdtOperation>> getOperationsSince(
+    int documentId,
+    String sinceHlc, {
+    int limit = 100,
+  }) async {
+    try {
+      return await _client.documentCollaboration.getOperationsSince(
+        documentId,
+        sinceHlc,
+        limit: limit,
+      );
+    } catch (e) {
+      throw CmsDataSourceException('Failed to get operations', e);
+    }
+  }
+
+  /// Submit an edit (partial field updates) for collaborative editing
+  Future<CmsDocument> submitEdit(
+    int documentId,
+    String sessionId,
+    Map<String, dynamic> fieldUpdates,
+  ) async {
+    try {
+      final response = await _client.documentCollaboration.submitEdit(
+        documentId,
+        sessionId,
+        fieldUpdates,
+      );
+      return _toCmsDocument(response);
+    } on serverpod.ServerpodClientException catch (e) {
+      if (e.statusCode == 401) {
+        throw const CmsAuthenticationException();
+      }
+      throw CmsDataSourceException('Failed to submit edit', e);
+    } catch (e) {
+      throw CmsDataSourceException('Failed to submit edit', e);
+    }
+  }
+
+  /// Get list of users currently editing this document
+  Future<List<Map<String, dynamic>>> getActiveEditors(int documentId) async {
+    try {
+      return await _client.documentCollaboration.getActiveEditors(documentId);
+    } catch (e) {
+      throw CmsDataSourceException('Failed to get active editors', e);
+    }
+  }
+
+  /// Get the current HLC for a document
+  Future<String?> getCurrentHlc(int documentId) async {
+    try {
+      return await _client.documentCollaboration.getCurrentHlc(documentId);
+    } catch (e) {
+      throw CmsDataSourceException('Failed to get current HLC', e);
+    }
+  }
+
+  /// Get operation count for a document
+  Future<int> getOperationCount(int documentId) async {
+    try {
+      return await _client.documentCollaboration.getOperationCount(documentId);
+    } catch (e) {
+      throw CmsDataSourceException('Failed to get operation count', e);
+    }
   }
 }
