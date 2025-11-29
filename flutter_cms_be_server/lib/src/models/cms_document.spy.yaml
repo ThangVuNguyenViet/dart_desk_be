@@ -4,6 +4,8 @@ fields:
   clientId: int, relation(parent=cms_clients, onDelete=Restrict)
   documentType: String
   title: String
+  slug: String?
+  isDefault: bool, default=false
   activeVersionData: String?  # Computed/cached from active DocumentVersion
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
@@ -16,6 +18,12 @@ indexes:
     fields: documentType
   cms_documents_client_type_idx:
     fields: clientId, documentType
+  cms_documents_slug_idx:
+    fields: slug
+  cms_documents_is_default_idx:
+    fields: isDefault
+  cms_documents_type_default_idx:
+    fields: documentType, isDefault
   cms_documents_active_data_idx:
     fields: activeVersionData
   cms_documents_created_at_idx:

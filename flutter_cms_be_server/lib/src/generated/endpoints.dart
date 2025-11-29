@@ -90,6 +90,43 @@ class Endpoints extends _i1.EndpointDispatch {
             params['documentId'],
           ),
         ),
+        'getDocumentBySlug': _i1.MethodConnector(
+          name: 'getDocumentBySlug',
+          params: {
+            'slug': _i1.ParameterDescription(
+              name: 'slug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['document'] as _i2.DocumentEndpoint).getDocumentBySlug(
+            session,
+            params['slug'],
+          ),
+        ),
+        'getDefaultDocument': _i1.MethodConnector(
+          name: 'getDefaultDocument',
+          params: {
+            'documentType': _i1.ParameterDescription(
+              name: 'documentType',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['document'] as _i2.DocumentEndpoint)
+                  .getDefaultDocument(
+            session,
+            params['documentType'],
+          ),
+        ),
         'createDocument': _i1.MethodConnector(
           name: 'createDocument',
           params: {
@@ -108,6 +145,16 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<Map<String, dynamic>>(),
               nullable: false,
             ),
+            'slug': _i1.ParameterDescription(
+              name: 'slug',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'isDefault': _i1.ParameterDescription(
+              name: 'isDefault',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
           },
           call: (
             _i1.Session session,
@@ -118,6 +165,8 @@ class Endpoints extends _i1.EndpointDispatch {
             params['documentType'],
             params['title'],
             params['data'],
+            slug: params['slug'],
+            isDefault: params['isDefault'],
           ),
         ),
         'updateDocument': _i1.MethodConnector(
@@ -133,6 +182,16 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<String?>(),
               nullable: true,
             ),
+            'slug': _i1.ParameterDescription(
+              name: 'slug',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'isDefault': _i1.ParameterDescription(
+              name: 'isDefault',
+              type: _i1.getType<bool?>(),
+              nullable: true,
+            ),
           },
           call: (
             _i1.Session session,
@@ -142,6 +201,8 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['documentId'],
             title: params['title'],
+            slug: params['slug'],
+            isDefault: params['isDefault'],
           ),
         ),
         'deleteDocument': _i1.MethodConnector(

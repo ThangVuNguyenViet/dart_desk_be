@@ -1,6 +1,8 @@
 document:
   - getDocuments:
   - getDocument:
+  - getDocumentBySlug:
+  - getDefaultDocument:
   - createDocument:
   - updateDocument:
   - deleteDocument:

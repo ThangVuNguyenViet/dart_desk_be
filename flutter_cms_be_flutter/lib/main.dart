@@ -1,5 +1,6 @@
-import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
+import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
 /// Sets up a global client object that can be used to talk to the server from
@@ -13,18 +14,32 @@ late final Client client;
 
 late String serverUrl;
 
-void main() {
+// Google OAuth configuration
+const String googleServerClientId =
+    '491670473884-ung977o6k7t8dmj69abcg601abso2d7e.apps.googleusercontent.com';
+const String googleRedirectPath = '/googlesignin';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   // When you are running the app on a physical device, you need to set the
   // server URL to the IP address of your computer. You can find the IP
   // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
   // You can set the variable when running or building your app like this:
   // E.g. `flutter run --dart-define=SERVER_URL=https://api.example.com/`
   const serverUrlFromEnv = String.fromEnvironment('SERVER_URL');
-  final serverUrl =
+  final apiUrl =
       serverUrlFromEnv.isEmpty ? 'http://$localhost:8080/' : serverUrlFromEnv;
 
-  client = Client(serverUrl)
-    ..connectivityMonitor = FlutterConnectivityMonitor();
+  // Create client with authentication key manager
+  client = Client(
+    apiUrl,
+    authenticationKeyManager: FlutterAuthenticationKeyManager(),
+  )..connectivityMonitor = FlutterConnectivityMonitor();
+
+  serverUrl = serverUrlFromEnv.isEmpty
+      ? 'http://$localhost:8082'
+      : serverUrlFromEnv.replaceAll(':8080', ':8082');
 
   runApp(const MyApp());
 }
@@ -35,9 +50,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Serverpod Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(title: 'Serverpod Example'),
+      title: 'Flutter CMS',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+      ),
+      home: FlutterCmsAuth(
+        client: client,
+        serverClientId: googleServerClientId,
+        redirectUri: Uri.parse('$serverUrl$googleRedirectPath'),
+        title: 'Welcome to Flutter CMS',
+        subtitle: 'Sign in to manage your content',
+        child: const MyHomePage(title: 'Flutter CMS'),
+      ),
     );
   }
 }
@@ -54,22 +79,61 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    // Access the current user from the authentication context
+    final user = context.currentUser;
+
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: const Center(
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sign Out',
+            onPressed: () {
+              context.signOut();
+            },
+          ),
+        ],
+      ),
+      body: Center(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              if (user?.imageUrl != null)
+                CircleAvatar(
+                  radius: 50,
+                  backgroundImage: NetworkImage(user!.imageUrl!),
+                )
+              else
+                const CircleAvatar(
+                  radius: 50,
+                  child: Icon(Icons.person, size: 50),
+                ),
+              const SizedBox(height: 24),
               Text(
-                'Flutter CMS Backend',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                'Welcome, ${user?.userName ?? user?.fullName ?? 'User'}!',
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 8),
+              if (user?.email != null)
+                Text(
+                  user!.email!,
+                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                ),
+              const SizedBox(height: 32),
+              const Text(
+                'You are successfully authenticated with Google!',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              const Text(
                 'Server is running and ready to accept requests.',
                 textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14),
               ),
             ],
           ),

@@ -17,12 +17,15 @@ abstract class CmsDocument implements _i1.SerializableModel {
     required this.clientId,
     required this.documentType,
     required this.title,
+    this.slug,
+    bool? isDefault,
     this.activeVersionData,
     DateTime? createdAt,
     DateTime? updatedAt,
     required this.createdByUserId,
     this.updatedByUserId,
-  })  : createdAt = createdAt ?? DateTime.now(),
+  })  : isDefault = isDefault ?? false,
+        createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
 
   factory CmsDocument({
@@ -30,6 +33,8 @@ abstract class CmsDocument implements _i1.SerializableModel {
     required int clientId,
     required String documentType,
     required String title,
+    String? slug,
+    bool? isDefault,
     String? activeVersionData,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -43,6 +48,8 @@ abstract class CmsDocument implements _i1.SerializableModel {
       clientId: jsonSerialization['clientId'] as int,
       documentType: jsonSerialization['documentType'] as String,
       title: jsonSerialization['title'] as String,
+      slug: jsonSerialization['slug'] as String?,
+      isDefault: jsonSerialization['isDefault'] as bool,
       activeVersionData: jsonSerialization['activeVersionData'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
@@ -66,6 +73,10 @@ abstract class CmsDocument implements _i1.SerializableModel {
 
   String title;
 
+  String? slug;
+
+  bool isDefault;
+
   String? activeVersionData;
 
   DateTime? createdAt;
@@ -84,6 +95,8 @@ abstract class CmsDocument implements _i1.SerializableModel {
     int? clientId,
     String? documentType,
     String? title,
+    String? slug,
+    bool? isDefault,
     String? activeVersionData,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -97,6 +110,8 @@ abstract class CmsDocument implements _i1.SerializableModel {
       'clientId': clientId,
       'documentType': documentType,
       'title': title,
+      if (slug != null) 'slug': slug,
+      'isDefault': isDefault,
       if (activeVersionData != null) 'activeVersionData': activeVersionData,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
@@ -119,6 +134,8 @@ class _CmsDocumentImpl extends CmsDocument {
     required int clientId,
     required String documentType,
     required String title,
+    String? slug,
+    bool? isDefault,
     String? activeVersionData,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -129,6 +146,8 @@ class _CmsDocumentImpl extends CmsDocument {
           clientId: clientId,
           documentType: documentType,
           title: title,
+          slug: slug,
+          isDefault: isDefault,
           activeVersionData: activeVersionData,
           createdAt: createdAt,
           updatedAt: updatedAt,
@@ -145,6 +164,8 @@ class _CmsDocumentImpl extends CmsDocument {
     int? clientId,
     String? documentType,
     String? title,
+    Object? slug = _Undefined,
+    bool? isDefault,
     Object? activeVersionData = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
@@ -156,6 +177,8 @@ class _CmsDocumentImpl extends CmsDocument {
       clientId: clientId ?? this.clientId,
       documentType: documentType ?? this.documentType,
       title: title ?? this.title,
+      slug: slug is String? ? slug : this.slug,
+      isDefault: isDefault ?? this.isDefault,
       activeVersionData: activeVersionData is String?
           ? activeVersionData
           : this.activeVersionData,

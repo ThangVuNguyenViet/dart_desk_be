@@ -58,13 +58,31 @@ class EndpointDocument extends _i1.EndpointRef {
         {'documentId': documentId},
       );
 
+  /// Get a document by slug
+  _i2.Future<_i4.CmsDocument?> getDocumentBySlug(String slug) =>
+      caller.callServerEndpoint<_i4.CmsDocument?>(
+        'document',
+        'getDocumentBySlug',
+        {'slug': slug},
+      );
+
+  /// Get the default document for a document type
+  _i2.Future<_i4.CmsDocument?> getDefaultDocument(String documentType) =>
+      caller.callServerEndpoint<_i4.CmsDocument?>(
+        'document',
+        'getDefaultDocument',
+        {'documentType': documentType},
+      );
+
   /// Create a new document with an initial version
   /// This creates both the CmsDocument and its first DocumentVersion
   _i2.Future<_i4.CmsDocument> createDocument(
     String documentType,
     String title,
-    Map<String, dynamic> data,
-  ) =>
+    Map<String, dynamic> data, {
+    String? slug,
+    required bool isDefault,
+  }) =>
       caller.callServerEndpoint<_i4.CmsDocument>(
         'document',
         'createDocument',
@@ -72,14 +90,18 @@ class EndpointDocument extends _i1.EndpointRef {
           'documentType': documentType,
           'title': title,
           'data': data,
+          'slug': slug,
+          'isDefault': isDefault,
         },
       );
 
-  /// Update document metadata (title, etc)
+  /// Update document metadata (title, slug, isDefault)
   /// To update document data, use createDocumentVersion instead
   _i2.Future<_i4.CmsDocument?> updateDocument(
     int documentId, {
     String? title,
+    String? slug,
+    bool? isDefault,
   }) =>
       caller.callServerEndpoint<_i4.CmsDocument?>(
         'document',
@@ -87,6 +109,8 @@ class EndpointDocument extends _i1.EndpointRef {
         {
           'documentId': documentId,
           'title': title,
+          'slug': slug,
+          'isDefault': isDefault,
         },
       );
 
@@ -131,6 +155,7 @@ class EndpointDocument extends _i1.EndpointRef {
       );
 
   /// Create a new version for a document
+  /// If status is 'published', updates the document's activeVersionData
   _i2.Future<_i6.DocumentVersion> createDocumentVersion(
     int documentId,
     Map<String, dynamic> data, {
@@ -149,6 +174,7 @@ class EndpointDocument extends _i1.EndpointRef {
       );
 
   /// Update an existing version
+  /// If the version is published, updates the document's activeVersionData
   _i2.Future<_i6.DocumentVersion?> updateDocumentVersion(
     int versionId,
     Map<String, dynamic> data, {
@@ -165,6 +191,7 @@ class EndpointDocument extends _i1.EndpointRef {
       );
 
   /// Publish a version (set status to 'published' and set publishedAt timestamp)
+  /// Also updates the document's activeVersionData cache
   _i2.Future<_i6.DocumentVersion?> publishDocumentVersion(int versionId) =>
       caller.callServerEndpoint<_i6.DocumentVersion?>(
         'document',
@@ -173,6 +200,7 @@ class EndpointDocument extends _i1.EndpointRef {
       );
 
   /// Archive a version (set status to 'archived' and set archivedAt timestamp)
+  /// If archiving the published version, updates activeVersionData to next published version or null
   _i2.Future<_i6.DocumentVersion?> archiveDocumentVersion(int versionId) =>
       caller.callServerEndpoint<_i6.DocumentVersion?>(
         'document',
@@ -181,6 +209,7 @@ class EndpointDocument extends _i1.EndpointRef {
       );
 
   /// Delete a version
+  /// If deleting the published version, updates activeVersionData to next published version or null
   _i2.Future<bool> deleteDocumentVersion(int versionId) =>
       caller.callServerEndpoint<bool>(
         'document',

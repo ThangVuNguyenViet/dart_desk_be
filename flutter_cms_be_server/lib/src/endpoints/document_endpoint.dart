@@ -94,6 +94,32 @@ class DocumentEndpoint extends Endpoint {
     return await CmsDocument.db.findById(session, documentId);
   }
 
+  /// Get a document by slug
+  Future<CmsDocument?> getDocumentBySlug(
+    Session session,
+    String slug,
+  ) async {
+    final documents = await CmsDocument.db.find(
+      session,
+      where: (t) => t.slug.equals(slug),
+      limit: 1,
+    );
+    return documents.isNotEmpty ? documents.first : null;
+  }
+
+  /// Get the default document for a document type
+  Future<CmsDocument?> getDefaultDocument(
+    Session session,
+    String documentType,
+  ) async {
+    final documents = await CmsDocument.db.find(
+      session,
+      where: (t) => t.documentType.equals(documentType) & t.isDefault.equals(true),
+      limit: 1,
+    );
+    return documents.isNotEmpty ? documents.first : null;
+  }
+
 
   /// Create a new document with an initial version
   /// This creates both the CmsDocument and its first DocumentVersion
@@ -101,8 +127,10 @@ class DocumentEndpoint extends Endpoint {
     Session session,
     String documentType,
     String title,
-    Map<String, dynamic> data,
-  ) async {
+    Map<String, dynamic> data, {
+    String? slug,
+    bool isDefault = false,
+  }) async {
     // Require authentication
     final authInfo = await session.authenticated;
     if (authInfo == null) {
@@ -117,6 +145,8 @@ class DocumentEndpoint extends Endpoint {
       clientId: 1, // TODO: Get from session or parameter
       documentType: documentType,
       title: title,
+      slug: slug,
+      isDefault: isDefault,
       activeVersionData: encodedData, // Cache the initial data
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -143,12 +173,14 @@ class DocumentEndpoint extends Endpoint {
     return created;
   }
 
-  /// Update document metadata (title, etc)
+  /// Update document metadata (title, slug, isDefault)
   /// To update document data, use createDocumentVersion instead
   Future<CmsDocument?> updateDocument(
     Session session,
     int documentId, {
     String? title,
+    String? slug,
+    bool? isDefault,
   }) async {
     // Require authentication
     final authInfo = await session.authenticated;
@@ -166,6 +198,8 @@ class DocumentEndpoint extends Endpoint {
 
     final updated = existing.copyWith(
       title: title ?? existing.title,
+      slug: slug ?? existing.slug,
+      isDefault: isDefault ?? existing.isDefault,
       updatedAt: DateTime.now(),
       updatedByUserId: userId,
     );

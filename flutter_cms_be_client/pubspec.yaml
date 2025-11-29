@@ -7,3 +7,11 @@ environment:
 dependencies:
   serverpod_client: 2.9.2
   serverpod_auth_client: 2.9.2
+  serverpod_auth_google_flutter: 2.9.2
+  serverpod_auth_shared_flutter: 2.9.2
+
+  flutter:
+    sdk: flutter
+  flutter_cms:
+    path: ../../flutter_cms/packages/flutter_cms
+  shadcn_ui: ^0.39.14

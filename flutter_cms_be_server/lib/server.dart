@@ -23,6 +23,9 @@ void run(List<String> args) async {
   pod.webServer.addRoute(RouteRoot(), '/');
   pod.webServer.addRoute(RouteRoot(), '/index.html');
 
+  // Google Sign-In authentication route
+  pod.webServer.addRoute(auth.RouteGoogleSignIn(), '/googlesignin');
+
   // Serve uploaded files from storage/public directory
   pod.webServer.addRoute(
     RouteStaticDirectory(serverDirectory: 'storage/public', basePath: '/'),

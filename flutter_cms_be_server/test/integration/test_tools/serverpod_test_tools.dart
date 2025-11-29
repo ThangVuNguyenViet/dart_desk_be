@@ -209,12 +209,72 @@ class _DocumentEndpoint {
     });
   }
 
+  _i3.Future<_i5.CmsDocument?> getDocumentBySlug(
+    _i1.TestSessionBuilder sessionBuilder,
+    String slug,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'document',
+        method: 'getDocumentBySlug',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'document',
+          methodName: 'getDocumentBySlug',
+          parameters: _i1.testObjectToJson({'slug': slug}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i5.CmsDocument?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i5.CmsDocument?> getDefaultDocument(
+    _i1.TestSessionBuilder sessionBuilder,
+    String documentType,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'document',
+        method: 'getDefaultDocument',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'document',
+          methodName: 'getDefaultDocument',
+          parameters: _i1.testObjectToJson({'documentType': documentType}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i5.CmsDocument?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<_i5.CmsDocument> createDocument(
     _i1.TestSessionBuilder sessionBuilder,
     String documentType,
     String title,
-    Map<String, dynamic> data,
-  ) async {
+    Map<String, dynamic> data, {
+    String? slug,
+    required bool isDefault,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -230,6 +290,8 @@ class _DocumentEndpoint {
             'documentType': documentType,
             'title': title,
             'data': data,
+            'slug': slug,
+            'isDefault': isDefault,
           }),
           serializationManager: _serializationManager,
         );
@@ -248,6 +310,8 @@ class _DocumentEndpoint {
     _i1.TestSessionBuilder sessionBuilder,
     int documentId, {
     String? title,
+    String? slug,
+    bool? isDefault,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -263,6 +327,8 @@ class _DocumentEndpoint {
           parameters: _i1.testObjectToJson({
             'documentId': documentId,
             'title': title,
+            'slug': slug,
+            'isDefault': isDefault,
           }),
           serializationManager: _serializationManager,
         );
