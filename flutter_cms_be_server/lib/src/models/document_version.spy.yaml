@@ -1,10 +1,10 @@
 class: DocumentVersion
 table: document_versions
 fields:
-  documentId: int, relation(parent=documents, onDelete=Cascade)
+  documentId: int, relation(parent=cms_documents, onDelete=Cascade)
   versionNumber: int
   status: String
-  data: String
+  data: String  # JSON string containing the actual document data
   changeLog: String?
   publishedAt: DateTime?
   scheduledAt: DateTime?

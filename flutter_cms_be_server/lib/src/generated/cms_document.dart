@@ -15,37 +15,43 @@ abstract class CmsDocument
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   CmsDocument._({
     this.id,
+    required this.clientId,
     required this.documentType,
-    required this.data,
+    required this.title,
+    this.activeVersionData,
     DateTime? createdAt,
     DateTime? updatedAt,
-    this.createdByUserId,
+    required this.createdByUserId,
     this.updatedByUserId,
   })  : createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
 
   factory CmsDocument({
     int? id,
+    required int clientId,
     required String documentType,
-    required String data,
+    required String title,
+    String? activeVersionData,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
+    required int createdByUserId,
     int? updatedByUserId,
   }) = _CmsDocumentImpl;
 
   factory CmsDocument.fromJson(Map<String, dynamic> jsonSerialization) {
     return CmsDocument(
       id: jsonSerialization['id'] as int?,
+      clientId: jsonSerialization['clientId'] as int,
       documentType: jsonSerialization['documentType'] as String,
-      data: jsonSerialization['data'] as String,
+      title: jsonSerialization['title'] as String,
+      activeVersionData: jsonSerialization['activeVersionData'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
-      createdByUserId: jsonSerialization['createdByUserId'] as int?,
+      createdByUserId: jsonSerialization['createdByUserId'] as int,
       updatedByUserId: jsonSerialization['updatedByUserId'] as int?,
     );
   }
@@ -57,15 +63,19 @@ abstract class CmsDocument
   @override
   int? id;
 
+  int clientId;
+
   String documentType;
 
-  String data;
+  String title;
+
+  String? activeVersionData;
 
   DateTime? createdAt;
 
   DateTime? updatedAt;
 
-  int? createdByUserId;
+  int createdByUserId;
 
   int? updatedByUserId;
 
@@ -77,8 +87,10 @@ abstract class CmsDocument
   @_i1.useResult
   CmsDocument copyWith({
     int? id,
+    int? clientId,
     String? documentType,
-    String? data,
+    String? title,
+    String? activeVersionData,
     DateTime? createdAt,
     DateTime? updatedAt,
     int? createdByUserId,
@@ -88,11 +100,13 @@ abstract class CmsDocument
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
+      'clientId': clientId,
       'documentType': documentType,
-      'data': data,
+      'title': title,
+      if (activeVersionData != null) 'activeVersionData': activeVersionData,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
+      'createdByUserId': createdByUserId,
       if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
     };
   }
@@ -101,11 +115,13 @@ abstract class CmsDocument
   Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
+      'clientId': clientId,
       'documentType': documentType,
-      'data': data,
+      'title': title,
+      if (activeVersionData != null) 'activeVersionData': activeVersionData,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
+      'createdByUserId': createdByUserId,
       if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
     };
   }
@@ -145,16 +161,20 @@ class _Undefined {}
 class _CmsDocumentImpl extends CmsDocument {
   _CmsDocumentImpl({
     int? id,
+    required int clientId,
     required String documentType,
-    required String data,
+    required String title,
+    String? activeVersionData,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
+    required int createdByUserId,
     int? updatedByUserId,
   }) : super._(
           id: id,
+          clientId: clientId,
           documentType: documentType,
-          data: data,
+          title: title,
+          activeVersionData: activeVersionData,
           createdAt: createdAt,
           updatedAt: updatedAt,
           createdByUserId: createdByUserId,
@@ -167,21 +187,26 @@ class _CmsDocumentImpl extends CmsDocument {
   @override
   CmsDocument copyWith({
     Object? id = _Undefined,
+    int? clientId,
     String? documentType,
-    String? data,
+    String? title,
+    Object? activeVersionData = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
-    Object? createdByUserId = _Undefined,
+    int? createdByUserId,
     Object? updatedByUserId = _Undefined,
   }) {
     return CmsDocument(
       id: id is int? ? id : this.id,
+      clientId: clientId ?? this.clientId,
       documentType: documentType ?? this.documentType,
-      data: data ?? this.data,
+      title: title ?? this.title,
+      activeVersionData: activeVersionData is String?
+          ? activeVersionData
+          : this.activeVersionData,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
-      createdByUserId:
-          createdByUserId is int? ? createdByUserId : this.createdByUserId,
+      createdByUserId: createdByUserId ?? this.createdByUserId,
       updatedByUserId:
           updatedByUserId is int? ? updatedByUserId : this.updatedByUserId,
     );
@@ -190,12 +215,20 @@ class _CmsDocumentImpl extends CmsDocument {
 
 class CmsDocumentTable extends _i1.Table<int?> {
   CmsDocumentTable({super.tableRelation}) : super(tableName: 'cms_documents') {
+    clientId = _i1.ColumnInt(
+      'clientId',
+      this,
+    );
     documentType = _i1.ColumnString(
       'documentType',
       this,
     );
-    data = _i1.ColumnString(
-      'data',
+    title = _i1.ColumnString(
+      'title',
+      this,
+    );
+    activeVersionData = _i1.ColumnString(
+      'activeVersionData',
       this,
     );
     createdAt = _i1.ColumnDateTime(
@@ -218,9 +251,13 @@ class CmsDocumentTable extends _i1.Table<int?> {
     );
   }
 
+  late final _i1.ColumnInt clientId;
+
   late final _i1.ColumnString documentType;
 
-  late final _i1.ColumnString data;
+  late final _i1.ColumnString title;
+
+  late final _i1.ColumnString activeVersionData;
 
   late final _i1.ColumnDateTime createdAt;
 
@@ -233,8 +270,10 @@ class CmsDocumentTable extends _i1.Table<int?> {
   @override
   List<_i1.Column> get columns => [
         id,
+        clientId,
         documentType,
-        data,
+        title,
+        activeVersionData,
         createdAt,
         updatedAt,
         createdByUserId,

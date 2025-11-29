@@ -1,13 +1,17 @@
 document:
   - getDocuments:
   - getDocument:
-  - getDocumentByType:
   - createDocument:
   - updateDocument:
-  - updateDocumentByType:
   - deleteDocument:
-  - deleteDocumentByType:
   - getDocumentTypes:
+  - getDocumentVersions:
+  - getDocumentVersion:
+  - createDocumentVersion:
+  - updateDocumentVersion:
+  - publishDocumentVersion:
+  - archiveDocumentVersion:
+  - deleteDocumentVersion:
 media:
   - uploadImage:
   - uploadFile:

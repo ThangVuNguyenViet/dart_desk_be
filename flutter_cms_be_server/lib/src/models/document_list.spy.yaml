@@ -1,4 +1,4 @@
-class: DocumentListResponse
+class: DocumentList
 fields:
   documents: List<protocol:CmsDocument>
   total: int

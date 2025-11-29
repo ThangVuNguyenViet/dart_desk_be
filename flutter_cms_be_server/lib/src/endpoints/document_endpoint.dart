@@ -5,8 +5,48 @@ import '../generated/protocol.dart';
 /// Endpoint for managing CMS documents
 /// All write operations require authentication
 class DocumentEndpoint extends Endpoint {
+  /// Helper method to sync activeVersionData with the published version
+  Future<void> _syncActiveVersionData(
+    Session session,
+    int documentId,
+  ) async {
+    // Find the published version (or latest draft if no published version)
+    final publishedVersions = await DocumentVersion.db.find(
+      session,
+      where: (t) => t.documentId.equals(documentId) & t.status.equals('published'),
+      orderBy: (t) => t.versionNumber,
+      orderDescending: true,
+      limit: 1,
+    );
+
+    String? activeData;
+    if (publishedVersions.isNotEmpty) {
+      activeData = publishedVersions.first.data;
+    } else {
+      // If no published version, use the latest version
+      final latestVersions = await DocumentVersion.db.find(
+        session,
+        where: (t) => t.documentId.equals(documentId),
+        orderBy: (t) => t.versionNumber,
+        orderDescending: true,
+        limit: 1,
+      );
+      activeData = latestVersions.isNotEmpty ? latestVersions.first.data : null;
+    }
+
+    // Update the document's activeVersionData
+    final document = await CmsDocument.db.findById(session, documentId);
+    if (document != null) {
+      final updatedDoc = document.copyWith(
+        activeVersionData: activeData,
+        updatedAt: DateTime.now(),
+      );
+      await CmsDocument.db.updateRow(session, updatedDoc);
+    }
+  }
+
   /// Get all documents for a specific document type with pagination
-  Future<DocumentListResponse> getDocuments(
+  Future<DocumentList> getDocuments(
     Session session,
     String documentType, {
     String? search,
@@ -25,7 +65,10 @@ class DocumentEndpoint extends Endpoint {
       where: (t) {
         var expr = t.documentType.equals(documentType);
         if (search != null && search.isNotEmpty) {
-          expr = expr & t.data.like('%$search%');
+          // Search in title and activeVersionData (cached from published version)
+          expr = expr &
+              (t.title.like('%$search%') |
+                  t.activeVersionData.like('%$search%'));
         }
         return expr;
       },
@@ -35,7 +78,7 @@ class DocumentEndpoint extends Endpoint {
       offset: offset,
     );
 
-    return DocumentListResponse(
+    return DocumentList(
       documents: documents,
       total: total,
       page: (offset ~/ limit) + 1,
@@ -51,24 +94,13 @@ class DocumentEndpoint extends Endpoint {
     return await CmsDocument.db.findById(session, documentId);
   }
 
-  /// Get a document by document type and ID
-  Future<CmsDocument?> getDocumentByType(
-    Session session,
-    String documentType,
-    int documentId,
-  ) async {
-    final documents = await CmsDocument.db.find(
-      session,
-      where: (t) => t.id.equals(documentId) & t.documentType.equals(documentType),
-      limit: 1,
-    );
-    return documents.isNotEmpty ? documents.first : null;
-  }
 
-  /// Create a new document
+  /// Create a new document with an initial version
+  /// This creates both the CmsDocument and its first DocumentVersion
   Future<CmsDocument> createDocument(
     Session session,
     String documentType,
+    String title,
     Map<String, dynamic> data,
   ) async {
     // Require authentication
@@ -79,9 +111,13 @@ class DocumentEndpoint extends Endpoint {
 
     final userId = authInfo.userId;
 
+    // Create the document
+    final encodedData = jsonEncode(data);
     final document = CmsDocument(
+      clientId: 1, // TODO: Get from session or parameter
       documentType: documentType,
-      data: jsonEncode(data),
+      title: title,
+      activeVersionData: encodedData, // Cache the initial data
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       createdByUserId: userId,
@@ -89,15 +125,31 @@ class DocumentEndpoint extends Endpoint {
     );
 
     final created = await CmsDocument.db.insertRow(session, document);
+
+    // Create the initial version
+    if (created.id != null) {
+      final version = DocumentVersion(
+        documentId: created.id!,
+        versionNumber: 1,
+        status: 'draft',
+        data: encodedData,
+        changeLog: 'Initial version',
+        createdAt: DateTime.now(),
+        createdByUserId: userId,
+      );
+      await DocumentVersion.db.insertRow(session, version);
+    }
+
     return created;
   }
 
-  /// Update an existing document
+  /// Update document metadata (title, etc)
+  /// To update document data, use createDocumentVersion instead
   Future<CmsDocument?> updateDocument(
     Session session,
-    int documentId,
-    Map<String, dynamic> data,
-  ) async {
+    int documentId, {
+    String? title,
+  }) async {
     // Require authentication
     final authInfo = await session.authenticated;
     if (authInfo == null) {
@@ -113,38 +165,7 @@ class DocumentEndpoint extends Endpoint {
     }
 
     final updated = existing.copyWith(
-      data: jsonEncode(data),
-      updatedAt: DateTime.now(),
-      updatedByUserId: userId,
-    );
-
-    await CmsDocument.db.updateRow(session, updated);
-    return updated;
-  }
-
-  /// Update a document by document type and ID
-  Future<CmsDocument?> updateDocumentByType(
-    Session session,
-    String documentType,
-    int documentId,
-    Map<String, dynamic> data,
-  ) async {
-    // Require authentication
-    final authInfo = await session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to update documents');
-    }
-
-    final userId = authInfo.userId;
-
-    final existing = await getDocumentByType(session, documentType, documentId);
-
-    if (existing == null) {
-      return null;
-    }
-
-    final updated = existing.copyWith(
-      data: jsonEncode(data),
+      title: title ?? existing.title,
       updatedAt: DateTime.now(),
       updatedByUserId: userId,
     );
@@ -168,21 +189,6 @@ class DocumentEndpoint extends Endpoint {
     return true;
   }
 
-  /// Delete a document by document type and ID
-  Future<bool> deleteDocumentByType(
-    Session session,
-    String documentType,
-    int documentId,
-  ) async {
-    final existing = await getDocumentByType(session, documentType, documentId);
-
-    if (existing == null) {
-      return false;
-    }
-
-    await CmsDocument.db.deleteRow(session, existing);
-    return true;
-  }
 
   /// Get all document types (unique document type names)
   Future<List<String>> getDocumentTypes(Session session) async {
@@ -191,5 +197,229 @@ class DocumentEndpoint extends Endpoint {
     );
 
     return result.map((row) => row.first as String).toList();
+  }
+
+  // ============================================================
+  // Document Version Operations
+  // ============================================================
+
+  /// Get all versions for a document with pagination
+  Future<DocumentVersionList> getDocumentVersions(
+    Session session,
+    int documentId, {
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    // Get total count
+    final total = await DocumentVersion.db.count(
+      session,
+      where: (t) => t.documentId.equals(documentId),
+    );
+
+    // Get paginated versions, ordered by version number descending
+    final versions = await DocumentVersion.db.find(
+      session,
+      where: (t) => t.documentId.equals(documentId),
+      orderBy: (t) => t.versionNumber,
+      orderDescending: true,
+      limit: limit,
+      offset: offset,
+    );
+
+    return DocumentVersionList(
+      versions: versions,
+      total: total,
+      page: (offset ~/ limit) + 1,
+      pageSize: limit,
+    );
+  }
+
+  /// Get a single version by ID
+  Future<DocumentVersion?> getDocumentVersion(
+    Session session,
+    int versionId,
+  ) async {
+    return await DocumentVersion.db.findById(session, versionId);
+  }
+
+  /// Create a new version for a document
+  /// If status is 'published', updates the document's activeVersionData
+  Future<DocumentVersion> createDocumentVersion(
+    Session session,
+    int documentId,
+    Map<String, dynamic> data, {
+    String status = 'draft',
+    String? changeLog,
+  }) async {
+    // Require authentication
+    final authInfo = await session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to create versions');
+    }
+
+    final userId = authInfo.userId;
+
+    // Get the next version number for this document
+    final existingVersions = await DocumentVersion.db.find(
+      session,
+      where: (t) => t.documentId.equals(documentId),
+      orderBy: (t) => t.versionNumber,
+      orderDescending: true,
+      limit: 1,
+    );
+
+    final nextVersionNumber =
+        existingVersions.isEmpty ? 1 : existingVersions.first.versionNumber + 1;
+
+    final version = DocumentVersion(
+      documentId: documentId,
+      versionNumber: nextVersionNumber,
+      status: status,
+      data: jsonEncode(data),
+      changeLog: changeLog,
+      createdAt: DateTime.now(),
+      createdByUserId: userId,
+    );
+
+    final created = await DocumentVersion.db.insertRow(session, version);
+
+    // Sync activeVersionData if this is a published version
+    if (status == 'published') {
+      await _syncActiveVersionData(session, documentId);
+    }
+
+    return created;
+  }
+
+  /// Update an existing version
+  /// If the version is published, updates the document's activeVersionData
+  Future<DocumentVersion?> updateDocumentVersion(
+    Session session,
+    int versionId,
+    Map<String, dynamic> data, {
+    String? changeLog,
+  }) async {
+    // Require authentication
+    final authInfo = await session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to update versions');
+    }
+
+    final existing = await DocumentVersion.db.findById(session, versionId);
+
+    if (existing == null) {
+      return null;
+    }
+
+    final updated = existing.copyWith(
+      data: jsonEncode(data),
+      changeLog: changeLog ?? existing.changeLog,
+    );
+
+    await DocumentVersion.db.updateRow(session, updated);
+
+    // Sync activeVersionData if this is a published version
+    if (updated.status == 'published') {
+      await _syncActiveVersionData(session, updated.documentId);
+    }
+
+    return updated;
+  }
+
+  /// Publish a version (set status to 'published' and set publishedAt timestamp)
+  /// Also updates the document's activeVersionData cache
+  Future<DocumentVersion?> publishDocumentVersion(
+    Session session,
+    int versionId,
+  ) async {
+    // Require authentication
+    final authInfo = await session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to publish versions');
+    }
+
+    final existing = await DocumentVersion.db.findById(session, versionId);
+
+    if (existing == null) {
+      return null;
+    }
+
+    final updated = existing.copyWith(
+      status: 'published',
+      publishedAt: DateTime.now(),
+    );
+
+    await DocumentVersion.db.updateRow(session, updated);
+
+    // Sync activeVersionData
+    await _syncActiveVersionData(session, existing.documentId);
+
+    return updated;
+  }
+
+  /// Archive a version (set status to 'archived' and set archivedAt timestamp)
+  /// If archiving the published version, updates activeVersionData to next published version or null
+  Future<DocumentVersion?> archiveDocumentVersion(
+    Session session,
+    int versionId,
+  ) async {
+    // Require authentication
+    final authInfo = await session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to archive versions');
+    }
+
+    final existing = await DocumentVersion.db.findById(session, versionId);
+
+    if (existing == null) {
+      return null;
+    }
+
+    final wasPublished = existing.status == 'published';
+
+    final updated = existing.copyWith(
+      status: 'archived',
+      archivedAt: DateTime.now(),
+    );
+
+    await DocumentVersion.db.updateRow(session, updated);
+
+    // Sync activeVersionData if we archived a published version
+    if (wasPublished) {
+      await _syncActiveVersionData(session, existing.documentId);
+    }
+
+    return updated;
+  }
+
+  /// Delete a version
+  /// If deleting the published version, updates activeVersionData to next published version or null
+  Future<bool> deleteDocumentVersion(
+    Session session,
+    int versionId,
+  ) async {
+    // Require authentication
+    final authInfo = await session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to delete versions');
+    }
+
+    final existing = await DocumentVersion.db.findById(session, versionId);
+
+    if (existing == null) {
+      return false;
+    }
+
+    final wasPublished = existing.status == 'published';
+    final documentId = existing.documentId;
+
+    await DocumentVersion.db.deleteRow(session, existing);
+
+    // Sync activeVersionData if we deleted a published version
+    if (wasPublished) {
+      await _syncActiveVersionData(session, documentId);
+    }
+
+    return true;
   }
 }

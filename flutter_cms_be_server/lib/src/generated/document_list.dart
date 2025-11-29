@@ -9,27 +9,27 @@
 // ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _i1;
 import 'cms_document.dart' as _i2;
 
-abstract class DocumentListResponse implements _i1.SerializableModel {
-  DocumentListResponse._({
+abstract class DocumentList
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+  DocumentList._({
     required this.documents,
     required this.total,
     required this.page,
     required this.pageSize,
   });
 
-  factory DocumentListResponse({
+  factory DocumentList({
     required List<_i2.CmsDocument> documents,
     required int total,
     required int page,
     required int pageSize,
-  }) = _DocumentListResponseImpl;
+  }) = _DocumentListImpl;
 
-  factory DocumentListResponse.fromJson(
-      Map<String, dynamic> jsonSerialization) {
-    return DocumentListResponse(
+  factory DocumentList.fromJson(Map<String, dynamic> jsonSerialization) {
+    return DocumentList(
       documents: (jsonSerialization['documents'] as List)
           .map((e) => _i2.CmsDocument.fromJson((e as Map<String, dynamic>)))
           .toList(),
@@ -47,10 +47,10 @@ abstract class DocumentListResponse implements _i1.SerializableModel {
 
   int pageSize;
 
-  /// Returns a shallow copy of this [DocumentListResponse]
+  /// Returns a shallow copy of this [DocumentList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  DocumentListResponse copyWith({
+  DocumentList copyWith({
     List<_i2.CmsDocument>? documents,
     int? total,
     int? page,
@@ -67,13 +67,23 @@ abstract class DocumentListResponse implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      'documents': documents.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'total': total,
+      'page': page,
+      'pageSize': pageSize,
+    };
+  }
+
+  @override
   String toString() {
     return _i1.SerializationManager.encode(this);
   }
 }
 
-class _DocumentListResponseImpl extends DocumentListResponse {
-  _DocumentListResponseImpl({
+class _DocumentListImpl extends DocumentList {
+  _DocumentListImpl({
     required List<_i2.CmsDocument> documents,
     required int total,
     required int page,
@@ -85,17 +95,17 @@ class _DocumentListResponseImpl extends DocumentListResponse {
           pageSize: pageSize,
         );
 
-  /// Returns a shallow copy of this [DocumentListResponse]
+  /// Returns a shallow copy of this [DocumentList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  DocumentListResponse copyWith({
+  DocumentList copyWith({
     List<_i2.CmsDocument>? documents,
     int? total,
     int? page,
     int? pageSize,
   }) {
-    return DocumentListResponse(
+    return DocumentList(
       documents:
           documents ?? this.documents.map((e0) => e0.copyWith()).toList(),
       total: total ?? this.total,

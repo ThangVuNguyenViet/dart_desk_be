@@ -1,0 +1,16 @@
+class: CmsDocumentData
+table: cms_documents_data
+fields:
+  documentType: String
+  data: String  # JSON string for flexible document data
+  createdAt: DateTime?, default=now
+  updatedAt: DateTime?, default=now
+  createdByUserId: int?
+  updatedByUserId: int?
+indexes:
+  cms_documents_data_document_type_idx:
+    fields: documentType
+  cms_documents_data_created_at_idx:
+    fields: createdAt
+  cms_documents_data_updated_at_idx:
+    fields: updatedAt

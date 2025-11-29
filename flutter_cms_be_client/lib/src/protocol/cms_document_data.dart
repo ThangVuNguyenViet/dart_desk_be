@@ -11,49 +11,40 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class Document implements _i1.SerializableModel {
-  Document._({
+abstract class CmsDocumentData implements _i1.SerializableModel {
+  CmsDocumentData._({
     this.id,
-    required this.clientId,
     required this.documentType,
-    required this.title,
-    this.slug,
-    this.currentVersionId,
+    required this.data,
     DateTime? createdAt,
     DateTime? updatedAt,
-    required this.createdByUserId,
+    this.createdByUserId,
     this.updatedByUserId,
   })  : createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
 
-  factory Document({
+  factory CmsDocumentData({
     int? id,
-    required int clientId,
     required String documentType,
-    required String title,
-    String? slug,
-    int? currentVersionId,
+    required String data,
     DateTime? createdAt,
     DateTime? updatedAt,
-    required int createdByUserId,
+    int? createdByUserId,
     int? updatedByUserId,
-  }) = _DocumentImpl;
+  }) = _CmsDocumentDataImpl;
 
-  factory Document.fromJson(Map<String, dynamic> jsonSerialization) {
-    return Document(
+  factory CmsDocumentData.fromJson(Map<String, dynamic> jsonSerialization) {
+    return CmsDocumentData(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int,
       documentType: jsonSerialization['documentType'] as String,
-      title: jsonSerialization['title'] as String,
-      slug: jsonSerialization['slug'] as String?,
-      currentVersionId: jsonSerialization['currentVersionId'] as int?,
+      data: jsonSerialization['data'] as String,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
-      createdByUserId: jsonSerialization['createdByUserId'] as int,
+      createdByUserId: jsonSerialization['createdByUserId'] as int?,
       updatedByUserId: jsonSerialization['updatedByUserId'] as int?,
     );
   }
@@ -63,34 +54,25 @@ abstract class Document implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int clientId;
-
   String documentType;
 
-  String title;
-
-  String? slug;
-
-  int? currentVersionId;
+  String data;
 
   DateTime? createdAt;
 
   DateTime? updatedAt;
 
-  int createdByUserId;
+  int? createdByUserId;
 
   int? updatedByUserId;
 
-  /// Returns a shallow copy of this [Document]
+  /// Returns a shallow copy of this [CmsDocumentData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Document copyWith({
+  CmsDocumentData copyWith({
     int? id,
-    int? clientId,
     String? documentType,
-    String? title,
-    String? slug,
-    int? currentVersionId,
+    String? data,
     DateTime? createdAt,
     DateTime? updatedAt,
     int? createdByUserId,
@@ -100,14 +82,11 @@ abstract class Document implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'clientId': clientId,
       'documentType': documentType,
-      'title': title,
-      if (slug != null) 'slug': slug,
-      if (currentVersionId != null) 'currentVersionId': currentVersionId,
+      'data': data,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
-      'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId,
       if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
     };
   }
@@ -120,58 +99,46 @@ abstract class Document implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _DocumentImpl extends Document {
-  _DocumentImpl({
+class _CmsDocumentDataImpl extends CmsDocumentData {
+  _CmsDocumentDataImpl({
     int? id,
-    required int clientId,
     required String documentType,
-    required String title,
-    String? slug,
-    int? currentVersionId,
+    required String data,
     DateTime? createdAt,
     DateTime? updatedAt,
-    required int createdByUserId,
+    int? createdByUserId,
     int? updatedByUserId,
   }) : super._(
           id: id,
-          clientId: clientId,
           documentType: documentType,
-          title: title,
-          slug: slug,
-          currentVersionId: currentVersionId,
+          data: data,
           createdAt: createdAt,
           updatedAt: updatedAt,
           createdByUserId: createdByUserId,
           updatedByUserId: updatedByUserId,
         );
 
-  /// Returns a shallow copy of this [Document]
+  /// Returns a shallow copy of this [CmsDocumentData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  Document copyWith({
+  CmsDocumentData copyWith({
     Object? id = _Undefined,
-    int? clientId,
     String? documentType,
-    String? title,
-    Object? slug = _Undefined,
-    Object? currentVersionId = _Undefined,
+    String? data,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
-    int? createdByUserId,
+    Object? createdByUserId = _Undefined,
     Object? updatedByUserId = _Undefined,
   }) {
-    return Document(
+    return CmsDocumentData(
       id: id is int? ? id : this.id,
-      clientId: clientId ?? this.clientId,
       documentType: documentType ?? this.documentType,
-      title: title ?? this.title,
-      slug: slug is String? ? slug : this.slug,
-      currentVersionId:
-          currentVersionId is int? ? currentVersionId : this.currentVersionId,
+      data: data ?? this.data,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
-      createdByUserId: createdByUserId ?? this.createdByUserId,
+      createdByUserId:
+          createdByUserId is int? ? createdByUserId : this.createdByUserId,
       updatedByUserId:
           updatedByUserId is int? ? updatedByUserId : this.updatedByUserId,
     );

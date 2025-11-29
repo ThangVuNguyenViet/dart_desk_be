@@ -9,28 +9,26 @@
 // ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'document_version.dart' as _i2;
 
-abstract class DocumentVersionListResponse
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  DocumentVersionListResponse._({
+abstract class DocumentVersionList implements _i1.SerializableModel {
+  DocumentVersionList._({
     required this.versions,
     required this.total,
     required this.page,
     required this.pageSize,
   });
 
-  factory DocumentVersionListResponse({
+  factory DocumentVersionList({
     required List<_i2.DocumentVersion> versions,
     required int total,
     required int page,
     required int pageSize,
-  }) = _DocumentVersionListResponseImpl;
+  }) = _DocumentVersionListImpl;
 
-  factory DocumentVersionListResponse.fromJson(
-      Map<String, dynamic> jsonSerialization) {
-    return DocumentVersionListResponse(
+  factory DocumentVersionList.fromJson(Map<String, dynamic> jsonSerialization) {
+    return DocumentVersionList(
       versions: (jsonSerialization['versions'] as List)
           .map((e) => _i2.DocumentVersion.fromJson((e as Map<String, dynamic>)))
           .toList(),
@@ -48,10 +46,10 @@ abstract class DocumentVersionListResponse
 
   int pageSize;
 
-  /// Returns a shallow copy of this [DocumentVersionListResponse]
+  /// Returns a shallow copy of this [DocumentVersionList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  DocumentVersionListResponse copyWith({
+  DocumentVersionList copyWith({
     List<_i2.DocumentVersion>? versions,
     int? total,
     int? page,
@@ -68,23 +66,13 @@ abstract class DocumentVersionListResponse
   }
 
   @override
-  Map<String, dynamic> toJsonForProtocol() {
-    return {
-      'versions': versions.toJson(valueToJson: (v) => v.toJsonForProtocol()),
-      'total': total,
-      'page': page,
-      'pageSize': pageSize,
-    };
-  }
-
-  @override
   String toString() {
     return _i1.SerializationManager.encode(this);
   }
 }
 
-class _DocumentVersionListResponseImpl extends DocumentVersionListResponse {
-  _DocumentVersionListResponseImpl({
+class _DocumentVersionListImpl extends DocumentVersionList {
+  _DocumentVersionListImpl({
     required List<_i2.DocumentVersion> versions,
     required int total,
     required int page,
@@ -96,17 +84,17 @@ class _DocumentVersionListResponseImpl extends DocumentVersionListResponse {
           pageSize: pageSize,
         );
 
-  /// Returns a shallow copy of this [DocumentVersionListResponse]
+  /// Returns a shallow copy of this [DocumentVersionList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  DocumentVersionListResponse copyWith({
+  DocumentVersionList copyWith({
     List<_i2.DocumentVersion>? versions,
     int? total,
     int? page,
     int? pageSize,
   }) {
-    return DocumentVersionListResponse(
+    return DocumentVersionList(
       versions: versions ?? this.versions.map((e0) => e0.copyWith()).toList(),
       total: total ?? this.total,
       page: page ?? this.page,

@@ -14,13 +14,16 @@
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
-import 'package:flutter_cms_be_server/src/generated/document_list_response.dart'
-    as _i4;
+import 'package:flutter_cms_be_server/src/generated/document_list.dart' as _i4;
 import 'package:flutter_cms_be_server/src/generated/cms_document.dart' as _i5;
-import 'package:flutter_cms_be_server/src/generated/upload_response.dart'
+import 'package:flutter_cms_be_server/src/generated/document_version_list.dart'
     as _i6;
-import 'dart:typed_data' as _i7;
-import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i8;
+import 'package:flutter_cms_be_server/src/generated/document_version.dart'
+    as _i7;
+import 'package:flutter_cms_be_server/src/generated/upload_response.dart'
+    as _i8;
+import 'dart:typed_data' as _i9;
+import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i10;
 import 'package:flutter_cms_be_server/src/generated/protocol.dart';
 import 'package:flutter_cms_be_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -140,7 +143,7 @@ class _DocumentEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i4.DocumentListResponse> getDocuments(
+  _i3.Future<_i4.DocumentList> getDocuments(
     _i1.TestSessionBuilder sessionBuilder,
     String documentType, {
     String? search,
@@ -169,7 +172,7 @@ class _DocumentEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i4.DocumentListResponse>);
+        ) as _i3.Future<_i4.DocumentList>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -206,42 +209,10 @@ class _DocumentEndpoint {
     });
   }
 
-  _i3.Future<_i5.CmsDocument?> getDocumentByType(
-    _i1.TestSessionBuilder sessionBuilder,
-    String documentType,
-    int documentId,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-        endpoint: 'document',
-        method: 'getDocumentByType',
-      );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'document',
-          methodName: 'getDocumentByType',
-          parameters: _i1.testObjectToJson({
-            'documentType': documentType,
-            'documentId': documentId,
-          }),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<_i5.CmsDocument?>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
   _i3.Future<_i5.CmsDocument> createDocument(
     _i1.TestSessionBuilder sessionBuilder,
     String documentType,
+    String title,
     Map<String, dynamic> data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -257,6 +228,7 @@ class _DocumentEndpoint {
           methodName: 'createDocument',
           parameters: _i1.testObjectToJson({
             'documentType': documentType,
+            'title': title,
             'data': data,
           }),
           serializationManager: _serializationManager,
@@ -274,9 +246,9 @@ class _DocumentEndpoint {
 
   _i3.Future<_i5.CmsDocument?> updateDocument(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId,
-    Map<String, dynamic> data,
-  ) async {
+    int documentId, {
+    String? title,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -290,42 +262,7 @@ class _DocumentEndpoint {
           methodName: 'updateDocument',
           parameters: _i1.testObjectToJson({
             'documentId': documentId,
-            'data': data,
-          }),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<_i5.CmsDocument?>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i3.Future<_i5.CmsDocument?> updateDocumentByType(
-    _i1.TestSessionBuilder sessionBuilder,
-    String documentType,
-    int documentId,
-    Map<String, dynamic> data,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-        endpoint: 'document',
-        method: 'updateDocumentByType',
-      );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'document',
-          methodName: 'updateDocumentByType',
-          parameters: _i1.testObjectToJson({
-            'documentType': documentType,
-            'documentId': documentId,
-            'data': data,
+            'title': title,
           }),
           serializationManager: _serializationManager,
         );
@@ -369,39 +306,6 @@ class _DocumentEndpoint {
     });
   }
 
-  _i3.Future<bool> deleteDocumentByType(
-    _i1.TestSessionBuilder sessionBuilder,
-    String documentType,
-    int documentId,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-        endpoint: 'document',
-        method: 'deleteDocumentByType',
-      );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'document',
-          methodName: 'deleteDocumentByType',
-          parameters: _i1.testObjectToJson({
-            'documentType': documentType,
-            'documentId': documentId,
-          }),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<bool>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
   _i3.Future<List<String>> getDocumentTypes(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -428,6 +332,229 @@ class _DocumentEndpoint {
       }
     });
   }
+
+  _i3.Future<_i6.DocumentVersionList> getDocumentVersions(
+    _i1.TestSessionBuilder sessionBuilder,
+    int documentId, {
+    required int limit,
+    required int offset,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'document',
+        method: 'getDocumentVersions',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'document',
+          methodName: 'getDocumentVersions',
+          parameters: _i1.testObjectToJson({
+            'documentId': documentId,
+            'limit': limit,
+            'offset': offset,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i6.DocumentVersionList>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i7.DocumentVersion?> getDocumentVersion(
+    _i1.TestSessionBuilder sessionBuilder,
+    int versionId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'document',
+        method: 'getDocumentVersion',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'document',
+          methodName: 'getDocumentVersion',
+          parameters: _i1.testObjectToJson({'versionId': versionId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i7.DocumentVersion?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i7.DocumentVersion> createDocumentVersion(
+    _i1.TestSessionBuilder sessionBuilder,
+    int documentId,
+    Map<String, dynamic> data, {
+    required String status,
+    String? changeLog,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'document',
+        method: 'createDocumentVersion',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'document',
+          methodName: 'createDocumentVersion',
+          parameters: _i1.testObjectToJson({
+            'documentId': documentId,
+            'data': data,
+            'status': status,
+            'changeLog': changeLog,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i7.DocumentVersion>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i7.DocumentVersion?> updateDocumentVersion(
+    _i1.TestSessionBuilder sessionBuilder,
+    int versionId,
+    Map<String, dynamic> data, {
+    String? changeLog,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'document',
+        method: 'updateDocumentVersion',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'document',
+          methodName: 'updateDocumentVersion',
+          parameters: _i1.testObjectToJson({
+            'versionId': versionId,
+            'data': data,
+            'changeLog': changeLog,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i7.DocumentVersion?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i7.DocumentVersion?> publishDocumentVersion(
+    _i1.TestSessionBuilder sessionBuilder,
+    int versionId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'document',
+        method: 'publishDocumentVersion',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'document',
+          methodName: 'publishDocumentVersion',
+          parameters: _i1.testObjectToJson({'versionId': versionId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i7.DocumentVersion?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i7.DocumentVersion?> archiveDocumentVersion(
+    _i1.TestSessionBuilder sessionBuilder,
+    int versionId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'document',
+        method: 'archiveDocumentVersion',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'document',
+          methodName: 'archiveDocumentVersion',
+          parameters: _i1.testObjectToJson({'versionId': versionId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i7.DocumentVersion?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<bool> deleteDocumentVersion(
+    _i1.TestSessionBuilder sessionBuilder,
+    int versionId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'document',
+        method: 'deleteDocumentVersion',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'document',
+          methodName: 'deleteDocumentVersion',
+          parameters: _i1.testObjectToJson({'versionId': versionId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _MediaEndpoint {
@@ -440,10 +567,10 @@ class _MediaEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i6.UploadResponse> uploadImage(
+  _i3.Future<_i8.UploadResponse> uploadImage(
     _i1.TestSessionBuilder sessionBuilder,
     String fileName,
-    _i7.ByteData fileData,
+    _i9.ByteData fileData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -465,7 +592,7 @@ class _MediaEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i6.UploadResponse>);
+        ) as _i3.Future<_i8.UploadResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -473,10 +600,10 @@ class _MediaEndpoint {
     });
   }
 
-  _i3.Future<_i6.UploadResponse> uploadFile(
+  _i3.Future<_i8.UploadResponse> uploadFile(
     _i1.TestSessionBuilder sessionBuilder,
     String fileName,
-    _i7.ByteData fileData,
+    _i9.ByteData fileData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -498,7 +625,7 @@ class _MediaEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i6.UploadResponse>);
+        ) as _i3.Future<_i8.UploadResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -535,7 +662,7 @@ class _MediaEndpoint {
     });
   }
 
-  _i3.Future<_i8.MediaFile?> getMedia(
+  _i3.Future<_i10.MediaFile?> getMedia(
     _i1.TestSessionBuilder sessionBuilder,
     int fileId,
   ) async {
@@ -556,7 +683,7 @@ class _MediaEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i8.MediaFile?>);
+        ) as _i3.Future<_i10.MediaFile?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -564,7 +691,7 @@ class _MediaEndpoint {
     });
   }
 
-  _i3.Future<List<_i8.MediaFile>> listMedia(
+  _i3.Future<List<_i10.MediaFile>> listMedia(
     _i1.TestSessionBuilder sessionBuilder, {
     required int limit,
     required int offset,
@@ -589,7 +716,7 @@ class _MediaEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<List<_i8.MediaFile>>);
+        ) as _i3.Future<List<_i10.MediaFile>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

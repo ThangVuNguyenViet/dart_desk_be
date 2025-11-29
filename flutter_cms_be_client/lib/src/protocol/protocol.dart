@@ -13,11 +13,11 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'cms_client.dart' as _i2;
 import 'cms_client_user.dart' as _i3;
 import 'cms_document.dart' as _i4;
-import 'cms_user.dart' as _i5;
-import 'document.dart' as _i6;
-import 'document_list_response.dart' as _i7;
+import 'cms_document_data.dart' as _i5;
+import 'cms_user.dart' as _i6;
+import 'document_list.dart' as _i7;
 import 'document_version.dart' as _i8;
-import 'document_version_list_response.dart' as _i9;
+import 'document_version_list.dart' as _i9;
 import 'media_file.dart' as _i10;
 import 'upload_response.dart' as _i11;
 import 'package:flutter_cms_be_client/src/protocol/media_file.dart' as _i12;
@@ -25,11 +25,11 @@ import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i13;
 export 'cms_client.dart';
 export 'cms_client_user.dart';
 export 'cms_document.dart';
+export 'cms_document_data.dart';
 export 'cms_user.dart';
-export 'document.dart';
-export 'document_list_response.dart';
+export 'document_list.dart';
 export 'document_version.dart';
-export 'document_version_list_response.dart';
+export 'document_version_list.dart';
 export 'media_file.dart';
 export 'upload_response.dart';
 export 'client.dart';
@@ -56,20 +56,20 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i4.CmsDocument) {
       return _i4.CmsDocument.fromJson(data) as T;
     }
-    if (t == _i5.CmsUser) {
-      return _i5.CmsUser.fromJson(data) as T;
+    if (t == _i5.CmsDocumentData) {
+      return _i5.CmsDocumentData.fromJson(data) as T;
     }
-    if (t == _i6.Document) {
-      return _i6.Document.fromJson(data) as T;
+    if (t == _i6.CmsUser) {
+      return _i6.CmsUser.fromJson(data) as T;
     }
-    if (t == _i7.DocumentListResponse) {
-      return _i7.DocumentListResponse.fromJson(data) as T;
+    if (t == _i7.DocumentList) {
+      return _i7.DocumentList.fromJson(data) as T;
     }
     if (t == _i8.DocumentVersion) {
       return _i8.DocumentVersion.fromJson(data) as T;
     }
-    if (t == _i9.DocumentVersionListResponse) {
-      return _i9.DocumentVersionListResponse.fromJson(data) as T;
+    if (t == _i9.DocumentVersionList) {
+      return _i9.DocumentVersionList.fromJson(data) as T;
     }
     if (t == _i10.MediaFile) {
       return _i10.MediaFile.fromJson(data) as T;
@@ -86,23 +86,21 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i4.CmsDocument?>()) {
       return (data != null ? _i4.CmsDocument.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i5.CmsUser?>()) {
-      return (data != null ? _i5.CmsUser.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i5.CmsDocumentData?>()) {
+      return (data != null ? _i5.CmsDocumentData.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.Document?>()) {
-      return (data != null ? _i6.Document.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i6.CmsUser?>()) {
+      return (data != null ? _i6.CmsUser.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.DocumentListResponse?>()) {
-      return (data != null ? _i7.DocumentListResponse.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i7.DocumentList?>()) {
+      return (data != null ? _i7.DocumentList.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i8.DocumentVersion?>()) {
       return (data != null ? _i8.DocumentVersion.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.DocumentVersionListResponse?>()) {
-      return (data != null
-          ? _i9.DocumentVersionListResponse.fromJson(data)
-          : null) as T;
+    if (t == _i1.getType<_i9.DocumentVersionList?>()) {
+      return (data != null ? _i9.DocumentVersionList.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i10.MediaFile?>()) {
       return (data != null ? _i10.MediaFile.fromJson(data) : null) as T;
@@ -149,20 +147,20 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i4.CmsDocument) {
       return 'CmsDocument';
     }
-    if (data is _i5.CmsUser) {
+    if (data is _i5.CmsDocumentData) {
+      return 'CmsDocumentData';
+    }
+    if (data is _i6.CmsUser) {
       return 'CmsUser';
     }
-    if (data is _i6.Document) {
-      return 'Document';
-    }
-    if (data is _i7.DocumentListResponse) {
-      return 'DocumentListResponse';
+    if (data is _i7.DocumentList) {
+      return 'DocumentList';
     }
     if (data is _i8.DocumentVersion) {
       return 'DocumentVersion';
     }
-    if (data is _i9.DocumentVersionListResponse) {
-      return 'DocumentVersionListResponse';
+    if (data is _i9.DocumentVersionList) {
+      return 'DocumentVersionList';
     }
     if (data is _i10.MediaFile) {
       return 'MediaFile';
@@ -192,20 +190,20 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'CmsDocument') {
       return deserialize<_i4.CmsDocument>(data['data']);
     }
+    if (dataClassName == 'CmsDocumentData') {
+      return deserialize<_i5.CmsDocumentData>(data['data']);
+    }
     if (dataClassName == 'CmsUser') {
-      return deserialize<_i5.CmsUser>(data['data']);
+      return deserialize<_i6.CmsUser>(data['data']);
     }
-    if (dataClassName == 'Document') {
-      return deserialize<_i6.Document>(data['data']);
-    }
-    if (dataClassName == 'DocumentListResponse') {
-      return deserialize<_i7.DocumentListResponse>(data['data']);
+    if (dataClassName == 'DocumentList') {
+      return deserialize<_i7.DocumentList>(data['data']);
     }
     if (dataClassName == 'DocumentVersion') {
       return deserialize<_i8.DocumentVersion>(data['data']);
     }
-    if (dataClassName == 'DocumentVersionListResponse') {
-      return deserialize<_i9.DocumentVersionListResponse>(data['data']);
+    if (dataClassName == 'DocumentVersionList') {
+      return deserialize<_i9.DocumentVersionList>(data['data']);
     }
     if (dataClassName == 'MediaFile') {
       return deserialize<_i10.MediaFile>(data['data']);
