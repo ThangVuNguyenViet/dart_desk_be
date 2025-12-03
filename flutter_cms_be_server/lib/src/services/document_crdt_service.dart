@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:crdt/crdt.dart';
 import 'package:serverpod/serverpod.dart';
+
 import '../generated/protocol.dart';
 
 /// Service for managing CRDT-based document operations
@@ -72,9 +74,8 @@ class DocumentCrdtService {
 
     // Generate new HLC timestamp (incremented from current)
     final currentHlc = doc.crdtHlc != null ? Hlc.parse(doc.crdtHlc!) : null;
-    final newHlc = currentHlc != null
-        ? currentHlc.increment()
-        : Hlc.now(nodeId);
+    final newHlc =
+        currentHlc != null ? currentHlc.increment() : Hlc.now(nodeId);
     final hlcString = newHlc.toString();
 
     // Create peer ID for attribution
@@ -116,7 +117,8 @@ class DocumentCrdtService {
     final opCount = await getOperationCount(session, documentId);
     if (opCount > 1000) {
       // Schedule compaction asynchronously (could be moved to background job)
-      session.log('Document $documentId has $opCount operations, needs compaction');
+      session.log(
+          'Document $documentId has $opCount operations, needs compaction');
     }
 
     return updated;
@@ -141,7 +143,8 @@ class DocumentCrdtService {
 
     if (snapshots.isNotEmpty) {
       // Start from snapshot (fast path)
-      final snapshotData = jsonDecode(snapshots.first.snapshotData) as Map<String, dynamic>;
+      final snapshotData =
+          jsonDecode(snapshots.first.snapshotData) as Map<String, dynamic>;
       flatState = _flattenMap(snapshotData);
       sinceHlc = snapshots.first.snapshotHlc;
     }
@@ -193,8 +196,10 @@ class DocumentCrdtService {
     String sinceHlc = '0';
 
     if (snapshotResults.isNotEmpty) {
-      final snapshot = DocumentCrdtSnapshot.fromJson(snapshotResults.first.toColumnMap());
-      final snapshotData = jsonDecode(snapshot.snapshotData) as Map<String, dynamic>;
+      final snapshot =
+          DocumentCrdtSnapshot.fromJson(snapshotResults.first.toColumnMap());
+      final snapshotData =
+          jsonDecode(snapshot.snapshotData) as Map<String, dynamic>;
       flatState = _flattenMap(snapshotData);
       sinceHlc = snapshot.snapshotHlc;
     }
@@ -267,12 +272,10 @@ class DocumentCrdtService {
   /// Returns the reconstructed document as a nested Map
   Map<String, dynamic> reconstructFromOperations(
     List<DocumentCrdtOperation> operations, {
-    Map<String, dynamic>? initialState,
+    required Map<String, dynamic> initialState,
   }) {
     // Start from initial state or empty
-    Map<String, dynamic> flatState = initialState != null
-        ? _flattenMap(initialState)
-        : {};
+    Map<String, dynamic> flatState = _flattenMap(initialState);
 
     // Apply each operation in order (assumes operations are sorted by HLC)
     for (var op in operations) {
@@ -299,6 +302,33 @@ class DocumentCrdtService {
       where: (t) => t.documentId.equals(documentId),
     );
     return result;
+  }
+
+  /// Get operations between two HLC timestamps (exclusive fromHlc, inclusive toHlc)
+  ///
+  /// [fromHlc] - Start HLC (exclusive), null returns empty list (for first version)
+  /// [toHlc] - End HLC (inclusive)
+  ///
+  /// Returns operations where: fromHlc < hlc <= toHlc
+  Future<List<DocumentCrdtOperation>> getOperationsBetweenHlc(
+    Session session,
+    int documentId,
+    String? fromHlc,
+    String toHlc,
+  ) async {
+    // First version has no previous operations
+    if (fromHlc == null) {
+      return [];
+    }
+
+    final results = await session.db.unsafeQuery(
+      r'SELECT * FROM document_crdt_operations WHERE "documentId" = $1 AND hlc > $2 AND hlc <= $3 ORDER BY hlc ASC',
+      parameters: QueryParameters.positional([documentId, fromHlc, toHlc]),
+    );
+
+    return results
+        .map((row) => DocumentCrdtOperation.fromJson(row.toColumnMap()))
+        .toList();
   }
 
   /// Flatten nested map to dot-notation

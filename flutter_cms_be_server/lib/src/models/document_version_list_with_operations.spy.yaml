@@ -1,0 +1,7 @@
+class: DocumentVersionListWithOperations
+fields:
+  versions: List<DocumentVersionWithOperations>
+  baseData: String?  # JSON state at the HLC before first version in page
+  total: int
+  page: int
+  pageSize: int

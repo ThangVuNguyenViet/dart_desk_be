@@ -158,14 +158,38 @@ class CloudDataSource implements CmsDataSource {
     int offset = 0,
   }) async {
     try {
+      // Always fetch with operations to compute data
       final response = await _client.document.getDocumentVersions(
         documentId,
         limit: limit,
         offset: offset,
+        includeOperations: true,
       );
 
+      // Convert versions and compute data from operations
+      final versions = <DocumentVersion>[];
+
+      // Start from base state (state at HLC before first version in page)
+      // This ensures correct reconstruction even with pagination
+      Map<String, dynamic> accumulatedState = response.baseData != null
+          ? jsonDecode(response.baseData!) as Map<String, dynamic>
+          : {}; // Empty state for first page (offset = 0)
+
+      for (final versionWithOps in response.versions) {
+        // Apply operations to accumulate state
+        accumulatedState = _reconstructFromOperations(
+          versionWithOps.operationsSincePrevious,
+          initialState: accumulatedState,
+        );
+
+        versions.add(_toDocumentVersionWithData(
+          versionWithOps.version,
+          accumulatedState,
+        ));
+      }
+
       return DocumentVersionList(
-        versions: response.versions.map(_toDocumentVersion).toList(),
+        versions: versions,
         total: response.total,
         page: response.page,
         pageSize: response.pageSize,
@@ -411,7 +435,7 @@ class CloudDataSource implements CmsDataSource {
       id: version.id,
       documentId: version.documentId,
       versionNumber: version.versionNumber,
-      status: version.status.name, // Convert enum to string
+      status: DocumentVersionStatus.fromString(version.status.name),
       changeLog: version.changeLog,
       publishedAt: version.publishedAt,
       scheduledAt: version.scheduledAt,
@@ -419,6 +443,45 @@ class CloudDataSource implements CmsDataSource {
       createdAt: version.createdAt,
       createdByUserId: version.createdByUserId,
     );
+  }
+
+  /// Converts a Serverpod DocumentVersion to platform-agnostic with computed data.
+  DocumentVersion _toDocumentVersionWithData(
+    serverpod.DocumentVersion version,
+    Map<String, dynamic> data,
+  ) {
+    return DocumentVersion(
+      id: version.id,
+      documentId: version.documentId,
+      versionNumber: version.versionNumber,
+      status: DocumentVersionStatus.fromString(version.status.name),
+      data: Map<String, dynamic>.from(data), // Copy to avoid mutation
+      changeLog: version.changeLog,
+      publishedAt: version.publishedAt,
+      scheduledAt: version.scheduledAt,
+      archivedAt: version.archivedAt,
+      createdAt: version.createdAt,
+      createdByUserId: version.createdByUserId,
+    );
+  }
+
+  /// Reconstructs document data from Serverpod CRDT operations.
+  Map<String, dynamic> _reconstructFromOperations(
+    List<serverpod.DocumentCrdtOperation> operations, {
+    Map<String, dynamic> initialState = const {},
+  }) {
+    Map<String, dynamic> flatState = _flattenMap(initialState);
+
+    for (var op in operations) {
+      if (op.operationType == serverpod.CrdtOperationType.put &&
+          op.fieldValue != null) {
+        flatState[op.fieldPath] = jsonDecode(op.fieldValue!);
+      } else if (op.operationType == serverpod.CrdtOperationType.delete) {
+        flatState.remove(op.fieldPath);
+      }
+    }
+
+    return _unflattenMap(flatState);
   }
 
   /// Helper to parse string status to DocumentVersionStatus enum
@@ -530,5 +593,55 @@ class CloudDataSource implements CmsDataSource {
     } catch (e) {
       throw CmsDataSourceException('Failed to get operation count', e);
     }
+  }
+
+  // ============================================================
+  // CRDT Helpers (Internal)
+  // ============================================================
+
+  /// Flatten nested map to dot-notation
+  /// Example: {"user": {"name": "John"}} -> {"user.name": "John"}
+  Map<String, dynamic> _flattenMap(
+    Map<String, dynamic> map, [
+    String prefix = '',
+  ]) {
+    final result = <String, dynamic>{};
+
+    for (var entry in map.entries) {
+      final key = prefix.isEmpty ? entry.key : '$prefix.${entry.key}';
+
+      if (entry.value is Map<String, dynamic>) {
+        result.addAll(_flattenMap(entry.value as Map<String, dynamic>, key));
+      } else {
+        result[key] = entry.value;
+      }
+    }
+
+    return result;
+  }
+
+  /// Unflatten dot-notation to nested map
+  /// Example: {"user.name": "John"} -> {"user": {"name": "John"}}
+  Map<String, dynamic> _unflattenMap(Map<String, dynamic> flat) {
+    final result = <String, dynamic>{};
+
+    for (var entry in flat.entries) {
+      final keys = entry.key.split('.');
+      dynamic current = result;
+
+      for (var i = 0; i < keys.length - 1; i++) {
+        if (current is! Map<String, dynamic>) {
+          break;
+        }
+        current[keys[i]] ??= <String, dynamic>{};
+        current = current[keys[i]];
+      }
+
+      if (current is Map<String, dynamic>) {
+        current[keys.last] = entry.value;
+      }
+    }
+
+    return result;
   }
 }

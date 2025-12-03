@@ -23,12 +23,14 @@ import 'document_crdt_snapshot.dart' as _i11;
 import 'document_list.dart' as _i12;
 import 'document_version.dart' as _i13;
 import 'document_version_list.dart' as _i14;
-import 'document_version_status.dart' as _i15;
-import 'media_file.dart' as _i16;
-import 'upload_response.dart' as _i17;
+import 'document_version_list_with_operations.dart' as _i15;
+import 'document_version_status.dart' as _i16;
+import 'document_version_with_operations.dart' as _i17;
+import 'media_file.dart' as _i18;
+import 'upload_response.dart' as _i19;
 import 'package:flutter_cms_be_server/src/generated/document_crdt_operation.dart'
-    as _i18;
-import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i19;
+    as _i20;
+import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i21;
 export 'cms_client.dart';
 export 'cms_client_user.dart';
 export 'cms_document.dart';
@@ -40,7 +42,9 @@ export 'document_crdt_snapshot.dart';
 export 'document_list.dart';
 export 'document_version.dart';
 export 'document_version_list.dart';
+export 'document_version_list_with_operations.dart';
 export 'document_version_status.dart';
+export 'document_version_with_operations.dart';
 export 'media_file.dart';
 export 'upload_response.dart';
 
@@ -1506,14 +1510,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i14.DocumentVersionList) {
       return _i14.DocumentVersionList.fromJson(data) as T;
     }
-    if (t == _i15.DocumentVersionStatus) {
-      return _i15.DocumentVersionStatus.fromJson(data) as T;
+    if (t == _i15.DocumentVersionListWithOperations) {
+      return _i15.DocumentVersionListWithOperations.fromJson(data) as T;
     }
-    if (t == _i16.MediaFile) {
-      return _i16.MediaFile.fromJson(data) as T;
+    if (t == _i16.DocumentVersionStatus) {
+      return _i16.DocumentVersionStatus.fromJson(data) as T;
     }
-    if (t == _i17.UploadResponse) {
-      return _i17.UploadResponse.fromJson(data) as T;
+    if (t == _i17.DocumentVersionWithOperations) {
+      return _i17.DocumentVersionWithOperations.fromJson(data) as T;
+    }
+    if (t == _i18.MediaFile) {
+      return _i18.MediaFile.fromJson(data) as T;
+    }
+    if (t == _i19.UploadResponse) {
+      return _i19.UploadResponse.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.CmsClient?>()) {
       return (data != null ? _i4.CmsClient.fromJson(data) : null) as T;
@@ -1551,15 +1561,25 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null ? _i14.DocumentVersionList.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i15.DocumentVersionStatus?>()) {
-      return (data != null ? _i15.DocumentVersionStatus.fromJson(data) : null)
+    if (t == _i1.getType<_i15.DocumentVersionListWithOperations?>()) {
+      return (data != null
+          ? _i15.DocumentVersionListWithOperations.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i16.DocumentVersionStatus?>()) {
+      return (data != null ? _i16.DocumentVersionStatus.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i16.MediaFile?>()) {
-      return (data != null ? _i16.MediaFile.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.DocumentVersionWithOperations?>()) {
+      return (data != null
+          ? _i17.DocumentVersionWithOperations.fromJson(data)
+          : null) as T;
     }
-    if (t == _i1.getType<_i17.UploadResponse?>()) {
-      return (data != null ? _i17.UploadResponse.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i18.MediaFile?>()) {
+      return (data != null ? _i18.MediaFile.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i19.UploadResponse?>()) {
+      return (data != null ? _i19.UploadResponse.fromJson(data) : null) as T;
     }
     if (t == List<_i6.CmsDocument>) {
       return (data as List).map((e) => deserialize<_i6.CmsDocument>(e)).toList()
@@ -1570,9 +1590,19 @@ class Protocol extends _i1.SerializationManagerServer {
           .map((e) => deserialize<_i13.DocumentVersion>(e))
           .toList() as T;
     }
-    if (t == List<_i18.DocumentCrdtOperation>) {
+    if (t == List<_i17.DocumentVersionWithOperations>) {
       return (data as List)
-          .map((e) => deserialize<_i18.DocumentCrdtOperation>(e))
+          .map((e) => deserialize<_i17.DocumentVersionWithOperations>(e))
+          .toList() as T;
+    }
+    if (t == List<_i10.DocumentCrdtOperation>) {
+      return (data as List)
+          .map((e) => deserialize<_i10.DocumentCrdtOperation>(e))
+          .toList() as T;
+    }
+    if (t == List<_i20.DocumentCrdtOperation>) {
+      return (data as List)
+          .map((e) => deserialize<_i20.DocumentCrdtOperation>(e))
           .toList() as T;
     }
     if (t == Map<String, dynamic>) {
@@ -1593,8 +1623,8 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserialize<String>(k), deserialize<dynamic>(v)))
           : null) as T;
     }
-    if (t == List<_i19.MediaFile>) {
-      return (data as List).map((e) => deserialize<_i19.MediaFile>(e)).toList()
+    if (t == List<_i21.MediaFile>) {
+      return (data as List).map((e) => deserialize<_i21.MediaFile>(e)).toList()
           as T;
     }
     try {
@@ -1643,13 +1673,19 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i14.DocumentVersionList) {
       return 'DocumentVersionList';
     }
-    if (data is _i15.DocumentVersionStatus) {
+    if (data is _i15.DocumentVersionListWithOperations) {
+      return 'DocumentVersionListWithOperations';
+    }
+    if (data is _i16.DocumentVersionStatus) {
       return 'DocumentVersionStatus';
     }
-    if (data is _i16.MediaFile) {
+    if (data is _i17.DocumentVersionWithOperations) {
+      return 'DocumentVersionWithOperations';
+    }
+    if (data is _i18.MediaFile) {
       return 'MediaFile';
     }
-    if (data is _i17.UploadResponse) {
+    if (data is _i19.UploadResponse) {
       return 'UploadResponse';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1702,14 +1738,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'DocumentVersionList') {
       return deserialize<_i14.DocumentVersionList>(data['data']);
     }
+    if (dataClassName == 'DocumentVersionListWithOperations') {
+      return deserialize<_i15.DocumentVersionListWithOperations>(data['data']);
+    }
     if (dataClassName == 'DocumentVersionStatus') {
-      return deserialize<_i15.DocumentVersionStatus>(data['data']);
+      return deserialize<_i16.DocumentVersionStatus>(data['data']);
+    }
+    if (dataClassName == 'DocumentVersionWithOperations') {
+      return deserialize<_i17.DocumentVersionWithOperations>(data['data']);
     }
     if (dataClassName == 'MediaFile') {
-      return deserialize<_i16.MediaFile>(data['data']);
+      return deserialize<_i18.MediaFile>(data['data']);
     }
     if (dataClassName == 'UploadResponse') {
-      return deserialize<_i17.UploadResponse>(data['data']);
+      return deserialize<_i19.UploadResponse>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1753,8 +1795,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i11.DocumentCrdtSnapshot.t;
       case _i13.DocumentVersion:
         return _i13.DocumentVersion.t;
-      case _i16.MediaFile:
-        return _i16.MediaFile.t;
+      case _i18.MediaFile:
+        return _i18.MediaFile.t;
     }
     return null;
   }

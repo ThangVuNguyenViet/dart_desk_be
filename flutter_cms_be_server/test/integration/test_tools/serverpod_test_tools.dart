@@ -18,7 +18,7 @@ import 'package:flutter_cms_be_server/src/generated/document_crdt_operation.dart
     as _i4;
 import 'package:flutter_cms_be_server/src/generated/cms_document.dart' as _i5;
 import 'package:flutter_cms_be_server/src/generated/document_list.dart' as _i6;
-import 'package:flutter_cms_be_server/src/generated/document_version_list.dart'
+import 'package:flutter_cms_be_server/src/generated/document_version_list_with_operations.dart'
     as _i7;
 import 'package:flutter_cms_be_server/src/generated/document_version.dart'
     as _i8;
@@ -641,11 +641,12 @@ class _DocumentEndpoint {
     });
   }
 
-  _i3.Future<_i7.DocumentVersionList> getDocumentVersions(
+  _i3.Future<_i7.DocumentVersionListWithOperations> getDocumentVersions(
     _i1.TestSessionBuilder sessionBuilder,
     int documentId, {
     required int limit,
     required int offset,
+    required bool includeOperations,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -662,13 +663,14 @@ class _DocumentEndpoint {
             'documentId': documentId,
             'limit': limit,
             'offset': offset,
+            'includeOperations': includeOperations,
           }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i7.DocumentVersionList>);
+        ) as _i3.Future<_i7.DocumentVersionListWithOperations>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

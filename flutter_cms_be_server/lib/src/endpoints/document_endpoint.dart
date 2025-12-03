@@ -247,11 +247,13 @@ class DocumentEndpoint extends Endpoint {
   // ============================================================
 
   /// Get all versions for a document with pagination
-  Future<DocumentVersionList> getDocumentVersions(
+  /// Optionally includes CRDT operations between adjacent versions
+  Future<DocumentVersionListWithOperations> getDocumentVersions(
     Session session,
     int documentId, {
     int limit = 20,
     int offset = 0,
+    bool includeOperations = false,
   }) async {
     // Get total count
     final total = await DocumentVersion.db.count(
@@ -259,18 +261,83 @@ class DocumentEndpoint extends Endpoint {
       where: (t) => t.documentId.equals(documentId),
     );
 
-    // Get paginated versions, ordered by version number descending
+    // Get paginated versions, ordered by version number ascending
+    // (to properly pair adjacent versions for operations)
     final versions = await DocumentVersion.db.find(
       session,
       where: (t) => t.documentId.equals(documentId),
       orderBy: (t) => t.versionNumber,
-      orderDescending: true,
+      orderDescending: false,
       limit: limit,
       offset: offset,
     );
 
-    return DocumentVersionList(
-      versions: versions,
+    // Handle pagination edge case: need previous version's HLC for first item
+    String? prevHlcForFirstItem;
+    if (includeOperations && offset > 0 && versions.isNotEmpty) {
+      final prevVersions = await DocumentVersion.db.find(
+        session,
+        where: (t) => t.documentId.equals(documentId),
+        orderBy: (t) => t.versionNumber,
+        orderDescending: false,
+        limit: 1,
+        offset: offset - 1,
+      );
+      prevHlcForFirstItem = prevVersions.firstOrNull?.snapshotHlc;
+    }
+
+    // Get base state for the first version in this page (for reconstruction)
+    String? baseData;
+    if (includeOperations && versions.isNotEmpty) {
+      // Use the HLC BEFORE the first version as the base state
+      final baseHlc = prevHlcForFirstItem;
+
+      if (baseHlc != null) {
+        // Reconstruct state at that point using getStateAtHlc
+        final baseState = await server.documentCrdtService.getStateAtHlc(
+          session,
+          documentId,
+          baseHlc,
+        );
+        baseData = jsonEncode(baseState);
+      }
+      // If baseHlc is null, we're at version 1, so baseState is empty {}
+    }
+
+    // Build versions with operations
+    final versionsWithOps = <DocumentVersionWithOperations>[];
+
+    for (var i = 0; i < versions.length; i++) {
+      final version = versions[i];
+      List<DocumentCrdtOperation> ops = [];
+
+      if (includeOperations && version.snapshotHlc != null) {
+        // Get previous version's HLC
+        String? prevHlc;
+        if (i == 0) {
+          // First item in page: use fetched prev HLC (null for first version)
+          prevHlc = prevHlcForFirstItem;
+        } else {
+          prevHlc = versions[i - 1].snapshotHlc;
+        }
+
+        ops = await server.documentCrdtService.getOperationsBetweenHlc(
+          session,
+          documentId,
+          prevHlc,
+          version.snapshotHlc!,
+        );
+      }
+
+      versionsWithOps.add(DocumentVersionWithOperations(
+        version: version,
+        operationsSincePrevious: ops,
+      ));
+    }
+
+    return DocumentVersionListWithOperations(
+      versions: versionsWithOps,
+      baseData: baseData,
       total: total,
       page: (offset ~/ limit) + 1,
       pageSize: limit,

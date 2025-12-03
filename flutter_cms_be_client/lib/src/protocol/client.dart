@@ -15,7 +15,7 @@ import 'package:flutter_cms_be_client/src/protocol/document_crdt_operation.dart'
     as _i3;
 import 'package:flutter_cms_be_client/src/protocol/cms_document.dart' as _i4;
 import 'package:flutter_cms_be_client/src/protocol/document_list.dart' as _i5;
-import 'package:flutter_cms_be_client/src/protocol/document_version_list.dart'
+import 'package:flutter_cms_be_client/src/protocol/document_version_list_with_operations.dart'
     as _i6;
 import 'package:flutter_cms_be_client/src/protocol/document_version.dart'
     as _i7;
@@ -231,18 +231,21 @@ class EndpointDocument extends _i1.EndpointRef {
       );
 
   /// Get all versions for a document with pagination
-  _i2.Future<_i6.DocumentVersionList> getDocumentVersions(
+  /// Optionally includes CRDT operations between adjacent versions
+  _i2.Future<_i6.DocumentVersionListWithOperations> getDocumentVersions(
     int documentId, {
     required int limit,
     required int offset,
+    required bool includeOperations,
   }) =>
-      caller.callServerEndpoint<_i6.DocumentVersionList>(
+      caller.callServerEndpoint<_i6.DocumentVersionListWithOperations>(
         'document',
         'getDocumentVersions',
         {
           'documentId': documentId,
           'limit': limit,
           'offset': offset,
+          'includeOperations': includeOperations,
         },
       );
 
