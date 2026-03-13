@@ -829,6 +829,32 @@ class EndpointUser extends _i1.EndpointRef {
       'apiToken': apiToken,
     },
   );
+
+  /// Get all clients the authenticated user belongs to.
+  /// Used by Manage app for client switcher.
+  _i2.Future<List<_i6.CmsClient>> getUserClients() =>
+      caller.callServerEndpoint<List<_i6.CmsClient>>(
+        'user',
+        'getUserClients',
+        {},
+      );
+
+  /// Get the current CMS user by client slug (for Manage app — no API token needed).
+  /// Authenticates via Serverpod auth session only.
+  _i2.Future<_i19.CmsUser?> getCurrentUserBySlug(String clientSlug) =>
+      caller.callServerEndpoint<_i19.CmsUser?>(
+        'user',
+        'getCurrentUserBySlug',
+        {'clientSlug': clientSlug},
+      );
+
+  /// Get count of CmsUsers for a client (for Overview stats).
+  _i2.Future<int> getClientUserCount(int clientId) =>
+      caller.callServerEndpoint<int>(
+        'user',
+        'getClientUserCount',
+        {'clientId': clientId},
+      );
 }
 
 class Modules {

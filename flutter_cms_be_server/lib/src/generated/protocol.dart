@@ -40,6 +40,7 @@ import 'package:flutter_cms_be_server/src/generated/cms_api_token.dart' as _i25;
 import 'package:flutter_cms_be_server/src/generated/document_crdt_operation.dart'
     as _i26;
 import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i27;
+import 'package:flutter_cms_be_server/src/generated/cms_client.dart' as _i28;
 export 'client_with_token.dart';
 export 'cms_api_token.dart';
 export 'cms_api_token_with_value.dart';
@@ -1741,6 +1742,10 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == List<_i27.MediaFile>) {
       return (data as List).map((e) => deserialize<_i27.MediaFile>(e)).toList()
+          as T;
+    }
+    if (t == List<_i28.CmsClient>) {
+      return (data as List).map((e) => deserialize<_i28.CmsClient>(e)).toList()
           as T;
     }
     try {
