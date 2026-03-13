@@ -9,6 +9,10 @@ dependencies:
   serverpod_flutter: 3.4.3
   serverpod_auth_idp_client: 3.4.3
   serverpod_auth_idp_flutter: 3.4.3
+  serverpod_admin_client:
+    git:
+      url: https://github.com/AdamMusa/serverpod_admin.git
+      path: serverpod_admin_client
 
   flutter:
     sdk: flutter

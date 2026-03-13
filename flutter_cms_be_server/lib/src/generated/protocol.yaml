@@ -12,6 +12,7 @@ cmsClient:
   - updateClient:
   - regenerateApiToken:
   - deleteClient:
+  - createClientWithOwner:
 documentCollaboration:
   - getOperationsSince:
   - submitEdit:

@@ -416,6 +416,31 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['clientId'],
                   ),
         ),
+        'createClientWithOwner': _i1.MethodConnector(
+          name: 'createClientWithOwner',
+          params: {
+            'name': _i1.ParameterDescription(
+              name: 'name',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'slug': _i1.ParameterDescription(
+              name: 'slug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['cmsClient'] as _i3.CmsClientEndpoint)
+                  .createClientWithOwner(
+                    session,
+                    name: params['name'],
+                    slug: params['slug'],
+                  ),
+        ),
       },
     );
     connectors['documentCollaboration'] = _i1.EndpointConnector(

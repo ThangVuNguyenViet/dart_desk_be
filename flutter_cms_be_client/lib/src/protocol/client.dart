@@ -204,6 +204,20 @@ class EndpointCmsClient extends _i1.EndpointRef {
         'deleteClient',
         {'clientId': clientId},
       );
+
+  /// Create a new client and an admin CmsUser for the caller in one transaction.
+  /// Used by the manage app's setup wizard for first-time users.
+  _i2.Future<_i6.CmsClient> createClientWithOwner({
+    required String name,
+    required String slug,
+  }) => caller.callServerEndpoint<_i6.CmsClient>(
+    'cmsClient',
+    'createClientWithOwner',
+    {
+      'name': name,
+      'slug': slug,
+    },
+  );
 }
 
 /// Endpoint for real-time document collaboration features

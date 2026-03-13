@@ -190,4 +190,96 @@ class CmsClientEndpoint extends Endpoint {
     await CmsClient.db.deleteRow(session, existing);
     return true;
   }
+
+  /// Reserved slugs that cannot be used as client slugs.
+  static const _reservedSlugs = {'login', 'setup', 'admin', 'api', 'app'};
+
+  /// Slug validation regex: 3-63 chars, lowercase alphanumeric + hyphens,
+  /// no leading/trailing hyphens.
+  static final _slugRegex = RegExp(r'^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$');
+
+  /// Create a new client and an admin CmsUser for the caller in one transaction.
+  /// Used by the manage app's setup wizard for first-time users.
+  Future<CmsClient> createClientWithOwner(
+    Session session, {
+    required String name,
+    required String slug,
+  }) async {
+    final authInfo = session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated');
+    }
+
+    // Validate slug format
+    if (!_slugRegex.hasMatch(slug)) {
+      throw Exception(
+        'Invalid slug: must be 3-63 characters, lowercase alphanumeric and hyphens, '
+        'cannot start or end with a hyphen',
+      );
+    }
+    if (_reservedSlugs.contains(slug)) {
+      throw Exception('Slug "$slug" is reserved and cannot be used');
+    }
+
+    // Check slug uniqueness
+    final existing = await CmsClient.db.findFirstRow(
+      session,
+      where: (t) => t.slug.equals(slug),
+    );
+    if (existing != null) {
+      throw Exception('Slug "$slug" is already taken');
+    }
+
+    // Generate internal API token (same pattern as createClient)
+    final rawToken = _generateToken();
+    final prefix = rawToken.substring(0, 16);
+    final hash = DBCrypt().hashpw(rawToken, DBCrypt().gensalt());
+
+    // Get user profile for email (same pattern as UserEndpoint.ensureUser lines 57-68)
+    String? email;
+    String? userName;
+    try {
+      final profileRows = await session.db.unsafeQuery(
+        'SELECT "email", "fullName" FROM "serverpod_auth_core_profile" '
+        'WHERE "authUserId" = \'${authInfo.userIdentifier}\' LIMIT 1',
+      );
+      if (profileRows.isNotEmpty) {
+        email = profileRows.first[0] as String?;
+        userName = profileRows.first[1] as String?;
+      }
+    } catch (e) {
+      // Profile lookup failed; use identifier as fallback
+    }
+
+    return session.db.transaction((transaction) async {
+      final client = await CmsClient.db.insertRow(
+        session,
+        CmsClient(
+          name: name,
+          slug: slug,
+          apiTokenHash: hash,
+          apiTokenPrefix: prefix,
+          isActive: true,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      );
+
+      await CmsUser.db.insertRow(
+        session,
+        CmsUser(
+          clientId: client.id!,
+          email: email ?? authInfo.userIdentifier,
+          name: userName,
+          role: 'admin',
+          isActive: true,
+          serverpodUserId: authInfo.userIdentifier,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      );
+
+      return client;
+    });
+  }
 }
