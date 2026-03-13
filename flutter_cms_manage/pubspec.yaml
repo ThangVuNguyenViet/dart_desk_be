@@ -1,0 +1,32 @@
+name: flutter_cms_manage
+description: Flutter CMS Manage — Project management dashboard
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+  flutter: '>=3.24.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shadcn_ui: ^0.39.14
+  zenrouter: ^0.1.0
+  signals: ^6.0.2
+  flutter_cms_be_client:
+    path: ../flutter_cms_be_client
+  serverpod_flutter: 3.4.3
+  serverpod_auth_idp_flutter: 3.4.3
+  lucide_icons_flutter: ^3.1.0
+  intl: any
+  flutter_web_plugins:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: '>=3.0.0 <7.0.0'
+
+flutter:
+  uses-material-design: true
