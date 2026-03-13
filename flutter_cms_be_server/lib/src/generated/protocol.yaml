@@ -1,3 +1,9 @@
+cmsApiToken:
+  - getTokens:
+  - createToken:
+  - updateToken:
+  - regenerateToken:
+  - deleteToken:
 cmsClient:
   - getClients:
   - getClientBySlug:

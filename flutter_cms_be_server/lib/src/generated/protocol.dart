@@ -36,9 +36,10 @@ import 'document_version_status.dart' as _i21;
 import 'document_version_with_operations.dart' as _i22;
 import 'media_file.dart' as _i23;
 import 'upload_response.dart' as _i24;
+import 'package:flutter_cms_be_server/src/generated/cms_api_token.dart' as _i25;
 import 'package:flutter_cms_be_server/src/generated/document_crdt_operation.dart'
-    as _i25;
-import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i26;
+    as _i26;
+import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i27;
 export 'client_with_token.dart';
 export 'cms_api_token.dart';
 export 'cms_api_token_with_value.dart';
@@ -1702,9 +1703,15 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
-    if (t == List<_i25.DocumentCrdtOperation>) {
+    if (t == List<_i25.CmsApiToken>) {
       return (data as List)
-              .map((e) => deserialize<_i25.DocumentCrdtOperation>(e))
+              .map((e) => deserialize<_i25.CmsApiToken>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i26.DocumentCrdtOperation>) {
+      return (data as List)
+              .map((e) => deserialize<_i26.DocumentCrdtOperation>(e))
               .toList()
           as T;
     }
@@ -1732,8 +1739,8 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == List<_i26.MediaFile>) {
-      return (data as List).map((e) => deserialize<_i26.MediaFile>(e)).toList()
+    if (t == List<_i27.MediaFile>) {
+      return (data as List).map((e) => deserialize<_i27.MediaFile>(e)).toList()
           as T;
     }
     try {
