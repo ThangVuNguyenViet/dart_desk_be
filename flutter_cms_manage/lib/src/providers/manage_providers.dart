@@ -3,6 +3,12 @@ import 'package:signals/signals.dart';
 
 import '../services/token_service.dart';
 
+/// Auth state for the AuthGate widget
+enum AuthState { loading, unauthenticated, authenticatedLoading, ready, noClients }
+
+/// Current auth state — written by AuthGate widget
+final authState = signal<AuthState>(AuthState.loading);
+
 /// Global Serverpod client instance (initialized in main.dart)
 late final Client serverpodClient;
 
@@ -49,4 +55,14 @@ Future<void> initClientContext(String clientSlug) async {
         await serverpodClient.user.getCurrentUserBySlug(clientSlug);
     currentUser.value = user;
   }
+}
+
+/// Sign out and clear all state
+Future<void> logout() async {
+  await serverpodClient.auth.signOutDevice();
+  currentUser.value = null;
+  currentClient.value = null;
+  userClients.value = [];
+  authState.value = AuthState.unauthenticated;
+  resetTokenService();
 }
