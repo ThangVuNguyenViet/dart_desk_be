@@ -7,6 +7,9 @@ import 'overview_route.dart';
 import 'tokens_route.dart';
 import 'settings_route.dart';
 import 'not_found_route.dart';
+import 'login_route.dart';
+import 'setup_wizard_route.dart';
+import 'client_picker_route.dart';
 
 class ManageCoordinator extends Coordinator<ManageRoute> {
   String clientSlug = '';
@@ -27,8 +30,15 @@ class ManageCoordinator extends Coordinator<ManageRoute> {
   @override
   ManageRoute parseRouteFromUri(Uri uri) {
     final segments = uri.pathSegments;
-    if (segments.isEmpty) return NotFoundRoute();
 
+    // 1. Root URL → client picker
+    if (segments.isEmpty) return ClientPickerRoute();
+
+    // 2. Reserved paths (not client slugs)
+    if (segments.first == 'login') return LoginRoute();
+    if (segments.first == 'setup') return SetupWizardRoute();
+
+    // 3. Everything else: first segment is clientSlug
     clientSlug = segments.first;
     final rest = segments.skip(1).toList();
 
