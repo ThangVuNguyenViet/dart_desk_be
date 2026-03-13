@@ -49,3 +49,6 @@ TIME                        ID         TYPE           CONTEXT                  D
 #8      _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
 <asynchronous suspension>
 
+SIGTERM (15) received, time: 2026-03-13 07:44:58.288019Z
+SERVERPOD initiating shutdown, time: 2026-03-13 07:44:58.289033Z
+SERVERPOD shutdown completed, time: 2026-03-13 07:44:58.298522Z

@@ -15,6 +15,12 @@
             "cwd": "flutter_cms_be_server",
             "request": "launch",
             "type": "dart"
+        },
+        {
+            "name": "flutter_cms_be_admin",
+            "cwd": "flutter_cms_be_admin",
+            "request": "launch",
+            "type": "dart"
         }
     ]
 }

@@ -1,11 +1,11 @@
 ---
 name: serverpod
-description: "Expert guidance for the Serverpod backend framework for Flutter/Dart. Use when (1) creating or modifying Serverpod endpoints, (2) defining database models in YAML with relations and indexes, (3) working with the Serverpod ORM for queries, transactions, and migrations, (4) implementing authentication with Google, Apple, email, or custom providers, (5) setting up caching with Redis or in-memory stores, (6) building real-time features with streams and WebSockets, (7) deploying Serverpod to cloud providers, (8) managing sessions, serialization, or code generation. Triggers include serverpod, endpoint, database model, ORM, session, migration, serverpod auth, serverpod deploy, serverpod generate."
+description: "Expert guidance for the Serverpod backend framework for Flutter/Dart. Use when working with: endpoints, YAML models, ORM/transactions/migrations, auth (Google/Apple/email/custom), caching (Redis/in-memory), real-time streams/WebSockets, deployment, sessions, serialization, code generation, file uploads (S3/GCS/R2), future calls/scheduling, testing (serverpod_test), modules, logging, Insights, Serverpod Mini, web server (Relic routes/middleware), health checks. Triggers: serverpod, endpoint, database model, ORM, session, migration, auth, deploy, generate, file upload, future call, test, mini, health check, web server, middleware, Relic."
 ---
 
 # Serverpod
 
-Open-source, scalable backend framework for Flutter enabling full-stack Dart development. Version 3.3.0.
+Open-source, scalable backend framework for Flutter enabling full-stack Dart development.
 
 - Docs: https://docs.serverpod.dev/
 - pub.dev: https://pub.dev/packages/serverpod
@@ -18,7 +18,7 @@ my_project/
 ├── my_project_server/    # Server (endpoints, models, business logic)
 │   ├── lib/src/
 │   │   ├── endpoints/    # API endpoints
-│   │   └── models/       # YAML model definitions
+│   │   └── models/       # YAML model definitions (.spy.yaml)
 │   ├── migrations/       # Database migrations
 │   └── config/           # Server configuration
 ├── my_project_client/    # Auto-generated client library
@@ -53,7 +53,7 @@ For full setup details: see [references/getting-started.md](references/getting-s
 Define in `lib/src/models/`:
 
 ```yaml
-# company.yaml
+# company.spy.yaml
 class: Company
 table: company
 fields:
@@ -69,8 +69,9 @@ After changes: `serverpod generate` then `serverpod create-migration`
 
 **Key features:**
 - Types: `int`, `double`, `bool`, `String`, `DateTime`, `Duration`, `UuidValue`, `ByteData`, `Uri`, enums, `List<T>`, `Map<String, T>`
-- Field scopes: `database` (default), `api`, `all`, `none`
+- Field scopes: `database` (default for table models), `api`, `all`, `none`
 - Relations: `relation(name=...)`, `relation(parent=table_name)`, `relation(optional)`
+- Default values: `default='value'`, `default=true`, `default=now`, `default=persist='value'`
 
 Full model syntax: see [references/models.md](references/models.md)
 
@@ -98,6 +99,7 @@ final company = await client.company.create(name: 'Acme');
 - `Session` provides access to database, caching, auth, logging
 - All params after `session` must be named
 - Throw `SerializableException` subclasses for typed client errors
+- Default max request size: 512 kB (override via `get maxRequestSize`)
 
 Advanced patterns: see [references/endpoints.md](references/endpoints.md)
 
@@ -133,18 +135,20 @@ await session.db.transaction((tx) async {
 // Eager loading relations
 final c = await Company.db.findById(session, id,
   include: Company.include(ceo: Employee.include()));
+
+// Count
+final total = await Company.db.count(session);
 ```
 
 Raw SQL, migrations, indexing: see [references/database.md](references/database.md)
 
-### Authentication (IDP System - Serverpod 3.x)
+### Authentication (IDP System)
 
 **Server setup** (`server.dart`):
 ```dart
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 
-// No authenticationHandler needed - initializeAuthServices handles it
 final pod = Serverpod(args, Protocol(), Endpoints());
 
 pod.initializeAuthServices(
@@ -183,25 +187,51 @@ class SecureEndpoint extends Endpoint {
 }
 ```
 
-**Flutter client setup**:
-```dart
-client = Client(apiUrl)
-  ..connectivityMonitor = FlutterConnectivityMonitor()
-  ..authSessionManager = FlutterAuthSessionManager();
-await client.auth.initialize();
-await client.auth.initializeGoogleSignIn();
-```
-
-**Google Sign-In widget** (new IDP):
-```dart
-GoogleSignInWidget(
-  client: client,
-  onAuthenticated: () { /* signed in */ },
-  onError: (error) { /* handle error */ },
-)
-```
-
 Setup and providers: see [references/authentication.md](references/authentication.md)
+
+### File Uploads
+
+```dart
+// Server: create upload description
+Future<String?> getUploadDescription(Session session, String path) async {
+  return await session.storage.createDirectFileUploadDescription(
+    storageId: 'public',
+    path: path,
+  );
+}
+
+// Server: verify upload
+Future<bool> verifyUpload(Session session, String path) async {
+  return await session.storage.verifyDirectFileUpload(storageId: 'public', path: path);
+}
+
+// Server: access files
+var url = await session.storage.getPublicUrl(storageId: 'public', path: 'my/path');
+var data = await session.storage.retrieveFile(storageId: 'public', path: 'my/path');
+```
+
+Cloud storage (GCS, S3, R2): see [references/file-uploads.md](references/file-uploads.md)
+
+### Future Calls (Scheduling)
+
+```dart
+class MyFutureCall extends FutureCall {
+  Future<void> doWork(Session session) async {
+    // Scheduled work here
+  }
+}
+
+// Schedule with delay
+await pod.futureCalls.callWithDelay(const Duration(hours: 1)).myFutureCall.doWork();
+
+// Schedule at specific time
+await pod.futureCalls.callAtTime(DateTime(2026, 1, 1)).myFutureCall.doWork();
+
+// Cancel by identifier
+await pod.futureCalls.cancel('my-identifier');
+```
+
+Full details: see [references/scheduling.md](references/scheduling.md)
 
 ### Caching
 
@@ -227,6 +257,70 @@ client.messages.listen<ChatMessage>('chat_1').listen((msg) => print(msg.text));
 
 Streams, WebSockets, patterns: see [references/realtime.md](references/realtime.md)
 
+### Logging
+
+```dart
+session.log('Processing request', level: LogLevel.info);
+session.log('Error occurred', level: LogLevel.warning, exception: e, stackTrace: stackTrace);
+```
+
+Logs stored in `serverpod_log`, `serverpod_query_log`, `serverpod_session_log` tables.
+
+Configuration in server config or env vars:
+- `SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED` - database storage toggle
+- `SERVERPOD_SESSION_CONSOLE_LOG_ENABLED` - console output toggle
+- `SERVERPOD_SESSION_LOG_RETENTION_PERIOD` - retention (default: 90 days)
+- `SERVERPOD_SESSION_CONSOLE_LOG_FORMAT` - `text` or `json`
+
+### Testing
+
+```dart
+import 'package:test/test.dart';
+import 'test_tools/serverpod_test_tools.dart';
+
+void main() {
+  withServerpod('Given Example endpoint', (sessionBuilder, endpoints) {
+    test('when calling hello then should return greeting', () async {
+      final greeting = await endpoints.example.hello(sessionBuilder, 'Michael');
+      expect(greeting, 'Hello Michael');
+    });
+  });
+}
+```
+
+Setup, auth testing, database seeding: see [references/testing.md](references/testing.md)
+
+### Serverpod Mini
+
+Lightweight alternative without PostgreSQL. Create with:
+
+```bash
+serverpod create myminipod --mini
+```
+
+Supports: endpoints, models, streaming, custom auth, caching, logging. Does NOT support: Postgres ORM, task scheduling, pre-built auth, file uploads, health checks, Insights.
+
+### Web Server (Relic)
+
+```dart
+class HelloRoute extends Route {
+  @override
+  Future<Result> handleCall(Session session, Request request) async {
+    return Response.ok(body: Body.fromString('Hello'));
+  }
+}
+
+// Register in server.dart
+pod.webServer.addRoute(HelloRoute(), '/api/hello');
+pod.webServer.addMiddleware(myMiddleware, '/path');
+```
+
+Routes, middleware, static files: see [references/web-server.md](references/web-server.md)
+
+### Health Checks
+
+Three Kubernetes-style HTTP probes: `/livez` (liveness), `/readyz` (readiness), `/startupz` (startup). Custom indicators via `HealthIndicator<T>`. See [references/health-checks.md](references/health-checks.md)
+
 ## Reference Files
 
 | File | Use when |
@@ -239,3 +333,14 @@ Streams, WebSockets, patterns: see [references/realtime.md](references/realtime.
 | [references/caching.md](references/caching.md) | In-memory/Redis caching, cache patterns, TTL |
 | [references/realtime.md](references/realtime.md) | Streams, WebSockets, message channels |
 | [references/deployment.md](references/deployment.md) | Server config, Docker, cloud deploy, nginx, scaling |
+| [references/file-uploads.md](references/file-uploads.md) | File upload API, cloud storage (GCS, S3, R2) |
+| [references/scheduling.md](references/scheduling.md) | Future calls, scheduled tasks, cancellation |
+| [references/testing.md](references/testing.md) | Integration tests, withServerpod, auth testing, DB seeding |
+| [references/serialization.md](references/serialization.md) | Custom serialization, Freezed, ProtocolSerialization |
+| [references/modules.md](references/modules.md) | Using and creating Serverpod modules |
+| [references/web-server.md](references/web-server.md) | Relic routes, middleware, static files, ContextProperty |
+| [references/health-checks.md](references/health-checks.md) | Kubernetes probes (/livez, /readyz, /startupz), custom indicators |
+| [references/sessions.md](references/sessions.md) | Session types, properties, manual sessions, lifecycle |
+| [references/configuration.md](references/configuration.md) | YAML config, env variables, passwords.yaml, generator.yaml |
+| [references/server-events.md](references/server-events.md) | Message channels, local/global messaging, auth revocation |
+| [references/exceptions.md](references/exceptions.md) | Serializable exceptions, YAML definition, default values |
