@@ -1,0 +1,4 @@
+class: CmsApiTokenWithValue
+fields:
+  token: CmsApiToken
+  plaintextToken: String

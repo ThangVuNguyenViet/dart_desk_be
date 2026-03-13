@@ -99,6 +99,7 @@ void _registerAdminModule() {
     registry.register<MediaFile>();
     registry.register<DocumentCrdtOperation>();
     registry.register<DocumentCrdtSnapshot>();
+    registry.register<CmsApiToken>();
 
     print('[Admin] Module registered with ${registry.registeredResourceMetadata.length} resources');
   });
