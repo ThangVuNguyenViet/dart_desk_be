@@ -3,8 +3,11 @@ table: cms_clients
 fields:
   name: String
   slug: String
+  apiTokenHash: String
   description: String?
   isActive: bool, default=true
+  apiTokenPrefix: String?
+  lastUsedAt: DateTime?
   settings: String?
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now

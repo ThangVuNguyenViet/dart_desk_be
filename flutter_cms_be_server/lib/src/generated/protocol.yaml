@@ -1,3 +1,11 @@
+cmsClient:
+  - getClients:
+  - getClientBySlug:
+  - getClient:
+  - createClient:
+  - updateClient:
+  - regenerateApiToken:
+  - deleteClient:
 documentCollaboration:
   - getOperationsSince:
   - submitEdit:
@@ -22,6 +30,15 @@ document:
   - publishDocumentVersion:
   - archiveDocumentVersion:
   - deleteDocumentVersion:
+emailIdp:
+  - login:
+  - startRegistration:
+  - verifyRegistrationCode:
+  - finishRegistration:
+  - startPasswordReset:
+  - verifyPasswordResetCode:
+  - finishPasswordReset:
+  - hasAccount:
 googleIdp:
   - login:
   - hasAccount:
@@ -33,3 +50,6 @@ media:
   - listMedia:
 refreshJwtTokens:
   - refreshAccessToken:
+user:
+  - ensureUser:
+  - getCurrentUser:

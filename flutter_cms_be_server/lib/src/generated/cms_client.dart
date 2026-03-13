@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -17,21 +18,27 @@ abstract class CmsClient
     this.id,
     required this.name,
     required this.slug,
+    required this.apiTokenHash,
     this.description,
     bool? isActive,
+    this.apiTokenPrefix,
+    this.lastUsedAt,
     this.settings,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : isActive = isActive ?? true,
-        createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : isActive = isActive ?? true,
+       createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   factory CmsClient({
     int? id,
     required String name,
     required String slug,
+    required String apiTokenHash,
     String? description,
     bool? isActive,
+    String? apiTokenPrefix,
+    DateTime? lastUsedAt,
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -42,8 +49,15 @@ abstract class CmsClient
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       slug: jsonSerialization['slug'] as String,
+      apiTokenHash: jsonSerialization['apiTokenHash'] as String,
       description: jsonSerialization['description'] as String?,
-      isActive: jsonSerialization['isActive'] as bool,
+      isActive: jsonSerialization['isActive'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['isActive']),
+      apiTokenPrefix: jsonSerialization['apiTokenPrefix'] as String?,
+      lastUsedAt: jsonSerialization['lastUsedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUsedAt']),
       settings: jsonSerialization['settings'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
@@ -65,9 +79,15 @@ abstract class CmsClient
 
   String slug;
 
+  String apiTokenHash;
+
   String? description;
 
   bool isActive;
+
+  String? apiTokenPrefix;
+
+  DateTime? lastUsedAt;
 
   String? settings;
 
@@ -85,8 +105,11 @@ abstract class CmsClient
     int? id,
     String? name,
     String? slug,
+    String? apiTokenHash,
     String? description,
     bool? isActive,
+    String? apiTokenPrefix,
+    DateTime? lastUsedAt,
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -94,11 +117,15 @@ abstract class CmsClient
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'CmsClient',
       if (id != null) 'id': id,
       'name': name,
       'slug': slug,
+      'apiTokenHash': apiTokenHash,
       if (description != null) 'description': description,
       'isActive': isActive,
+      if (apiTokenPrefix != null) 'apiTokenPrefix': apiTokenPrefix,
+      if (lastUsedAt != null) 'lastUsedAt': lastUsedAt?.toJson(),
       if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
@@ -108,11 +135,15 @@ abstract class CmsClient
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'CmsClient',
       if (id != null) 'id': id,
       'name': name,
       'slug': slug,
+      'apiTokenHash': apiTokenHash,
       if (description != null) 'description': description,
       'isActive': isActive,
+      if (apiTokenPrefix != null) 'apiTokenPrefix': apiTokenPrefix,
+      if (lastUsedAt != null) 'lastUsedAt': lastUsedAt?.toJson(),
       if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
@@ -156,21 +187,27 @@ class _CmsClientImpl extends CmsClient {
     int? id,
     required String name,
     required String slug,
+    required String apiTokenHash,
     String? description,
     bool? isActive,
+    String? apiTokenPrefix,
+    DateTime? lastUsedAt,
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super._(
-          id: id,
-          name: name,
-          slug: slug,
-          description: description,
-          isActive: isActive,
-          settings: settings,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-        );
+         id: id,
+         name: name,
+         slug: slug,
+         apiTokenHash: apiTokenHash,
+         description: description,
+         isActive: isActive,
+         apiTokenPrefix: apiTokenPrefix,
+         lastUsedAt: lastUsedAt,
+         settings: settings,
+         createdAt: createdAt,
+         updatedAt: updatedAt,
+       );
 
   /// Returns a shallow copy of this [CmsClient]
   /// with some or all fields replaced by the given arguments.
@@ -180,8 +217,11 @@ class _CmsClientImpl extends CmsClient {
     Object? id = _Undefined,
     String? name,
     String? slug,
+    String? apiTokenHash,
     Object? description = _Undefined,
     bool? isActive,
+    Object? apiTokenPrefix = _Undefined,
+    Object? lastUsedAt = _Undefined,
     Object? settings = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
@@ -190,8 +230,13 @@ class _CmsClientImpl extends CmsClient {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       slug: slug ?? this.slug,
+      apiTokenHash: apiTokenHash ?? this.apiTokenHash,
       description: description is String? ? description : this.description,
       isActive: isActive ?? this.isActive,
+      apiTokenPrefix: apiTokenPrefix is String?
+          ? apiTokenPrefix
+          : this.apiTokenPrefix,
+      lastUsedAt: lastUsedAt is DateTime? ? lastUsedAt : this.lastUsedAt,
       settings: settings is String? ? settings : this.settings,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
@@ -199,14 +244,77 @@ class _CmsClientImpl extends CmsClient {
   }
 }
 
+class CmsClientUpdateTable extends _i1.UpdateTable<CmsClientTable> {
+  CmsClientUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+    table.name,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> slug(String value) => _i1.ColumnValue(
+    table.slug,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> apiTokenHash(String value) => _i1.ColumnValue(
+    table.apiTokenHash,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> description(String? value) => _i1.ColumnValue(
+    table.description,
+    value,
+  );
+
+  _i1.ColumnValue<bool, bool> isActive(bool value) => _i1.ColumnValue(
+    table.isActive,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> apiTokenPrefix(String? value) =>
+      _i1.ColumnValue(
+        table.apiTokenPrefix,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> lastUsedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.lastUsedAt,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> settings(String? value) => _i1.ColumnValue(
+    table.settings,
+    value,
+  );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> updatedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.updatedAt,
+        value,
+      );
+}
+
 class CmsClientTable extends _i1.Table<int?> {
   CmsClientTable({super.tableRelation}) : super(tableName: 'cms_clients') {
+    updateTable = CmsClientUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
     slug = _i1.ColumnString(
       'slug',
+      this,
+    );
+    apiTokenHash = _i1.ColumnString(
+      'apiTokenHash',
       this,
     );
     description = _i1.ColumnString(
@@ -217,6 +325,14 @@ class CmsClientTable extends _i1.Table<int?> {
       'isActive',
       this,
       hasDefault: true,
+    );
+    apiTokenPrefix = _i1.ColumnString(
+      'apiTokenPrefix',
+      this,
+    );
+    lastUsedAt = _i1.ColumnDateTime(
+      'lastUsedAt',
+      this,
     );
     settings = _i1.ColumnString(
       'settings',
@@ -234,13 +350,21 @@ class CmsClientTable extends _i1.Table<int?> {
     );
   }
 
+  late final CmsClientUpdateTable updateTable;
+
   late final _i1.ColumnString name;
 
   late final _i1.ColumnString slug;
 
+  late final _i1.ColumnString apiTokenHash;
+
   late final _i1.ColumnString description;
 
   late final _i1.ColumnBool isActive;
+
+  late final _i1.ColumnString apiTokenPrefix;
+
+  late final _i1.ColumnDateTime lastUsedAt;
 
   late final _i1.ColumnString settings;
 
@@ -250,15 +374,18 @@ class CmsClientTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        slug,
-        description,
-        isActive,
-        settings,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    name,
+    slug,
+    apiTokenHash,
+    description,
+    isActive,
+    apiTokenPrefix,
+    lastUsedAt,
+    settings,
+    createdAt,
+    updatedAt,
+  ];
 }
 
 class CmsClientInclude extends _i1.IncludeObject {
@@ -317,7 +444,7 @@ class CmsClientRepository {
   /// );
   /// ```
   Future<List<CmsClient>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CmsClientTable>? where,
     int? limit,
     int? offset,
@@ -325,6 +452,8 @@ class CmsClientRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CmsClientTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CmsClient>(
       where: where?.call(CmsClient.t),
@@ -334,6 +463,8 @@ class CmsClientRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -355,13 +486,15 @@ class CmsClientRepository {
   /// );
   /// ```
   Future<CmsClient?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CmsClientTable>? where,
     int? offset,
     _i1.OrderByBuilder<CmsClientTable>? orderBy,
     bool orderDescending = false,
     _i1.OrderByListBuilder<CmsClientTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CmsClient>(
       where: where?.call(CmsClient.t),
@@ -370,18 +503,24 @@ class CmsClientRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [CmsClient] by its [id] or null if no such row exists.
   Future<CmsClient?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<CmsClient>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -391,14 +530,20 @@ class CmsClientRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<CmsClient>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CmsClient> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<CmsClient>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -406,7 +551,7 @@ class CmsClientRepository {
   ///
   /// The returned [CmsClient] will have its `id` field set.
   Future<CmsClient> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CmsClient row, {
     _i1.Transaction? transaction,
   }) async {
@@ -422,7 +567,7 @@ class CmsClientRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<CmsClient>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CmsClient> rows, {
     _i1.ColumnSelections<CmsClientTable>? columns,
     _i1.Transaction? transaction,
@@ -438,7 +583,7 @@ class CmsClientRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<CmsClient> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CmsClient row, {
     _i1.ColumnSelections<CmsClientTable>? columns,
     _i1.Transaction? transaction,
@@ -450,11 +595,51 @@ class CmsClientRepository {
     );
   }
 
+  /// Updates a single [CmsClient] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CmsClient?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CmsClientUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CmsClient>(
+      id,
+      columnValues: columnValues(CmsClient.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CmsClient]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<CmsClient>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<CmsClientUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<CmsClientTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CmsClientTable>? orderBy,
+    _i1.OrderByListBuilder<CmsClientTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CmsClient>(
+      columnValues: columnValues(CmsClient.t.updateTable),
+      where: where(CmsClient.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CmsClient.t),
+      orderByList: orderByList?.call(CmsClient.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [CmsClient]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<CmsClient>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CmsClient> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -466,7 +651,7 @@ class CmsClientRepository {
 
   /// Deletes a single [CmsClient].
   Future<CmsClient> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CmsClient row, {
     _i1.Transaction? transaction,
   }) async {
@@ -478,7 +663,7 @@ class CmsClientRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<CmsClient>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CmsClientTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -491,7 +676,7 @@ class CmsClientRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CmsClientTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -499,6 +684,22 @@ class CmsClientRepository {
     return session.db.count<CmsClient>(
       where: where?.call(CmsClient.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [CmsClient] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<CmsClientTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<CmsClient>(
+      where: where(CmsClient.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
