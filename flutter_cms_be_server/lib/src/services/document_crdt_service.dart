@@ -16,11 +16,10 @@ class DocumentCrdtService {
   Future<void> initializeCrdt(
     Session session,
     int documentId,
-    Map<String, dynamic> initialData,
-  ) async {
-    // Get authenticated user
-    final authInfo = await session.authenticated;
-    final userId = authInfo?.userId;
+    Map<String, dynamic> initialData, {
+    int? cmsUserId,
+  }) async {
+    final userId = cmsUserId;
 
     // Generate initial HLC timestamp
     final hlc = Hlc.now(nodeId);
@@ -60,11 +59,10 @@ class DocumentCrdtService {
     Session session,
     int documentId,
     Map<String, dynamic> updates,
-    String sessionId,
-  ) async {
-    // Get authenticated user
-    final authInfo = await session.authenticated;
-    final userId = authInfo?.userId;
+    String sessionId, {
+    int? cmsUserId,
+  }) async {
+    final userId = cmsUserId;
 
     // Get current document
     final doc = await CmsDocument.db.findById(session, documentId);

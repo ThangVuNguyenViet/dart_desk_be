@@ -1,11 +1,12 @@
 import 'dart:io';
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 
 import 'package:flutter_cms_be_server/src/web/routes/root.dart';
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/google.dart';
 
-import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
+import 'src/generated/protocol.dart';
 import 'src/services/document_crdt_service.dart';
 
 // Global CRDT service instance
@@ -25,26 +26,35 @@ void run(List<String> args) async {
     args,
     Protocol(),
     Endpoints(),
-    authenticationHandler: auth.authenticationHandler,
   );
 
   // Setup a default page at the web root.
   pod.webServer.addRoute(RouteRoot(), '/');
   pod.webServer.addRoute(RouteRoot(), '/index.html');
 
-  // Google Sign-In authentication route
-  pod.webServer.addRoute(auth.RouteGoogleSignIn(), '/googlesignin');
-
   // Serve uploaded files from storage/public directory
   pod.webServer.addRoute(
-    RouteStaticDirectory(serverDirectory: 'storage/public', basePath: '/'),
+    StaticRoute.directory(Directory('storage/public')),
     '/files/*',
   );
 
   // Serve all files in the /static directory.
   pod.webServer.addRoute(
-    RouteStaticDirectory(serverDirectory: 'static', basePath: '/'),
+    StaticRoute.directory(Directory('static')),
     '/*',
+  );
+
+  pod.initializeAuthServices(
+    tokenManagerBuilders: [
+      JwtConfigFromPasswords(),
+    ],
+    identityProviderBuilders: [
+      GoogleIdpConfig(
+        clientSecret: GoogleClientSecret.fromJsonString(
+          pod.getPassword('googleClientSecret')!,
+        ),
+      ),
+    ],
   );
 
   // Start the server.

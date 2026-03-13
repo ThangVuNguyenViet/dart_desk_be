@@ -11,26 +11,29 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
-import 'cms_client.dart' as _i4;
-import 'cms_client_user.dart' as _i5;
-import 'cms_document.dart' as _i6;
-import 'cms_document_data.dart' as _i7;
-import 'cms_user.dart' as _i8;
-import 'crdt_operation_type.dart' as _i9;
-import 'document_crdt_operation.dart' as _i10;
-import 'document_crdt_snapshot.dart' as _i11;
-import 'document_list.dart' as _i12;
-import 'document_version.dart' as _i13;
-import 'document_version_list.dart' as _i14;
-import 'document_version_list_with_operations.dart' as _i15;
-import 'document_version_status.dart' as _i16;
-import 'document_version_with_operations.dart' as _i17;
-import 'media_file.dart' as _i18;
-import 'upload_response.dart' as _i19;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i3;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i4;
+import 'cms_client.dart' as _i5;
+import 'cms_client_user.dart' as _i6;
+import 'cms_document.dart' as _i7;
+import 'cms_document_data.dart' as _i8;
+import 'cms_user.dart' as _i9;
+import 'crdt_operation_type.dart' as _i10;
+import 'document_crdt_operation.dart' as _i11;
+import 'document_crdt_snapshot.dart' as _i12;
+import 'document_list.dart' as _i13;
+import 'document_version.dart' as _i14;
+import 'document_version_list.dart' as _i15;
+import 'document_version_list_with_operations.dart' as _i16;
+import 'document_version_status.dart' as _i17;
+import 'document_version_with_operations.dart' as _i18;
+import 'media_file.dart' as _i19;
+import 'upload_response.dart' as _i20;
 import 'package:flutter_cms_be_server/src/generated/document_crdt_operation.dart'
-    as _i20;
-import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i21;
+    as _i21;
+import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i22;
 export 'cms_client.dart';
 export 'cms_client_user.dart';
 export 'cms_document.dart';
@@ -726,9 +729,9 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.ColumnDefinition(
           name: 'serverpodUserId',
-          columnType: _i2.ColumnType.bigint,
+          columnType: _i2.ColumnType.text,
           isNullable: true,
-          dartType: 'int?',
+          dartType: 'String?',
         ),
         _i2.ColumnDefinition(
           name: 'createdAt',
@@ -1468,6 +1471,7 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     ..._i3.Protocol.targetTableDefinitions,
+    ..._i4.Protocol.targetTableDefinitions,
     ..._i2.Protocol.targetTableDefinitions,
   ];
 
@@ -1477,132 +1481,132 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i4.CmsClient) {
-      return _i4.CmsClient.fromJson(data) as T;
+    if (t == _i5.CmsClient) {
+      return _i5.CmsClient.fromJson(data) as T;
     }
-    if (t == _i5.CmsClientUser) {
-      return _i5.CmsClientUser.fromJson(data) as T;
+    if (t == _i6.CmsClientUser) {
+      return _i6.CmsClientUser.fromJson(data) as T;
     }
-    if (t == _i6.CmsDocument) {
-      return _i6.CmsDocument.fromJson(data) as T;
+    if (t == _i7.CmsDocument) {
+      return _i7.CmsDocument.fromJson(data) as T;
     }
-    if (t == _i7.CmsDocumentData) {
-      return _i7.CmsDocumentData.fromJson(data) as T;
+    if (t == _i8.CmsDocumentData) {
+      return _i8.CmsDocumentData.fromJson(data) as T;
     }
-    if (t == _i8.CmsUser) {
-      return _i8.CmsUser.fromJson(data) as T;
+    if (t == _i9.CmsUser) {
+      return _i9.CmsUser.fromJson(data) as T;
     }
-    if (t == _i9.CrdtOperationType) {
-      return _i9.CrdtOperationType.fromJson(data) as T;
+    if (t == _i10.CrdtOperationType) {
+      return _i10.CrdtOperationType.fromJson(data) as T;
     }
-    if (t == _i10.DocumentCrdtOperation) {
-      return _i10.DocumentCrdtOperation.fromJson(data) as T;
+    if (t == _i11.DocumentCrdtOperation) {
+      return _i11.DocumentCrdtOperation.fromJson(data) as T;
     }
-    if (t == _i11.DocumentCrdtSnapshot) {
-      return _i11.DocumentCrdtSnapshot.fromJson(data) as T;
+    if (t == _i12.DocumentCrdtSnapshot) {
+      return _i12.DocumentCrdtSnapshot.fromJson(data) as T;
     }
-    if (t == _i12.DocumentList) {
-      return _i12.DocumentList.fromJson(data) as T;
+    if (t == _i13.DocumentList) {
+      return _i13.DocumentList.fromJson(data) as T;
     }
-    if (t == _i13.DocumentVersion) {
-      return _i13.DocumentVersion.fromJson(data) as T;
+    if (t == _i14.DocumentVersion) {
+      return _i14.DocumentVersion.fromJson(data) as T;
     }
-    if (t == _i14.DocumentVersionList) {
-      return _i14.DocumentVersionList.fromJson(data) as T;
+    if (t == _i15.DocumentVersionList) {
+      return _i15.DocumentVersionList.fromJson(data) as T;
     }
-    if (t == _i15.DocumentVersionListWithOperations) {
-      return _i15.DocumentVersionListWithOperations.fromJson(data) as T;
+    if (t == _i16.DocumentVersionListWithOperations) {
+      return _i16.DocumentVersionListWithOperations.fromJson(data) as T;
     }
-    if (t == _i16.DocumentVersionStatus) {
-      return _i16.DocumentVersionStatus.fromJson(data) as T;
+    if (t == _i17.DocumentVersionStatus) {
+      return _i17.DocumentVersionStatus.fromJson(data) as T;
     }
-    if (t == _i17.DocumentVersionWithOperations) {
-      return _i17.DocumentVersionWithOperations.fromJson(data) as T;
+    if (t == _i18.DocumentVersionWithOperations) {
+      return _i18.DocumentVersionWithOperations.fromJson(data) as T;
     }
-    if (t == _i18.MediaFile) {
-      return _i18.MediaFile.fromJson(data) as T;
+    if (t == _i19.MediaFile) {
+      return _i19.MediaFile.fromJson(data) as T;
     }
-    if (t == _i19.UploadResponse) {
-      return _i19.UploadResponse.fromJson(data) as T;
+    if (t == _i20.UploadResponse) {
+      return _i20.UploadResponse.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i4.CmsClient?>()) {
-      return (data != null ? _i4.CmsClient.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i5.CmsClient?>()) {
+      return (data != null ? _i5.CmsClient.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i5.CmsClientUser?>()) {
-      return (data != null ? _i5.CmsClientUser.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i6.CmsClientUser?>()) {
+      return (data != null ? _i6.CmsClientUser.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.CmsDocument?>()) {
-      return (data != null ? _i6.CmsDocument.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.CmsDocument?>()) {
+      return (data != null ? _i7.CmsDocument.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.CmsDocumentData?>()) {
-      return (data != null ? _i7.CmsDocumentData.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.CmsDocumentData?>()) {
+      return (data != null ? _i8.CmsDocumentData.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i8.CmsUser?>()) {
-      return (data != null ? _i8.CmsUser.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i9.CmsUser?>()) {
+      return (data != null ? _i9.CmsUser.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.CrdtOperationType?>()) {
-      return (data != null ? _i9.CrdtOperationType.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.CrdtOperationType?>()) {
+      return (data != null ? _i10.CrdtOperationType.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.DocumentCrdtOperation?>()) {
-      return (data != null ? _i10.DocumentCrdtOperation.fromJson(data) : null)
+    if (t == _i1.getType<_i11.DocumentCrdtOperation?>()) {
+      return (data != null ? _i11.DocumentCrdtOperation.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i11.DocumentCrdtSnapshot?>()) {
-      return (data != null ? _i11.DocumentCrdtSnapshot.fromJson(data) : null)
+    if (t == _i1.getType<_i12.DocumentCrdtSnapshot?>()) {
+      return (data != null ? _i12.DocumentCrdtSnapshot.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i12.DocumentList?>()) {
-      return (data != null ? _i12.DocumentList.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i13.DocumentList?>()) {
+      return (data != null ? _i13.DocumentList.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i13.DocumentVersion?>()) {
-      return (data != null ? _i13.DocumentVersion.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.DocumentVersion?>()) {
+      return (data != null ? _i14.DocumentVersion.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.DocumentVersionList?>()) {
-      return (data != null ? _i14.DocumentVersionList.fromJson(data) : null)
+    if (t == _i1.getType<_i15.DocumentVersionList?>()) {
+      return (data != null ? _i15.DocumentVersionList.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i15.DocumentVersionListWithOperations?>()) {
+    if (t == _i1.getType<_i16.DocumentVersionListWithOperations?>()) {
       return (data != null
-          ? _i15.DocumentVersionListWithOperations.fromJson(data)
+          ? _i16.DocumentVersionListWithOperations.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i16.DocumentVersionStatus?>()) {
-      return (data != null ? _i16.DocumentVersionStatus.fromJson(data) : null)
+    if (t == _i1.getType<_i17.DocumentVersionStatus?>()) {
+      return (data != null ? _i17.DocumentVersionStatus.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i17.DocumentVersionWithOperations?>()) {
+    if (t == _i1.getType<_i18.DocumentVersionWithOperations?>()) {
       return (data != null
-          ? _i17.DocumentVersionWithOperations.fromJson(data)
+          ? _i18.DocumentVersionWithOperations.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i18.MediaFile?>()) {
-      return (data != null ? _i18.MediaFile.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i19.MediaFile?>()) {
+      return (data != null ? _i19.MediaFile.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.UploadResponse?>()) {
-      return (data != null ? _i19.UploadResponse.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i20.UploadResponse?>()) {
+      return (data != null ? _i20.UploadResponse.fromJson(data) : null) as T;
     }
-    if (t == List<_i6.CmsDocument>) {
-      return (data as List).map((e) => deserialize<_i6.CmsDocument>(e)).toList()
+    if (t == List<_i7.CmsDocument>) {
+      return (data as List).map((e) => deserialize<_i7.CmsDocument>(e)).toList()
           as T;
     }
-    if (t == List<_i13.DocumentVersion>) {
+    if (t == List<_i14.DocumentVersion>) {
       return (data as List)
-          .map((e) => deserialize<_i13.DocumentVersion>(e))
+          .map((e) => deserialize<_i14.DocumentVersion>(e))
           .toList() as T;
     }
-    if (t == List<_i17.DocumentVersionWithOperations>) {
+    if (t == List<_i18.DocumentVersionWithOperations>) {
       return (data as List)
-          .map((e) => deserialize<_i17.DocumentVersionWithOperations>(e))
+          .map((e) => deserialize<_i18.DocumentVersionWithOperations>(e))
           .toList() as T;
     }
-    if (t == List<_i10.DocumentCrdtOperation>) {
+    if (t == List<_i11.DocumentCrdtOperation>) {
       return (data as List)
-          .map((e) => deserialize<_i10.DocumentCrdtOperation>(e))
+          .map((e) => deserialize<_i11.DocumentCrdtOperation>(e))
           .toList() as T;
     }
-    if (t == List<_i20.DocumentCrdtOperation>) {
+    if (t == List<_i21.DocumentCrdtOperation>) {
       return (data as List)
-          .map((e) => deserialize<_i20.DocumentCrdtOperation>(e))
+          .map((e) => deserialize<_i21.DocumentCrdtOperation>(e))
           .toList() as T;
     }
     if (t == Map<String, dynamic>) {
@@ -1623,12 +1627,15 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserialize<String>(k), deserialize<dynamic>(v)))
           : null) as T;
     }
-    if (t == List<_i21.MediaFile>) {
-      return (data as List).map((e) => deserialize<_i21.MediaFile>(e)).toList()
+    if (t == List<_i22.MediaFile>) {
+      return (data as List).map((e) => deserialize<_i22.MediaFile>(e)).toList()
           as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i4.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i2.Protocol().deserialize<T>(data, t);
@@ -1640,52 +1647,52 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i4.CmsClient) {
+    if (data is _i5.CmsClient) {
       return 'CmsClient';
     }
-    if (data is _i5.CmsClientUser) {
+    if (data is _i6.CmsClientUser) {
       return 'CmsClientUser';
     }
-    if (data is _i6.CmsDocument) {
+    if (data is _i7.CmsDocument) {
       return 'CmsDocument';
     }
-    if (data is _i7.CmsDocumentData) {
+    if (data is _i8.CmsDocumentData) {
       return 'CmsDocumentData';
     }
-    if (data is _i8.CmsUser) {
+    if (data is _i9.CmsUser) {
       return 'CmsUser';
     }
-    if (data is _i9.CrdtOperationType) {
+    if (data is _i10.CrdtOperationType) {
       return 'CrdtOperationType';
     }
-    if (data is _i10.DocumentCrdtOperation) {
+    if (data is _i11.DocumentCrdtOperation) {
       return 'DocumentCrdtOperation';
     }
-    if (data is _i11.DocumentCrdtSnapshot) {
+    if (data is _i12.DocumentCrdtSnapshot) {
       return 'DocumentCrdtSnapshot';
     }
-    if (data is _i12.DocumentList) {
+    if (data is _i13.DocumentList) {
       return 'DocumentList';
     }
-    if (data is _i13.DocumentVersion) {
+    if (data is _i14.DocumentVersion) {
       return 'DocumentVersion';
     }
-    if (data is _i14.DocumentVersionList) {
+    if (data is _i15.DocumentVersionList) {
       return 'DocumentVersionList';
     }
-    if (data is _i15.DocumentVersionListWithOperations) {
+    if (data is _i16.DocumentVersionListWithOperations) {
       return 'DocumentVersionListWithOperations';
     }
-    if (data is _i16.DocumentVersionStatus) {
+    if (data is _i17.DocumentVersionStatus) {
       return 'DocumentVersionStatus';
     }
-    if (data is _i17.DocumentVersionWithOperations) {
+    if (data is _i18.DocumentVersionWithOperations) {
       return 'DocumentVersionWithOperations';
     }
-    if (data is _i18.MediaFile) {
+    if (data is _i19.MediaFile) {
       return 'MediaFile';
     }
-    if (data is _i19.UploadResponse) {
+    if (data is _i20.UploadResponse) {
       return 'UploadResponse';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1694,7 +1701,11 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth.$className';
+      return 'serverpod_auth_idp.$className';
+    }
+    className = _i4.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -1706,60 +1717,64 @@ class Protocol extends _i1.SerializationManagerServer {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'CmsClient') {
-      return deserialize<_i4.CmsClient>(data['data']);
+      return deserialize<_i5.CmsClient>(data['data']);
     }
     if (dataClassName == 'CmsClientUser') {
-      return deserialize<_i5.CmsClientUser>(data['data']);
+      return deserialize<_i6.CmsClientUser>(data['data']);
     }
     if (dataClassName == 'CmsDocument') {
-      return deserialize<_i6.CmsDocument>(data['data']);
+      return deserialize<_i7.CmsDocument>(data['data']);
     }
     if (dataClassName == 'CmsDocumentData') {
-      return deserialize<_i7.CmsDocumentData>(data['data']);
+      return deserialize<_i8.CmsDocumentData>(data['data']);
     }
     if (dataClassName == 'CmsUser') {
-      return deserialize<_i8.CmsUser>(data['data']);
+      return deserialize<_i9.CmsUser>(data['data']);
     }
     if (dataClassName == 'CrdtOperationType') {
-      return deserialize<_i9.CrdtOperationType>(data['data']);
+      return deserialize<_i10.CrdtOperationType>(data['data']);
     }
     if (dataClassName == 'DocumentCrdtOperation') {
-      return deserialize<_i10.DocumentCrdtOperation>(data['data']);
+      return deserialize<_i11.DocumentCrdtOperation>(data['data']);
     }
     if (dataClassName == 'DocumentCrdtSnapshot') {
-      return deserialize<_i11.DocumentCrdtSnapshot>(data['data']);
+      return deserialize<_i12.DocumentCrdtSnapshot>(data['data']);
     }
     if (dataClassName == 'DocumentList') {
-      return deserialize<_i12.DocumentList>(data['data']);
+      return deserialize<_i13.DocumentList>(data['data']);
     }
     if (dataClassName == 'DocumentVersion') {
-      return deserialize<_i13.DocumentVersion>(data['data']);
+      return deserialize<_i14.DocumentVersion>(data['data']);
     }
     if (dataClassName == 'DocumentVersionList') {
-      return deserialize<_i14.DocumentVersionList>(data['data']);
+      return deserialize<_i15.DocumentVersionList>(data['data']);
     }
     if (dataClassName == 'DocumentVersionListWithOperations') {
-      return deserialize<_i15.DocumentVersionListWithOperations>(data['data']);
+      return deserialize<_i16.DocumentVersionListWithOperations>(data['data']);
     }
     if (dataClassName == 'DocumentVersionStatus') {
-      return deserialize<_i16.DocumentVersionStatus>(data['data']);
+      return deserialize<_i17.DocumentVersionStatus>(data['data']);
     }
     if (dataClassName == 'DocumentVersionWithOperations') {
-      return deserialize<_i17.DocumentVersionWithOperations>(data['data']);
+      return deserialize<_i18.DocumentVersionWithOperations>(data['data']);
     }
     if (dataClassName == 'MediaFile') {
-      return deserialize<_i18.MediaFile>(data['data']);
+      return deserialize<_i19.MediaFile>(data['data']);
     }
     if (dataClassName == 'UploadResponse') {
-      return deserialize<_i19.UploadResponse>(data['data']);
+      return deserialize<_i20.UploadResponse>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
     }
-    if (dataClassName.startsWith('serverpod_auth.')) {
-      data['className'] = dataClassName.substring(15);
+    if (dataClassName.startsWith('serverpod_auth_idp.')) {
+      data['className'] = dataClassName.substring(19);
       return _i3.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
+      data['className'] = dataClassName.substring(20);
+      return _i4.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -1773,30 +1788,36 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     {
+      var table = _i4.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
       var table = _i2.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     switch (t) {
-      case _i4.CmsClient:
-        return _i4.CmsClient.t;
-      case _i5.CmsClientUser:
-        return _i5.CmsClientUser.t;
-      case _i6.CmsDocument:
-        return _i6.CmsDocument.t;
-      case _i7.CmsDocumentData:
-        return _i7.CmsDocumentData.t;
-      case _i8.CmsUser:
-        return _i8.CmsUser.t;
-      case _i10.DocumentCrdtOperation:
-        return _i10.DocumentCrdtOperation.t;
-      case _i11.DocumentCrdtSnapshot:
-        return _i11.DocumentCrdtSnapshot.t;
-      case _i13.DocumentVersion:
-        return _i13.DocumentVersion.t;
-      case _i18.MediaFile:
-        return _i18.MediaFile.t;
+      case _i5.CmsClient:
+        return _i5.CmsClient.t;
+      case _i6.CmsClientUser:
+        return _i6.CmsClientUser.t;
+      case _i7.CmsDocument:
+        return _i7.CmsDocument.t;
+      case _i8.CmsDocumentData:
+        return _i8.CmsDocumentData.t;
+      case _i9.CmsUser:
+        return _i9.CmsUser.t;
+      case _i11.DocumentCrdtOperation:
+        return _i11.DocumentCrdtOperation.t;
+      case _i12.DocumentCrdtSnapshot:
+        return _i12.DocumentCrdtSnapshot.t;
+      case _i14.DocumentVersion:
+        return _i14.DocumentVersion.t;
+      case _i19.MediaFile:
+        return _i19.MediaFile.t;
     }
     return null;
   }

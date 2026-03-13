@@ -29,7 +29,10 @@ import 'upload_response.dart' as _i17;
 import 'package:flutter_cms_be_client/src/protocol/document_crdt_operation.dart'
     as _i18;
 import 'package:flutter_cms_be_client/src/protocol/media_file.dart' as _i19;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i20;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i20;
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+    as _i21;
 export 'cms_client.dart';
 export 'cms_client_user.dart';
 export 'cms_document.dart';
@@ -214,6 +217,9 @@ class Protocol extends _i1.SerializationManager {
     try {
       return _i20.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i21.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -271,7 +277,11 @@ class Protocol extends _i1.SerializationManager {
     }
     className = _i20.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth.$className';
+      return 'serverpod_auth_idp.$className';
+    }
+    className = _i21.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -330,9 +340,13 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'UploadResponse') {
       return deserialize<_i17.UploadResponse>(data['data']);
     }
-    if (dataClassName.startsWith('serverpod_auth.')) {
-      data['className'] = dataClassName.substring(15);
+    if (dataClassName.startsWith('serverpod_auth_idp.')) {
+      data['className'] = dataClassName.substring(19);
       return _i20.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
+      data['className'] = dataClassName.substring(20);
+      return _i21.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

@@ -1,41 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
-import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
-/// Sets up a global client object that can be used to talk to the server from
-/// anywhere in our app. The client is generated from your server code
-/// and is set up to connect to a Serverpod running on a local server on
-/// the default port. You will need to modify this to connect to staging or
-/// production servers.
-/// In a larger app, you may want to use the dependency injection of your choice
-/// instead of using a global client object. This is just a simple example.
 late final Client client;
 
 late String serverUrl;
 
-// Google OAuth configuration
-const String googleServerClientId =
-    '491670473884-ung977o6k7t8dmj69abcg601abso2d7e.apps.googleusercontent.com';
-const String googleRedirectPath = '/googlesignin';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // When you are running the app on a physical device, you need to set the
-  // server URL to the IP address of your computer. You can find the IP
-  // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
-  // You can set the variable when running or building your app like this:
-  // E.g. `flutter run --dart-define=SERVER_URL=https://api.example.com/`
   const serverUrlFromEnv = String.fromEnvironment('SERVER_URL');
   final apiUrl =
       serverUrlFromEnv.isEmpty ? 'http://$localhost:8080/' : serverUrlFromEnv;
 
-  // Create client with authentication key manager
-  client = Client(
-    apiUrl,
-    authenticationKeyManager: FlutterAuthenticationKeyManager(),
-  )..connectivityMonitor = FlutterConnectivityMonitor();
+  // Create client with new IDP auth session manager
+  client = Client(apiUrl)
+    ..connectivityMonitor = FlutterConnectivityMonitor()
+    ..authSessionManager = FlutterAuthSessionManager();
+
+  // Initialize auth and Google sign-in
+  await client.auth.initialize();
+  await client.auth.initializeGoogleSignIn();
 
   serverUrl = serverUrlFromEnv.isEmpty
       ? 'http://$localhost:8082'
@@ -57,8 +42,6 @@ class MyApp extends StatelessWidget {
       ),
       home: FlutterCmsAuth(
         client: client,
-        serverClientId: googleServerClientId,
-        redirectUri: Uri.parse('$serverUrl$googleRedirectPath'),
         title: 'Welcome to Flutter CMS',
         subtitle: 'Sign in to manage your content',
         child: const MyHomePage(title: 'Flutter CMS'),
@@ -77,10 +60,36 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
+  UserProfileModel? _profile;
+  bool _loadingProfile = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final profile =
+          await client.modules.serverpod_auth_core.userProfileInfo.get();
+      if (mounted) {
+        setState(() {
+          _profile = profile;
+          _loadingProfile = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _loadingProfile = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Access the current user from the authentication context
-    final user = context.currentUser;
+    final displayName =
+        _profile?.fullName ?? _profile?.userName ?? _profile?.email ?? 'User';
 
     return Scaffold(
       appBar: AppBar(
@@ -101,28 +110,26 @@ class MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (user?.imageUrl != null)
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(user!.imageUrl!),
-                )
-              else
-                const CircleAvatar(
-                  radius: 50,
-                  child: Icon(Icons.person, size: 50),
-                ),
-              const SizedBox(height: 24),
-              Text(
-                'Welcome, ${user?.userName ?? user?.fullName ?? 'User'}!',
-                style:
-                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              const CircleAvatar(
+                radius: 50,
+                child: Icon(Icons.person, size: 50),
               ),
-              const SizedBox(height: 8),
-              if (user?.email != null)
+              const SizedBox(height: 24),
+              if (_loadingProfile)
+                const CircularProgressIndicator()
+              else
                 Text(
-                  user!.email!,
+                  'Welcome, $displayName!',
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              if (_profile?.email != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  _profile!.email!,
                   style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                 ),
+              ],
               const SizedBox(height: 32),
               const Text(
                 'You are successfully authenticated with Google!',

@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
-import '../generated/protocol.dart';
+
 import '../../../server.dart' as server;
+import '../generated/protocol.dart';
 
 /// Endpoint for real-time document collaboration features
 /// Provides operation polling, edit submission, and presence tracking
@@ -35,10 +36,16 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Map<String, dynamic> fieldUpdates,
   ) async {
     // Require authentication
-    final authInfo = await session.authenticated;
+    final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('User must be authenticated to submit edits');
     }
+
+    // Resolve CMS user for attribution
+    final cmsUser = await CmsUser.db.findFirstRow(
+      session,
+      where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
+    );
 
     // Apply CRDT operations
     return await server.documentCrdtService.applyOperations(
@@ -46,6 +53,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
       documentId,
       fieldUpdates,
       sessionId,
+      cmsUserId: cmsUser?.id,
     );
   }
 
@@ -55,8 +63,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
-    final fiveMinutesAgo =
-        DateTime.now().subtract(const Duration(minutes: 5));
+    final fiveMinutesAgo = DateTime.now().subtract(const Duration(minutes: 5));
 
     // Get recent operations for this document
     final recentOps = await DocumentCrdtOperation.db.find(
@@ -91,8 +98,8 @@ class DocumentCollaborationEndpoint extends Endpoint {
     });
 
     // Sort by most recent activity
-    editors.sort((a, b) =>
-        (b['lastEdit'] as String).compareTo(a['lastEdit'] as String));
+    editors.sort(
+        (a, b) => (b['lastEdit'] as String).compareTo(a['lastEdit'] as String));
 
     return editors;
   }
@@ -125,7 +132,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
     int documentId,
   ) async {
     // Require authentication
-    final authInfo = await session.authenticated;
+    final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('User must be authenticated to compact operations');
     }

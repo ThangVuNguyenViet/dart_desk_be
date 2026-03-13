@@ -34,7 +34,7 @@ abstract class CmsUser implements _i1.SerializableModel {
     String? name,
     String? role,
     bool? isActive,
-    int? serverpodUserId,
+    String? serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _CmsUserImpl;
@@ -47,7 +47,7 @@ abstract class CmsUser implements _i1.SerializableModel {
       name: jsonSerialization['name'] as String?,
       role: jsonSerialization['role'] as String,
       isActive: jsonSerialization['isActive'] as bool,
-      serverpodUserId: jsonSerialization['serverpodUserId'] as int?,
+      serverpodUserId: jsonSerialization['serverpodUserId'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -72,7 +72,7 @@ abstract class CmsUser implements _i1.SerializableModel {
 
   bool isActive;
 
-  int? serverpodUserId;
+  String? serverpodUserId;
 
   DateTime? createdAt;
 
@@ -88,7 +88,7 @@ abstract class CmsUser implements _i1.SerializableModel {
     String? name,
     String? role,
     bool? isActive,
-    int? serverpodUserId,
+    String? serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -123,7 +123,7 @@ class _CmsUserImpl extends CmsUser {
     String? name,
     String? role,
     bool? isActive,
-    int? serverpodUserId,
+    String? serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super._(
@@ -161,7 +161,7 @@ class _CmsUserImpl extends CmsUser {
       role: role ?? this.role,
       isActive: isActive ?? this.isActive,
       serverpodUserId:
-          serverpodUserId is int? ? serverpodUserId : this.serverpodUserId,
+          serverpodUserId is String? ? serverpodUserId : this.serverpodUserId,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
     );

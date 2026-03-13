@@ -22,9 +22,14 @@ document:
   - publishDocumentVersion:
   - archiveDocumentVersion:
   - deleteDocumentVersion:
+googleIdp:
+  - login:
+  - hasAccount:
 media:
   - uploadImage:
   - uploadFile:
   - deleteMedia:
   - getMedia:
   - listMedia:
+refreshJwtTokens:
+  - refreshAccessToken:

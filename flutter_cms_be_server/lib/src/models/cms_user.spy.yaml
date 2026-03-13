@@ -6,7 +6,7 @@ fields:
   name: String?
   role: String, default='viewer'
   isActive: bool, default=true
-  serverpodUserId: int?
+  serverpodUserId: String?
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
 indexes:

@@ -1,52 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../flutter_cms_be_client.dart';
 
 /// A widget that provides authentication guard functionality using Serverpod's
-/// authentication system with Google Sign-In integration.
-///
-/// This widget manages the authentication state and displays either a sign-in UI
-/// or the authenticated content based on the user's authentication status.
+/// new IDP authentication system with Google Sign-In integration.
 ///
 /// Example usage:
 /// ```dart
 /// FlutterCmsAuth(
 ///   client: client,
-///   serverClientId: '491670473884-ung977o6k7t8dmj69abcg601abso2d7e.apps.googleusercontent.com',
-///   redirectUri: Uri.parse('http://localhost:8080/googlesignin'),
 ///   child: MyAuthenticatedApp(),
 /// )
 /// ```
 class FlutterCmsAuth extends StatefulWidget {
-  /// The Serverpod client instance used for authentication.
   final Client client;
-
-  /// The content to display when the user is authenticated.
   final Widget child;
-
-  /// Google OAuth client ID for authentication.
-  final String? serverClientId;
-
-  /// OAuth redirect URI for handling authentication callbacks.
-  final Uri? redirectUri;
-
-  /// The title to display on the sign-in screen.
   final String title;
-
-  /// The subtitle or description to display on the sign-in screen.
   final String? subtitle;
-
-  /// Optional logo widget to display above the title.
   final Widget? logo;
 
   const FlutterCmsAuth({
     super.key,
     required this.client,
     required this.child,
-    this.serverClientId,
-    this.redirectUri,
     this.title = 'Welcome to Flutter CMS',
     this.subtitle,
     this.logo,
@@ -57,11 +34,11 @@ class FlutterCmsAuth extends StatefulWidget {
 }
 
 class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
-  late SessionManager _sessionManager;
-  late Caller _caller;
-  UserInfo? _userInfo;
   bool _isLoading = true;
   String? _errorMessage;
+
+  FlutterAuthSessionManager get _auth =>
+      widget.client.authSessionManager;
 
   @override
   void initState() {
@@ -69,7 +46,6 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
     _initializeAuth();
   }
 
-  /// Initialize the session manager and check for existing session
   Future<void> _initializeAuth() async {
     try {
       setState(() {
@@ -77,24 +53,11 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
         _errorMessage = null;
       });
 
-      // Initialize session manager
-      _sessionManager = SessionManager(
-        caller: widget.client.modules.auth,
-      );
-      _caller = widget.client.modules.auth;
+      _auth.authInfoListenable.addListener(_onAuthChanged);
 
-      // Initialize the session with stored data
-      await _sessionManager.initialize();
-
-      // Register listener for authentication state changes
-      _sessionManager.addListener(() {
-        if (mounted) {
-          _checkAuthStatus();
-        }
+      setState(() {
+        _isLoading = false;
       });
-
-      // Check initial authentication status
-      _checkAuthStatus();
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to initialize authentication: ${e.toString()}';
@@ -103,25 +66,15 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
     }
   }
 
-  /// Check the current authentication status and update the user info
-  void _checkAuthStatus() {
+  void _onAuthChanged() {
     if (mounted) {
-      setState(() {
-        _userInfo = _sessionManager.signedInUser;
-        _isLoading = false;
-      });
+      setState(() {});
     }
   }
 
-  /// Handle sign-out
   Future<void> _handleSignOut() async {
     try {
-      await _sessionManager.signOutDevice();
-      if (mounted) {
-        setState(() {
-          _userInfo = null;
-        });
-      }
+      await _auth.signOutDevice();
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -133,33 +86,28 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
 
   @override
   void dispose() {
-    // Clean up session manager
-    _sessionManager.dispose();
+    _auth.authInfoListenable.removeListener(_onAuthChanged);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Show loading indicator while checking authentication status
     if (_isLoading) {
       return _buildLoadingScreen();
     }
 
-    // Show authenticated content if user is signed in
-    if (_userInfo != null) {
+    if (_auth.isAuthenticated) {
       return _FlutterCmsAuthProvider(
-        sessionManager: _sessionManager,
-        userInfo: _userInfo!,
+        authSessionManager: _auth,
+        authSuccess: _auth.authInfo!,
         onSignOut: _handleSignOut,
         child: widget.child,
       );
     }
 
-    // Show sign-in screen if user is not authenticated
     return _buildSignInScreen();
   }
 
-  /// Build the loading screen
   Widget _buildLoadingScreen() {
     return Scaffold(
       body: Center(
@@ -178,130 +126,115 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
     );
   }
 
-  /// Build the sign-in screen with shadcn_ui components
   Widget _buildSignInScreen() {
-    return Scaffold(
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Logo (if provided)
-                if (widget.logo != null) ...[
-                  Center(child: widget.logo!),
-                  const SizedBox(height: 24),
-                ],
-
-                // Title
-                Text(
-                  widget.title,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-
-                // Subtitle (if provided)
-                if (widget.subtitle != null) ...[
+    return ShadTheme(
+      data: ShadThemeData(),
+      child: Scaffold(
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (widget.logo != null) ...[
+                    Center(child: widget.logo!),
+                    const SizedBox(height: 24),
+                  ],
                   Text(
-                    widget.subtitle!,
+                    widget.title,
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  if (widget.subtitle != null) ...[
+                    Text(
+                      widget.subtitle!,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                  ] else ...[
+                    const SizedBox(height: 32),
+                  ],
+                  ShadCard(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Sign in to continue',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        if (_errorMessage != null) ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.red[50],
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.red[200]!),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red[700],
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _errorMessage!,
+                                    style: TextStyle(
+                                      color: Colors.red[700],
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        GoogleSignInWidget(
+                          client: widget.client,
+                          onAuthenticated: () {
+                            if (mounted) setState(() {});
+                          },
+                          onError: (error) {
+                            setState(() {
+                              _errorMessage =
+                                  'Google Sign-In failed. Please try again.';
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'By signing in, you agree to our Terms of Service and Privacy Policy.',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 12,
                       color: Colors.grey[600],
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 32),
-                ] else ...[
-                  const SizedBox(height: 32),
                 ],
-
-                // Sign-in card
-                ShadCard(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Sign in to continue',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Error message (if any)
-                      if (_errorMessage != null) ...[
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.red[50],
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.red[200]!),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.error_outline,
-                                color: Colors.red[700],
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _errorMessage!,
-                                  style: TextStyle(
-                                    color: Colors.red[700],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-
-                      // Google Sign-In button using Serverpod's official widget
-                      if (widget.serverClientId != null &&
-                          widget.redirectUri != null)
-                        SignInWithGoogleButton(
-                          caller: _caller,
-                          serverClientId: widget.serverClientId!,
-                          redirectUri: widget.redirectUri!,
-                        )
-                      else
-                        ShadButton(
-                          onPressed: null,
-                          size: ShadButtonSize.lg,
-                          child: const Text(
-                            'Configure Google Sign-In',
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Footer text
-                Text(
-                  'By signing in, you agree to our Terms of Service and Privacy Policy.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -312,18 +245,17 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
 
 /// InheritedWidget that provides authentication data to descendant widgets
 class _FlutterCmsAuthProvider extends InheritedWidget {
-  final SessionManager sessionManager;
-  final UserInfo userInfo;
+  final FlutterAuthSessionManager authSessionManager;
+  final AuthSuccess authSuccess;
   final VoidCallback onSignOut;
 
   const _FlutterCmsAuthProvider({
-    required this.sessionManager,
-    required this.userInfo,
+    required this.authSessionManager,
+    required this.authSuccess,
     required this.onSignOut,
     required super.child,
   });
 
-  /// Retrieve the authentication provider from the widget tree
   static _FlutterCmsAuthProvider? of(BuildContext context) {
     return context
         .dependOnInheritedWidgetOfExactType<_FlutterCmsAuthProvider>();
@@ -331,21 +263,26 @@ class _FlutterCmsAuthProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(_FlutterCmsAuthProvider oldWidget) {
-    return userInfo != oldWidget.userInfo ||
-        sessionManager != oldWidget.sessionManager;
+    return authSuccess != oldWidget.authSuccess ||
+        authSessionManager != oldWidget.authSessionManager;
   }
 }
 
 /// Extension on BuildContext to easily access authentication data
 extension FlutterCmsAuthContext on BuildContext {
-  /// Get the current user info from the authentication provider
-  UserInfo? get currentUser {
-    return _FlutterCmsAuthProvider.of(this)?.userInfo;
+  /// Get the current auth success info
+  AuthSuccess? get currentAuthInfo {
+    return _FlutterCmsAuthProvider.of(this)?.authSuccess;
   }
 
-  /// Get the session manager from the authentication provider
-  SessionManager? get sessionManager {
-    return _FlutterCmsAuthProvider.of(this)?.sessionManager;
+  /// Get the current user ID (UUID)
+  UuidValue? get currentUserId {
+    return _FlutterCmsAuthProvider.of(this)?.authSuccess.authUserId;
+  }
+
+  /// Get the auth session manager
+  FlutterAuthSessionManager? get authSessionManager {
+    return _FlutterCmsAuthProvider.of(this)?.authSessionManager;
   }
 
   /// Sign out the current user

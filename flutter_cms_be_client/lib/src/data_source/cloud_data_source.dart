@@ -83,7 +83,7 @@ class CloudDataSource implements CmsDataSource {
       final response = await _client.document.createDocument(
         documentType,
         title,
-        data,
+        {},
         slug: slug,
         isDefault: isDefault,
       );

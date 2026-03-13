@@ -1,12 +1,13 @@
 import 'dart:convert';
+
 import 'package:serverpod/serverpod.dart';
-import '../generated/protocol.dart';
+
 import '../../../server.dart' as server;
+import '../generated/protocol.dart';
 
 /// Endpoint for managing CMS documents
 /// All write operations require authentication
 class DocumentEndpoint extends Endpoint {
-
   /// Get all documents for a specific document type with pagination
   Future<DocumentList> getDocuments(
     Session session,
@@ -28,9 +29,7 @@ class DocumentEndpoint extends Endpoint {
         var expr = t.documentType.equals(documentType);
         if (search != null && search.isNotEmpty) {
           // Search in title and data (cached latest version)
-          expr = expr &
-              (t.title.like('%$search%') |
-                  t.data.like('%$search%'));
+          expr = expr & (t.title.like('%$search%') | t.data.like('%$search%'));
         }
         return expr;
       },
@@ -76,12 +75,12 @@ class DocumentEndpoint extends Endpoint {
   ) async {
     final documents = await CmsDocument.db.find(
       session,
-      where: (t) => t.documentType.equals(documentType) & t.isDefault.equals(true),
+      where: (t) =>
+          t.documentType.equals(documentType) & t.isDefault.equals(true),
       limit: 1,
     );
     return documents.isNotEmpty ? documents.first : null;
   }
-
 
   /// Create a new document with an initial version
   /// This creates both the CmsDocument and its first DocumentVersion
@@ -94,12 +93,13 @@ class DocumentEndpoint extends Endpoint {
     bool isDefault = false,
   }) async {
     // Require authentication
-    final authInfo = await session.authenticated;
+    final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('User must be authenticated to create documents');
     }
 
-    final userId = authInfo.userId;
+    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+    final userId = cmsUser.id!;
 
     // Create the document
     final encodedData = jsonEncode(data);
@@ -126,6 +126,7 @@ class DocumentEndpoint extends Endpoint {
         session,
         created.id!,
         data,
+        cmsUserId: userId,
       );
 
       // Get the HLC that was set during initialization
@@ -165,13 +166,15 @@ class DocumentEndpoint extends Endpoint {
     String? sessionId,
   }) async {
     // Require authentication
-    final authInfo = await session.authenticated;
+    final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('User must be authenticated to update documents');
     }
 
-    // Use user ID as session ID if not provided
-    final editSessionId = sessionId ?? 'user-${authInfo.userId}';
+    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+
+    // Use user identifier as session ID if not provided
+    final editSessionId = sessionId ?? 'user-${authInfo.userIdentifier}';
 
     // Apply CRDT operations
     return await server.documentCrdtService.applyOperations(
@@ -179,6 +182,7 @@ class DocumentEndpoint extends Endpoint {
       documentId,
       updates,
       editSessionId,
+      cmsUserId: cmsUser.id,
     );
   }
 
@@ -192,12 +196,13 @@ class DocumentEndpoint extends Endpoint {
     bool? isDefault,
   }) async {
     // Require authentication
-    final authInfo = await session.authenticated;
+    final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('User must be authenticated to update documents');
     }
 
-    final userId = authInfo.userId;
+    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+    final userId = cmsUser.id!;
 
     final existing = await CmsDocument.db.findById(session, documentId);
 
@@ -231,7 +236,6 @@ class DocumentEndpoint extends Endpoint {
     await CmsDocument.db.deleteRow(session, existing);
     return true;
   }
-
 
   /// Get all document types (unique document type names)
   Future<List<String>> getDocumentTypes(Session session) async {
@@ -383,12 +387,13 @@ class DocumentEndpoint extends Endpoint {
     String? changeLog,
   }) async {
     // Require authentication
-    final authInfo = await session.authenticated;
+    final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('User must be authenticated to create versions');
     }
 
-    final userId = authInfo.userId;
+    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+    final userId = cmsUser.id!;
 
     // Get the next version number for this document
     final existingVersions = await DocumentVersion.db.find(
@@ -434,7 +439,7 @@ class DocumentEndpoint extends Endpoint {
     int versionId,
   ) async {
     // Require authentication
-    final authInfo = await session.authenticated;
+    final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('User must be authenticated to publish versions');
     }
@@ -461,7 +466,7 @@ class DocumentEndpoint extends Endpoint {
     int versionId,
   ) async {
     // Require authentication
-    final authInfo = await session.authenticated;
+    final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('User must be authenticated to archive versions');
     }
@@ -488,7 +493,7 @@ class DocumentEndpoint extends Endpoint {
     int versionId,
   ) async {
     // Require authentication
-    final authInfo = await session.authenticated;
+    final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('User must be authenticated to delete versions');
     }
@@ -502,5 +507,18 @@ class DocumentEndpoint extends Endpoint {
     await DocumentVersion.db.deleteRow(session, existing);
 
     return true;
+  }
+
+  /// Look up the CMS user from the auth user identifier.
+  Future<CmsUser> _getCmsUser(
+      Session session, String userIdentifier) async {
+    final cmsUser = await CmsUser.db.findFirstRow(
+      session,
+      where: (t) => t.serverpodUserId.equals(userIdentifier),
+    );
+    if (cmsUser == null) {
+      throw Exception('CMS user not found for authenticated user');
+    }
+    return cmsUser;
   }
 }

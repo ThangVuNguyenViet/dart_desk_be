@@ -1,0 +1,51 @@
+SERVERPOD version: 3.3.0, dart: 3.11.1 (stable) (Tue Feb 24 00:03:07 2026 -0800) on "macos_arm64", time: 2026-03-13 07:25:23.317845Z
+runMode: development
+serverId: default
+role: monolith
+loggingMode: normal
+applyMigrations: false
+applyRepairMigration: false
+SERVERPOD initialized, time: 2026-03-13 07:25:23.358240Z
+2026-03-13 07:25:23.780900Z WebServer  INFO: Webserver listening on http://localhost:8082
+TIME                        ID         TYPE           CONTEXT                  DETAILS
+--------------------------- ---------- -------------- ------------------------ ------------------------------
+2026-03-13 07:25:35.743721Z  681682503 METHOD         document.getDocuments    user=null, queries=2, duration=44µs
+2026-03-13 07:25:38.991997Z  895139122 METHOD         document.getDocuments    user=null, queries=2, duration=10µs
+2026-03-13 07:25:41.849275Z  536842590 METHOD         document.createDocument  user=null, queries=0, duration=10µs
+2026-03-13 07:25:41.849275Z  536842590 ERROR          n/a                      Exception: User must be authenticated to create documents
+2026-03-13 07:25:41.849275Z  536842590 STACK TRACE    n/a                      #0      DocumentEndpoint.createDocument (package:flutter_cms_be_server/src/endpoints/document_endpoint.dart:98:7)
+#1      Endpoints.initializeEndpoints.<anonymous closure> (package:flutter_cms_be_server/src/generated/endpoints.dart:339:63)
+#2      Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:57)
+<asynchronous suspension>
+#3      Server._endpoints (package:serverpod/src/server/server.dart:376:12)
+<asynchronous suspension>
+#4      Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
+<asynchronous suspension>
+#5      Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
+<asynchronous suspension>
+#6      _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:127:18)
+<asynchronous suspension>
+#7      _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
+<asynchronous suspension>
+#8      _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
+<asynchronous suspension>
+
+2026-03-13 07:25:41.857429Z ERROR: Internal server error. Request handler failed with exception.
+2026-03-13 07:25:41.857429Z ERROR: Exception: User must be authenticated to create documents
+#0      DocumentEndpoint.createDocument (package:flutter_cms_be_server/src/endpoints/document_endpoint.dart:98:7)
+#1      Endpoints.initializeEndpoints.<anonymous closure> (package:flutter_cms_be_server/src/generated/endpoints.dart:339:63)
+#2      Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:57)
+<asynchronous suspension>
+#3      Server._endpoints (package:serverpod/src/server/server.dart:376:12)
+<asynchronous suspension>
+#4      Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
+<asynchronous suspension>
+#5      Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
+<asynchronous suspension>
+#6      _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:127:18)
+<asynchronous suspension>
+#7      _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
+<asynchronous suspension>
+#8      _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
+<asynchronous suspension>
+

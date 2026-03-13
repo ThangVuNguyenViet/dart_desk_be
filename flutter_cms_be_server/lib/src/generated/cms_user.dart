@@ -35,7 +35,7 @@ abstract class CmsUser
     String? name,
     String? role,
     bool? isActive,
-    int? serverpodUserId,
+    String? serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _CmsUserImpl;
@@ -48,7 +48,7 @@ abstract class CmsUser
       name: jsonSerialization['name'] as String?,
       role: jsonSerialization['role'] as String,
       isActive: jsonSerialization['isActive'] as bool,
-      serverpodUserId: jsonSerialization['serverpodUserId'] as int?,
+      serverpodUserId: jsonSerialization['serverpodUserId'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -75,7 +75,7 @@ abstract class CmsUser
 
   bool isActive;
 
-  int? serverpodUserId;
+  String? serverpodUserId;
 
   DateTime? createdAt;
 
@@ -94,7 +94,7 @@ abstract class CmsUser
     String? name,
     String? role,
     bool? isActive,
-    int? serverpodUserId,
+    String? serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -168,7 +168,7 @@ class _CmsUserImpl extends CmsUser {
     String? name,
     String? role,
     bool? isActive,
-    int? serverpodUserId,
+    String? serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super._(
@@ -206,7 +206,7 @@ class _CmsUserImpl extends CmsUser {
       role: role ?? this.role,
       isActive: isActive ?? this.isActive,
       serverpodUserId:
-          serverpodUserId is int? ? serverpodUserId : this.serverpodUserId,
+          serverpodUserId is String? ? serverpodUserId : this.serverpodUserId,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
     );
@@ -237,7 +237,7 @@ class CmsUserTable extends _i1.Table<int?> {
       this,
       hasDefault: true,
     );
-    serverpodUserId = _i1.ColumnInt(
+    serverpodUserId = _i1.ColumnString(
       'serverpodUserId',
       this,
     );
@@ -263,7 +263,7 @@ class CmsUserTable extends _i1.Table<int?> {
 
   late final _i1.ColumnBool isActive;
 
-  late final _i1.ColumnInt serverpodUserId;
+  late final _i1.ColumnString serverpodUserId;
 
   late final _i1.ColumnDateTime createdAt;
 

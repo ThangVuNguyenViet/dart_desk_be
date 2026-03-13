@@ -1,5 +1,7 @@
 import 'dart:typed_data';
+
 import 'package:serverpod/serverpod.dart';
+
 import '../generated/protocol.dart';
 
 /// Endpoint for managing media files and uploads
@@ -60,12 +62,10 @@ class MediaEndpoint extends Endpoint {
     }
 
     // Require authentication
-    final authInfo = await session.authenticated;
+    final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('User must be authenticated to upload files');
     }
-
-    final userId = authInfo.userId;
 
     // Generate unique filename
     final timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -95,7 +95,7 @@ class MediaEndpoint extends Endpoint {
       // Get the CMS user to find their clientId
       final cmsUser = await CmsUser.db.findFirstRow(
         session,
-        where: (t) => t.serverpodUserId.equals(userId),
+        where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
       );
 
       if (cmsUser == null) {
