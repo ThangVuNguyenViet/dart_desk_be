@@ -1,15 +1,17 @@
-# flutter_cms_be_flutter
+# flutter_cms_be_admin
 
-A new Flutter project with Serverpod.
+A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application that is using
-Serverpod.
+This project is a starting point for a Flutter application.
 
-A great starting point for learning Serverpod is our documentation site at:
-[https://docs.serverpod.dev](https://docs.serverpod.dev).
+A few resources to get you started if this is your first Flutter project:
 
-To run the project, first make sure that the server is running, then do:
+- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
+- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
 
-    flutter run
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

@@ -1,151 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
-import 'package:serverpod_flutter/serverpod_flutter.dart';
+import 'package:serverpod_admin_dashboard/serverpod_admin_dashboard.dart';
 
 late final Client client;
 
-late String serverUrl;
-
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   const serverUrlFromEnv = String.fromEnvironment('SERVER_URL');
-  final apiUrl =
+  final serverUrl =
       serverUrlFromEnv.isEmpty ? 'http://$localhost:8080/' : serverUrlFromEnv;
 
-  // Create client with new IDP auth session manager
-  client = Client(apiUrl)
+  client = Client(serverUrl)
     ..connectivityMonitor = FlutterConnectivityMonitor()
     ..authSessionManager = FlutterAuthSessionManager();
+  client.auth.initialize();
 
-  // Initialize auth and Google sign-in
-  await client.auth.initialize();
-  await client.auth.initializeGoogleSignIn();
-
-  serverUrl = serverUrlFromEnv.isEmpty
-      ? 'http://$localhost:8082'
-      : serverUrlFromEnv.replaceAll(':8080', ':8082');
-
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter CMS',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
-      home: FlutterCmsAuth(
+  runApp(
+    MaterialApp(
+      title: 'CMS Admin',
+      debugShowCheckedModeBanner: false,
+      home: AdminDashboard(
         client: client,
-        title: 'Welcome to Flutter CMS',
-        subtitle: 'Sign in to manage your content',
-        child: const MyHomePage(title: 'Flutter CMS'),
-      ),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  MyHomePageState createState() => MyHomePageState();
-}
-
-class MyHomePageState extends State<MyHomePage> {
-  UserProfileModel? _profile;
-  bool _loadingProfile = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProfile();
-  }
-
-  Future<void> _loadProfile() async {
-    try {
-      final profile =
-          await client.modules.serverpod_auth_core.userProfileInfo.get();
-      if (mounted) {
-        setState(() {
-          _profile = profile;
-          _loadingProfile = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _loadingProfile = false);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final displayName =
-        _profile?.fullName ?? _profile?.userName ?? _profile?.email ?? 'User';
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Sign Out',
-            onPressed: () {
-              context.signOut();
-            },
+        title: 'CMS Admin Dashboard',
+        loginTitle: 'CMS Admin',
+        loginSubtitle: 'Sign in with your admin account',
+        sidebarItemCustomizations: const {
+          'cms_clients': SidebarItemCustomization(
+            label: 'Clients',
+            icon: Icons.business,
           ),
-        ],
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const CircleAvatar(
-                radius: 50,
-                child: Icon(Icons.person, size: 50),
-              ),
-              const SizedBox(height: 24),
-              if (_loadingProfile)
-                const CircularProgressIndicator()
-              else
-                Text(
-                  'Welcome, $displayName!',
-                  style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-              if (_profile?.email != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  _profile!.email!,
-                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                ),
-              ],
-              const SizedBox(height: 32),
-              const Text(
-                'You are successfully authenticated with Google!',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Server is running and ready to accept requests.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14),
-              ),
-            ],
+          'cms_documents': SidebarItemCustomization(
+            label: 'Documents',
+            icon: Icons.article,
           ),
-        ),
+          'cms_document_datas': SidebarItemCustomization(
+            label: 'Document Data',
+            icon: Icons.data_object,
+          ),
+          'cms_users': SidebarItemCustomization(
+            label: 'Users',
+            icon: Icons.people,
+          ),
+          'document_versions': SidebarItemCustomization(
+            label: 'Versions',
+            icon: Icons.history,
+          ),
+          'media_files': SidebarItemCustomization(
+            label: 'Media',
+            icon: Icons.perm_media,
+          ),
+          'document_crdt_operations': SidebarItemCustomization(
+            label: 'CRDT Ops',
+            icon: Icons.sync,
+          ),
+          'document_crdt_snapshots': SidebarItemCustomization(
+            label: 'CRDT Snapshots',
+            icon: Icons.camera,
+          ),
+        },
       ),
-    );
-  }
+    ),
+  );
 }
