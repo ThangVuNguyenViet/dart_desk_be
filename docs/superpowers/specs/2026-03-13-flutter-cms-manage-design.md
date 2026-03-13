@@ -34,7 +34,7 @@ fields:
   tokenPrefix: String              # "cms_vi_", "cms_ed_", "cms_ad_" (role-encoded)
   tokenSuffix: String              # last 4 chars for display ("...x7Kq")
   role: String                     # viewer | editor | admin
-  createdByUserId: int?
+  createdByUserId: int?            # nullable for tokens created via admin seeding/migration
   lastUsedAt: DateTime?
   expiresAt: DateTime?
   isActive: bool
@@ -42,8 +42,9 @@ fields:
 indexes:
   cms_api_token_client_idx:
     fields: clientId
-  cms_api_token_prefix_idx:
-    fields: tokenPrefix
+  cms_api_token_lookup_idx:
+    fields: clientId, tokenPrefix, tokenSuffix
+    unique: true
 ```
 
 ### CmsApiTokenWithValue (serialization only, not stored)
@@ -60,9 +61,19 @@ fields:
 - Pattern: `cms_{role_prefix}_{base64(32 random bytes)}`
 - Role prefixes: `vi` (viewer), `ed` (editor), `ad` (admin)
 - Example: `cms_ed_a6YkZWe82WpTevvPem3ynitEBWky2J0FZpj9ycAk6S4WM4u`
-- Storage: bcrypt hash in `tokenHash`, first 8 chars in `tokenPrefix`, last 4 in `tokenSuffix`
+- Storage: bcrypt hash in `tokenHash`, role prefix in `tokenPrefix` (e.g., `cms_ed_`), last 4 chars of the random portion in `tokenSuffix`
 - Display: `cms_ed_...x7Kq` (prefix + suffix)
 - Shown once: full plaintext token returned only at creation/regeneration
+
+### Migration from existing CmsClient.apiTokenHash
+
+The existing `apiTokenHash` and `apiTokenPrefix` fields on `CmsClient` remain for backward compatibility. They serve as the **bootstrap token** — the first token created when a client is set up via the admin endpoint (`CmsClientEndpoint.createClient()`). This token has implicit `admin` role.
+
+Going forward:
+- New tokens are created via `CmsApiTokenEndpoint` and stored in `cms_api_tokens`
+- The Manage app authenticates users via Serverpod auth (Google/email IDP), not via API tokens
+- API tokens are for external app/script access to the CMS data API
+- The existing `CmsClient.apiTokenHash` continues to work as a fallback during token validation
 
 ## API Endpoint
 
@@ -82,8 +93,14 @@ class CmsApiTokenEndpoint extends Endpoint {
     DateTime? expiresAt,
   )
 
-  /// Update token metadata (name, isActive, expiresAt)
-  Future<CmsApiToken> updateToken(Session session, int tokenId, ...)
+  /// Update token metadata
+  Future<CmsApiToken> updateToken(
+    Session session,
+    int tokenId,
+    String? name,
+    bool? isActive,
+    DateTime? expiresAt,
+  )
 
   /// Regenerate token value — returns new plaintext token (shown once)
   Future<CmsApiTokenWithValue> regenerateToken(Session session, int tokenId)
@@ -93,9 +110,31 @@ class CmsApiTokenEndpoint extends Endpoint {
 }
 ```
 
-**Auth:** All methods require `session.authenticated`. Verify caller is a CmsUser belonging to the given `clientId`.
+**Auth:** All methods require `session.authenticated` (Serverpod auth via Google/email IDP). The Manage app user is authenticated as a Serverpod user, and their CmsUser record (via `UserEndpoint.getCurrentUser()`) determines which `clientId` they belong to. The endpoint verifies the caller's `clientId` matches the requested `clientId`.
 
-**Token validation changes:** Update `UserEndpoint.ensureUser()` to also check `cms_api_tokens` table, matching by bcrypt and respecting `isActive`, `expiresAt`, and `role`.
+**Token validation changes:** Update `UserEndpoint.ensureUser()` to check tokens in this order:
+1. Extract the role prefix from the incoming token (e.g., `cms_ed_`) and the suffix (last 4 chars)
+2. Query `cms_api_tokens` by `clientId` + `tokenPrefix` + `tokenSuffix` + `isActive = true` — this narrows to at most 1 candidate
+3. bcrypt-verify the incoming token against the single candidate's `tokenHash`
+4. If no match in `cms_api_tokens`, fall back to `CmsClient.apiTokenHash` (backward compatibility for `cms_live_` tokens)
+5. The matched token's `role` determines API permissions for that request
+6. Reject if `expiresAt` is set and has passed
+
+Add composite index `(clientId, tokenPrefix, tokenSuffix)` for efficient lookup.
+
+## Manage App Authentication & Client Context
+
+The Manage app authenticates users via **Serverpod auth (Google/email IDP)**, not via API tokens. API tokens are for external app/script access to the CMS data API.
+
+**Client context resolution:**
+- A Serverpod user can belong to multiple clients (multiple `CmsUser` rows with different `clientId`)
+- The Manage app URL includes the client slug: `/manage/:clientSlug/overview`, `/manage/:clientSlug/api/tokens`, etc.
+- On app load, the Manage app fetches all `CmsUser` records for the authenticated `serverpodUserId` to get the list of clients the user has access to
+- The `clientSlug` from the URL determines which client is active
+
+**New endpoint needed:** `UserEndpoint.getUserClients(Session session)` — returns all `CmsClient` records the authenticated user belongs to. This enables the client switcher if a user has access to multiple clients.
+
+**Existing endpoint adjustment:** `UserEndpoint.getCurrentUser()` currently requires `clientSlug` and `apiToken` parameters. Add an overload or new method that resolves the CmsUser from `session.authenticated` + `clientSlug` (without requiring an API token), for use by the Manage app.
 
 ## App Structure
 
@@ -131,18 +170,20 @@ flutter_cms_manage/
 ### Route hierarchy
 
 ```
+/:clientSlug/                → redirects to /:clientSlug/overview
 ManageLayout (top bar + project header + tabs)
-├── OverviewRoute    → /overview
+├── OverviewRoute    → /:clientSlug/overview
 ├── ApiLayout (left sidebar for API sub-sections)
-│   └── TokensRoute  → /api/tokens
-└── SettingsRoute    → /settings
-/                    → redirects to /overview
+│   └── TokensRoute  → /:clientSlug/api/tokens
+└── SettingsRoute    → /:clientSlug/settings
 ```
 
 ### Coordinator
 
 ```dart
 class ManageCoordinator extends Coordinator<ManageRoute> {
+  String clientSlug; // set from URL, drives client context
+
   late final manageStack = NavigationPath.createWith(
     label: 'manage', coordinator: this,
   )..bindLayout(ManageLayout.new);
@@ -156,7 +197,13 @@ class ManageCoordinator extends Coordinator<ManageRoute> {
 
   @override
   ManageRoute parseRouteFromUri(Uri uri) {
-    return switch (uri.pathSegments) {
+    final segments = uri.pathSegments;
+    if (segments.isEmpty) return NotFoundRoute();
+
+    clientSlug = segments.first;
+    final rest = segments.skip(1).toList();
+
+    return switch (rest) {
       [] => OverviewRoute(),
       ['overview'] => OverviewRoute(),
       ['api', 'tokens'] => TokensRoute(),
@@ -209,7 +256,7 @@ class OverviewRoute extends ManageRoute {
   @override
   Type get layout => ManageLayout;
   @override
-  Uri toUri() => Uri.parse('/overview');
+  Uri toUri() => Uri.parse('/${coordinator.clientSlug}/overview');
   @override
   Widget build(ManageCoordinator coordinator, BuildContext context) =>
       OverviewScreen(coordinator: coordinator);
@@ -219,7 +266,7 @@ class TokensRoute extends ManageRoute {
   @override
   Type get layout => ApiLayout;
   @override
-  Uri toUri() => Uri.parse('/api/tokens');
+  Uri toUri() => Uri.parse('/${coordinator.clientSlug}/api/tokens');
   @override
   Widget build(ManageCoordinator coordinator, BuildContext context) =>
       TokensScreen(coordinator: coordinator);
@@ -229,7 +276,7 @@ class SettingsRoute extends ManageRoute {
   @override
   Type get layout => ManageLayout;
   @override
-  Uri toUri() => Uri.parse('/settings');
+  Uri toUri() => Uri.parse('/${coordinator.clientSlug}/settings');
   @override
   Widget build(ManageCoordinator coordinator, BuildContext context) =>
       SettingsScreen(coordinator: coordinator);
@@ -249,6 +296,24 @@ Dark theme layout with:
 
 - **Left sidebar** (180px): Sub-section links — Tokens (active), CORS Origins (future), more
 - **Content area**: Renders child route (TokensScreen)
+
+### OverviewScreen
+
+Displays client project information:
+- **Client details**: name, slug, description, `isActive` status
+- **Client ID**: copyable display
+- **Quick stats**: number of API tokens (from `CmsApiTokenEndpoint.getTokens()`), number of documents (from `DocumentEndpoint.getDocuments()` with `limit: 1` to get total count from response), number of CMS users (new: `UserEndpoint.getClientUserCount()`)
+- **Quick links**: "Open Studio" button, "Manage API Tokens" button
+
+### SettingsScreen
+
+Client configuration form using ShadForm:
+- **Client name**: ShadInputFormField (editable)
+- **Description**: ShadTextareaFormField (editable)
+- **Slug**: ShadInputFormField (read-only display)
+- **Status**: Toggle `isActive` with confirmation dialog
+- **Save button**: Calls `CmsClientEndpoint.updateClient()`
+- **Danger zone**: Delete client with confirmation dialog. If FK constraint error occurs (users/documents exist), display error toast explaining the client cannot be deleted until all associated data is removed first
 
 ### TokensScreen
 
@@ -295,12 +360,12 @@ dependencies:
 
 ## Implementation Order
 
-1. **Backend first**: `CmsApiToken` model + migration + `CmsApiTokenEndpoint`
-2. **App scaffold**: `flutter_cms_manage/` with ShadApp, zenrouter coordinator, ManageLayout
-3. **Tokens feature**: TokensScreen, CreateTokenDialog, TokenRevealDialog, token service
-4. **Overview screen**: Basic project info display (client details, stats)
-5. **Settings screen**: Client configuration (name, description, etc.)
-6. **Token validation**: Update `UserEndpoint.ensureUser()` to check `cms_api_tokens` table
+1. **Backend: model + migration**: `CmsApiToken` model, `CmsApiTokenWithValue`, `serverpod generate`, `serverpod create-migration`
+2. **Backend: endpoint + token validation**: `CmsApiTokenEndpoint`, update `UserEndpoint.ensureUser()` to check `cms_api_tokens` with prefix-based lookup
+3. **App scaffold**: `flutter_cms_manage/` with ShadApp, zenrouter coordinator, ManageLayout, ApiLayout, shell widgets
+4. **Tokens feature**: TokensScreen, CreateTokenDialog, TokenRevealDialog, token service
+5. **Overview screen**: Client details, quick stats, quick links
+6. **Settings screen**: Client config form with ShadForm, save/delete actions
 
 ## Future Expansion
 
