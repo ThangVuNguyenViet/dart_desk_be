@@ -61,7 +61,8 @@ fields:
 - Pattern: `cms_{role_prefix}_{base64(32 random bytes)}`
 - Role prefixes: `vi` (viewer), `ed` (editor), `ad` (admin)
 - Example: `cms_ed_a6YkZWe82WpTevvPem3ynitEBWky2J0FZpj9ycAk6S4WM4u`
-- Storage: bcrypt hash in `tokenHash`, role prefix in `tokenPrefix` (e.g., `cms_ed_`), last 4 chars of the random portion in `tokenSuffix`
+- Storage: bcrypt hash in `tokenHash`, role prefix in `tokenPrefix` (e.g., `cms_ed_`), last 4 chars of the full token string in `tokenSuffix`
+- Collision handling: if `(clientId, tokenPrefix, tokenSuffix)` already exists, regenerate the random portion until unique (retry up to 5 times)
 - Display: `cms_ed_...x7Kq` (prefix + suffix)
 - Shown once: full plaintext token returned only at creation/regeneration
 
@@ -93,7 +94,7 @@ class CmsApiTokenEndpoint extends Endpoint {
     DateTime? expiresAt,
   )
 
-  /// Update token metadata
+  /// Update token metadata. Looks up token by ID, verifies its clientId matches caller's client.
   Future<CmsApiToken> updateToken(
     Session session,
     int tokenId,
@@ -102,10 +103,10 @@ class CmsApiTokenEndpoint extends Endpoint {
     DateTime? expiresAt,
   )
 
-  /// Regenerate token value — returns new plaintext token (shown once)
+  /// Regenerate token value. Verifies token belongs to caller's client. Returns new plaintext token (shown once).
   Future<CmsApiTokenWithValue> regenerateToken(Session session, int tokenId)
 
-  /// Delete a token permanently
+  /// Delete a token permanently. Verifies token belongs to caller's client.
   Future<bool> deleteToken(Session session, int tokenId)
 }
 ```
@@ -134,7 +135,12 @@ The Manage app authenticates users via **Serverpod auth (Google/email IDP)**, no
 
 **New endpoint needed:** `UserEndpoint.getUserClients(Session session)` — returns all `CmsClient` records the authenticated user belongs to. This enables the client switcher if a user has access to multiple clients.
 
-**Existing endpoint adjustment:** `UserEndpoint.getCurrentUser()` currently requires `clientSlug` and `apiToken` parameters. Add an overload or new method that resolves the CmsUser from `session.authenticated` + `clientSlug` (without requiring an API token), for use by the Manage app.
+**New endpoints needed:**
+- `UserEndpoint.getUserClients(Session session)` — returns all `CmsClient` records the authenticated user belongs to
+- `UserEndpoint.getCurrentUserBySlug(Session session, String clientSlug)` — resolves the CmsUser from `session.authenticated` + `clientSlug` without requiring an API token (for Manage app use)
+- `UserEndpoint.getClientUserCount(Session session, int clientId)` — returns count of CmsUsers for a client (for Overview stats)
+
+The existing `getCurrentUser()` method (requiring `clientSlug` + `apiToken`) remains unchanged for Studio/API use.
 
 ## App Structure
 
