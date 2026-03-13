@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'src/providers/manage_providers.dart';
 import 'src/routes/manage_coordinator.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
+
+  serverpodClient = Client(
+    'http://$localhost:8080/',
+  )
+    ..connectivityMonitor = FlutterConnectivityMonitor()
+    ..authSessionManager = FlutterAuthSessionManager();
+  serverpodClient.auth.initialize();
+
   runApp(const ManageApp());
 }
 
