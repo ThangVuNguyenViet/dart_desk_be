@@ -7,10 +7,12 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'document_version.dart' as _i2;
+import 'package:flutter_cms_be_client/src/protocol/protocol.dart' as _i3;
 
 abstract class DocumentVersionList implements _i1.SerializableModel {
   DocumentVersionList._({
@@ -29,9 +31,9 @@ abstract class DocumentVersionList implements _i1.SerializableModel {
 
   factory DocumentVersionList.fromJson(Map<String, dynamic> jsonSerialization) {
     return DocumentVersionList(
-      versions: (jsonSerialization['versions'] as List)
-          .map((e) => _i2.DocumentVersion.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      versions: _i3.Protocol().deserialize<List<_i2.DocumentVersion>>(
+        jsonSerialization['versions'],
+      ),
       total: jsonSerialization['total'] as int,
       page: jsonSerialization['page'] as int,
       pageSize: jsonSerialization['pageSize'] as int,
@@ -58,6 +60,7 @@ abstract class DocumentVersionList implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DocumentVersionList',
       'versions': versions.toJson(valueToJson: (v) => v.toJson()),
       'total': total,
       'page': page,
@@ -78,11 +81,11 @@ class _DocumentVersionListImpl extends DocumentVersionList {
     required int page,
     required int pageSize,
   }) : super._(
-          versions: versions,
-          total: total,
-          page: page,
-          pageSize: pageSize,
-        );
+         versions: versions,
+         total: total,
+         page: page,
+         pageSize: pageSize,
+       );
 
   /// Returns a shallow copy of this [DocumentVersionList]
   /// with some or all fields replaced by the given arguments.

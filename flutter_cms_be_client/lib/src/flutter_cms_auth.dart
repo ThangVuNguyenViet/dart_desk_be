@@ -4,26 +4,34 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../flutter_cms_be_client.dart';
 
 /// A widget that provides authentication guard functionality using Serverpod's
-/// new IDP authentication system with Google Sign-In integration.
+/// IDP authentication system with Google Sign-In integration.
+///
+/// Simplified constructor only requires `clientId` (CmsClient slug) and `serverUrl`.
+/// The widget creates the Client internally and calls `ensureUser` after sign-in.
 ///
 /// Example usage:
 /// ```dart
 /// FlutterCmsAuth(
-///   client: client,
-///   child: MyAuthenticatedApp(),
+///   clientId: 'default',
+///   serverUrl: 'http://localhost:8080/',
+///   builder: (context, client) => MyAuthenticatedApp(client: client),
 /// )
 /// ```
 class FlutterCmsAuth extends StatefulWidget {
-  final Client client;
-  final Widget child;
+  final String clientId;
+  final String apiToken;
+  final String serverUrl;
+  final Widget Function(BuildContext context, Client client) builder;
   final String title;
   final String? subtitle;
   final Widget? logo;
 
   const FlutterCmsAuth({
     super.key,
-    required this.client,
-    required this.child,
+    required this.clientId,
+    required this.apiToken,
+    required this.serverUrl,
+    required this.builder,
     this.title = 'Welcome to Flutter CMS',
     this.subtitle,
     this.logo,
@@ -34,33 +42,46 @@ class FlutterCmsAuth extends StatefulWidget {
 }
 
 class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
+  late final Client _client;
   bool _isLoading = true;
+  bool _isEnsuringUser = false;
   String? _errorMessage;
 
-  FlutterAuthSessionManager get _auth =>
-      widget.client.authSessionManager;
+  FlutterAuthSessionManager get _auth => _client.authSessionManager;
 
   @override
   void initState() {
     super.initState();
-    _initializeAuth();
+    _initializeClient();
   }
 
-  Future<void> _initializeAuth() async {
+  Future<void> _initializeClient() async {
     try {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
       });
 
+      _client = Client(widget.serverUrl)
+        ..connectivityMonitor = FlutterConnectivityMonitor()
+        ..authSessionManager = FlutterAuthSessionManager();
+
+      await _client.auth.initialize();
+      await _client.auth.initializeGoogleSignIn();
+
       _auth.authInfoListenable.addListener(_onAuthChanged);
+
+      // If already authenticated, ensure user exists
+      if (_auth.isAuthenticated) {
+        await _ensureUser();
+      }
 
       setState(() {
         _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to initialize authentication: ${e.toString()}';
+        _errorMessage = 'Failed to initialize: ${e.toString()}';
         _isLoading = false;
       });
     }
@@ -68,7 +89,25 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
 
   void _onAuthChanged() {
     if (mounted) {
+      if (_auth.isAuthenticated && !_isEnsuringUser) {
+        _ensureUser();
+      }
       setState(() {});
+    }
+  }
+
+  Future<void> _ensureUser() async {
+    _isEnsuringUser = true;
+    try {
+      await _client.user.ensureUser(widget.clientId, widget.apiToken);
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Failed to initialize user: ${e.toString()}';
+        });
+      }
+    } finally {
+      _isEnsuringUser = false;
     }
   }
 
@@ -98,10 +137,13 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
 
     if (_auth.isAuthenticated) {
       return _FlutterCmsAuthProvider(
+        client: _client,
+        clientId: widget.clientId,
+        apiToken: widget.apiToken,
         authSessionManager: _auth,
         authSuccess: _auth.authInfo!,
         onSignOut: _handleSignOut,
-        child: widget.child,
+        child: widget.builder(context, _client),
       );
     }
 
@@ -210,7 +252,7 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
                           const SizedBox(height: 16),
                         ],
                         GoogleSignInWidget(
-                          client: widget.client,
+                          client: _client,
                           onAuthenticated: () {
                             if (mounted) setState(() {});
                           },
@@ -245,11 +287,17 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
 
 /// InheritedWidget that provides authentication data to descendant widgets
 class _FlutterCmsAuthProvider extends InheritedWidget {
+  final Client client;
+  final String clientId;
+  final String apiToken;
   final FlutterAuthSessionManager authSessionManager;
   final AuthSuccess authSuccess;
   final VoidCallback onSignOut;
 
   const _FlutterCmsAuthProvider({
+    required this.client,
+    required this.clientId,
+    required this.apiToken,
     required this.authSessionManager,
     required this.authSuccess,
     required this.onSignOut,
@@ -264,12 +312,30 @@ class _FlutterCmsAuthProvider extends InheritedWidget {
   @override
   bool updateShouldNotify(_FlutterCmsAuthProvider oldWidget) {
     return authSuccess != oldWidget.authSuccess ||
-        authSessionManager != oldWidget.authSessionManager;
+        authSessionManager != oldWidget.authSessionManager ||
+        client != oldWidget.client ||
+        clientId != oldWidget.clientId ||
+        apiToken != oldWidget.apiToken;
   }
 }
 
 /// Extension on BuildContext to easily access authentication data
 extension FlutterCmsAuthContext on BuildContext {
+  /// Get the CMS Client instance
+  Client? get cmsClient {
+    return _FlutterCmsAuthProvider.of(this)?.client;
+  }
+
+  /// Get the CMS client ID (slug)
+  String? get cmsClientId {
+    return _FlutterCmsAuthProvider.of(this)?.clientId;
+  }
+
+  /// Get the CMS API token
+  String? get cmsApiToken {
+    return _FlutterCmsAuthProvider.of(this)?.apiToken;
+  }
+
   /// Get the current auth success info
   AuthSuccess? get currentAuthInfo {
     return _FlutterCmsAuthProvider.of(this)?.authSuccess;

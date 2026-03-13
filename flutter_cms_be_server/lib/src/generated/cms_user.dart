@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -23,10 +24,10 @@ abstract class CmsUser
     this.serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : role = role ?? 'viewer',
-        isActive = isActive ?? true,
-        createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : role = role ?? 'viewer',
+       isActive = isActive ?? true,
+       createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   factory CmsUser({
     int? id,
@@ -46,8 +47,10 @@ abstract class CmsUser
       clientId: jsonSerialization['clientId'] as int,
       email: jsonSerialization['email'] as String,
       name: jsonSerialization['name'] as String?,
-      role: jsonSerialization['role'] as String,
-      isActive: jsonSerialization['isActive'] as bool,
+      role: jsonSerialization['role'] as String?,
+      isActive: jsonSerialization['isActive'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['isActive']),
       serverpodUserId: jsonSerialization['serverpodUserId'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
@@ -101,6 +104,7 @@ abstract class CmsUser
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'CmsUser',
       if (id != null) 'id': id,
       'clientId': clientId,
       'email': email,
@@ -116,6 +120,7 @@ abstract class CmsUser
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'CmsUser',
       if (id != null) 'id': id,
       'clientId': clientId,
       'email': email,
@@ -172,16 +177,16 @@ class _CmsUserImpl extends CmsUser {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super._(
-          id: id,
-          clientId: clientId,
-          email: email,
-          name: name,
-          role: role,
-          isActive: isActive,
-          serverpodUserId: serverpodUserId,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-        );
+         id: id,
+         clientId: clientId,
+         email: email,
+         name: name,
+         role: role,
+         isActive: isActive,
+         serverpodUserId: serverpodUserId,
+         createdAt: createdAt,
+         updatedAt: updatedAt,
+       );
 
   /// Returns a shallow copy of this [CmsUser]
   /// with some or all fields replaced by the given arguments.
@@ -205,16 +210,65 @@ class _CmsUserImpl extends CmsUser {
       name: name is String? ? name : this.name,
       role: role ?? this.role,
       isActive: isActive ?? this.isActive,
-      serverpodUserId:
-          serverpodUserId is String? ? serverpodUserId : this.serverpodUserId,
+      serverpodUserId: serverpodUserId is String?
+          ? serverpodUserId
+          : this.serverpodUserId,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
     );
   }
 }
 
+class CmsUserUpdateTable extends _i1.UpdateTable<CmsUserTable> {
+  CmsUserUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> clientId(int value) => _i1.ColumnValue(
+    table.clientId,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+    table.email,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> name(String? value) => _i1.ColumnValue(
+    table.name,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> role(String value) => _i1.ColumnValue(
+    table.role,
+    value,
+  );
+
+  _i1.ColumnValue<bool, bool> isActive(bool value) => _i1.ColumnValue(
+    table.isActive,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> serverpodUserId(String? value) =>
+      _i1.ColumnValue(
+        table.serverpodUserId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> updatedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.updatedAt,
+        value,
+      );
+}
+
 class CmsUserTable extends _i1.Table<int?> {
   CmsUserTable({super.tableRelation}) : super(tableName: 'cms_users') {
+    updateTable = CmsUserUpdateTable(this);
     clientId = _i1.ColumnInt(
       'clientId',
       this,
@@ -253,6 +307,8 @@ class CmsUserTable extends _i1.Table<int?> {
     );
   }
 
+  late final CmsUserUpdateTable updateTable;
+
   late final _i1.ColumnInt clientId;
 
   late final _i1.ColumnString email;
@@ -271,16 +327,16 @@ class CmsUserTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        clientId,
-        email,
-        name,
-        role,
-        isActive,
-        serverpodUserId,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    clientId,
+    email,
+    name,
+    role,
+    isActive,
+    serverpodUserId,
+    createdAt,
+    updatedAt,
+  ];
 }
 
 class CmsUserInclude extends _i1.IncludeObject {
@@ -339,7 +395,7 @@ class CmsUserRepository {
   /// );
   /// ```
   Future<List<CmsUser>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CmsUserTable>? where,
     int? limit,
     int? offset,
@@ -347,6 +403,8 @@ class CmsUserRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CmsUserTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CmsUser>(
       where: where?.call(CmsUser.t),
@@ -356,6 +414,8 @@ class CmsUserRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -377,13 +437,15 @@ class CmsUserRepository {
   /// );
   /// ```
   Future<CmsUser?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CmsUserTable>? where,
     int? offset,
     _i1.OrderByBuilder<CmsUserTable>? orderBy,
     bool orderDescending = false,
     _i1.OrderByListBuilder<CmsUserTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CmsUser>(
       where: where?.call(CmsUser.t),
@@ -392,18 +454,24 @@ class CmsUserRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [CmsUser] by its [id] or null if no such row exists.
   Future<CmsUser?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<CmsUser>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -413,14 +481,20 @@ class CmsUserRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<CmsUser>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CmsUser> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<CmsUser>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -428,7 +502,7 @@ class CmsUserRepository {
   ///
   /// The returned [CmsUser] will have its `id` field set.
   Future<CmsUser> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CmsUser row, {
     _i1.Transaction? transaction,
   }) async {
@@ -444,7 +518,7 @@ class CmsUserRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<CmsUser>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CmsUser> rows, {
     _i1.ColumnSelections<CmsUserTable>? columns,
     _i1.Transaction? transaction,
@@ -460,7 +534,7 @@ class CmsUserRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<CmsUser> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CmsUser row, {
     _i1.ColumnSelections<CmsUserTable>? columns,
     _i1.Transaction? transaction,
@@ -472,11 +546,51 @@ class CmsUserRepository {
     );
   }
 
+  /// Updates a single [CmsUser] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CmsUser?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CmsUserUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CmsUser>(
+      id,
+      columnValues: columnValues(CmsUser.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CmsUser]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<CmsUser>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<CmsUserUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<CmsUserTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CmsUserTable>? orderBy,
+    _i1.OrderByListBuilder<CmsUserTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CmsUser>(
+      columnValues: columnValues(CmsUser.t.updateTable),
+      where: where(CmsUser.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CmsUser.t),
+      orderByList: orderByList?.call(CmsUser.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [CmsUser]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<CmsUser>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CmsUser> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -488,7 +602,7 @@ class CmsUserRepository {
 
   /// Deletes a single [CmsUser].
   Future<CmsUser> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CmsUser row, {
     _i1.Transaction? transaction,
   }) async {
@@ -500,7 +614,7 @@ class CmsUserRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<CmsUser>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CmsUserTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -513,7 +627,7 @@ class CmsUserRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CmsUserTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -521,6 +635,22 @@ class CmsUserRepository {
     return session.db.count<CmsUser>(
       where: where?.call(CmsUser.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [CmsUser] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<CmsUserTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<CmsUser>(
+      where: where(CmsUser.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

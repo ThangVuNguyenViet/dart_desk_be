@@ -8,6 +8,10 @@ build/
 # Directory created by dartdoc
 doc/api/
 
+# Environment variables
+.env
+../.env
+
 # Passwords file
 config/passwords.yaml
 

@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -32,7 +33,8 @@ abstract class DocumentCrdtSnapshot
   }) = _DocumentCrdtSnapshotImpl;
 
   factory DocumentCrdtSnapshot.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DocumentCrdtSnapshot(
       id: jsonSerialization['id'] as int?,
       documentId: jsonSerialization['documentId'] as int,
@@ -80,6 +82,7 @@ abstract class DocumentCrdtSnapshot
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DocumentCrdtSnapshot',
       if (id != null) 'id': id,
       'documentId': documentId,
       'snapshotHlc': snapshotHlc,
@@ -92,6 +95,7 @@ abstract class DocumentCrdtSnapshot
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'DocumentCrdtSnapshot',
       if (id != null) 'id': id,
       'documentId': documentId,
       'snapshotHlc': snapshotHlc,
@@ -142,13 +146,13 @@ class _DocumentCrdtSnapshotImpl extends DocumentCrdtSnapshot {
     required int operationCountAtSnapshot,
     DateTime? createdAt,
   }) : super._(
-          id: id,
-          documentId: documentId,
-          snapshotHlc: snapshotHlc,
-          snapshotData: snapshotData,
-          operationCountAtSnapshot: operationCountAtSnapshot,
-          createdAt: createdAt,
-        );
+         id: id,
+         documentId: documentId,
+         snapshotHlc: snapshotHlc,
+         snapshotData: snapshotData,
+         operationCountAtSnapshot: operationCountAtSnapshot,
+         createdAt: createdAt,
+       );
 
   /// Returns a shallow copy of this [DocumentCrdtSnapshot]
   /// with some or all fields replaced by the given arguments.
@@ -174,9 +178,42 @@ class _DocumentCrdtSnapshotImpl extends DocumentCrdtSnapshot {
   }
 }
 
+class DocumentCrdtSnapshotUpdateTable
+    extends _i1.UpdateTable<DocumentCrdtSnapshotTable> {
+  DocumentCrdtSnapshotUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> documentId(int value) => _i1.ColumnValue(
+    table.documentId,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> snapshotHlc(String value) => _i1.ColumnValue(
+    table.snapshotHlc,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> snapshotData(String value) => _i1.ColumnValue(
+    table.snapshotData,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> operationCountAtSnapshot(int value) =>
+      _i1.ColumnValue(
+        table.operationCountAtSnapshot,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+}
+
 class DocumentCrdtSnapshotTable extends _i1.Table<int?> {
   DocumentCrdtSnapshotTable({super.tableRelation})
-      : super(tableName: 'document_crdt_snapshots') {
+    : super(tableName: 'document_crdt_snapshots') {
+    updateTable = DocumentCrdtSnapshotUpdateTable(this);
     documentId = _i1.ColumnInt(
       'documentId',
       this,
@@ -200,6 +237,8 @@ class DocumentCrdtSnapshotTable extends _i1.Table<int?> {
     );
   }
 
+  late final DocumentCrdtSnapshotUpdateTable updateTable;
+
   late final _i1.ColumnInt documentId;
 
   late final _i1.ColumnString snapshotHlc;
@@ -212,13 +251,13 @@ class DocumentCrdtSnapshotTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        documentId,
-        snapshotHlc,
-        snapshotData,
-        operationCountAtSnapshot,
-        createdAt,
-      ];
+    id,
+    documentId,
+    snapshotHlc,
+    snapshotData,
+    operationCountAtSnapshot,
+    createdAt,
+  ];
 }
 
 class DocumentCrdtSnapshotInclude extends _i1.IncludeObject {
@@ -277,7 +316,7 @@ class DocumentCrdtSnapshotRepository {
   /// );
   /// ```
   Future<List<DocumentCrdtSnapshot>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<DocumentCrdtSnapshotTable>? where,
     int? limit,
     int? offset,
@@ -285,6 +324,8 @@ class DocumentCrdtSnapshotRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentCrdtSnapshotTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DocumentCrdtSnapshot>(
       where: where?.call(DocumentCrdtSnapshot.t),
@@ -294,6 +335,8 @@ class DocumentCrdtSnapshotRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -315,13 +358,15 @@ class DocumentCrdtSnapshotRepository {
   /// );
   /// ```
   Future<DocumentCrdtSnapshot?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<DocumentCrdtSnapshotTable>? where,
     int? offset,
     _i1.OrderByBuilder<DocumentCrdtSnapshotTable>? orderBy,
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentCrdtSnapshotTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DocumentCrdtSnapshot>(
       where: where?.call(DocumentCrdtSnapshot.t),
@@ -330,18 +375,24 @@ class DocumentCrdtSnapshotRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [DocumentCrdtSnapshot] by its [id] or null if no such row exists.
   Future<DocumentCrdtSnapshot?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DocumentCrdtSnapshot>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -351,14 +402,20 @@ class DocumentCrdtSnapshotRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<DocumentCrdtSnapshot>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<DocumentCrdtSnapshot> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<DocumentCrdtSnapshot>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -366,7 +423,7 @@ class DocumentCrdtSnapshotRepository {
   ///
   /// The returned [DocumentCrdtSnapshot] will have its `id` field set.
   Future<DocumentCrdtSnapshot> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     DocumentCrdtSnapshot row, {
     _i1.Transaction? transaction,
   }) async {
@@ -382,7 +439,7 @@ class DocumentCrdtSnapshotRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<DocumentCrdtSnapshot>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<DocumentCrdtSnapshot> rows, {
     _i1.ColumnSelections<DocumentCrdtSnapshotTable>? columns,
     _i1.Transaction? transaction,
@@ -398,7 +455,7 @@ class DocumentCrdtSnapshotRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DocumentCrdtSnapshot> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     DocumentCrdtSnapshot row, {
     _i1.ColumnSelections<DocumentCrdtSnapshotTable>? columns,
     _i1.Transaction? transaction,
@@ -410,11 +467,53 @@ class DocumentCrdtSnapshotRepository {
     );
   }
 
+  /// Updates a single [DocumentCrdtSnapshot] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DocumentCrdtSnapshot?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DocumentCrdtSnapshotUpdateTable>
+    columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DocumentCrdtSnapshot>(
+      id,
+      columnValues: columnValues(DocumentCrdtSnapshot.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DocumentCrdtSnapshot]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DocumentCrdtSnapshot>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<DocumentCrdtSnapshotUpdateTable>
+    columnValues,
+    required _i1.WhereExpressionBuilder<DocumentCrdtSnapshotTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DocumentCrdtSnapshotTable>? orderBy,
+    _i1.OrderByListBuilder<DocumentCrdtSnapshotTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DocumentCrdtSnapshot>(
+      columnValues: columnValues(DocumentCrdtSnapshot.t.updateTable),
+      where: where(DocumentCrdtSnapshot.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DocumentCrdtSnapshot.t),
+      orderByList: orderByList?.call(DocumentCrdtSnapshot.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [DocumentCrdtSnapshot]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<DocumentCrdtSnapshot>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<DocumentCrdtSnapshot> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -426,7 +525,7 @@ class DocumentCrdtSnapshotRepository {
 
   /// Deletes a single [DocumentCrdtSnapshot].
   Future<DocumentCrdtSnapshot> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     DocumentCrdtSnapshot row, {
     _i1.Transaction? transaction,
   }) async {
@@ -438,7 +537,7 @@ class DocumentCrdtSnapshotRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<DocumentCrdtSnapshot>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DocumentCrdtSnapshotTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -451,7 +550,7 @@ class DocumentCrdtSnapshotRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<DocumentCrdtSnapshotTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -459,6 +558,22 @@ class DocumentCrdtSnapshotRepository {
     return session.db.count<DocumentCrdtSnapshot>(
       where: where?.call(DocumentCrdtSnapshot.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [DocumentCrdtSnapshot] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<DocumentCrdtSnapshotTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<DocumentCrdtSnapshot>(
+      where: where(DocumentCrdtSnapshot.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

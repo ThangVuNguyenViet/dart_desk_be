@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -49,6 +50,7 @@ abstract class UploadResponse implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UploadResponse',
       'id': id,
       'url': url,
       if (fileName != null) 'fileName': fileName,
@@ -69,10 +71,10 @@ class _UploadResponseImpl extends UploadResponse {
     required String url,
     String? fileName,
   }) : super._(
-          id: id,
-          url: url,
-          fileName: fileName,
-        );
+         id: id,
+         url: url,
+         fileName: fileName,
+       );
 
   /// Returns a shallow copy of this [UploadResponse]
   /// with some or all fields replaced by the given arguments.

@@ -7,10 +7,12 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'document_version_with_operations.dart' as _i2;
+import 'package:flutter_cms_be_client/src/protocol/protocol.dart' as _i3;
 
 abstract class DocumentVersionListWithOperations
     implements _i1.SerializableModel {
@@ -31,12 +33,13 @@ abstract class DocumentVersionListWithOperations
   }) = _DocumentVersionListWithOperationsImpl;
 
   factory DocumentVersionListWithOperations.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DocumentVersionListWithOperations(
-      versions: (jsonSerialization['versions'] as List)
-          .map((e) => _i2.DocumentVersionWithOperations.fromJson(
-              (e as Map<String, dynamic>)))
-          .toList(),
+      versions: _i3.Protocol()
+          .deserialize<List<_i2.DocumentVersionWithOperations>>(
+            jsonSerialization['versions'],
+          ),
       baseData: jsonSerialization['baseData'] as String?,
       total: jsonSerialization['total'] as int,
       page: jsonSerialization['page'] as int,
@@ -67,6 +70,7 @@ abstract class DocumentVersionListWithOperations
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DocumentVersionListWithOperations',
       'versions': versions.toJson(valueToJson: (v) => v.toJson()),
       if (baseData != null) 'baseData': baseData,
       'total': total,
@@ -92,12 +96,12 @@ class _DocumentVersionListWithOperationsImpl
     required int page,
     required int pageSize,
   }) : super._(
-          versions: versions,
-          baseData: baseData,
-          total: total,
-          page: page,
-          pageSize: pageSize,
-        );
+         versions: versions,
+         baseData: baseData,
+         total: total,
+         page: page,
+         pageSize: pageSize,
+       );
 
   /// Returns a shallow copy of this [DocumentVersionListWithOperations]
   /// with some or all fields replaced by the given arguments.

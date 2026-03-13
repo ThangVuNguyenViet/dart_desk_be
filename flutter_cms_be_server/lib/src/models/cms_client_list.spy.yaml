@@ -1,0 +1,6 @@
+class: CmsClientList
+fields:
+  clients: List<protocol:CmsClient>
+  total: int
+  page: int
+  pageSize: int

@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -26,9 +27,9 @@ abstract class CmsDocument implements _i1.SerializableModel {
     DateTime? updatedAt,
     required this.createdByUserId,
     this.updatedByUserId,
-  })  : isDefault = isDefault ?? false,
-        createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : isDefault = isDefault ?? false,
+       createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   factory CmsDocument({
     int? id,
@@ -53,7 +54,9 @@ abstract class CmsDocument implements _i1.SerializableModel {
       documentType: jsonSerialization['documentType'] as String,
       title: jsonSerialization['title'] as String,
       slug: jsonSerialization['slug'] as String?,
-      isDefault: jsonSerialization['isDefault'] as bool,
+      isDefault: jsonSerialization['isDefault'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['isDefault']),
       data: jsonSerialization['data'] as String?,
       crdtNodeId: jsonSerialization['crdtNodeId'] as String?,
       crdtHlc: jsonSerialization['crdtHlc'] as String?,
@@ -118,6 +121,7 @@ abstract class CmsDocument implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'CmsDocument',
       if (id != null) 'id': id,
       'clientId': clientId,
       'documentType': documentType,
@@ -158,20 +162,20 @@ class _CmsDocumentImpl extends CmsDocument {
     required int createdByUserId,
     int? updatedByUserId,
   }) : super._(
-          id: id,
-          clientId: clientId,
-          documentType: documentType,
-          title: title,
-          slug: slug,
-          isDefault: isDefault,
-          data: data,
-          crdtNodeId: crdtNodeId,
-          crdtHlc: crdtHlc,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-          createdByUserId: createdByUserId,
-          updatedByUserId: updatedByUserId,
-        );
+         id: id,
+         clientId: clientId,
+         documentType: documentType,
+         title: title,
+         slug: slug,
+         isDefault: isDefault,
+         data: data,
+         crdtNodeId: crdtNodeId,
+         crdtHlc: crdtHlc,
+         createdAt: createdAt,
+         updatedAt: updatedAt,
+         createdByUserId: createdByUserId,
+         updatedByUserId: updatedByUserId,
+       );
 
   /// Returns a shallow copy of this [CmsDocument]
   /// with some or all fields replaced by the given arguments.
@@ -205,8 +209,9 @@ class _CmsDocumentImpl extends CmsDocument {
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
       createdByUserId: createdByUserId ?? this.createdByUserId,
-      updatedByUserId:
-          updatedByUserId is int? ? updatedByUserId : this.updatedByUserId,
+      updatedByUserId: updatedByUserId is int?
+          ? updatedByUserId
+          : this.updatedByUserId,
     );
   }
 }

@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter_cms_be_server/src/web/routes/root.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_admin_server/serverpod_admin_server.dart' as admin;
 import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 
 import 'src/generated/endpoints.dart';
@@ -12,21 +14,17 @@ import 'src/services/document_crdt_service.dart';
 // Global CRDT service instance
 late DocumentCrdtService documentCrdtService;
 
-// This is the starting point of your Serverpod server. In most cases, you will
-// only need to make additions to this file if you add future calls,  are
-// configuring Relic (Serverpod's web-server), or need custom setup work.
-
 void run(List<String> args) async {
-  // Initialize CRDT service with node ID
-  final nodeId = Platform.environment['CRDT_NODE_ID'] ?? 'postgres-main';
-  documentCrdtService = DocumentCrdtService(nodeId);
-
   // Initialize Serverpod and connect it with your generated code.
   final pod = Serverpod(
     args,
     Protocol(),
     Endpoints(),
   );
+
+  // Initialize CRDT service with node ID from passwords.yaml
+  final nodeId = pod.getPassword('crdtNodeId') ?? 'postgres-main';
+  documentCrdtService = DocumentCrdtService(nodeId);
 
   // Setup a default page at the web root.
   pod.webServer.addRoute(RouteRoot(), '/');
@@ -54,9 +52,107 @@ void run(List<String> args) async {
           pod.getPassword('googleClientSecret')!,
         ),
       ),
+      EmailIdpConfigFromPasswords(
+        sendRegistrationVerificationCode: _sendRegistrationCode,
+        sendPasswordResetVerificationCode: _sendPasswordResetCode,
+      ),
     ],
   );
 
   // Start the server.
   await pod.start();
+
+  // Register admin module with all CMS models.
+  _registerAdminModule();
+
+  // Seed admin user (idempotent — safe to call on every startup).
+  await _seedAdminUser();
+}
+
+void _sendRegistrationCode(
+  Session session, {
+  required String email,
+  required UuidValue accountRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  session.log('[EmailIdp] Registration code ($email): $verificationCode');
+}
+
+void _sendPasswordResetCode(
+  Session session, {
+  required String email,
+  required UuidValue passwordResetRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  session.log('[EmailIdp] Password reset code ($email): $verificationCode');
+}
+
+void _registerAdminModule() {
+  admin.configureAdminModule((registry) {
+    registry.register<CmsClient>();
+    registry.register<CmsDocument>();
+    registry.register<CmsDocumentData>();
+    registry.register<CmsUser>();
+    registry.register<DocumentVersion>();
+    registry.register<MediaFile>();
+    registry.register<DocumentCrdtOperation>();
+    registry.register<DocumentCrdtSnapshot>();
+
+    print('[Admin] Module registered with ${registry.registeredResourceMetadata.length} resources');
+  });
+}
+
+/// Creates a default admin user if one doesn't already exist.
+/// Uses environment variables or falls back to dev defaults.
+Future<void> _seedAdminUser() async {
+  final session = await Serverpod.instance.createSession();
+
+  try {
+    final emailAdmin = AuthServices.instance.emailIdp.admin;
+    final email = Serverpod.instance.getPassword('adminEmail');
+    final password = Serverpod.instance.getPassword('adminPassword');
+
+    if (email == null || password == null) {
+      print('[Admin] ADMIN_EMAIL and ADMIN_PASSWORD env vars not set, skipping admin seed');
+      return;
+    }
+
+    // Check if the email account already exists
+    final existingAccount = await emailAdmin.findAccount(
+      session,
+      email: email,
+    );
+
+    UuidValue authUserId;
+
+    if (existingAccount == null) {
+      // Create a new auth user and email authentication
+      final authUser = await AuthServices.instance.authUsers.create(session);
+      authUserId = authUser.id;
+
+      await emailAdmin.createEmailAuthentication(
+        session,
+        authUserId: authUserId,
+        email: email,
+        password: password,
+      );
+      print('[Admin] Created admin user: $email');
+    } else {
+      authUserId = existingAccount.authUserId;
+      print('[Admin] Admin user already exists: $email');
+    }
+
+    // Ensure admin scope is set
+    await AuthServices.instance.authUsers.update(
+      session,
+      authUserId: authUserId,
+      scopes: {Scope.admin},
+    );
+  } catch (e) {
+    print('[Admin] Error seeding admin user: $e');
+  } finally {
+    await session.close();
+  }
 }

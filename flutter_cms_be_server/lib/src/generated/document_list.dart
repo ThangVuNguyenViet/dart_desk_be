@@ -7,10 +7,12 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'cms_document.dart' as _i2;
+import 'package:flutter_cms_be_server/src/generated/protocol.dart' as _i3;
 
 abstract class DocumentList
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -30,9 +32,9 @@ abstract class DocumentList
 
   factory DocumentList.fromJson(Map<String, dynamic> jsonSerialization) {
     return DocumentList(
-      documents: (jsonSerialization['documents'] as List)
-          .map((e) => _i2.CmsDocument.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      documents: _i3.Protocol().deserialize<List<_i2.CmsDocument>>(
+        jsonSerialization['documents'],
+      ),
       total: jsonSerialization['total'] as int,
       page: jsonSerialization['page'] as int,
       pageSize: jsonSerialization['pageSize'] as int,
@@ -59,6 +61,7 @@ abstract class DocumentList
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DocumentList',
       'documents': documents.toJson(valueToJson: (v) => v.toJson()),
       'total': total,
       'page': page,
@@ -69,6 +72,7 @@ abstract class DocumentList
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'DocumentList',
       'documents': documents.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'total': total,
       'page': page,
@@ -89,11 +93,11 @@ class _DocumentListImpl extends DocumentList {
     required int page,
     required int pageSize,
   }) : super._(
-          documents: documents,
-          total: total,
-          page: page,
-          pageSize: pageSize,
-        );
+         documents: documents,
+         total: total,
+         page: page,
+         pageSize: pageSize,
+       );
 
   /// Returns a shallow copy of this [DocumentList]
   /// with some or all fields replaced by the given arguments.

@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -108,6 +109,7 @@ abstract class MediaFile
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'MediaFile',
       if (id != null) 'id': id,
       'clientId': clientId,
       'fileName': fileName,
@@ -125,6 +127,7 @@ abstract class MediaFile
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'MediaFile',
       if (id != null) 'id': id,
       'clientId': clientId,
       'fileName': fileName,
@@ -185,18 +188,18 @@ class _MediaFileImpl extends MediaFile {
     required int uploadedByUserId,
     DateTime? createdAt,
   }) : super._(
-          id: id,
-          clientId: clientId,
-          fileName: fileName,
-          fileType: fileType,
-          fileSize: fileSize,
-          storagePath: storagePath,
-          publicUrl: publicUrl,
-          altText: altText,
-          metadata: metadata,
-          uploadedByUserId: uploadedByUserId,
-          createdAt: createdAt,
-        );
+         id: id,
+         clientId: clientId,
+         fileName: fileName,
+         fileType: fileType,
+         fileSize: fileSize,
+         storagePath: storagePath,
+         publicUrl: publicUrl,
+         altText: altText,
+         metadata: metadata,
+         uploadedByUserId: uploadedByUserId,
+         createdAt: createdAt,
+       );
 
   /// Returns a shallow copy of this [MediaFile]
   /// with some or all fields replaced by the given arguments.
@@ -231,8 +234,64 @@ class _MediaFileImpl extends MediaFile {
   }
 }
 
+class MediaFileUpdateTable extends _i1.UpdateTable<MediaFileTable> {
+  MediaFileUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> clientId(int value) => _i1.ColumnValue(
+    table.clientId,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> fileName(String value) => _i1.ColumnValue(
+    table.fileName,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> fileType(String value) => _i1.ColumnValue(
+    table.fileType,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> fileSize(int value) => _i1.ColumnValue(
+    table.fileSize,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> storagePath(String value) => _i1.ColumnValue(
+    table.storagePath,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> publicUrl(String value) => _i1.ColumnValue(
+    table.publicUrl,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> altText(String? value) => _i1.ColumnValue(
+    table.altText,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> metadata(String? value) => _i1.ColumnValue(
+    table.metadata,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> uploadedByUserId(int value) => _i1.ColumnValue(
+    table.uploadedByUserId,
+    value,
+  );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+}
+
 class MediaFileTable extends _i1.Table<int?> {
   MediaFileTable({super.tableRelation}) : super(tableName: 'media_files') {
+    updateTable = MediaFileUpdateTable(this);
     clientId = _i1.ColumnInt(
       'clientId',
       this,
@@ -276,6 +335,8 @@ class MediaFileTable extends _i1.Table<int?> {
     );
   }
 
+  late final MediaFileUpdateTable updateTable;
+
   late final _i1.ColumnInt clientId;
 
   late final _i1.ColumnString fileName;
@@ -298,18 +359,18 @@ class MediaFileTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        clientId,
-        fileName,
-        fileType,
-        fileSize,
-        storagePath,
-        publicUrl,
-        altText,
-        metadata,
-        uploadedByUserId,
-        createdAt,
-      ];
+    id,
+    clientId,
+    fileName,
+    fileType,
+    fileSize,
+    storagePath,
+    publicUrl,
+    altText,
+    metadata,
+    uploadedByUserId,
+    createdAt,
+  ];
 }
 
 class MediaFileInclude extends _i1.IncludeObject {
@@ -368,7 +429,7 @@ class MediaFileRepository {
   /// );
   /// ```
   Future<List<MediaFile>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MediaFileTable>? where,
     int? limit,
     int? offset,
@@ -376,6 +437,8 @@ class MediaFileRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<MediaFileTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MediaFile>(
       where: where?.call(MediaFile.t),
@@ -385,6 +448,8 @@ class MediaFileRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -406,13 +471,15 @@ class MediaFileRepository {
   /// );
   /// ```
   Future<MediaFile?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MediaFileTable>? where,
     int? offset,
     _i1.OrderByBuilder<MediaFileTable>? orderBy,
     bool orderDescending = false,
     _i1.OrderByListBuilder<MediaFileTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MediaFile>(
       where: where?.call(MediaFile.t),
@@ -421,18 +488,24 @@ class MediaFileRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [MediaFile] by its [id] or null if no such row exists.
   Future<MediaFile?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<MediaFile>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -442,14 +515,20 @@ class MediaFileRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<MediaFile>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MediaFile> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<MediaFile>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -457,7 +536,7 @@ class MediaFileRepository {
   ///
   /// The returned [MediaFile] will have its `id` field set.
   Future<MediaFile> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MediaFile row, {
     _i1.Transaction? transaction,
   }) async {
@@ -473,7 +552,7 @@ class MediaFileRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<MediaFile>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MediaFile> rows, {
     _i1.ColumnSelections<MediaFileTable>? columns,
     _i1.Transaction? transaction,
@@ -489,7 +568,7 @@ class MediaFileRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<MediaFile> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MediaFile row, {
     _i1.ColumnSelections<MediaFileTable>? columns,
     _i1.Transaction? transaction,
@@ -501,11 +580,51 @@ class MediaFileRepository {
     );
   }
 
+  /// Updates a single [MediaFile] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<MediaFile?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<MediaFileUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<MediaFile>(
+      id,
+      columnValues: columnValues(MediaFile.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [MediaFile]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<MediaFile>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<MediaFileUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<MediaFileTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<MediaFileTable>? orderBy,
+    _i1.OrderByListBuilder<MediaFileTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<MediaFile>(
+      columnValues: columnValues(MediaFile.t.updateTable),
+      where: where(MediaFile.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MediaFile.t),
+      orderByList: orderByList?.call(MediaFile.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [MediaFile]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<MediaFile>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MediaFile> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -517,7 +636,7 @@ class MediaFileRepository {
 
   /// Deletes a single [MediaFile].
   Future<MediaFile> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MediaFile row, {
     _i1.Transaction? transaction,
   }) async {
@@ -529,7 +648,7 @@ class MediaFileRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<MediaFile>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MediaFileTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -542,7 +661,7 @@ class MediaFileRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MediaFileTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -550,6 +669,22 @@ class MediaFileRepository {
     return session.db.count<MediaFile>(
       where: where?.call(MediaFile.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [MediaFile] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<MediaFileTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<MediaFile>(
+      where: where(MediaFile.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -27,8 +28,8 @@ abstract class DocumentVersion
     this.archivedAt,
     DateTime? createdAt,
     required this.createdByUserId,
-  })  : operationCount = operationCount ?? 0,
-        createdAt = createdAt ?? DateTime.now();
+  }) : operationCount = operationCount ?? 0,
+       createdAt = createdAt ?? DateTime.now();
 
   factory DocumentVersion({
     int? id,
@@ -51,18 +52,21 @@ abstract class DocumentVersion
       documentId: jsonSerialization['documentId'] as int,
       versionNumber: jsonSerialization['versionNumber'] as int,
       status: _i2.DocumentVersionStatus.fromJson(
-          (jsonSerialization['status'] as String)),
+        (jsonSerialization['status'] as String),
+      ),
       snapshotHlc: jsonSerialization['snapshotHlc'] as String?,
-      operationCount: jsonSerialization['operationCount'] as int,
+      operationCount: jsonSerialization['operationCount'] as int?,
       changeLog: jsonSerialization['changeLog'] as String?,
       publishedAt: jsonSerialization['publishedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(
-              jsonSerialization['publishedAt']),
+              jsonSerialization['publishedAt'],
+            ),
       scheduledAt: jsonSerialization['scheduledAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(
-              jsonSerialization['scheduledAt']),
+              jsonSerialization['scheduledAt'],
+            ),
       archivedAt: jsonSerialization['archivedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['archivedAt']),
@@ -125,6 +129,7 @@ abstract class DocumentVersion
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DocumentVersion',
       if (id != null) 'id': id,
       'documentId': documentId,
       'versionNumber': versionNumber,
@@ -143,6 +148,7 @@ abstract class DocumentVersion
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'DocumentVersion',
       if (id != null) 'id': id,
       'documentId': documentId,
       'versionNumber': versionNumber,
@@ -205,19 +211,19 @@ class _DocumentVersionImpl extends DocumentVersion {
     DateTime? createdAt,
     required int createdByUserId,
   }) : super._(
-          id: id,
-          documentId: documentId,
-          versionNumber: versionNumber,
-          status: status,
-          snapshotHlc: snapshotHlc,
-          operationCount: operationCount,
-          changeLog: changeLog,
-          publishedAt: publishedAt,
-          scheduledAt: scheduledAt,
-          archivedAt: archivedAt,
-          createdAt: createdAt,
-          createdByUserId: createdByUserId,
-        );
+         id: id,
+         documentId: documentId,
+         versionNumber: versionNumber,
+         status: status,
+         snapshotHlc: snapshotHlc,
+         operationCount: operationCount,
+         changeLog: changeLog,
+         publishedAt: publishedAt,
+         scheduledAt: scheduledAt,
+         archivedAt: archivedAt,
+         createdAt: createdAt,
+         createdByUserId: createdByUserId,
+       );
 
   /// Returns a shallow copy of this [DocumentVersion]
   /// with some or all fields replaced by the given arguments.
@@ -254,9 +260,75 @@ class _DocumentVersionImpl extends DocumentVersion {
   }
 }
 
+class DocumentVersionUpdateTable extends _i1.UpdateTable<DocumentVersionTable> {
+  DocumentVersionUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> documentId(int value) => _i1.ColumnValue(
+    table.documentId,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> versionNumber(int value) => _i1.ColumnValue(
+    table.versionNumber,
+    value,
+  );
+
+  _i1.ColumnValue<_i2.DocumentVersionStatus, _i2.DocumentVersionStatus> status(
+    _i2.DocumentVersionStatus value,
+  ) => _i1.ColumnValue(
+    table.status,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> snapshotHlc(String? value) => _i1.ColumnValue(
+    table.snapshotHlc,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> operationCount(int value) => _i1.ColumnValue(
+    table.operationCount,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> changeLog(String? value) => _i1.ColumnValue(
+    table.changeLog,
+    value,
+  );
+
+  _i1.ColumnValue<DateTime, DateTime> publishedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.publishedAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> scheduledAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.scheduledAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> archivedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.archivedAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> createdByUserId(int value) => _i1.ColumnValue(
+    table.createdByUserId,
+    value,
+  );
+}
+
 class DocumentVersionTable extends _i1.Table<int?> {
   DocumentVersionTable({super.tableRelation})
-      : super(tableName: 'document_versions') {
+    : super(tableName: 'document_versions') {
+    updateTable = DocumentVersionUpdateTable(this);
     documentId = _i1.ColumnInt(
       'documentId',
       this,
@@ -306,6 +378,8 @@ class DocumentVersionTable extends _i1.Table<int?> {
     );
   }
 
+  late final DocumentVersionUpdateTable updateTable;
+
   late final _i1.ColumnInt documentId;
 
   late final _i1.ColumnInt versionNumber;
@@ -330,19 +404,19 @@ class DocumentVersionTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        documentId,
-        versionNumber,
-        status,
-        snapshotHlc,
-        operationCount,
-        changeLog,
-        publishedAt,
-        scheduledAt,
-        archivedAt,
-        createdAt,
-        createdByUserId,
-      ];
+    id,
+    documentId,
+    versionNumber,
+    status,
+    snapshotHlc,
+    operationCount,
+    changeLog,
+    publishedAt,
+    scheduledAt,
+    archivedAt,
+    createdAt,
+    createdByUserId,
+  ];
 }
 
 class DocumentVersionInclude extends _i1.IncludeObject {
@@ -401,7 +475,7 @@ class DocumentVersionRepository {
   /// );
   /// ```
   Future<List<DocumentVersion>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<DocumentVersionTable>? where,
     int? limit,
     int? offset,
@@ -409,6 +483,8 @@ class DocumentVersionRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentVersionTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DocumentVersion>(
       where: where?.call(DocumentVersion.t),
@@ -418,6 +494,8 @@ class DocumentVersionRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -439,13 +517,15 @@ class DocumentVersionRepository {
   /// );
   /// ```
   Future<DocumentVersion?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<DocumentVersionTable>? where,
     int? offset,
     _i1.OrderByBuilder<DocumentVersionTable>? orderBy,
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentVersionTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DocumentVersion>(
       where: where?.call(DocumentVersion.t),
@@ -454,18 +534,24 @@ class DocumentVersionRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
   /// Finds a single [DocumentVersion] by its [id] or null if no such row exists.
   Future<DocumentVersion?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DocumentVersion>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -475,14 +561,20 @@ class DocumentVersionRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<DocumentVersion>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<DocumentVersion> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<DocumentVersion>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -490,7 +582,7 @@ class DocumentVersionRepository {
   ///
   /// The returned [DocumentVersion] will have its `id` field set.
   Future<DocumentVersion> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     DocumentVersion row, {
     _i1.Transaction? transaction,
   }) async {
@@ -506,7 +598,7 @@ class DocumentVersionRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<DocumentVersion>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<DocumentVersion> rows, {
     _i1.ColumnSelections<DocumentVersionTable>? columns,
     _i1.Transaction? transaction,
@@ -522,7 +614,7 @@ class DocumentVersionRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DocumentVersion> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     DocumentVersion row, {
     _i1.ColumnSelections<DocumentVersionTable>? columns,
     _i1.Transaction? transaction,
@@ -534,11 +626,53 @@ class DocumentVersionRepository {
     );
   }
 
+  /// Updates a single [DocumentVersion] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DocumentVersion?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DocumentVersionUpdateTable>
+    columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DocumentVersion>(
+      id,
+      columnValues: columnValues(DocumentVersion.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DocumentVersion]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DocumentVersion>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<DocumentVersionUpdateTable>
+    columnValues,
+    required _i1.WhereExpressionBuilder<DocumentVersionTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DocumentVersionTable>? orderBy,
+    _i1.OrderByListBuilder<DocumentVersionTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DocumentVersion>(
+      columnValues: columnValues(DocumentVersion.t.updateTable),
+      where: where(DocumentVersion.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DocumentVersion.t),
+      orderByList: orderByList?.call(DocumentVersion.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [DocumentVersion]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<DocumentVersion>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<DocumentVersion> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -550,7 +684,7 @@ class DocumentVersionRepository {
 
   /// Deletes a single [DocumentVersion].
   Future<DocumentVersion> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     DocumentVersion row, {
     _i1.Transaction? transaction,
   }) async {
@@ -562,7 +696,7 @@ class DocumentVersionRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<DocumentVersion>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DocumentVersionTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -575,7 +709,7 @@ class DocumentVersionRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<DocumentVersionTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -583,6 +717,22 @@ class DocumentVersionRepository {
     return session.db.count<DocumentVersion>(
       where: where?.call(DocumentVersion.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [DocumentVersion] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<DocumentVersionTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<DocumentVersion>(
+      where: where(DocumentVersion.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

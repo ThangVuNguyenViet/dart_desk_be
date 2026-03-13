@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -22,10 +23,10 @@ abstract class CmsUser implements _i1.SerializableModel {
     this.serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : role = role ?? 'viewer',
-        isActive = isActive ?? true,
-        createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : role = role ?? 'viewer',
+       isActive = isActive ?? true,
+       createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   factory CmsUser({
     int? id,
@@ -45,8 +46,10 @@ abstract class CmsUser implements _i1.SerializableModel {
       clientId: jsonSerialization['clientId'] as int,
       email: jsonSerialization['email'] as String,
       name: jsonSerialization['name'] as String?,
-      role: jsonSerialization['role'] as String,
-      isActive: jsonSerialization['isActive'] as bool,
+      role: jsonSerialization['role'] as String?,
+      isActive: jsonSerialization['isActive'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['isActive']),
       serverpodUserId: jsonSerialization['serverpodUserId'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
@@ -95,6 +98,7 @@ abstract class CmsUser implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'CmsUser',
       if (id != null) 'id': id,
       'clientId': clientId,
       'email': email,
@@ -127,16 +131,16 @@ class _CmsUserImpl extends CmsUser {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super._(
-          id: id,
-          clientId: clientId,
-          email: email,
-          name: name,
-          role: role,
-          isActive: isActive,
-          serverpodUserId: serverpodUserId,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-        );
+         id: id,
+         clientId: clientId,
+         email: email,
+         name: name,
+         role: role,
+         isActive: isActive,
+         serverpodUserId: serverpodUserId,
+         createdAt: createdAt,
+         updatedAt: updatedAt,
+       );
 
   /// Returns a shallow copy of this [CmsUser]
   /// with some or all fields replaced by the given arguments.
@@ -160,8 +164,9 @@ class _CmsUserImpl extends CmsUser {
       name: name is String? ? name : this.name,
       role: role ?? this.role,
       isActive: isActive ?? this.isActive,
-      serverpodUserId:
-          serverpodUserId is String? ? serverpodUserId : this.serverpodUserId,
+      serverpodUserId: serverpodUserId is String?
+          ? serverpodUserId
+          : this.serverpodUserId,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
     );

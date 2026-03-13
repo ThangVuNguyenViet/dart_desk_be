@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -20,8 +21,8 @@ abstract class CmsDocumentData implements _i1.SerializableModel {
     DateTime? updatedAt,
     this.createdByUserId,
     this.updatedByUserId,
-  })  : createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   factory CmsDocumentData({
     int? id,
@@ -81,6 +82,7 @@ abstract class CmsDocumentData implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'CmsDocumentData',
       if (id != null) 'id': id,
       'documentType': documentType,
       'data': data,
@@ -109,14 +111,14 @@ class _CmsDocumentDataImpl extends CmsDocumentData {
     int? createdByUserId,
     int? updatedByUserId,
   }) : super._(
-          id: id,
-          documentType: documentType,
-          data: data,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-          createdByUserId: createdByUserId,
-          updatedByUserId: updatedByUserId,
-        );
+         id: id,
+         documentType: documentType,
+         data: data,
+         createdAt: createdAt,
+         updatedAt: updatedAt,
+         createdByUserId: createdByUserId,
+         updatedByUserId: updatedByUserId,
+       );
 
   /// Returns a shallow copy of this [CmsDocumentData]
   /// with some or all fields replaced by the given arguments.
@@ -137,10 +139,12 @@ class _CmsDocumentDataImpl extends CmsDocumentData {
       data: data ?? this.data,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
-      createdByUserId:
-          createdByUserId is int? ? createdByUserId : this.createdByUserId,
-      updatedByUserId:
-          updatedByUserId is int? ? updatedByUserId : this.updatedByUserId,
+      createdByUserId: createdByUserId is int?
+          ? createdByUserId
+          : this.createdByUserId,
+      updatedByUserId: updatedByUserId is int?
+          ? updatedByUserId
+          : this.updatedByUserId,
     );
   }
 }

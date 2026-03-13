@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -38,14 +39,16 @@ abstract class DocumentCrdtOperation implements _i1.SerializableModel {
   }) = _DocumentCrdtOperationImpl;
 
   factory DocumentCrdtOperation.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DocumentCrdtOperation(
       id: jsonSerialization['id'] as int?,
       documentId: jsonSerialization['documentId'] as int,
       hlc: jsonSerialization['hlc'] as String,
       nodeId: jsonSerialization['nodeId'] as String,
       operationType: _i2.CrdtOperationType.fromJson(
-          (jsonSerialization['operationType'] as String)),
+        (jsonSerialization['operationType'] as String),
+      ),
       fieldPath: jsonSerialization['fieldPath'] as String,
       fieldValue: jsonSerialization['fieldValue'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
@@ -93,6 +96,7 @@ abstract class DocumentCrdtOperation implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DocumentCrdtOperation',
       if (id != null) 'id': id,
       'documentId': documentId,
       'hlc': hlc,
@@ -125,16 +129,16 @@ class _DocumentCrdtOperationImpl extends DocumentCrdtOperation {
     DateTime? createdAt,
     int? createdByUserId,
   }) : super._(
-          id: id,
-          documentId: documentId,
-          hlc: hlc,
-          nodeId: nodeId,
-          operationType: operationType,
-          fieldPath: fieldPath,
-          fieldValue: fieldValue,
-          createdAt: createdAt,
-          createdByUserId: createdByUserId,
-        );
+         id: id,
+         documentId: documentId,
+         hlc: hlc,
+         nodeId: nodeId,
+         operationType: operationType,
+         fieldPath: fieldPath,
+         fieldValue: fieldValue,
+         createdAt: createdAt,
+         createdByUserId: createdByUserId,
+       );
 
   /// Returns a shallow copy of this [DocumentCrdtOperation]
   /// with some or all fields replaced by the given arguments.
@@ -160,8 +164,9 @@ class _DocumentCrdtOperationImpl extends DocumentCrdtOperation {
       fieldPath: fieldPath ?? this.fieldPath,
       fieldValue: fieldValue is String? ? fieldValue : this.fieldValue,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
-      createdByUserId:
-          createdByUserId is int? ? createdByUserId : this.createdByUserId,
+      createdByUserId: createdByUserId is int?
+          ? createdByUserId
+          : this.createdByUserId,
     );
   }
 }

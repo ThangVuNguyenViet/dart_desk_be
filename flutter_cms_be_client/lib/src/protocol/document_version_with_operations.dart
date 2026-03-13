@@ -7,11 +7,13 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'document_version.dart' as _i2;
 import 'document_crdt_operation.dart' as _i3;
+import 'package:flutter_cms_be_client/src/protocol/protocol.dart' as _i4;
 
 abstract class DocumentVersionWithOperations implements _i1.SerializableModel {
   DocumentVersionWithOperations._({
@@ -25,15 +27,16 @@ abstract class DocumentVersionWithOperations implements _i1.SerializableModel {
   }) = _DocumentVersionWithOperationsImpl;
 
   factory DocumentVersionWithOperations.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DocumentVersionWithOperations(
-      version: _i2.DocumentVersion.fromJson(
-          (jsonSerialization['version'] as Map<String, dynamic>)),
-      operationsSincePrevious: (jsonSerialization['operationsSincePrevious']
-              as List)
-          .map((e) =>
-              _i3.DocumentCrdtOperation.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      version: _i4.Protocol().deserialize<_i2.DocumentVersion>(
+        jsonSerialization['version'],
+      ),
+      operationsSincePrevious: _i4.Protocol()
+          .deserialize<List<_i3.DocumentCrdtOperation>>(
+            jsonSerialization['operationsSincePrevious'],
+          ),
     );
   }
 
@@ -51,9 +54,11 @@ abstract class DocumentVersionWithOperations implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DocumentVersionWithOperations',
       'version': version.toJson(),
-      'operationsSincePrevious':
-          operationsSincePrevious.toJson(valueToJson: (v) => v.toJson()),
+      'operationsSincePrevious': operationsSincePrevious.toJson(
+        valueToJson: (v) => v.toJson(),
+      ),
     };
   }
 
@@ -68,9 +73,9 @@ class _DocumentVersionWithOperationsImpl extends DocumentVersionWithOperations {
     required _i2.DocumentVersion version,
     required List<_i3.DocumentCrdtOperation> operationsSincePrevious,
   }) : super._(
-          version: version,
-          operationsSincePrevious: operationsSincePrevious,
-        );
+         version: version,
+         operationsSincePrevious: operationsSincePrevious,
+       );
 
   /// Returns a shallow copy of this [DocumentVersionWithOperations]
   /// with some or all fields replaced by the given arguments.
@@ -82,7 +87,8 @@ class _DocumentVersionWithOperationsImpl extends DocumentVersionWithOperations {
   }) {
     return DocumentVersionWithOperations(
       version: version ?? this.version.copyWith(),
-      operationsSincePrevious: operationsSincePrevious ??
+      operationsSincePrevious:
+          operationsSincePrevious ??
           this.operationsSincePrevious.map((e0) => e0.copyWith()).toList(),
     );
   }

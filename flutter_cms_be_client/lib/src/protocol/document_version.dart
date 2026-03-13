@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -26,8 +27,8 @@ abstract class DocumentVersion implements _i1.SerializableModel {
     this.archivedAt,
     DateTime? createdAt,
     required this.createdByUserId,
-  })  : operationCount = operationCount ?? 0,
-        createdAt = createdAt ?? DateTime.now();
+  }) : operationCount = operationCount ?? 0,
+       createdAt = createdAt ?? DateTime.now();
 
   factory DocumentVersion({
     int? id,
@@ -50,18 +51,21 @@ abstract class DocumentVersion implements _i1.SerializableModel {
       documentId: jsonSerialization['documentId'] as int,
       versionNumber: jsonSerialization['versionNumber'] as int,
       status: _i2.DocumentVersionStatus.fromJson(
-          (jsonSerialization['status'] as String)),
+        (jsonSerialization['status'] as String),
+      ),
       snapshotHlc: jsonSerialization['snapshotHlc'] as String?,
-      operationCount: jsonSerialization['operationCount'] as int,
+      operationCount: jsonSerialization['operationCount'] as int?,
       changeLog: jsonSerialization['changeLog'] as String?,
       publishedAt: jsonSerialization['publishedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(
-              jsonSerialization['publishedAt']),
+              jsonSerialization['publishedAt'],
+            ),
       scheduledAt: jsonSerialization['scheduledAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(
-              jsonSerialization['scheduledAt']),
+              jsonSerialization['scheduledAt'],
+            ),
       archivedAt: jsonSerialization['archivedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['archivedAt']),
@@ -119,6 +123,7 @@ abstract class DocumentVersion implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DocumentVersion',
       if (id != null) 'id': id,
       'documentId': documentId,
       'versionNumber': versionNumber,
@@ -157,19 +162,19 @@ class _DocumentVersionImpl extends DocumentVersion {
     DateTime? createdAt,
     required int createdByUserId,
   }) : super._(
-          id: id,
-          documentId: documentId,
-          versionNumber: versionNumber,
-          status: status,
-          snapshotHlc: snapshotHlc,
-          operationCount: operationCount,
-          changeLog: changeLog,
-          publishedAt: publishedAt,
-          scheduledAt: scheduledAt,
-          archivedAt: archivedAt,
-          createdAt: createdAt,
-          createdByUserId: createdByUserId,
-        );
+         id: id,
+         documentId: documentId,
+         versionNumber: versionNumber,
+         status: status,
+         snapshotHlc: snapshotHlc,
+         operationCount: operationCount,
+         changeLog: changeLog,
+         publishedAt: publishedAt,
+         scheduledAt: scheduledAt,
+         archivedAt: archivedAt,
+         createdAt: createdAt,
+         createdByUserId: createdByUserId,
+       );
 
   /// Returns a shallow copy of this [DocumentVersion]
   /// with some or all fields replaced by the given arguments.

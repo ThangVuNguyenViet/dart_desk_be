@@ -1,0 +1,4 @@
+class: ClientWithToken
+fields:
+  client: CmsClient
+  apiToken: String

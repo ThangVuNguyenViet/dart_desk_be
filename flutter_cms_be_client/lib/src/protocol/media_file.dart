@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -102,6 +103,7 @@ abstract class MediaFile implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'MediaFile',
       if (id != null) 'id': id,
       'clientId': clientId,
       'fileName': fileName,
@@ -138,18 +140,18 @@ class _MediaFileImpl extends MediaFile {
     required int uploadedByUserId,
     DateTime? createdAt,
   }) : super._(
-          id: id,
-          clientId: clientId,
-          fileName: fileName,
-          fileType: fileType,
-          fileSize: fileSize,
-          storagePath: storagePath,
-          publicUrl: publicUrl,
-          altText: altText,
-          metadata: metadata,
-          uploadedByUserId: uploadedByUserId,
-          createdAt: createdAt,
-        );
+         id: id,
+         clientId: clientId,
+         fileName: fileName,
+         fileType: fileType,
+         fileSize: fileSize,
+         storagePath: storagePath,
+         publicUrl: publicUrl,
+         altText: altText,
+         metadata: metadata,
+         uploadedByUserId: uploadedByUserId,
+         createdAt: createdAt,
+       );
 
   /// Returns a shallow copy of this [MediaFile]
   /// with some or all fields replaced by the given arguments.
