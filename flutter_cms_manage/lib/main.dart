@@ -5,6 +5,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'src/providers/manage_providers.dart';
 import 'src/routes/manage_coordinator.dart';
+import 'src/widgets/auth_gate.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +47,10 @@ class _ManageAppState extends State<ManageApp> {
       ),
       routeInformationParser: coordinator.routeInformationParser,
       routerDelegate: coordinator.routerDelegate,
+      builder: (context, child) => AuthGate(
+        coordinator: coordinator,
+        child: child ?? const SizedBox.shrink(),
+      ),
     );
   }
 }

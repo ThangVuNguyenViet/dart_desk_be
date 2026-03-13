@@ -7,6 +7,7 @@ import 'manage_coordinator.dart';
 import 'overview_route.dart';
 import 'tokens_route.dart';
 import 'settings_route.dart';
+import '../providers/manage_providers.dart';
 
 class ManageLayout extends ManageRoute with RouteLayout<ManageRoute> {
   @override
@@ -85,10 +86,20 @@ class _TopBar extends StatelessWidget {
             onPressed: () {},
           ),
           const SizedBox(width: 8),
-          ShadAvatar(
-            'U',
-            size: const Size(28, 28),
-            placeholder: const Text('U'),
+          ShadButton.ghost(
+            onPressed: () => logout(),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ShadAvatar(
+                  'U',
+                  size: const Size(28, 28),
+                  placeholder: const Text('U'),
+                ),
+                const SizedBox(width: 8),
+                Icon(LucideIcons.logOut, size: 14),
+              ],
+            ),
           ),
         ],
       ),
