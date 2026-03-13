@@ -169,117 +169,88 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
   }
 
   Widget _buildSignInScreen() {
-    return ShadTheme(
-      data: ShadThemeData(),
-      child: Scaffold(
-        body: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (widget.logo != null) ...[
-                    Center(child: widget.logo!),
-                    const SizedBox(height: 24),
-                  ],
-                  Text(
-                    widget.title,
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  if (widget.subtitle != null) ...[
+    return Scaffold(
+      body: Builder(
+        builder: (context) {
+          final theme = ShadTheme.of(context);
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (widget.logo != null) ...[
+                      Center(child: widget.logo!),
+                      const SizedBox(height: 24),
+                    ],
                     Text(
-                      widget.subtitle!,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
+                      widget.title,
+                      style: theme.textTheme.h1Large,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    if (widget.subtitle != null) ...[
+                      Text(
+                        widget.subtitle!,
+                        style: theme.textTheme.muted,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 32),
+                    ] else ...[
+                      const SizedBox(height: 32),
+                    ],
+                    ShadCard(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'Sign in to continue',
+                            style: theme.textTheme.h4,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 24),
+                          if (_errorMessage != null) ...[
+                            ShadAlert.destructive(
+                              iconSrc: LucideIcons.circleAlert,
+                              title: const Text('Error'),
+                              description: Text(_errorMessage!),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                          GoogleSignInWidget(
+                            client: _client,
+                            scopes: const [],
+                            onAuthenticated: () {
+                              if (mounted) setState(() {});
+                            },
+                            onError: (error) {
+                              setState(() {
+                                _errorMessage =
+                                    'Google Sign-In failed. Please try again.';
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'By signing in, you agree to our Terms of Service and Privacy Policy.',
+                      style: theme.textTheme.muted.copyWith(
+                        fontSize: 12,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 32),
-                  ] else ...[
-                    const SizedBox(height: 32),
                   ],
-                  ShadCard(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          'Sign in to continue',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 24),
-                        if (_errorMessage != null) ...[
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.red[50],
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.red[200]!),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  color: Colors.red[700],
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    _errorMessage!,
-                                    style: TextStyle(
-                                      color: Colors.red[700],
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        GoogleSignInWidget(
-                          client: _client,
-                          onAuthenticated: () {
-                            if (mounted) setState(() {});
-                          },
-                          onError: (error) {
-                            setState(() {
-                              _errorMessage =
-                                  'Google Sign-In failed. Please try again.';
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'By signing in, you agree to our Terms of Service and Privacy Policy.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
