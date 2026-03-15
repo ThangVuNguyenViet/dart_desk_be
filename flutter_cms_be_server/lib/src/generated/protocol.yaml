@@ -29,6 +29,7 @@ document:
   - updateDocumentData:
   - updateDocument:
   - deleteDocument:
+  - suggestSlug:
   - getDocumentTypes:
   - getDocumentVersions:
   - getDocumentVersion:

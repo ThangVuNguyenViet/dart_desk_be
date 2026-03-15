@@ -4,7 +4,13 @@ import 'package:signals/signals.dart';
 import '../services/token_service.dart';
 
 /// Auth state for the AuthGate widget
-enum AuthState { loading, unauthenticated, authenticatedLoading, ready, noClients }
+enum AuthState {
+  loading,
+  unauthenticated,
+  authenticatedLoading,
+  ready,
+  noClients
+}
 
 /// Current auth state — written by AuthGate widget
 final authState = signal<AuthState>(AuthState.loading);
@@ -12,20 +18,41 @@ final authState = signal<AuthState>(AuthState.loading);
 /// Global Serverpod client instance (initialized in main.dart)
 late final Client serverpodClient;
 
-/// Current authenticated CmsUser
-final currentUser = signal<CmsUser?>(null);
+/// Current authenticated CmsUser — derived from currentClientSlug
+final currentUser = futureSignal<CmsUser?>(
+  () async {
+    final slug = currentClientSlug.value;
+    if (slug.isEmpty) return null;
+    return serverpodClient.user.getCurrentUserBySlug(slug);
+  },
+  dependencies: [currentClientSlug],
+);
 
-/// Current CmsClient (resolved from URL slug)
-final currentClient = signal<CmsClient?>(null);
+/// Current client slug (set from URL)
+final currentClientSlug = signal<String>('');
 
 /// All clients the user belongs to
-final userClients = listSignal<CmsClient>([]);
+final userClients = futureSignal<List<CmsClient>>(
+  () => serverpodClient.user.getUserClients(),
+  lazy: true,
+);
+
+/// Current CmsClient — derived from currentClientSlug + userClients
+final currentClient = futureSignal<CmsClient?>(
+  () async {
+    final slug = currentClientSlug.value;
+    if (slug.isEmpty) return null;
+    final clients = await userClients.future;
+    return clients.where((c) => c.slug == slug).firstOrNull;
+  },
+  dependencies: [currentClientSlug, userClients],
+);
 
 /// Token service for the current client
 TokenService? _tokenService;
 
 TokenService get tokenService {
-  final client = currentClient.value;
+  final client = currentClient.value.value;
   if (client == null) throw StateError('No client selected');
   if (_tokenService == null || _tokenService!.clientId != client.id!) {
     _tokenService = TokenService(
@@ -42,27 +69,16 @@ void resetTokenService() {
 }
 
 /// Initialize client context from slug
-Future<void> initClientContext(String clientSlug) async {
-  final clients = await serverpodClient.user.getUserClients();
-  userClients.value = clients;
-
-  final client = clients.where((c) => c.slug == clientSlug).firstOrNull;
-  currentClient.value = client;
+void initClientContext(String slug) {
+  currentClientSlug.value = slug;
   resetTokenService();
-
-  if (client != null) {
-    final user =
-        await serverpodClient.user.getCurrentUserBySlug(clientSlug);
-    currentUser.value = user;
-  }
 }
 
 /// Sign out and clear all state
 Future<void> logout() async {
   await serverpodClient.auth.signOutDevice();
-  currentUser.value = null;
-  currentClient.value = null;
-  userClients.value = [];
+  currentClientSlug.value = '';
+  userClients.reset();
   authState.value = AuthState.unauthenticated;
   resetTokenService();
 }

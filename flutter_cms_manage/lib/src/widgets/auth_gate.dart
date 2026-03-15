@@ -3,10 +3,10 @@ import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../providers/manage_providers.dart';
-import '../screens/login_screen.dart';
-import '../screens/setup_wizard_screen.dart';
 import '../routes/manage_coordinator.dart';
 import '../routes/overview_route.dart';
+import '../screens/login_screen.dart';
+import '../screens/setup_wizard_screen.dart';
 
 class AuthGate extends StatefulWidget {
   final Widget child;
@@ -48,17 +48,24 @@ class _AuthGateState extends State<AuthGate> {
     if (mounted) setState(() {});
 
     try {
-      final clients = await serverpodClient.user.getUserClients();
-      userClients.value = clients;
+      userClients.reload();
+      final clients = await userClients.future;
 
       if (clients.isEmpty) {
         authState.value = AuthState.noClients;
       } else {
+        // Set slug from URL if available
+        final slug = widget.coordinator.clientSlug;
+        if (slug.isNotEmpty) {
+          currentClientSlug.value = slug;
+        }
+
         authState.value = AuthState.ready;
 
         // If user has exactly one client and is on root/login/setup,
         // redirect to their client's overview
         if (clients.length == 1 && _isRootOrAuthRoute()) {
+          currentClientSlug.value = clients.first.slug;
           widget.coordinator.replace(
             OverviewRoute(clients.first.slug),
           );

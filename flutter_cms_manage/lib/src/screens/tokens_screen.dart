@@ -34,6 +34,10 @@ class _TokensScreenState extends State<TokensScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
+    final clientState = currentClient.watch(context);
+    if (clientState.value == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
     final tokenList = tokenService.tokens.watch(context);
     final loading = tokenService.isLoading.watch(context);
     final errorMsg = tokenService.error.watch(context);

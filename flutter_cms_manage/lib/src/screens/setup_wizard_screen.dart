@@ -49,8 +49,9 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
         slug: slug,
       );
 
-      // Update local state immediately (avoid re-fetch race condition)
-      userClients.value = [...userClients.value, client];
+      // Reload clients from server and update state
+      userClients.reload();
+      await userClients.future;
       authState.value = AuthState.ready;
 
       if (mounted) {

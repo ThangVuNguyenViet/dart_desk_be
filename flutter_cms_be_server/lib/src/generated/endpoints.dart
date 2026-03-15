@@ -827,6 +827,31 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['documentId'],
                   ),
         ),
+        'suggestSlug': _i1.MethodConnector(
+          name: 'suggestSlug',
+          params: {
+            'title': _i1.ParameterDescription(
+              name: 'title',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'documentType': _i1.ParameterDescription(
+              name: 'documentType',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['document'] as _i5.DocumentEndpoint).suggestSlug(
+                    session,
+                    params['title'],
+                    params['documentType'],
+                  ),
+        ),
         'getDocumentTypes': _i1.MethodConnector(
           name: 'getDocumentTypes',
           params: {},

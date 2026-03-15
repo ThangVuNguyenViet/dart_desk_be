@@ -226,10 +226,9 @@ class _DetailRow extends StatelessWidget {
               size: ShadButtonSize.sm,
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: value ?? ''));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Copied to clipboard'),
-                    duration: Duration(seconds: 2),
+                ShadToaster.of(context).show(
+                  const ShadToast(
+                    title: Text('Copied to clipboard'),
                   ),
                 );
               },

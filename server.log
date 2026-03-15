@@ -1,54 +1,1173 @@
-SERVERPOD version: 3.3.0, dart: 3.11.1 (stable) (Tue Feb 24 00:03:07 2026 -0800) on "macos_arm64", time: 2026-03-13 07:25:23.317845Z
+SERVERPOD version: 3.4.3, dart: 3.11.1 (stable) (Tue Feb 24 00:03:07 2026 -0800) on "macos_arm64", time: 2026-03-13 22:03:27.963314Z
 runMode: development
 serverId: default
 role: monolith
 loggingMode: normal
 applyMigrations: false
 applyRepairMigration: false
-SERVERPOD initialized, time: 2026-03-13 07:25:23.358240Z
-2026-03-13 07:25:23.780900Z WebServer  INFO: Webserver listening on http://localhost:8082
+SERVERPOD initialized, time: 2026-03-13 22:03:28.022574Z
+2026-03-13 22:03:28.533876Z WebServer  INFO: Webserver listening on http://localhost:8082
 TIME                        ID         TYPE           CONTEXT                  DETAILS
 --------------------------- ---------- -------------- ------------------------ ------------------------------
-2026-03-13 07:25:35.743721Z  681682503 METHOD         document.getDocuments    user=null, queries=2, duration=44µs
-2026-03-13 07:25:38.991997Z  895139122 METHOD         document.getDocuments    user=null, queries=2, duration=10µs
-2026-03-13 07:25:41.849275Z  536842590 METHOD         document.createDocument  user=null, queries=0, duration=10µs
-2026-03-13 07:25:41.849275Z  536842590 ERROR          n/a                      Exception: User must be authenticated to create documents
-2026-03-13 07:25:41.849275Z  536842590 STACK TRACE    n/a                      #0      DocumentEndpoint.createDocument (package:flutter_cms_be_server/src/endpoints/document_endpoint.dart:98:7)
-#1      Endpoints.initializeEndpoints.<anonymous closure> (package:flutter_cms_be_server/src/generated/endpoints.dart:339:63)
-#2      Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:57)
-<asynchronous suspension>
-#3      Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#4      Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#5      Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#6      _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:127:18)
-<asynchronous suspension>
-#7      _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#8      _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
+[Admin] Admin user already exists: thangvnv0806@gmail.com
+2026-03-13 22:03:28.601356Z  613280721 INTERNAL       n/a                      queries=3, duration=34.3ms
+2026-03-13 22:06:24.281026Z  309730002 METHOD         googleIdp.login          user=null, queries=16, duration=820ms
+2026-03-13 22:06:24.428641Z  307082834 METHOD         user.ensureUser          user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=5, duration=125ms
+2026-03-13 22:06:24.767950Z  858827418 METHOD         document.getDocuments    user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=15.1ms
+2026-03-13 22:06:27.315027Z  430783699 METHOD         document.getDocumentVersions user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=12.8ms
+2026-03-13 22:07:26.964911Z   18405318 METHOD         googleIdp.login          user=null, queries=16, duration=307ms
+2026-03-13 22:07:27.094245Z  957347908 METHOD         user.ensureUser          user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=5, duration=109ms
+2026-03-13 22:07:27.497346Z  663333061 METHOD         document.getDocuments    user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=7.72ms
+2026-03-13 22:07:55.339093Z  336469198 METHOD         document.getDocumentVersions user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=5.64ms
+2026-03-13 22:11:09.878217Z  500343886 METHOD         googleIdp.login          user=null, queries=16, duration=291ms
+2026-03-13 22:11:10.061998Z  899926463 METHOD         user.ensureUser          user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=5, duration=154ms
+2026-03-13 22:11:10.500261Z  260277472 METHOD         document.getDocuments    user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=7.53ms
+2026-03-13 22:12:38.001962Z  314028533 METHOD         googleIdp.login          user=null, queries=16, duration=776ms
+2026-03-13 22:12:38.146145Z  457535613 METHOD         user.ensureUser          user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=5, duration=121ms
+2026-03-13 22:12:38.581102Z  160073758 METHOD         document.getDocuments    user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=17.5ms
+2026-03-13 22:13:14.481067Z 1058131822 METHOD         document.getDocumentVersions user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=17.4ms
+2026-03-13 22:13:14.483414Z  376874441 METHOD         document.getDocumentVersions user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=16.3ms
+2026-03-13 22:13:14.961899Z  742814728 METHOD         document.getDocumentVersion user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=1, duration=5.67ms
+2026-03-13 22:13:26.764894Z   77510480 METHOD         document.getDocumentVersions user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=7.59ms
+2026-03-13 22:13:27.083029Z  510042968 METHOD         document.getDocumentVersions user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=7.41ms
+2026-03-13 22:13:27.651084Z  997364563 METHOD         document.getDocumentVersions user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=7.73ms
+2026-03-13 22:13:28.292089Z  902130455 METHOD         document.getDocumentVersions user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=7.13ms
+2026-03-13 22:21:20.636864Z  919651561 METHOD         googleIdp.login          user=null, queries=16, duration=286ms
+2026-03-13 22:21:20.795582Z   49454337 METHOD         user.ensureUser          user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=5, duration=139ms
+2026-03-13 22:21:21.210653Z    9598048 METHOD         document.getDocuments    user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=6.39ms
+2026-03-14 06:15:26.465229Z 1004599426 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=157ms
+2026-03-14 06:15:26.500222Z  101040429 METHOD         serverpod_auth_core.status.isSignedIn user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=0, duration=889µs
+2026-03-14 06:15:26.643253Z  571644572 METHOD         user.ensureUser          user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=5, duration=119ms
+2026-03-14 06:15:27.176244Z  838356912 METHOD         document.getDocuments    user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=5.78ms
+2026-03-14 06:15:28.941464Z  681798339 METHOD         document.getDocumentVersions user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=7.48ms
+2026-03-14 06:15:42.873539Z  559124043 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=102ms
+2026-03-14 06:15:42.897278Z  877653425 METHOD         serverpod_auth_core.status.isSignedIn user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=0, duration=471µs
+2026-03-14 06:15:43.034424Z  939293294 METHOD         user.ensureUser          user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=5, duration=116ms
+2026-03-14 06:15:43.513570Z  299141087 METHOD         document.getDocuments    user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=5.4ms
+2026-03-14 06:16:06.956936Z  880237498 METHOD         document.getDocumentVersions user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=6.64ms
+2026-03-14 06:17:17.745924Z  136661313 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=94.2ms
+2026-03-14 06:17:17.765086Z  114382102 METHOD         serverpod_auth_core.status.isSignedIn user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=0, duration=350µs
+2026-03-14 06:17:17.905146Z  721440649 METHOD         user.ensureUser          user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=5, duration=115ms
+2026-03-14 06:17:18.440034Z  451135884 METHOD         document.getDocuments    user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=8.6ms
+2026-03-14 06:18:55.009717Z  642218412 METHOD         document.getDocumentVersions user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=7.58ms
+2026-03-14 06:19:23.294507Z  667995610 QUERY          n/a                      id=null, duration=12ms, query=INSERT INTO "cms_documents" ("clientId", "documentType", "title", "slug", "isDefault", "data", "crdtNodeId", "crdtHlc", "createdAt", "updatedAt", "createdByUserId", "updatedByUserId") VALUES (1, 'homeScreenConfig', 'test2', 'test2', FALSE, '{}', NULL, NULL, '2026-03-14T06:19:23.262508Z', '2026-03-14T06:19:23.262508Z', 1, 1) RETURNING *
+2026-03-14 06:19:23.294507Z  667995610 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 06:19:23.294507Z  667995610 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
 
-2026-03-13 07:25:41.857429Z ERROR: Internal server error. Request handler failed with exception.
-2026-03-13 07:25:41.857429Z ERROR: Exception: User must be authenticated to create documents
-#0      DocumentEndpoint.createDocument (package:flutter_cms_be_server/src/endpoints/document_endpoint.dart:98:7)
-#1      Endpoints.initializeEndpoints.<anonymous closure> (package:flutter_cms_be_server/src/generated/endpoints.dart:339:63)
-#2      Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:57)
-<asynchronous suspension>
-#3      Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#4      Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#5      Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#6      _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:127:18)
-<asynchronous suspension>
-#7      _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#8      _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
+2026-03-14 06:19:23.294851Z  667995610 METHOD         document.createDocument  user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=36.5ms
+2026-03-14 06:19:23.294851Z  667995610 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 06:19:23.294851Z  667995610 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
 
-SIGTERM (15) received, time: 2026-03-13 07:44:58.288019Z
-SERVERPOD initiating shutdown, time: 2026-03-13 07:44:58.289033Z
-SERVERPOD shutdown completed, time: 2026-03-13 07:44:58.298522Z
+2026-03-14 06:19:23.307347Z ERROR: Internal server error. Request handler failed with exception.
+2026-03-14 06:19:23.307347Z ERROR: DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 06:19:35.388305Z  594395539 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=118ms
+2026-03-14 06:19:35.404126Z  341282820 METHOD         serverpod_auth_core.status.isSignedIn user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=0, duration=298µs
+2026-03-14 06:19:35.537546Z  778069366 METHOD         user.ensureUser          user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=5, duration=117ms
+2026-03-14 06:19:36.055803Z  291248394 METHOD         document.getDocuments    user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=10.2ms
+2026-03-14 06:58:22.749174Z  900209253 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=118ms
+2026-03-14 06:58:22.838129Z  959193836 METHOD         serverpod_auth_core.status.isSignedIn user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=0, duration=1.22ms
+2026-03-14 06:58:22.995302Z  972939982 METHOD         user.ensureUser          user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=5, duration=130ms
+2026-03-14 06:58:23.621341Z  763754934 METHOD         document.getDocuments    user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=11.3ms
+2026-03-14 07:00:29.511038Z  403657052 QUERY          n/a                      id=null, duration=6.31ms, query=INSERT INTO "cms_documents" ("clientId", "documentType", "title", "slug", "isDefault", "data", "crdtNodeId", "crdtHlc", "createdAt", "updatedAt", "createdByUserId", "updatedByUserId") VALUES (1, 'homeScreenConfig', 'test3', 'test3', FALSE, '{}', NULL, NULL, '2026-03-14T07:00:29.501792Z', '2026-03-14T07:00:29.501792Z', 1, 1) RETURNING *
+2026-03-14 07:00:29.511038Z  403657052 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 07:00:29.511038Z  403657052 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:00:29.511430Z  403657052 METHOD         document.createDocument  user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=16.6ms
+2026-03-14 07:00:29.511430Z  403657052 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 07:00:29.511430Z  403657052 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:00:29.550359Z ERROR: Internal server error. Request handler failed with exception.
+2026-03-14 07:00:29.550359Z ERROR: DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:01:14.813483Z    1719557 QUERY          n/a                      id=null, duration=6.12ms, query=INSERT INTO "cms_documents" ("clientId", "documentType", "title", "slug", "isDefault", "data", "crdtNodeId", "crdtHlc", "createdAt", "updatedAt", "createdByUserId", "updatedByUserId") VALUES (1, 'homeScreenConfig', 'test3', 'test3', FALSE, '{}', NULL, NULL, '2026-03-14T07:01:14.805375Z', '2026-03-14T07:01:14.805375Z', 1, 1) RETURNING *
+2026-03-14 07:01:14.813483Z    1719557 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 07:01:14.813483Z    1719557 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:01:14.813852Z    1719557 METHOD         document.createDocument  user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=31.3ms
+2026-03-14 07:01:14.813852Z    1719557 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 07:01:14.813852Z    1719557 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:01:14.848830Z ERROR: Internal server error. Request handler failed with exception.
+2026-03-14 07:01:14.848830Z ERROR: DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:04:06.934338Z  529103586 QUERY          n/a                      id=null, duration=7.47ms, query=INSERT INTO "cms_documents" ("clientId", "documentType", "title", "slug", "isDefault", "data", "crdtNodeId", "crdtHlc", "createdAt", "updatedAt", "createdByUserId", "updatedByUserId") VALUES (1, 'homeScreenConfig', 'test3', 'test3', FALSE, '{}', NULL, NULL, '2026-03-14T07:04:06.924086Z', '2026-03-14T07:04:06.924087Z', 1, 1) RETURNING *
+2026-03-14 07:04:06.934338Z  529103586 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 07:04:06.934338Z  529103586 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:04:06.934814Z  529103586 METHOD         document.createDocument  user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=22.7ms
+2026-03-14 07:04:06.934814Z  529103586 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 07:04:06.934814Z  529103586 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:04:06.962520Z ERROR: Internal server error. Request handler failed with exception.
+2026-03-14 07:04:06.962520Z ERROR: DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:06:54.016523Z  311371885 QUERY          n/a                      id=null, duration=7.03ms, query=INSERT INTO "cms_documents" ("clientId", "documentType", "title", "slug", "isDefault", "data", "crdtNodeId", "crdtHlc", "createdAt", "updatedAt", "createdByUserId", "updatedByUserId") VALUES (1, 'homeScreenConfig', 'test3', 'test3', FALSE, '{}', NULL, NULL, '2026-03-14T07:06:54.006682Z', '2026-03-14T07:06:54.006682Z', 1, 1) RETURNING *
+2026-03-14 07:06:54.016523Z  311371885 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 07:06:54.016523Z  311371885 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:06:54.017091Z  311371885 METHOD         document.createDocument  user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=19.8ms
+2026-03-14 07:06:54.017091Z  311371885 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 07:06:54.017091Z  311371885 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:06:54.051105Z ERROR: Internal server error. Request handler failed with exception.
+2026-03-14 07:06:54.051105Z ERROR: DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:07:20.652363Z  878253501 QUERY          n/a                      id=null, duration=3.31ms, query=INSERT INTO "cms_documents" ("clientId", "documentType", "title", "slug", "isDefault", "data", "crdtNodeId", "crdtHlc", "createdAt", "updatedAt", "createdByUserId", "updatedByUserId") VALUES (1, 'homeScreenConfig', 'test3', 'test3', FALSE, '{}', NULL, NULL, '2026-03-14T07:07:20.647855Z', '2026-03-14T07:07:20.647856Z', 1, 1) RETURNING *
+2026-03-14 07:07:20.652363Z  878253501 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 07:07:20.652363Z  878253501 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:07:20.652726Z  878253501 METHOD         document.createDocument  user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=10.3ms
+2026-03-14 07:07:20.652726Z  878253501 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 07:07:20.652726Z  878253501 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:07:20.681243Z ERROR: Internal server error. Request handler failed with exception.
+2026-03-14 07:07:20.681243Z ERROR: DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:07:44.895670Z  531721344 QUERY          n/a                      id=null, duration=7.41ms, query=INSERT INTO "cms_documents" ("clientId", "documentType", "title", "slug", "isDefault", "data", "crdtNodeId", "crdtHlc", "createdAt", "updatedAt", "createdByUserId", "updatedByUserId") VALUES (1, 'homeScreenConfig', 'test5', 'test5', FALSE, '{}', NULL, NULL, '2026-03-14T07:07:44.884449Z', '2026-03-14T07:07:44.884449Z', 1, 1) RETURNING *
+2026-03-14 07:07:44.895670Z  531721344 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 07:07:44.895670Z  531721344 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:07:44.896044Z  531721344 METHOD         document.createDocument  user=019ce62b-a12c-764f-b422-1b6d6c6cb227, queries=2, duration=18.4ms
+2026-03-14 07:07:44.896044Z  531721344 ERROR          n/a                      DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+2026-03-14 07:07:44.896044Z  531721344 STACK TRACE    n/a                      package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+
+2026-03-14 07:07:44.933585Z ERROR: Internal server error. Request handler failed with exception.
+2026-03-14 07:07:44.933585Z ERROR: DatabaseQueryException: { message: duplicate key value violates unique constraint "cms_documents_client_type_idx", code: 23505, detail: Key ("clientId", "documentType")=(1, homeScreenConfig) already exists., table: cms_documents, constraint: cms_documents_client_type_idx }
+package:postgres/src/v3/connection.dart 930:37                                    _PgResultStreamSubscription.handleError
+package:postgres/src/v3/connection.dart 530:21                                    PgConnectionImplementation._handleMessage
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/zone.dart 633:7                                                        _CustomZone.runUnaryGuarded
+dart:async/stream_impl.dart 381:11                                                _BufferingStreamSubscription._sendData
+dart:async/stream_impl.dart 312:7                                                 _BufferingStreamSubscription._add
+dart:async/stream_controller.dart 798:19                                          _SyncStreamControllerDispatch._sendData
+dart:async/stream_controller.dart 663:7                                           _StreamController._add
+dart:async/stream_controller.dart 618:5                                           _StreamController.add
+dart:async/stream.dart 823:20                                                     Stream.asyncMap.<fn>.add
+dart:async/zone_root.dart 48:47                                                   _rootRunUnary
+dart:async/zone.dart 733:19                                                       _CustomZone.runUnary
+dart:async/stream_impl.dart 215:3                                                 _BufferingStreamSubscription.resume
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 718:35                                    _PreparedStatement.run
+package:postgres/src/v3/connection.dart 185:31                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 153:16                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+===== asynchronous gap ===========================
+package:postgres/src/v3/connection.dart 199:35                                    _PgSessionBase._prepare
+package:postgres/src/v3/connection.dart 183:30                                    _PgSessionBase.execute
+package:postgres/src/pool/pool_impl.dart 309:24                                   _PoolConnection.execute
+package:postgres/src/pool/pool_impl.dart 64:34                                    PoolImplementation.execute.<fn>
+package:postgres/src/pool/pool_impl.dart 153:24                                   PoolImplementation.withConnection
+package:serverpod/src/database/adapters/postgres/database_connection.dart 562:20  PostgresDatabaseConnection._query
+package:serverpod/src/database/adapters/postgres/database_connection.dart 660:18  PostgresDatabaseConnection._mappedResultsQuery
+package:serverpod/src/database/adapters/postgres/database_connection.dart 987:12  PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<fn>
+package:serverpod/src/database/adapters/postgres/database_connection.dart 197:13  PostgresDatabaseConnection.insert
+package:serverpod/src/database/adapters/postgres/database_connection.dart 212:18  PostgresDatabaseConnection.insertRow
+package:flutter_cms_be_server/src/endpoints/document_endpoint.dart 121:21         DocumentEndpoint.createDocument
+package:serverpod/src/server/server.dart 509:22                                   Server._handleEndpointCall
+package:serverpod/src/server/server.dart 376:12                                   Server._endpoints
+package:serverpod/src/server/server.dart 207:16                                   Server._reportException.<fn>
+package:serverpod/src/server/server.dart 351:22                                   Server._headers.<fn>
+package:relic_core/src/middleware/routing_middleware.dart 135:18                  _RoutingMiddlewareBuilder.call.<fn>
+package:relic_core/src/relic_server.dart 156:24                                   _RelicServer._wrapHandlerWithMiddleware.<fn>
+package:relic_core/src/relic_server.dart 132:22                                   _RelicServer._handleRequest
+

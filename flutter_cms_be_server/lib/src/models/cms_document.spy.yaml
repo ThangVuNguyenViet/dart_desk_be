@@ -4,7 +4,7 @@ fields:
   clientId: int, relation(parent=cms_clients, onDelete=Restrict)
   documentType: String
   title: String
-  slug: String?
+  slug: String
   isDefault: bool, default=false
   data: String?  # Latest CRDT-merged document state (JSON)
   crdtNodeId: String?  # CRDT node identifier
@@ -14,24 +14,12 @@ fields:
   createdByUserId: int, relation(parent=cms_users, onDelete=SetNull)
   updatedByUserId: int?, relation(parent=cms_users, onDelete=SetNull)
 indexes:
-  cms_documents_client_id_idx:
-    fields: clientId
-  cms_documents_document_type_idx:
-    fields: documentType
   cms_documents_client_type_idx:
     fields: clientId, documentType
+  cms_documents_client_type_slug_idx:
+    fields: clientId, documentType, slug
     unique: true
-  cms_documents_slug_idx:
-    fields: slug
-  cms_documents_is_default_idx:
-    fields: isDefault
   cms_documents_type_default_idx:
     fields: documentType, isDefault
-  cms_documents_data_idx:
-    fields: data
-  cms_documents_crdt_node_idx:
-    fields: crdtNodeId
   cms_documents_created_at_idx:
     fields: createdAt
-  cms_documents_updated_at_idx:
-    fields: updatedAt

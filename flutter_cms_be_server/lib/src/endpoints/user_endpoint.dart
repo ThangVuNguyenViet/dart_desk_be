@@ -154,7 +154,7 @@ class UserEndpoint extends Endpoint {
     final clientIds = users.map((u) => u.clientId).toSet();
     final clients = await CmsClient.db.find(
       session,
-      where: (t) => t.id.inSet(clientIds.cast<int?>()) & t.isActive.equals(true),
+      where: (t) => t.id.inSet(clientIds) & t.isActive.equals(true),
     );
 
     return clients;

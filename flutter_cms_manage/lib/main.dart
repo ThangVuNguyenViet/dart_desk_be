@@ -1,22 +1,25 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:marionette_flutter/marionette_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'src/providers/manage_providers.dart';
 import 'src/routes/manage_coordinator.dart';
 import 'src/widgets/auth_gate.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  usePathUrlStrategy();
+void main() async {
+  if (kDebugMode) {
+    MarionetteBinding.ensureInitialized();
+  }
 
   serverpodClient = Client(
     'http://$localhost:8080/',
   )
     ..connectivityMonitor = FlutterConnectivityMonitor()
     ..authSessionManager = FlutterAuthSessionManager();
-  serverpodClient.auth.initialize();
+  await serverpodClient.auth.initialize();
+  await serverpodClient.auth.initializeGoogleSignIn();
 
   runApp(const ManageApp());
 }

@@ -215,7 +215,7 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
                           const SizedBox(height: 24),
                           if (_errorMessage != null) ...[
                             ShadAlert.destructive(
-                              iconSrc: LucideIcons.circleAlert,
+                              icon: Icon(LucideIcons.circleAlert),
                               title: const Text('Error'),
                               description: Text(_errorMessage!),
                             ),

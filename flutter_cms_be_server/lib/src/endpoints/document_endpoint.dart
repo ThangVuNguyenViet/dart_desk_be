@@ -103,11 +103,12 @@ class DocumentEndpoint extends Endpoint {
 
     // Create the document
     final encodedData = jsonEncode(data);
+    final effectiveSlug = slug ?? title.toLowerCase().replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(RegExp(r'\s+'), '-').replaceAll(RegExp(r'-+'), '-').trim();
     final document = CmsDocument(
       clientId: 1, // TODO: Get from session or parameter
       documentType: documentType,
       title: title,
-      slug: slug,
+      slug: effectiveSlug,
       isDefault: isDefault,
       data: encodedData, // Cache the initial data
       crdtNodeId: null, // Will be set when CRDT is initialized
@@ -117,6 +118,20 @@ class DocumentEndpoint extends Endpoint {
       createdByUserId: userId,
       updatedByUserId: userId,
     );
+
+    // Check if a document with the same slug already exists for this type
+    final existing = await CmsDocument.db.findFirstRow(
+      session,
+      where: (t) =>
+          t.clientId.equals(document.clientId) &
+          t.documentType.equals(documentType) &
+          t.slug.equals(effectiveSlug),
+    );
+    if (existing != null) {
+      throw Exception(
+        'A document with slug "$effectiveSlug" already exists for type "$documentType".',
+      );
+    }
 
     final created = await CmsDocument.db.insertRow(session, document);
 
@@ -235,6 +250,59 @@ class DocumentEndpoint extends Endpoint {
 
     await CmsDocument.db.deleteRow(session, existing);
     return true;
+  }
+
+  /// Suggest a unique slug for a document based on its title.
+  ///
+  /// Generates a URL-friendly slug from the title and checks the database
+  /// for duplicates. If a duplicate exists, appends a numeric suffix (e.g. -2, -3).
+  Future<String> suggestSlug(
+    Session session,
+    String title,
+    String documentType,
+  ) async {
+    // Generate base slug from title
+    var baseSlug = title
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^\w\s-]'), '')
+        .replaceAll(RegExp(r'\s+'), '-')
+        .replaceAll(RegExp(r'-+'), '-')
+        .trim();
+
+    if (baseSlug.isEmpty) {
+      baseSlug = 'untitled';
+    }
+
+    // Remove trailing hyphens
+    baseSlug = baseSlug.replaceAll(RegExp(r'-$'), '');
+
+    // Check if this slug already exists
+    final existing = await CmsDocument.db.findFirstRow(
+      session,
+      where: (t) =>
+          t.slug.equals(baseSlug) & t.documentType.equals(documentType),
+    );
+
+    if (existing == null) {
+      return baseSlug;
+    }
+
+    // Find the next available suffix
+    // Query all slugs that match the pattern "baseSlug" or "baseSlug-N"
+    final similarDocs = await CmsDocument.db.find(
+      session,
+      where: (t) =>
+          t.slug.like('$baseSlug%') & t.documentType.equals(documentType),
+    );
+
+    final existingSlugs = similarDocs.map((d) => d.slug).toSet();
+
+    var suffix = 2;
+    while (existingSlugs.contains('$baseSlug-$suffix')) {
+      suffix++;
+    }
+
+    return '$baseSlug-$suffix';
   }
 
   /// Get all document types (unique document type names)

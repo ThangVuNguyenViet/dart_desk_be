@@ -409,6 +409,22 @@ class EndpointDocument extends _i1.EndpointRef {
         {'documentId': documentId},
       );
 
+  /// Suggest a unique slug for a document based on its title.
+  ///
+  /// Generates a URL-friendly slug from the title and checks the database
+  /// for duplicates. If a duplicate exists, appends a numeric suffix (e.g. -2, -3).
+  _i2.Future<String> suggestSlug(
+    String title,
+    String documentType,
+  ) => caller.callServerEndpoint<String>(
+    'document',
+    'suggestSlug',
+    {
+      'title': title,
+      'documentType': documentType,
+    },
+  );
+
   /// Get all document types (unique document type names)
   _i2.Future<List<String>> getDocumentTypes() =>
       caller.callServerEndpoint<List<String>>(

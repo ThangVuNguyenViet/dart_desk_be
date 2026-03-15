@@ -1,2 +1,8 @@
 # Environment variables
 .env
+
+# Dart tool
+.dart_tool/
+
+# Superpowers
+.superpowers/

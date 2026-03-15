@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   shadcn_ui: ^0.39.14
-  zenrouter: ^0.1.0
+  zenrouter: ^2.0.3
   signals: ^6.0.2
   flutter_cms_be_client:
     path: ../flutter_cms_be_client
@@ -22,6 +22,8 @@ dependencies:
   intl: any
   flutter_web_plugins:
     sdk: flutter
+  marionette_flutter:
+    path: ../../marionette_mcp/packages/marionette_flutter
 
 dev_dependencies:
   flutter_test:

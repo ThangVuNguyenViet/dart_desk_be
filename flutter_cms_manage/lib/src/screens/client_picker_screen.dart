@@ -14,7 +14,8 @@ class ClientPickerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final clients = userClients.watch(context);
+    final clientsState = userClients.watch(context);
+    final clients = clientsState.value ?? [];
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
@@ -33,6 +34,8 @@ class ClientPickerScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text('Select a project', style: theme.textTheme.muted),
                 const SizedBox(height: 24),
+                if (clientsState.isLoading && clients.isEmpty)
+                  const Center(child: CircularProgressIndicator()),
                 ...clients.map((client) => Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: GestureDetector(
@@ -41,10 +44,9 @@ class ClientPickerScreen extends StatelessWidget {
                         child: ShadCard(
                           child: Row(
                             children: [
-                              ShadAvatar(
-                                '',
-                                size: const Size(40, 40),
-                                placeholder: Text(
+                              CircleAvatar(
+                                radius: 20,
+                                child: Text(
                                   client.name.isNotEmpty
                                       ? client.name[0].toUpperCase()
                                       : '?',

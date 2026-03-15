@@ -18,7 +18,7 @@ abstract class CmsDocument implements _i1.SerializableModel {
     required this.clientId,
     required this.documentType,
     required this.title,
-    this.slug,
+    required this.slug,
     bool? isDefault,
     this.data,
     this.crdtNodeId,
@@ -36,7 +36,7 @@ abstract class CmsDocument implements _i1.SerializableModel {
     required int clientId,
     required String documentType,
     required String title,
-    String? slug,
+    required String slug,
     bool? isDefault,
     String? data,
     String? crdtNodeId,
@@ -53,7 +53,7 @@ abstract class CmsDocument implements _i1.SerializableModel {
       clientId: jsonSerialization['clientId'] as int,
       documentType: jsonSerialization['documentType'] as String,
       title: jsonSerialization['title'] as String,
-      slug: jsonSerialization['slug'] as String?,
+      slug: jsonSerialization['slug'] as String,
       isDefault: jsonSerialization['isDefault'] == null
           ? null
           : _i1.BoolJsonExtension.fromJson(jsonSerialization['isDefault']),
@@ -82,7 +82,7 @@ abstract class CmsDocument implements _i1.SerializableModel {
 
   String title;
 
-  String? slug;
+  String slug;
 
   bool isDefault;
 
@@ -126,7 +126,7 @@ abstract class CmsDocument implements _i1.SerializableModel {
       'clientId': clientId,
       'documentType': documentType,
       'title': title,
-      if (slug != null) 'slug': slug,
+      'slug': slug,
       'isDefault': isDefault,
       if (data != null) 'data': data,
       if (crdtNodeId != null) 'crdtNodeId': crdtNodeId,
@@ -152,7 +152,7 @@ class _CmsDocumentImpl extends CmsDocument {
     required int clientId,
     required String documentType,
     required String title,
-    String? slug,
+    required String slug,
     bool? isDefault,
     String? data,
     String? crdtNodeId,
@@ -186,7 +186,7 @@ class _CmsDocumentImpl extends CmsDocument {
     int? clientId,
     String? documentType,
     String? title,
-    Object? slug = _Undefined,
+    String? slug,
     bool? isDefault,
     Object? data = _Undefined,
     Object? crdtNodeId = _Undefined,
@@ -201,7 +201,7 @@ class _CmsDocumentImpl extends CmsDocument {
       clientId: clientId ?? this.clientId,
       documentType: documentType ?? this.documentType,
       title: title ?? this.title,
-      slug: slug is String? ? slug : this.slug,
+      slug: slug ?? this.slug,
       isDefault: isDefault ?? this.isDefault,
       data: data is String? ? data : this.data,
       crdtNodeId: crdtNodeId is String? ? crdtNodeId : this.crdtNodeId,

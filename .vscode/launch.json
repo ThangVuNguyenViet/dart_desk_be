@@ -17,10 +17,20 @@
             "type": "dart"
         },
         {
-            "name": "flutter_cms_be_admin",
-            "cwd": "flutter_cms_be_admin",
+            "name": "flutter_cms_be_flutter",
+            "cwd": "flutter_cms_be_flutter",
             "request": "launch",
             "type": "dart"
+        },
+        {
+            "name": "flutter_cms_manage",
+            "cwd": "flutter_cms_manage",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--web-port",
+                "60367"
+            ]
         }
     ]
 }

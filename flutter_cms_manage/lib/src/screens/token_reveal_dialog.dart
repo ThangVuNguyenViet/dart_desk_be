@@ -89,10 +89,9 @@ class TokenRevealDialog extends StatelessWidget {
                   leading: Icon(LucideIcons.copy, size: 14),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: tokenValue));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Token copied to clipboard'),
-                        duration: Duration(seconds: 2),
+                    ShadToaster.of(context).show(
+                      const ShadToast(
+                        title: Text('Token copied to clipboard'),
                       ),
                     );
                   },

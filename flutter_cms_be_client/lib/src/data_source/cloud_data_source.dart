@@ -139,6 +139,15 @@ class CloudDataSource implements CmsDataSource {
   }
 
   @override
+  Future<String> suggestSlug(String title, String documentType) async {
+    try {
+      return await _client.document.suggestSlug(title, documentType);
+    } catch (e) {
+      throw CmsDataSourceException('Failed to suggest slug', e);
+    }
+  }
+
+  @override
   Future<List<String>> getDocumentTypes() async {
     try {
       return await _client.document.getDocumentTypes();

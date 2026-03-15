@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:zenrouter/zenrouter.dart';
 
-import 'manage_route.dart';
-import 'manage_coordinator.dart';
-import 'overview_route.dart';
-import 'tokens_route.dart';
-import 'settings_route.dart';
 import '../providers/manage_providers.dart';
+import 'manage_coordinator.dart';
+import 'manage_route.dart';
+import 'overview_route.dart';
+import 'settings_route.dart';
+import 'tokens_route.dart';
 
 class ManageLayout extends ManageRoute with RouteLayout<ManageRoute> {
   @override
@@ -23,7 +23,7 @@ class ManageLayout extends ManageRoute with RouteLayout<ManageRoute> {
   }
 }
 
-class ManageShell extends StatelessWidget {
+class ManageShell extends StatefulWidget {
   final ManageCoordinator coordinator;
   final Widget child;
 
@@ -34,6 +34,35 @@ class ManageShell extends StatelessWidget {
   });
 
   @override
+  State<ManageShell> createState() => _ManageShellState();
+}
+
+class _ManageShellState extends State<ManageShell> {
+  String _initializedSlug = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _initClient();
+  }
+
+  @override
+  void didUpdateWidget(ManageShell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.coordinator.clientSlug != _initializedSlug) {
+      _initClient();
+    }
+  }
+
+  void _initClient() {
+    final slug = widget.coordinator.clientSlug;
+    if (slug.isNotEmpty && slug != _initializedSlug) {
+      _initializedSlug = slug;
+      initClientContext(slug);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
 
@@ -41,11 +70,11 @@ class ManageShell extends StatelessWidget {
       backgroundColor: theme.colorScheme.background,
       body: Column(
         children: [
-          _TopBar(coordinator: coordinator),
-          _ProjectHeader(coordinator: coordinator),
-          _TabNavigation(coordinator: coordinator),
+          _TopBar(coordinator: widget.coordinator),
+          _ProjectHeader(coordinator: widget.coordinator),
+          _TabNavigation(coordinator: widget.coordinator),
           const Divider(height: 1),
-          Expanded(child: child),
+          Expanded(child: widget.child),
         ],
       ),
     );
@@ -91,10 +120,9 @@ class _TopBar extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ShadAvatar(
-                  'U',
-                  size: const Size(28, 28),
-                  placeholder: const Text('U'),
+                const CircleAvatar(
+                  radius: 14,
+                  child: Text('U', style: TextStyle(fontSize: 12)),
                 ),
                 const SizedBox(width: 8),
                 Icon(LucideIcons.logOut, size: 14),
@@ -118,10 +146,9 @@ class _ProjectHeader extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       child: Row(
         children: [
-          ShadAvatar(
-            '',
-            size: const Size(48, 48),
-            placeholder: Text(
+          CircleAvatar(
+            radius: 24,
+            child: Text(
               coordinator.clientSlug.isNotEmpty
                   ? coordinator.clientSlug[0].toUpperCase()
                   : '?',
@@ -155,10 +182,11 @@ class _TabNavigation extends StatelessWidget {
       listenable:
           Listenable.merge([coordinator.manageStack, coordinator.apiStack]),
       builder: (context, _) {
-        final activeRoute = coordinator.root.activeRoute;
-        final isOverview = activeRoute is OverviewRoute;
-        final isTokens = _isTokensActive(coordinator);
-        final isSettings = activeRoute is SettingsRoute;
+        final path = coordinator.currentUri.path;
+        final isOverview =
+            path.endsWith('/overview') || path == '/$slug';
+        final isTokens = path.contains('/api/');
+        final isSettings = path.endsWith('/settings');
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -183,10 +211,6 @@ class _TabNavigation extends StatelessWidget {
     );
   }
 
-  bool _isTokensActive(ManageCoordinator coordinator) {
-    final apiRoute = coordinator.apiStack.activeRoute;
-    return apiRoute is TokensRoute;
-  }
 }
 
 class _TabButton extends StatelessWidget {

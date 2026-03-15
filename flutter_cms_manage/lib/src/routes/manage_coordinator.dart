@@ -14,21 +14,21 @@ import 'client_picker_route.dart';
 class ManageCoordinator extends Coordinator<ManageRoute> {
   String clientSlug = '';
 
-  late final manageStack = NavigationPath<ManageRoute>('manage');
+  late final manageStack = NavigationPath<ManageRoute>.createWith(
+    coordinator: this,
+    label: 'manage',
+  )..bindLayout(ManageLayout.new);
 
-  late final apiStack = NavigationPath<ManageRoute>('api');
+  late final apiStack = NavigationPath<ManageRoute>.createWith(
+    coordinator: this,
+    label: 'api',
+  )..bindLayout(ApiLayout.new);
 
   @override
   List<StackPath> get paths => [...super.paths, manageStack, apiStack];
 
   @override
-  void defineLayout() {
-    RouteLayout.defineLayout(ManageLayout, ManageLayout.new);
-    RouteLayout.defineLayout(ApiLayout, ApiLayout.new);
-  }
-
-  @override
-  ManageRoute parseRouteFromUri(Uri uri) {
+  ManageRoute? parseRouteFromUri(Uri uri) {
     final segments = uri.pathSegments;
 
     // 1. Root URL → client picker
