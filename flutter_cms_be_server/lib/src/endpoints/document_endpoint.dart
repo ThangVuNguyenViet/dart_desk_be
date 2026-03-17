@@ -105,7 +105,7 @@ class DocumentEndpoint extends Endpoint {
     final encodedData = jsonEncode(data);
     final effectiveSlug = slug ?? title.toLowerCase().replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(RegExp(r'\s+'), '-').replaceAll(RegExp(r'-+'), '-').trim();
     final document = CmsDocument(
-      clientId: 1, // TODO: Get from session or parameter
+      clientId: cmsUser.clientId,
       documentType: documentType,
       title: title,
       slug: effectiveSlug,
@@ -242,10 +242,23 @@ class DocumentEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
+    // Require authentication
+    final authInfo = session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to delete documents');
+    }
+
+    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+
     final existing = await CmsDocument.db.findById(session, documentId);
 
     if (existing == null) {
       return false;
+    }
+
+    // Verify the document belongs to the user's client
+    if (existing.clientId != cmsUser.clientId) {
+      throw Exception('Access denied: document belongs to a different client');
     }
 
     await CmsDocument.db.deleteRow(session, existing);
