@@ -522,7 +522,7 @@ class CloudDataSource implements CmsDataSource {
     try {
       final response = await _client.document.updateDocumentData(
         documentId,
-        updates,
+        updates.map((k, v) => MapEntry(k, v.toString())),
         sessionId: sessionId,
       );
       return _toCmsDocument(response);
