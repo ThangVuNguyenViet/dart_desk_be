@@ -28,10 +28,10 @@ enable_redis = false
 # *.example.com to your certificate. You will need to create one certificate
 # for your main region and one for use with Cloudfront that resides in the
 # us-east-1 region.
-hosted_zone_id             = "<YOUR HOSTED ZONE ID>"
-top_domain                 = "<YOUR DOMAIN NAME>"
-certificate_arn            = "<YOUR CERTIFICATE ARN>"
-cloudfront_certificate_arn = "<YOUR CERTIFICATE ARN IN US-EAST-1>"
+hosted_zone_id             = "Z02887953HWSQEBHW9LR3"
+top_domain                 = "dartdesk.dev"
+certificate_arn            = "arn:aws:acm:us-west-2:585534523113:certificate/ed4e0281-34b3-48a8-b248-325e7335970d"
+cloudfront_certificate_arn = "arn:aws:acm:us-east-1:585534523113:certificate/cb896638-0ed0-42a8-92a0-d2bf623f12de"
 
 # Subdomains for different services. Default values are recommended, but you
 # may want to change the subdomain_web to www if you are using the top domain
@@ -60,7 +60,7 @@ use_top_domain_for_web = false
 # Note: For some regions the t2.micro is not available. If so, consult the AWS
 # documentation to find another instance type that suits your needs.
 instance_type                = "t2.micro"
-instance_ami                 = "ami-0ca285d4c2cda3300"
+instance_ami                 = "ami-0534a0fd33c655746"
 autoscaling_min_size         = 1
 autoscaling_max_size         = 1
 autoscaling_desired_capacity = 1
