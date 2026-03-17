@@ -2,7 +2,7 @@
 set -e  # Exit on any error
 
 # Variables for configuration
-DART_VERSION=3.5.1
+DART_VERSION=3.11.1
 USERNAME=ec2-user
 WORKDIR=/home/$USERNAME
 DART_INSTALL_DIR="/usr/lib/dart$DART_VERSION"
@@ -11,6 +11,9 @@ DART_INSTALL_DIR="/usr/lib/dart$DART_VERSION"
 # if [ -f "/etc/profile.d/script.sh" ]; then
 #     sudo rm /etc/profile.d/script.sh
 # fi
+
+# Install git (needed for dart pub get)
+yum install -y git unzip
 
 # Install the specified Dart version if not already installed
 if [ ! -d "$DART_INSTALL_DIR" ]; then

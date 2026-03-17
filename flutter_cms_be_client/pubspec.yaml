@@ -18,4 +18,4 @@ dependencies:
     sdk: flutter
   flutter_cms:
     path: ../../flutter_cms/packages/flutter_cms
-  shadcn_ui: ^0.39.14
+  shadcn_ui: ^0.52.1

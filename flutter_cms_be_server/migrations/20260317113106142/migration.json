@@ -1,0 +1,131 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "alterTable",
+      "alterTable": {
+        "__className__": "serverpod.TableMigration",
+        "name": "cms_documents",
+        "schema": "public",
+        "addColumns": [],
+        "deleteColumns": [],
+        "modifyColumns": [
+          {
+            "__className__": "serverpod.ColumnMigration",
+            "columnName": "slug",
+            "addNullable": false,
+            "removeNullable": true,
+            "changeDefault": false
+          }
+        ],
+        "addIndexes": [
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "cms_documents_client_type_slug_idx",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "clientId"
+              },
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "documentType"
+              },
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "slug"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "cms_documents_client_type_idx",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "clientId"
+              },
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "documentType"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "deleteIndexes": [
+          "cms_documents_client_id_idx",
+          "cms_documents_document_type_idx",
+          "cms_documents_slug_idx",
+          "cms_documents_is_default_idx",
+          "cms_documents_data_idx",
+          "cms_documents_crdt_node_idx",
+          "cms_documents_updated_at_idx",
+          "cms_documents_client_type_idx"
+        ],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "notNullAdded",
+            "message": "Column \"slug\" of table \"cms_documents\" is modified to be not null. If there are existing rows with null values, this migration will fail.",
+            "table": "cms_documents",
+            "columns": [
+              "slug"
+            ],
+            "destrucive": false
+          },
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "uniqueIndexCreated",
+            "message": "Unique index \"cms_documents_client_type_slug_idx\" is added to table \"cms_documents\". If there are existing rows with duplicate values, this migration will fail.",
+            "table": "cms_documents",
+            "columns": [
+              "clientId",
+              "documentType",
+              "slug"
+            ],
+            "destrucive": false
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "notNullAdded",
+      "message": "Column \"slug\" of table \"cms_documents\" is modified to be not null. If there are existing rows with null values, this migration will fail.",
+      "table": "cms_documents",
+      "columns": [
+        "slug"
+      ],
+      "destrucive": false
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "uniqueIndexCreated",
+      "message": "Unique index \"cms_documents_client_type_slug_idx\" is added to table \"cms_documents\". If there are existing rows with duplicate values, this migration will fail.",
+      "table": "cms_documents",
+      "columns": [
+        "clientId",
+        "documentType",
+        "slug"
+      ],
+      "destrucive": false
+    }
+  ],
+  "migrationApiVersion": 1
+}

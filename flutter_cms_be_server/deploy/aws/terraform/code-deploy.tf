@@ -85,14 +85,9 @@ resource "aws_s3_bucket" "deployment" {
   }
 }
 
-resource "aws_s3_bucket_acl" "deployment" {
-  bucket = aws_s3_bucket.deployment.id
-  acl    = "private"
-}
-
 resource "aws_s3_bucket_ownership_controls" "deployment" {
   bucket = aws_s3_bucket.deployment.id
   rule {
-    object_ownership = "ObjectWriter"
+    object_ownership = "BucketOwnerEnforced"
   }
 }

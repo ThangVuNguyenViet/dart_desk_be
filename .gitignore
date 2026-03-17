@@ -6,3 +6,17 @@
 
 # Superpowers
 .superpowers/
+
+# Compiled binaries
+*.dill
+
+# Server logs
+server.log
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.*
+tfplan
+config.auto.tfvars
