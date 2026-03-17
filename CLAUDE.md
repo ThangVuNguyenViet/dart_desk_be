@@ -156,6 +156,24 @@ Configured for both AWS and GCP:
 - **GCP**: Cloud Run, Compute Engine
 - See `deploy/` directory for Terraform and deployment scripts
 
+### Terraform Secrets Setup
+
+Terraform config is split into two files in `flutter_cms_be_server/deploy/aws/terraform/`:
+
+- **`config.auto.tfvars`** — Committed. Contains non-secret infrastructure config (domain, region, instance type, bucket names).
+- **`secrets.auto.tfvars`** — Gitignored. Contains database passwords.
+
+To set up for the first time:
+```bash
+cd flutter_cms_be_server/deploy/aws/terraform
+cp secrets.auto.tfvars.example secrets.auto.tfvars
+# Edit secrets.auto.tfvars and fill in the database passwords
+```
+
+Both files are auto-loaded by Terraform. Never commit `secrets.auto.tfvars`.
+
+**Note:** `terraform.tfstate` is local-only (no remote backend). Do not delete it — Terraform uses it to track managed AWS resources.
+
 ## Configuration Files
 
 - `config/development.yaml` - Local development
