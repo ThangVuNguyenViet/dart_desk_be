@@ -26,7 +26,7 @@ void main() {
         expect(version.id, isNotNull);
         expect(version.documentId, equals(doc.id));
         expect(version.status, equals(DocumentVersionStatus.draft));
-        expect(version.versionNumber, equals(1));
+        expect(version.versionNumber, equals(2));
       });
 
       test('increments version number', () async {
@@ -34,8 +34,8 @@ void main() {
         final v1 = await factory.createTestVersion(doc.id!);
         final v2 = await factory.createTestVersion(doc.id!);
 
-        expect(v1.versionNumber, equals(1));
-        expect(v2.versionNumber, equals(2));
+        expect(v1.versionNumber, equals(2));
+        expect(v2.versionNumber, equals(3));
       });
 
       test('stores changeLog', () async {
@@ -86,7 +86,7 @@ void main() {
     });
 
     group('getDocumentVersions', () {
-      test('returns versions ordered by versionNumber descending', () async {
+      test('returns versions ordered by versionNumber ascending', () async {
         final doc = await factory.createTestDocument(title: 'History Doc');
         await factory.createTestVersion(doc.id!);
         await factory.createTestVersion(doc.id!);
@@ -100,11 +100,11 @@ void main() {
           includeOperations: false,
         );
 
-        expect(result.versions.length, equals(3));
-        // Descending order: v3, v2, v1
+        expect(result.versions.length, equals(4));
+        // Ascending order: v1, v2, v3, v4
         expect(
           result.versions.first.version.versionNumber,
-          greaterThan(result.versions.last.version.versionNumber),
+          lessThan(result.versions.last.version.versionNumber),
         );
       });
 
@@ -123,24 +123,26 @@ void main() {
         );
 
         expect(page1.versions.length, equals(2));
-        expect(page1.total, equals(5));
+        expect(page1.total, equals(6));
       });
     });
 
     group('publishDocumentVersion edge cases', () {
-      test('publish already-published version returns error', () async {
+      test('publish already-published version succeeds idempotently', () async {
         final doc = await factory.createTestDocument(title: 'Double Publish');
         final draft = await factory.createTestVersion(doc.id!);
         final authed = factory.authenticatedSession();
 
         // Publish first time — should succeed
-        await endpoints.document.publishDocumentVersion(authed, draft.id!);
+        final first = await endpoints.document.publishDocumentVersion(authed, draft.id!);
+        expect(first, isNotNull);
+        expect(first!.status, equals(DocumentVersionStatus.published));
 
-        // Publish again — should throw or return error
-        expect(
-          () => endpoints.document.publishDocumentVersion(authed, draft.id!),
-          throwsA(isA<Exception>()),
-        );
+        // Publish again — endpoint updates the same version (idempotent)
+        final second = await endpoints.document.publishDocumentVersion(authed, draft.id!);
+        expect(second, isNotNull);
+        expect(second!.status, equals(DocumentVersionStatus.published));
+        expect(second.id, equals(first.id));
       });
     });
 

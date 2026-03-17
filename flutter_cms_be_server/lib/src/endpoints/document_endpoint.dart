@@ -16,17 +16,28 @@ class DocumentEndpoint extends Endpoint {
     int limit = 20,
     int offset = 0,
   }) async {
-    // Get total count
+    // Require authentication for client-scoped queries
+    final authInfo = session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to list documents');
+    }
+
+    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+
+    // Get total count filtered by clientId
     final total = await CmsDocument.db.count(
       session,
-      where: (t) => t.documentType.equals(documentType),
+      where: (t) =>
+          t.documentType.equals(documentType) &
+          t.clientId.equals(cmsUser.clientId),
     );
 
-    // Get paginated documents
+    // Get paginated documents filtered by clientId
     final documents = await CmsDocument.db.find(
       session,
       where: (t) {
-        var expr = t.documentType.equals(documentType);
+        var expr = t.documentType.equals(documentType) &
+            t.clientId.equals(cmsUser.clientId);
         if (search != null && search.isNotEmpty) {
           // Search in title and data (cached latest version)
           expr = expr & (t.title.like('%$search%') | t.data.like('%$search%'));
@@ -223,6 +234,11 @@ class DocumentEndpoint extends Endpoint {
 
     if (existing == null) {
       return null;
+    }
+
+    // Verify the document belongs to the user's client
+    if (existing.clientId != cmsUser.clientId) {
+      throw Exception('Access denied: document belongs to a different client');
     }
 
     final updated = existing.copyWith(

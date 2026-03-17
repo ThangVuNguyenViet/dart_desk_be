@@ -141,7 +141,7 @@ void main() {
         }
 
         final result = await endpoints.document.getDocuments(
-          sessionBuilder,
+          factory.authenticatedSession(),
           'list_test',
           limit: 3,
           offset: 0,
@@ -162,7 +162,7 @@ void main() {
         );
 
         final result = await endpoints.document.getDocuments(
-          sessionBuilder,
+          factory.authenticatedSession(),
           'search_test',
           search: 'Alpha',
           limit: 100,

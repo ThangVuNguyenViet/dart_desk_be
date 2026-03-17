@@ -7,6 +7,7 @@ void main() {
     late TestDataFactory factory;
 
     setUp(() {
+      TestDataFactory.initializeCrdtService();
       factory = TestDataFactory(
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
