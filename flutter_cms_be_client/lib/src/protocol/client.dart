@@ -352,7 +352,7 @@ class EndpointDocument extends _i1.EndpointRef {
   _i2.Future<_i9.CmsDocument> createDocument(
     String documentType,
     String title,
-    Map<String, dynamic> data, {
+    Map<String, String> data, {
     String? slug,
     required bool isDefault,
   }) => caller.callServerEndpoint<_i9.CmsDocument>(
@@ -371,7 +371,7 @@ class EndpointDocument extends _i1.EndpointRef {
   /// Only changed fields need to be provided - they will be merged automatically
   _i2.Future<_i9.CmsDocument> updateDocumentData(
     int documentId,
-    Map<String, dynamic> updates, {
+    Map<String, String> updates, {
     String? sessionId,
   }) => caller.callServerEndpoint<_i9.CmsDocument>(
     'document',

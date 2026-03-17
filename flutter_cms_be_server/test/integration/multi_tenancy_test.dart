@@ -7,6 +7,7 @@ void main() {
     late TestDataFactory factory;
 
     setUp(() {
+      TestDataFactory.initializeCrdtService();
       factory = TestDataFactory(
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
@@ -42,7 +43,7 @@ void main() {
             authedA,
             'blog',
             'Client A Secret',
-            {'content': 'private'},
+            <String, String>{'content': 'private'},
             isDefault: false,
           );
 
@@ -75,7 +76,7 @@ void main() {
 
           // Client A creates a document
           final docA = await endpoints.document.createDocument(
-            authedA, 'blog', 'A Private Doc', {},
+            authedA, 'blog', 'A Private Doc', <String, String>{},
             isDefault: false,
           );
 
@@ -101,7 +102,7 @@ void main() {
           await endpoints.user.ensureUser(authedB, 'iso-del-b', clientB.apiToken);
 
           final docA = await endpoints.document.createDocument(
-            authedA, 'blog', 'A Secret Doc', {},
+            authedA, 'blog', 'A Secret Doc', <String, String>{},
             isDefault: false,
           );
 
@@ -126,11 +127,11 @@ void main() {
 
           // Both clients create a document with the same slug
           final docA = await endpoints.document.createDocument(
-            authedA, 'page', 'Page A', {},
+            authedA, 'page', 'Page A', <String, String>{},
             slug: 'hello', isDefault: false,
           );
           final docB = await endpoints.document.createDocument(
-            authedB, 'page', 'Page B', {},
+            authedB, 'page', 'Page B', <String, String>{},
             slug: 'hello', isDefault: false,
           );
 

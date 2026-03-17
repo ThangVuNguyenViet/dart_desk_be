@@ -29,7 +29,11 @@ void main() {
       test('rejects reserved slugs', () async {
         final authed = factory.authenticatedSession();
         expect(
-          () => endpoints.cmsClient.createClient(authed, 'Login', 'login'),
+          () => endpoints.cmsClient.createClientWithOwner(
+            authed,
+            name: 'Login',
+            slug: 'login',
+          ),
           throwsA(isA<Exception>()),
         );
       });
@@ -37,7 +41,11 @@ void main() {
       test('rejects invalid slug format', () async {
         final authed = factory.authenticatedSession();
         expect(
-          () => endpoints.cmsClient.createClient(authed, 'Bad', 'AB'),
+          () => endpoints.cmsClient.createClientWithOwner(
+            authed,
+            name: 'Bad',
+            slug: 'AB',
+          ),
           throwsA(isA<Exception>()),
         );
       });

@@ -712,7 +712,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<Map<String, dynamic>>(),
+              type: _i1.getType<Map<String, String>>(),
               nullable: false,
             ),
             'slug': _i1.ParameterDescription(
@@ -750,7 +750,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'updates': _i1.ParameterDescription(
               name: 'updates',
-              type: _i1.getType<Map<String, dynamic>>(),
+              type: _i1.getType<Map<String, String>>(),
               nullable: false,
             ),
             'sessionId': _i1.ParameterDescription(

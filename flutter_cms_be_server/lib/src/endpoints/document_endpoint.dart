@@ -88,7 +88,7 @@ class DocumentEndpoint extends Endpoint {
     Session session,
     String documentType,
     String title,
-    Map<String, dynamic> data, {
+    Map<String, String> data, {
     String? slug,
     bool isDefault = false,
   }) async {
@@ -177,7 +177,7 @@ class DocumentEndpoint extends Endpoint {
   Future<CmsDocument> updateDocumentData(
     Session session,
     int documentId,
-    Map<String, dynamic> updates, {
+    Map<String, String> updates, {
     String? sessionId,
   }) async {
     // Require authentication

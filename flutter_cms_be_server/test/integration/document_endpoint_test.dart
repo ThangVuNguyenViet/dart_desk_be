@@ -10,6 +10,7 @@ void main() {
     late ClientWithToken testClient;
 
     setUp(() async {
+      TestDataFactory.initializeCrdtService();
       factory = TestDataFactory(
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,

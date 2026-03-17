@@ -4,6 +4,8 @@ import 'package:test/test.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test/serverpod_test.dart';
 import 'package:flutter_cms_be_server/src/generated/protocol.dart';
+import 'package:flutter_cms_be_server/server.dart' as server;
+import 'package:flutter_cms_be_server/src/services/document_crdt_service.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 /// Factory for creating test entities via real endpoint calls.
@@ -16,6 +18,12 @@ class TestDataFactory {
     required this.sessionBuilder,
     required this.endpoints,
   });
+
+  /// Initializes the global CRDT service used by document endpoints.
+  /// Must be called before any test that creates or updates documents.
+  static void initializeCrdtService() {
+    server.documentCrdtService = DocumentCrdtService('test-node');
+  }
 
   /// Creates an authenticated session builder.
   /// withServerpod sessions are unauthenticated by default.
@@ -51,7 +59,7 @@ class TestDataFactory {
   Future<CmsDocument> createTestDocument({
     String documentType = 'test_type',
     String title = 'Test Document',
-    Map<String, dynamic> data = const {'field1': 'value1'},
+    Map<String, String> data = const {'field1': 'value1'},
     String? slug,
     bool isDefault = false,
   }) async {
