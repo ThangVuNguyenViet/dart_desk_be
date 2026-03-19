@@ -22,34 +22,38 @@ import 'cms_api_token.dart' as _i7;
 import 'cms_api_token_with_value.dart' as _i8;
 import 'cms_client.dart' as _i9;
 import 'cms_client_list.dart' as _i10;
-import 'cms_document.dart' as _i11;
-import 'cms_document_data.dart' as _i12;
-import 'cms_user.dart' as _i13;
-import 'crdt_operation_type.dart' as _i14;
-import 'document_crdt_operation.dart' as _i15;
-import 'document_crdt_snapshot.dart' as _i16;
-import 'document_list.dart' as _i17;
-import 'document_version.dart' as _i18;
-import 'document_version_list.dart' as _i19;
-import 'document_version_list_with_operations.dart' as _i20;
-import 'document_version_status.dart' as _i21;
-import 'document_version_with_operations.dart' as _i22;
-import 'media_file.dart' as _i23;
-import 'upload_response.dart' as _i24;
-import 'package:flutter_cms_be_server/src/generated/cms_api_token.dart' as _i25;
+import 'cms_deployment.dart' as _i11;
+import 'cms_document.dart' as _i12;
+import 'cms_document_data.dart' as _i13;
+import 'cms_user.dart' as _i14;
+import 'crdt_operation_type.dart' as _i15;
+import 'deployment_status.dart' as _i16;
+import 'document_crdt_operation.dart' as _i17;
+import 'document_crdt_snapshot.dart' as _i18;
+import 'document_list.dart' as _i19;
+import 'document_version.dart' as _i20;
+import 'document_version_list.dart' as _i21;
+import 'document_version_list_with_operations.dart' as _i22;
+import 'document_version_status.dart' as _i23;
+import 'document_version_with_operations.dart' as _i24;
+import 'media_file.dart' as _i25;
+import 'upload_response.dart' as _i26;
+import 'package:flutter_cms_be_server/src/generated/cms_api_token.dart' as _i27;
 import 'package:flutter_cms_be_server/src/generated/document_crdt_operation.dart'
-    as _i26;
-import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i27;
-import 'package:flutter_cms_be_server/src/generated/cms_client.dart' as _i28;
+    as _i28;
+import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i29;
+import 'package:flutter_cms_be_server/src/generated/cms_client.dart' as _i30;
 export 'client_with_token.dart';
 export 'cms_api_token.dart';
 export 'cms_api_token_with_value.dart';
 export 'cms_client.dart';
 export 'cms_client_list.dart';
+export 'cms_deployment.dart';
 export 'cms_document.dart';
 export 'cms_document_data.dart';
 export 'cms_user.dart';
 export 'crdt_operation_type.dart';
+export 'deployment_status.dart';
 export 'document_crdt_operation.dart';
 export 'document_crdt_snapshot.dart';
 export 'document_list.dart';
@@ -336,6 +340,168 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'isActive',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'cms_deployments',
+      dartName: 'CmsDeployment',
+      schema: 'public',
+      module: 'flutter_cms_be',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'cms_deployments_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'clientId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'version',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:DeploymentStatus',
+        ),
+        _i2.ColumnDefinition(
+          name: 'filePath',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'fileSize',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'uploadedByUserId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'commitHash',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'metadata',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'cms_deployments_fk_0',
+          columns: ['clientId'],
+          referenceTable: 'cms_clients',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.restrict,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'cms_deployments_fk_1',
+          columns: ['uploadedByUserId'],
+          referenceTable: 'cms_users',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.setNull,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'cms_deployments_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'cms_deployment_client_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'clientId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'cms_deployment_client_version_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'clientId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'version',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'cms_deployment_client_status_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'clientId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'status',
             ),
           ],
           type: 'btree',
@@ -1496,47 +1662,53 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i10.CmsClientList) {
       return _i10.CmsClientList.fromJson(data) as T;
     }
-    if (t == _i11.CmsDocument) {
-      return _i11.CmsDocument.fromJson(data) as T;
+    if (t == _i11.CmsDeployment) {
+      return _i11.CmsDeployment.fromJson(data) as T;
     }
-    if (t == _i12.CmsDocumentData) {
-      return _i12.CmsDocumentData.fromJson(data) as T;
+    if (t == _i12.CmsDocument) {
+      return _i12.CmsDocument.fromJson(data) as T;
     }
-    if (t == _i13.CmsUser) {
-      return _i13.CmsUser.fromJson(data) as T;
+    if (t == _i13.CmsDocumentData) {
+      return _i13.CmsDocumentData.fromJson(data) as T;
     }
-    if (t == _i14.CrdtOperationType) {
-      return _i14.CrdtOperationType.fromJson(data) as T;
+    if (t == _i14.CmsUser) {
+      return _i14.CmsUser.fromJson(data) as T;
     }
-    if (t == _i15.DocumentCrdtOperation) {
-      return _i15.DocumentCrdtOperation.fromJson(data) as T;
+    if (t == _i15.CrdtOperationType) {
+      return _i15.CrdtOperationType.fromJson(data) as T;
     }
-    if (t == _i16.DocumentCrdtSnapshot) {
-      return _i16.DocumentCrdtSnapshot.fromJson(data) as T;
+    if (t == _i16.DeploymentStatus) {
+      return _i16.DeploymentStatus.fromJson(data) as T;
     }
-    if (t == _i17.DocumentList) {
-      return _i17.DocumentList.fromJson(data) as T;
+    if (t == _i17.DocumentCrdtOperation) {
+      return _i17.DocumentCrdtOperation.fromJson(data) as T;
     }
-    if (t == _i18.DocumentVersion) {
-      return _i18.DocumentVersion.fromJson(data) as T;
+    if (t == _i18.DocumentCrdtSnapshot) {
+      return _i18.DocumentCrdtSnapshot.fromJson(data) as T;
     }
-    if (t == _i19.DocumentVersionList) {
-      return _i19.DocumentVersionList.fromJson(data) as T;
+    if (t == _i19.DocumentList) {
+      return _i19.DocumentList.fromJson(data) as T;
     }
-    if (t == _i20.DocumentVersionListWithOperations) {
-      return _i20.DocumentVersionListWithOperations.fromJson(data) as T;
+    if (t == _i20.DocumentVersion) {
+      return _i20.DocumentVersion.fromJson(data) as T;
     }
-    if (t == _i21.DocumentVersionStatus) {
-      return _i21.DocumentVersionStatus.fromJson(data) as T;
+    if (t == _i21.DocumentVersionList) {
+      return _i21.DocumentVersionList.fromJson(data) as T;
     }
-    if (t == _i22.DocumentVersionWithOperations) {
-      return _i22.DocumentVersionWithOperations.fromJson(data) as T;
+    if (t == _i22.DocumentVersionListWithOperations) {
+      return _i22.DocumentVersionListWithOperations.fromJson(data) as T;
     }
-    if (t == _i23.MediaFile) {
-      return _i23.MediaFile.fromJson(data) as T;
+    if (t == _i23.DocumentVersionStatus) {
+      return _i23.DocumentVersionStatus.fromJson(data) as T;
     }
-    if (t == _i24.UploadResponse) {
-      return _i24.UploadResponse.fromJson(data) as T;
+    if (t == _i24.DocumentVersionWithOperations) {
+      return _i24.DocumentVersionWithOperations.fromJson(data) as T;
+    }
+    if (t == _i25.MediaFile) {
+      return _i25.MediaFile.fromJson(data) as T;
+    }
+    if (t == _i26.UploadResponse) {
+      return _i26.UploadResponse.fromJson(data) as T;
     }
     if (t == _i1.getType<_i6.ClientWithToken?>()) {
       return (data != null ? _i6.ClientWithToken.fromJson(data) : null) as T;
@@ -1554,95 +1726,101 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i10.CmsClientList?>()) {
       return (data != null ? _i10.CmsClientList.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i11.CmsDocument?>()) {
-      return (data != null ? _i11.CmsDocument.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i11.CmsDeployment?>()) {
+      return (data != null ? _i11.CmsDeployment.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i12.CmsDocumentData?>()) {
-      return (data != null ? _i12.CmsDocumentData.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i12.CmsDocument?>()) {
+      return (data != null ? _i12.CmsDocument.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i13.CmsUser?>()) {
-      return (data != null ? _i13.CmsUser.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i13.CmsDocumentData?>()) {
+      return (data != null ? _i13.CmsDocumentData.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.CrdtOperationType?>()) {
-      return (data != null ? _i14.CrdtOperationType.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.CmsUser?>()) {
+      return (data != null ? _i14.CmsUser.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i15.DocumentCrdtOperation?>()) {
-      return (data != null ? _i15.DocumentCrdtOperation.fromJson(data) : null)
+    if (t == _i1.getType<_i15.CrdtOperationType?>()) {
+      return (data != null ? _i15.CrdtOperationType.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i16.DeploymentStatus?>()) {
+      return (data != null ? _i16.DeploymentStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i17.DocumentCrdtOperation?>()) {
+      return (data != null ? _i17.DocumentCrdtOperation.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i16.DocumentCrdtSnapshot?>()) {
-      return (data != null ? _i16.DocumentCrdtSnapshot.fromJson(data) : null)
+    if (t == _i1.getType<_i18.DocumentCrdtSnapshot?>()) {
+      return (data != null ? _i18.DocumentCrdtSnapshot.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i17.DocumentList?>()) {
-      return (data != null ? _i17.DocumentList.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i19.DocumentList?>()) {
+      return (data != null ? _i19.DocumentList.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i18.DocumentVersion?>()) {
-      return (data != null ? _i18.DocumentVersion.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i20.DocumentVersion?>()) {
+      return (data != null ? _i20.DocumentVersion.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.DocumentVersionList?>()) {
-      return (data != null ? _i19.DocumentVersionList.fromJson(data) : null)
+    if (t == _i1.getType<_i21.DocumentVersionList?>()) {
+      return (data != null ? _i21.DocumentVersionList.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i20.DocumentVersionListWithOperations?>()) {
+    if (t == _i1.getType<_i22.DocumentVersionListWithOperations?>()) {
       return (data != null
-              ? _i20.DocumentVersionListWithOperations.fromJson(data)
+              ? _i22.DocumentVersionListWithOperations.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i21.DocumentVersionStatus?>()) {
-      return (data != null ? _i21.DocumentVersionStatus.fromJson(data) : null)
+    if (t == _i1.getType<_i23.DocumentVersionStatus?>()) {
+      return (data != null ? _i23.DocumentVersionStatus.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i22.DocumentVersionWithOperations?>()) {
+    if (t == _i1.getType<_i24.DocumentVersionWithOperations?>()) {
       return (data != null
-              ? _i22.DocumentVersionWithOperations.fromJson(data)
+              ? _i24.DocumentVersionWithOperations.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i23.MediaFile?>()) {
-      return (data != null ? _i23.MediaFile.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i25.MediaFile?>()) {
+      return (data != null ? _i25.MediaFile.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i24.UploadResponse?>()) {
-      return (data != null ? _i24.UploadResponse.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i26.UploadResponse?>()) {
+      return (data != null ? _i26.UploadResponse.fromJson(data) : null) as T;
     }
     if (t == List<_i9.CmsClient>) {
       return (data as List).map((e) => deserialize<_i9.CmsClient>(e)).toList()
           as T;
     }
-    if (t == List<_i11.CmsDocument>) {
+    if (t == List<_i12.CmsDocument>) {
       return (data as List)
-              .map((e) => deserialize<_i11.CmsDocument>(e))
+              .map((e) => deserialize<_i12.CmsDocument>(e))
               .toList()
           as T;
     }
-    if (t == List<_i18.DocumentVersion>) {
+    if (t == List<_i20.DocumentVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i18.DocumentVersion>(e))
+              .map((e) => deserialize<_i20.DocumentVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i22.DocumentVersionWithOperations>) {
+    if (t == List<_i24.DocumentVersionWithOperations>) {
       return (data as List)
-              .map((e) => deserialize<_i22.DocumentVersionWithOperations>(e))
+              .map((e) => deserialize<_i24.DocumentVersionWithOperations>(e))
               .toList()
           as T;
     }
-    if (t == List<_i15.DocumentCrdtOperation>) {
+    if (t == List<_i17.DocumentCrdtOperation>) {
       return (data as List)
-              .map((e) => deserialize<_i15.DocumentCrdtOperation>(e))
+              .map((e) => deserialize<_i17.DocumentCrdtOperation>(e))
               .toList()
           as T;
     }
-    if (t == List<_i25.CmsApiToken>) {
+    if (t == List<_i27.CmsApiToken>) {
       return (data as List)
-              .map((e) => deserialize<_i25.CmsApiToken>(e))
+              .map((e) => deserialize<_i27.CmsApiToken>(e))
               .toList()
           as T;
     }
-    if (t == List<_i26.DocumentCrdtOperation>) {
+    if (t == List<_i28.DocumentCrdtOperation>) {
       return (data as List)
-              .map((e) => deserialize<_i26.DocumentCrdtOperation>(e))
+              .map((e) => deserialize<_i28.DocumentCrdtOperation>(e))
               .toList()
           as T;
     }
@@ -1670,12 +1848,12 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == List<_i27.MediaFile>) {
-      return (data as List).map((e) => deserialize<_i27.MediaFile>(e)).toList()
+    if (t == List<_i29.MediaFile>) {
+      return (data as List).map((e) => deserialize<_i29.MediaFile>(e)).toList()
           as T;
     }
-    if (t == List<_i28.CmsClient>) {
-      return (data as List).map((e) => deserialize<_i28.CmsClient>(e)).toList()
+    if (t == List<_i30.CmsClient>) {
+      return (data as List).map((e) => deserialize<_i30.CmsClient>(e)).toList()
           as T;
     }
     try {
@@ -1700,21 +1878,23 @@ class Protocol extends _i1.SerializationManagerServer {
       _i8.CmsApiTokenWithValue => 'CmsApiTokenWithValue',
       _i9.CmsClient => 'CmsClient',
       _i10.CmsClientList => 'CmsClientList',
-      _i11.CmsDocument => 'CmsDocument',
-      _i12.CmsDocumentData => 'CmsDocumentData',
-      _i13.CmsUser => 'CmsUser',
-      _i14.CrdtOperationType => 'CrdtOperationType',
-      _i15.DocumentCrdtOperation => 'DocumentCrdtOperation',
-      _i16.DocumentCrdtSnapshot => 'DocumentCrdtSnapshot',
-      _i17.DocumentList => 'DocumentList',
-      _i18.DocumentVersion => 'DocumentVersion',
-      _i19.DocumentVersionList => 'DocumentVersionList',
-      _i20.DocumentVersionListWithOperations =>
+      _i11.CmsDeployment => 'CmsDeployment',
+      _i12.CmsDocument => 'CmsDocument',
+      _i13.CmsDocumentData => 'CmsDocumentData',
+      _i14.CmsUser => 'CmsUser',
+      _i15.CrdtOperationType => 'CrdtOperationType',
+      _i16.DeploymentStatus => 'DeploymentStatus',
+      _i17.DocumentCrdtOperation => 'DocumentCrdtOperation',
+      _i18.DocumentCrdtSnapshot => 'DocumentCrdtSnapshot',
+      _i19.DocumentList => 'DocumentList',
+      _i20.DocumentVersion => 'DocumentVersion',
+      _i21.DocumentVersionList => 'DocumentVersionList',
+      _i22.DocumentVersionListWithOperations =>
         'DocumentVersionListWithOperations',
-      _i21.DocumentVersionStatus => 'DocumentVersionStatus',
-      _i22.DocumentVersionWithOperations => 'DocumentVersionWithOperations',
-      _i23.MediaFile => 'MediaFile',
-      _i24.UploadResponse => 'UploadResponse',
+      _i23.DocumentVersionStatus => 'DocumentVersionStatus',
+      _i24.DocumentVersionWithOperations => 'DocumentVersionWithOperations',
+      _i25.MediaFile => 'MediaFile',
+      _i26.UploadResponse => 'UploadResponse',
       _ => null,
     };
   }
@@ -1742,33 +1922,37 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'CmsClient';
       case _i10.CmsClientList():
         return 'CmsClientList';
-      case _i11.CmsDocument():
+      case _i11.CmsDeployment():
+        return 'CmsDeployment';
+      case _i12.CmsDocument():
         return 'CmsDocument';
-      case _i12.CmsDocumentData():
+      case _i13.CmsDocumentData():
         return 'CmsDocumentData';
-      case _i13.CmsUser():
+      case _i14.CmsUser():
         return 'CmsUser';
-      case _i14.CrdtOperationType():
+      case _i15.CrdtOperationType():
         return 'CrdtOperationType';
-      case _i15.DocumentCrdtOperation():
+      case _i16.DeploymentStatus():
+        return 'DeploymentStatus';
+      case _i17.DocumentCrdtOperation():
         return 'DocumentCrdtOperation';
-      case _i16.DocumentCrdtSnapshot():
+      case _i18.DocumentCrdtSnapshot():
         return 'DocumentCrdtSnapshot';
-      case _i17.DocumentList():
+      case _i19.DocumentList():
         return 'DocumentList';
-      case _i18.DocumentVersion():
+      case _i20.DocumentVersion():
         return 'DocumentVersion';
-      case _i19.DocumentVersionList():
+      case _i21.DocumentVersionList():
         return 'DocumentVersionList';
-      case _i20.DocumentVersionListWithOperations():
+      case _i22.DocumentVersionListWithOperations():
         return 'DocumentVersionListWithOperations';
-      case _i21.DocumentVersionStatus():
+      case _i23.DocumentVersionStatus():
         return 'DocumentVersionStatus';
-      case _i22.DocumentVersionWithOperations():
+      case _i24.DocumentVersionWithOperations():
         return 'DocumentVersionWithOperations';
-      case _i23.MediaFile():
+      case _i25.MediaFile():
         return 'MediaFile';
-      case _i24.UploadResponse():
+      case _i26.UploadResponse():
         return 'UploadResponse';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1811,47 +1995,53 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'CmsClientList') {
       return deserialize<_i10.CmsClientList>(data['data']);
     }
+    if (dataClassName == 'CmsDeployment') {
+      return deserialize<_i11.CmsDeployment>(data['data']);
+    }
     if (dataClassName == 'CmsDocument') {
-      return deserialize<_i11.CmsDocument>(data['data']);
+      return deserialize<_i12.CmsDocument>(data['data']);
     }
     if (dataClassName == 'CmsDocumentData') {
-      return deserialize<_i12.CmsDocumentData>(data['data']);
+      return deserialize<_i13.CmsDocumentData>(data['data']);
     }
     if (dataClassName == 'CmsUser') {
-      return deserialize<_i13.CmsUser>(data['data']);
+      return deserialize<_i14.CmsUser>(data['data']);
     }
     if (dataClassName == 'CrdtOperationType') {
-      return deserialize<_i14.CrdtOperationType>(data['data']);
+      return deserialize<_i15.CrdtOperationType>(data['data']);
+    }
+    if (dataClassName == 'DeploymentStatus') {
+      return deserialize<_i16.DeploymentStatus>(data['data']);
     }
     if (dataClassName == 'DocumentCrdtOperation') {
-      return deserialize<_i15.DocumentCrdtOperation>(data['data']);
+      return deserialize<_i17.DocumentCrdtOperation>(data['data']);
     }
     if (dataClassName == 'DocumentCrdtSnapshot') {
-      return deserialize<_i16.DocumentCrdtSnapshot>(data['data']);
+      return deserialize<_i18.DocumentCrdtSnapshot>(data['data']);
     }
     if (dataClassName == 'DocumentList') {
-      return deserialize<_i17.DocumentList>(data['data']);
+      return deserialize<_i19.DocumentList>(data['data']);
     }
     if (dataClassName == 'DocumentVersion') {
-      return deserialize<_i18.DocumentVersion>(data['data']);
+      return deserialize<_i20.DocumentVersion>(data['data']);
     }
     if (dataClassName == 'DocumentVersionList') {
-      return deserialize<_i19.DocumentVersionList>(data['data']);
+      return deserialize<_i21.DocumentVersionList>(data['data']);
     }
     if (dataClassName == 'DocumentVersionListWithOperations') {
-      return deserialize<_i20.DocumentVersionListWithOperations>(data['data']);
+      return deserialize<_i22.DocumentVersionListWithOperations>(data['data']);
     }
     if (dataClassName == 'DocumentVersionStatus') {
-      return deserialize<_i21.DocumentVersionStatus>(data['data']);
+      return deserialize<_i23.DocumentVersionStatus>(data['data']);
     }
     if (dataClassName == 'DocumentVersionWithOperations') {
-      return deserialize<_i22.DocumentVersionWithOperations>(data['data']);
+      return deserialize<_i24.DocumentVersionWithOperations>(data['data']);
     }
     if (dataClassName == 'MediaFile') {
-      return deserialize<_i23.MediaFile>(data['data']);
+      return deserialize<_i25.MediaFile>(data['data']);
     }
     if (dataClassName == 'UploadResponse') {
-      return deserialize<_i24.UploadResponse>(data['data']);
+      return deserialize<_i26.UploadResponse>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1903,20 +2093,22 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i7.CmsApiToken.t;
       case _i9.CmsClient:
         return _i9.CmsClient.t;
-      case _i11.CmsDocument:
-        return _i11.CmsDocument.t;
-      case _i12.CmsDocumentData:
-        return _i12.CmsDocumentData.t;
-      case _i13.CmsUser:
-        return _i13.CmsUser.t;
-      case _i15.DocumentCrdtOperation:
-        return _i15.DocumentCrdtOperation.t;
-      case _i16.DocumentCrdtSnapshot:
-        return _i16.DocumentCrdtSnapshot.t;
-      case _i18.DocumentVersion:
-        return _i18.DocumentVersion.t;
-      case _i23.MediaFile:
-        return _i23.MediaFile.t;
+      case _i11.CmsDeployment:
+        return _i11.CmsDeployment.t;
+      case _i12.CmsDocument:
+        return _i12.CmsDocument.t;
+      case _i13.CmsDocumentData:
+        return _i13.CmsDocumentData.t;
+      case _i14.CmsUser:
+        return _i14.CmsUser.t;
+      case _i17.DocumentCrdtOperation:
+        return _i17.DocumentCrdtOperation.t;
+      case _i18.DocumentCrdtSnapshot:
+        return _i18.DocumentCrdtSnapshot.t;
+      case _i20.DocumentVersion:
+        return _i20.DocumentVersion.t;
+      case _i25.MediaFile:
+        return _i25.MediaFile.t;
     }
     return null;
   }

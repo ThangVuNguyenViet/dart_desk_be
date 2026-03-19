@@ -1,0 +1,21 @@
+class: CmsDeployment
+table: cms_deployments
+fields:
+  clientId: int, relation(parent=cms_clients, onDelete=Restrict)
+  version: int
+  status: DeploymentStatus
+  filePath: String
+  fileSize: int?
+  uploadedByUserId: int?, relation(parent=cms_users, onDelete=SetNull)
+  commitHash: String?
+  metadata: String?
+  createdAt: DateTime?, default=now
+  updatedAt: DateTime?, default=now
+indexes:
+  cms_deployment_client_idx:
+    fields: clientId
+  cms_deployment_client_version_idx:
+    fields: clientId, version
+    unique: true
+  cms_deployment_client_status_idx:
+    fields: clientId, status

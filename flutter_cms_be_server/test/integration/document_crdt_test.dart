@@ -75,6 +75,153 @@ void main() {
       });
     });
 
+    group('complex data types', () {
+      test('create with rich data, retrieve and verify types preserved',
+          () async {
+        final complexData = TestDataFactory.complexTestData;
+        final doc = await factory.createTestDocument(
+          title: 'Complex Doc',
+          data: complexData,
+        );
+        final authed = factory.authenticatedSession();
+
+        final fetched = await endpoints.document.getDocument(authed, doc.id!);
+        expect(fetched, isNotNull);
+
+        final data = jsonDecode(fetched!.data!) as Map<String, dynamic>;
+        expect(data['title'], equals('Test Page'));
+        expect(data['title'], isA<String>());
+        expect(data['isActive'], isA<bool>());
+        expect(data['isActive'], isTrue);
+        expect(data['count'], isA<int>());
+        expect(data['count'], equals(42));
+        expect(data['rating'], isA<double>());
+        expect(data['rating'], equals(4.5));
+        expect(data['tags'], isA<List>());
+        expect(data['tags'], equals(['alpha', 'beta', 'gamma']));
+        expect(data['metadata'], isA<Map>());
+        expect(data['metadata']['author'], equals('Jane'));
+        expect(data['metadata']['version'], isA<int>());
+        expect(data['metadata']['version'], equals(3));
+        expect(data['metadata']['published'], isA<bool>());
+        expect(data['metadata']['published'], isTrue);
+        expect(data['items'], isA<List>());
+        expect((data['items'] as List).length, equals(2));
+        expect(data['items'][0]['name'], equals('Item 1'));
+        expect(data['items'][0]['price'], isA<double>());
+        expect(data['items'][0]['price'], equals(9.99));
+        expect(data['emptyList'], isA<List>());
+        expect((data['emptyList'] as List), isEmpty);
+        expect(data['emptyMap'], isA<Map>());
+        expect((data['emptyMap'] as Map), isEmpty);
+        expect(data['nullableField'], isNull);
+      });
+
+      test('update with complex types, verify merge preserves types',
+          () async {
+        final doc = await factory.createTestDocument(
+          title: 'Update Complex Doc',
+          data: {'simple': 'start'},
+        );
+        final authed = factory.authenticatedSession();
+
+        await endpoints.document.updateDocumentData(
+          authed,
+          doc.id!,
+          {
+            'nested': {
+              'deep': {'value': true}
+            },
+            'scores': [100, 200],
+          },
+        );
+
+        final fetched = await endpoints.document.getDocument(authed, doc.id!);
+        final data = jsonDecode(fetched!.data!) as Map<String, dynamic>;
+
+        expect(data['nested'], isA<Map>());
+        expect(data['nested']['deep'], isA<Map>());
+        expect(data['nested']['deep']['value'], isA<bool>());
+        expect(data['nested']['deep']['value'], isTrue);
+        expect(data['scores'], isA<List>());
+        expect(data['scores'], equals([100, 200]));
+        expect(data['scores'][0], isA<int>());
+      });
+
+      test('deeply nested List→Map→List→Map round-trips correctly', () async {
+        final doc = await factory.createTestDocument(
+          title: 'Deep Nesting Doc',
+          data: {
+            'root': [
+              {
+                'sections': [
+                  {'label': 'A', 'score': 1},
+                  {'label': 'B', 'score': 2},
+                ],
+                'active': true,
+              },
+              {
+                'sections': [
+                  {'label': 'C', 'score': 3},
+                ],
+                'active': false,
+              },
+            ],
+          },
+        );
+        final authed = factory.authenticatedSession();
+
+        final fetched = await endpoints.document.getDocument(authed, doc.id!);
+        final data = jsonDecode(fetched!.data!) as Map<String, dynamic>;
+
+        // List
+        expect(data['root'], isA<List>());
+        final root = data['root'] as List;
+        // Map
+        expect(root[0], isA<Map>());
+        // List
+        expect(root[0]['sections'], isA<List>());
+        // Map
+        expect(root[0]['sections'][0], isA<Map>());
+        expect(root[0]['sections'][0]['label'], equals('A'));
+        expect(root[0]['sections'][0]['score'], isA<int>());
+        expect(root[0]['sections'][0]['score'], equals(1));
+        expect(root[0]['sections'][1]['score'], equals(2));
+        expect(root[0]['active'], isA<bool>());
+        expect(root[0]['active'], isTrue);
+        expect(root[1]['active'], isFalse);
+        expect(root[1]['sections'][0]['label'], equals('C'));
+      });
+
+      test('version snapshot preserves complex types', () async {
+        final complexData = TestDataFactory.complexTestData;
+        final doc = await factory.createTestDocument(
+          title: 'Version Complex Doc',
+          data: complexData,
+        );
+
+        final version = await factory.createTestVersion(doc.id!);
+
+        final versionData = await endpoints.document.getDocumentVersionData(
+          sessionBuilder,
+          version.id!,
+        );
+
+        expect(versionData, isNotNull);
+        expect(versionData!['isActive'], isA<bool>());
+        expect(versionData['isActive'], isTrue);
+        expect(versionData['count'], isA<int>());
+        expect(versionData['count'], equals(42));
+        expect(versionData['rating'], isA<double>());
+        expect(versionData['tags'], isA<List>());
+        expect(versionData['tags'], equals(['alpha', 'beta', 'gamma']));
+        expect(versionData['metadata'], isA<Map>());
+        expect(versionData['metadata']['version'], isA<int>());
+        expect(versionData['items'], isA<List>());
+        expect(versionData['items'][0]['price'], isA<double>());
+      });
+    });
+
     group('CRDT operations tracking', () {
       test('operations are recorded and countable', () async {
         final doc = await factory.createTestDocument(

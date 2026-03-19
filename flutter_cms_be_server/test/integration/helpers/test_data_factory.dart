@@ -88,6 +88,27 @@ class TestDataFactory {
     );
   }
 
+  /// Rich test data with mixed types for verifying Map<String, dynamic> round-trips.
+  static Map<String, dynamic> get complexTestData => {
+        'title': 'Test Page',
+        'isActive': true,
+        'count': 42,
+        'rating': 4.5,
+        'tags': ['alpha', 'beta', 'gamma'],
+        'metadata': {
+          'author': 'Jane',
+          'version': 3,
+          'published': true,
+        },
+        'items': [
+          {'name': 'Item 1', 'price': 9.99},
+          {'name': 'Item 2', 'price': 19.99},
+        ],
+        'emptyList': <dynamic>[],
+        'emptyMap': <String, dynamic>{},
+        'nullableField': null,
+      };
+
   /// Uploads a minimal test PNG image (1x1 pixel).
   Future<UploadResponse> uploadTestImage({
     String fileName = 'test_image.png',

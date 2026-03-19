@@ -523,13 +523,14 @@ packages:
     source: hosted
     version: "3.4.3"
   serverpod_serialization:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: serverpod_serialization
-      sha256: "1c774ee85229fb09ee72ebb183f823601b3c45ae40edc18f5e27f6e87e00dae6"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.4.3"
+      path: "packages/serverpod_serialization"
+      ref: "fix/dynamic-map-deserialization"
+      resolved-ref: e3f7e4bd9769e8c8da4443b806b2808b0509e25f
+      url: "https://github.com/ThangVuNguyenViet/serverpod.git"
+    source: git
+    version: "3.4.4"
   serverpod_shared:
     dependency: transitive
     description:

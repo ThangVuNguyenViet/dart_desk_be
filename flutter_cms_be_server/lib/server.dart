@@ -101,6 +101,7 @@ void _registerAdminModule() {
     registry.register<DocumentCrdtOperation>();
     registry.register<DocumentCrdtSnapshot>();
     registry.register<CmsApiToken>();
+    registry.register<CmsDeployment>();
 
     developer.log(
         '[Admin] Module registered with ${registry.registeredResourceMetadata.length} resources');

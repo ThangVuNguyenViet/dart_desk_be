@@ -17,6 +17,13 @@ dependencies:
       url: https://github.com/AdamMusa/serverpod_admin.git
       path: serverpod_admin_server
 
+dependency_overrides:
+  serverpod_serialization:
+    git:
+      url: https://github.com/ThangVuNguyenViet/serverpod.git
+      ref: fix/dynamic-map-deserialization
+      path: packages/serverpod_serialization
+
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
   test: '^1.24.2'
