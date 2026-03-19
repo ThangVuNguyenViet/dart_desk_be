@@ -8,6 +8,8 @@
 - [Configuration Options](#configuration-options)
 - [Rollback Options](#rollback-options)
 - [Test Exceptions](#test-exceptions)
+- [Advanced Examples](#advanced-examples)
+- [Best Practices](#best-practices)
 
 ## Setup
 
@@ -242,4 +244,120 @@ Wait for async events (useful with generators):
 ```dart
 var stream = endpoints.someEndpoint.generatorFunction(session);
 await flushEventQueue();
+```
+
+## Advanced Examples
+
+### Run unit and integration tests separately
+
+```bash
+dart test                    # All tests (unit + integration)
+dart test -t integration     # Only integration tests
+dart test -x integration     # Only unit tests
+```
+
+The tag name can be customized via `testGroupTagsOverride`.
+
+### Testing session-dependent business logic
+
+Use `withServerpod` while ignoring the `endpoints` argument when testing business logic modules that depend on `Session`:
+
+```dart
+withServerpod('Given decreasing product quantity when quantity is zero', (
+  sessionBuilder,
+  _, // ignore endpoints — testing business logic directly
+) {
+  var session = sessionBuilder.build();
+
+  setUp(() async {
+    await Product.db.insertRow(session, [
+      Product(id: 123, name: 'Apple', quantity: 0),
+    ]);
+  });
+
+  test('then should throw InvalidOperationException', () async {
+    var future = ProductsBusinessLogic.updateQuantity(
+      session,
+      id: 123,
+      decrease: 1,
+    );
+    await expectLater(future, throwsA(isA<InvalidOperationException>()));
+  });
+});
+```
+
+### Multi-user stream testing
+
+Create separate sessions with different authentication contexts:
+
+```dart
+var userSession1 = sessionBuilder.copyWith(
+  authentication: AuthenticationOverride.authenticationInfo(userId1, {}),
+);
+var userSession2 = sessionBuilder.copyWith(
+  authentication: AuthenticationOverride.authenticationInfo(userId2, {}),
+);
+```
+
+Use `flushEventQueue()` to ensure streams execute to their first `yield` before continuing:
+
+```dart
+var stream = endpoints.example.listenForNumbersOnSharedStream(userSession1);
+await flushEventQueue(); // ensures the listener is ready
+await endpoints.example.postNumberToSharedStream(userSession2, 42);
+```
+
+### Database connection optimization
+
+Concurrent tests may exceed database connection limits. Defer `sessionBuilder.build()` to `setUp`/`setUpAll` instead of top-level scope:
+
+```dart
+withServerpod('Given Products', (sessionBuilder, endpoints) {
+  late Session session;
+
+  setUp(() {
+    session = sessionBuilder.build(); // deferred — not top-level
+  });
+
+  test('test 1', () async { /* use session */ });
+  test('test 2', () async { /* use session */ });
+});
+```
+
+## Best Practices
+
+### Imports
+Import only the generated test tools file, not `serverpod_test` directly:
+
+```dart
+// ✅ Good
+import 'test_tools/serverpod_test_tools.dart';
+
+// ❌ Bad — redundant, creates clutter
+import 'package:serverpod_test/serverpod_test.dart';
+import 'test_tools/serverpod_test_tools.dart';
+```
+
+### Database cleanup
+Omit manual database cleanup — `withServerpod` wraps operations in a transaction that automatically rolls back after each test by default.
+
+### Calling endpoints
+Always use the provided `endpoints` parameter rather than instantiating endpoint classes directly. Direct instantiation bypasses lifecycle events and validation.
+
+```dart
+// ✅ Good
+await endpoints.example.hello(sessionBuilder, 'name');
+
+// ❌ Bad — bypasses test framework
+await ExampleEndpoint().hello(session, 'name');
+```
+
+### Test organization
+Separate unit and integration tests:
+
+```
+test/
+├── unit/           # Pure unit tests (no withServerpod)
+└── integration/    # Tests using withServerpod
+    └── test_tools/ # Generated test tools
 ```

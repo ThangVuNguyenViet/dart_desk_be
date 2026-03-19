@@ -352,7 +352,7 @@ class EndpointDocument extends _i1.EndpointRef {
   _i2.Future<_i9.CmsDocument> createDocument(
     String documentType,
     String title,
-    Map<String, String> data, {
+    Map<String, dynamic> data, {
     String? slug,
     required bool isDefault,
   }) => caller.callServerEndpoint<_i9.CmsDocument>(
@@ -371,7 +371,7 @@ class EndpointDocument extends _i1.EndpointRef {
   /// Only changed fields need to be provided - they will be merged automatically
   _i2.Future<_i9.CmsDocument> updateDocumentData(
     int documentId,
-    Map<String, String> updates, {
+    Map<String, dynamic> updates, {
     String? sessionId,
   }) => caller.callServerEndpoint<_i9.CmsDocument>(
     'document',
@@ -459,8 +459,8 @@ class EndpointDocument extends _i1.EndpointRef {
         {'versionId': versionId},
       );
 
-  /// Get the document data for a specific version
-  /// Reconstructs the data from CRDT operations at the version's HLC snapshot
+  /// Get the document data for a specific version.
+  /// Reconstructs the data from CRDT operations at the version's HLC snapshot.
   _i2.Future<Map<String, dynamic>?> getDocumentVersionData(int versionId) =>
       caller.callServerEndpoint<Map<String, dynamic>?>(
         'document',

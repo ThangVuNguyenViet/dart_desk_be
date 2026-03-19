@@ -1,13 +1,14 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../flutter_cms_be_client.dart';
 
 /// A widget that provides authentication guard functionality using Serverpod's
-/// IDP authentication system with Google Sign-In integration.
+/// IDP authentication system with Google Sign-In and email/password support.
 ///
-/// Simplified constructor only requires `clientId` (CmsClient slug) and `serverUrl`.
-/// The widget creates the Client internally and calls `ensureUser` after sign-in.
+/// The sign-in screen shows both Google Sign-In and email/password options.
 ///
 /// Example usage:
 /// ```dart
@@ -45,7 +46,12 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
   late final Client _client;
   bool _isLoading = true;
   bool _isEnsuringUser = false;
+  bool _isEmailSigningIn = false;
   String? _errorMessage;
+
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
 
   FlutterAuthSessionManager get _auth => _client.authSessionManager;
 
@@ -62,7 +68,23 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
         _errorMessage = null;
       });
 
-      _client = Client(widget.serverUrl)
+      _client = Client(
+        widget.serverUrl,
+        onFailedCall: (context, error, stackTrace) {
+          developer.log(
+            'API call failed: ${context.endpointName}.${context.methodName}',
+            name: 'ServerpodClient',
+            error: error,
+            stackTrace: stackTrace,
+          );
+        },
+        onSucceededCall: (context) {
+          developer.log(
+            'API call succeeded: ${context.endpointName}.${context.methodName}',
+            name: 'ServerpodClient',
+          );
+        },
+      )
         ..connectivityMonitor = FlutterConnectivityMonitor()
         ..authSessionManager = FlutterAuthSessionManager();
 
@@ -111,6 +133,44 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
     }
   }
 
+  Future<void> _signInWithEmail(String email, String password) async {
+    setState(() {
+      _isEmailSigningIn = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final authSuccess =
+          await _client.emailIdp.login(email: email, password: password);
+      await _auth.updateSignedInUser(authSuccess);
+      // _onAuthChanged will handle ensureUser
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Email sign-in failed. Error: ${e.toString()}';
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isEmailSigningIn = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleEmailSubmit() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please enter both email and password.';
+      });
+      return;
+    }
+    await _signInWithEmail(email, password);
+  }
+
   Future<void> _handleSignOut() async {
     try {
       await _auth.signOutDevice();
@@ -126,6 +186,8 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
   @override
   void dispose() {
     _auth.authInfoListenable.removeListener(_onAuthChanged);
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -221,6 +283,7 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
                             ),
                             const SizedBox(height: 16),
                           ],
+                          // Google Sign-In
                           GoogleSignInWidget(
                             client: _client,
                             scopes: const [],
@@ -233,6 +296,61 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
                                     'Google Sign-In failed. Please try again.';
                               });
                             },
+                          ),
+                          const SizedBox(height: 20),
+                          // Divider
+                          Row(
+                            children: [
+                              const Expanded(child: Divider()),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                child: Text(
+                                  'or',
+                                  style: theme.textTheme.muted,
+                                ),
+                              ),
+                              const Expanded(child: Divider()),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          // Email field
+                          ShadInput(
+                            controller: _emailController,
+                            placeholder: const Text('Email'),
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                          const SizedBox(height: 12),
+                          // Password field
+                          ShadInput(
+                            controller: _passwordController,
+                            placeholder: const Text('Password'),
+                            obscureText: _obscurePassword,
+                            trailing: GestureDetector(
+                              onTap: () => setState(
+                                  () => _obscurePassword = !_obscurePassword),
+                              child: Icon(
+                                _obscurePassword
+                                    ? LucideIcons.eyeOff
+                                    : LucideIcons.eye,
+                                size: 16,
+                              ),
+                            ),
+                            onSubmitted: (_) => _handleEmailSubmit(),
+                          ),
+                          const SizedBox(height: 16),
+                          // Sign-in button
+                          ShadButton(
+                            onPressed:
+                                _isEmailSigningIn ? null : _handleEmailSubmit,
+                            child: _isEmailSigningIn
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2),
+                                  )
+                                : const Text('Sign in with email'),
                           ),
                         ],
                       ),

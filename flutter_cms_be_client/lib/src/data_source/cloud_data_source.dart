@@ -83,7 +83,7 @@ class CloudDataSource implements CmsDataSource {
       final response = await _client.document.createDocument(
         documentType,
         title,
-        data.map((k, v) => MapEntry(k, v.toString())),
+        data,
         slug: slug,
         isDefault: isDefault,
       );
@@ -223,7 +223,8 @@ class CloudDataSource implements CmsDataSource {
   @override
   Future<Map<String, dynamic>?> getDocumentVersionData(int versionId) async {
     try {
-      return await _client.document.getDocumentVersionData(versionId);
+      final data = await _client.document.getDocumentVersionData(versionId);
+      return data;
     } catch (e) {
       throw CmsDataSourceException('Failed to get document version data', e);
     }
@@ -522,7 +523,7 @@ class CloudDataSource implements CmsDataSource {
     try {
       final response = await _client.document.updateDocumentData(
         documentId,
-        updates.map((k, v) => MapEntry(k, v.toString())),
+        updates,
         sessionId: sessionId,
       );
       return _toCmsDocument(response);

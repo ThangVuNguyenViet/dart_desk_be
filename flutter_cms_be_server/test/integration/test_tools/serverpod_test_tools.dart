@@ -1035,7 +1035,7 @@ class _DocumentEndpoint {
     _i1.TestSessionBuilder sessionBuilder,
     String documentType,
     String title,
-    Map<String, String> data, {
+    Map<String, dynamic> data, {
     String? slug,
     required bool isDefault,
   }) async {
@@ -1075,7 +1075,7 @@ class _DocumentEndpoint {
   _i3.Future<_i10.CmsDocument> updateDocumentData(
     _i1.TestSessionBuilder sessionBuilder,
     int documentId,
-    Map<String, String> updates, {
+    Map<String, dynamic> updates, {
     String? sessionId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {

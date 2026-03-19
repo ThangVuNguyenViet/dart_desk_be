@@ -99,7 +99,7 @@ class DocumentEndpoint extends Endpoint {
     Session session,
     String documentType,
     String title,
-    Map<String, String> data, {
+    Map<String, dynamic> data, {
     String? slug,
     bool isDefault = false,
   }) async {
@@ -112,7 +112,7 @@ class DocumentEndpoint extends Endpoint {
     final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
     final userId = cmsUser.id!;
 
-    // Create the document
+    // Create the document — encode data as JSON for storage
     final encodedData = jsonEncode(data);
     final effectiveSlug = slug ?? title.toLowerCase().replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(RegExp(r'\s+'), '-').replaceAll(RegExp(r'-+'), '-').trim();
     final document = CmsDocument(
@@ -188,7 +188,7 @@ class DocumentEndpoint extends Endpoint {
   Future<CmsDocument> updateDocumentData(
     Session session,
     int documentId,
-    Map<String, String> updates, {
+    Map<String, dynamic> updates, {
     String? sessionId,
   }) async {
     // Require authentication
@@ -453,8 +453,8 @@ class DocumentEndpoint extends Endpoint {
     return await DocumentVersion.db.findById(session, versionId);
   }
 
-  /// Get the document data for a specific version
-  /// Reconstructs the data from CRDT operations at the version's HLC snapshot
+  /// Get the document data for a specific version.
+  /// Reconstructs the data from CRDT operations at the version's HLC snapshot.
   Future<Map<String, dynamic>?> getDocumentVersionData(
     Session session,
     int versionId,

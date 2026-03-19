@@ -46,10 +46,9 @@ RETURNING id;
     print('');
     print('To run the Flutter app against E2E:');
     print('  cd examples/cms_app');
-    print('  flutter run -d chrome --web-port=60366 \\');
-    print('    --dart-define=SERVER_URL=http://localhost:8080/ \\');
-    print('    --dart-define=CMS_CLIENT_ID=$clientSlug \\');
-    print('    --dart-define=CMS_API_TOKEN=$knownToken');
+    print('  flutter run -d chrome -t lib/main_e2e.dart');
+    print('');
+    print('Defaults are baked into main_e2e.dart. Override via --dart-define if needed.');
   } catch (e) {
     print('Error: $e');
     exit(1);
