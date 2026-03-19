@@ -39,10 +39,12 @@ import 'document_version_with_operations.dart' as _i24;
 import 'media_file.dart' as _i25;
 import 'upload_response.dart' as _i26;
 import 'package:flutter_cms_be_server/src/generated/cms_api_token.dart' as _i27;
-import 'package:flutter_cms_be_server/src/generated/document_crdt_operation.dart'
+import 'package:flutter_cms_be_server/src/generated/cms_deployment.dart'
     as _i28;
-import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i29;
-import 'package:flutter_cms_be_server/src/generated/cms_client.dart' as _i30;
+import 'package:flutter_cms_be_server/src/generated/document_crdt_operation.dart'
+    as _i29;
+import 'package:flutter_cms_be_server/src/generated/media_file.dart' as _i30;
+import 'package:flutter_cms_be_server/src/generated/cms_client.dart' as _i31;
 export 'client_with_token.dart';
 export 'cms_api_token.dart';
 export 'cms_api_token_with_value.dart';
@@ -1818,9 +1820,15 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
-    if (t == List<_i28.DocumentCrdtOperation>) {
+    if (t == List<_i28.CmsDeployment>) {
       return (data as List)
-              .map((e) => deserialize<_i28.DocumentCrdtOperation>(e))
+              .map((e) => deserialize<_i28.CmsDeployment>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i29.DocumentCrdtOperation>) {
+      return (data as List)
+              .map((e) => deserialize<_i29.DocumentCrdtOperation>(e))
               .toList()
           as T;
     }
@@ -1848,12 +1856,12 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == List<_i29.MediaFile>) {
-      return (data as List).map((e) => deserialize<_i29.MediaFile>(e)).toList()
+    if (t == List<_i30.MediaFile>) {
+      return (data as List).map((e) => deserialize<_i30.MediaFile>(e)).toList()
           as T;
     }
-    if (t == List<_i30.CmsClient>) {
-      return (data as List).map((e) => deserialize<_i30.CmsClient>(e)).toList()
+    if (t == List<_i31.CmsClient>) {
+      return (data as List).map((e) => deserialize<_i31.CmsClient>(e)).toList()
           as T;
     }
     try {
