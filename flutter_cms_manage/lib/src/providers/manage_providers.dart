@@ -1,6 +1,7 @@
 import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
 import 'package:signals/signals.dart';
 
+import '../services/deployment_service.dart';
 import '../services/token_service.dart';
 
 /// Auth state for the AuthGate widget
@@ -63,9 +64,27 @@ TokenService get tokenService {
   return _tokenService!;
 }
 
+/// Deployment service for the current client
+DeploymentService? _deploymentService;
+
+DeploymentService get deploymentService {
+  final client = currentClient.value.value;
+  if (client == null) throw StateError('No client selected');
+  final slug = currentClientSlug.value;
+  if (_deploymentService == null || _deploymentService!.clientId != client.id!) {
+    _deploymentService = DeploymentService(
+      client: serverpodClient,
+      clientId: client.id!,
+      clientSlug: slug,
+    );
+  }
+  return _deploymentService!;
+}
+
 /// Reset token service when client changes
 void resetTokenService() {
   _tokenService = null;
+  _deploymentService = null;
 }
 
 /// Initialize client context from slug

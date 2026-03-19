@@ -1,13 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:signals/signals_flutter.dart';
 
+import '../providers/manage_providers.dart';
 import '../routes/manage_coordinator.dart';
 import '../routes/tokens_route.dart';
 
-class OverviewScreen extends StatelessWidget {
+class OverviewScreen extends StatefulWidget {
   final ManageCoordinator coordinator;
   const OverviewScreen({super.key, required this.coordinator});
+
+  @override
+  State<OverviewScreen> createState() => _OverviewScreenState();
+}
+
+class _OverviewScreenState extends State<OverviewScreen> {
+  @override
+  void initState() {
+    super.initState();
+    try {
+      deploymentService.loadDeployments();
+    } catch (_) {
+      // client not ready yet
+    }
+  }
+
+  ManageCoordinator get coordinator => widget.coordinator;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +73,10 @@ class OverviewScreen extends StatelessWidget {
                   label: 'Team Members',
                   value: '\u2014',
                 ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _DeploymentStatCard(),
               ),
             ],
           ),
@@ -237,6 +261,55 @@ class _DetailRow extends StatelessWidget {
           ],
         ],
       ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Deployment stat card
+// ---------------------------------------------------------------------------
+
+class _DeploymentStatCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+
+    CmsDeployment? active;
+    try {
+      final service = deploymentService;
+      service.deployments.watch(context);
+      active = service.activeDeployment;
+    } catch (_) {
+      // client not ready
+    }
+
+    final version = active != null ? 'v${active.version}' : '\u2014';
+    final subtitle = active?.createdAt != null
+        ? DateFormat('MMM d, yyyy').format(active!.createdAt!)
+        : 'No active deployment';
+
+    return ShadCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Deployments',
+                style: theme.textTheme.muted
+                    .copyWith(fontWeight: FontWeight.w500),
+              ),
+              Icon(LucideIcons.rocket, size: 16,
+                  color: theme.colorScheme.mutedForeground),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(version, style: theme.textTheme.h3),
+          const SizedBox(height: 4),
+          Text(subtitle, style: theme.textTheme.muted),
+        ],
+      ),
     );
   }
 }

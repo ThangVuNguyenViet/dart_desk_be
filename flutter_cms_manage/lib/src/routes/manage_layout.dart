@@ -7,6 +7,7 @@ import 'manage_coordinator.dart';
 import 'manage_route.dart';
 import 'overview_route.dart';
 import 'settings_route.dart';
+import 'deployments_route.dart';
 import 'tokens_route.dart';
 
 class ManageLayout extends ManageRoute with RouteLayout<ManageRoute> {
@@ -185,6 +186,7 @@ class _TabNavigation extends StatelessWidget {
         final path = coordinator.currentUri.path;
         final isOverview =
             path.endsWith('/overview') || path == '/$slug';
+        final isDeployments = path.endsWith('/deployments');
         final isTokens = path.contains('/api/');
         final isSettings = path.endsWith('/settings');
 
@@ -196,6 +198,11 @@ class _TabNavigation extends StatelessWidget {
                   label: 'Overview',
                   isActive: isOverview,
                   onPressed: () => coordinator.push(OverviewRoute(slug))),
+              _TabButton(
+                  label: 'Deployments',
+                  isActive: isDeployments,
+                  onPressed: () =>
+                      coordinator.push(DeploymentsRoute(slug))),
               _TabButton(
                   label: 'API',
                   isActive: isTokens,

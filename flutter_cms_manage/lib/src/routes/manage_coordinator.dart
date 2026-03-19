@@ -4,6 +4,7 @@ import 'manage_route.dart';
 import 'manage_layout.dart';
 import 'api_layout.dart';
 import 'overview_route.dart';
+import 'deployments_route.dart';
 import 'tokens_route.dart';
 import 'settings_route.dart';
 import 'not_found_route.dart';
@@ -46,6 +47,7 @@ class ManageCoordinator extends Coordinator<ManageRoute> {
       [] => OverviewRoute(clientSlug),
       ['overview'] => OverviewRoute(clientSlug),
       ['api', 'tokens'] => TokensRoute(clientSlug),
+      ['deployments'] => DeploymentsRoute(clientSlug),
       ['settings'] => SettingsRoute(clientSlug),
       _ => NotFoundRoute(),
     };
