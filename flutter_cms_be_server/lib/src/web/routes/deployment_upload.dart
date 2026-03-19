@@ -14,7 +14,7 @@ const _retentionCount = 10;
 
 /// Route handler for deployment uploads.
 /// POST /deployment/upload?slug=my-slug
-/// Authorization: Bearer <api-token>
+/// Authorization: Bearer [api-token]
 class DeploymentUploadRoute extends Route {
   final DeploymentStorage storage;
 
@@ -32,10 +32,12 @@ class DeploymentUploadRoute extends Route {
       }
 
       // Authenticate via Bearer token
-      final authHeader = request.headers['authorization'];
+      final authValues = request.headers['authorization'];
+      final authHeader = authValues?.firstOrNull;
       if (authHeader == null || !authHeader.startsWith('Bearer ')) {
         return Response.unauthorized(
-          body: Body.fromString(jsonEncode({'error': 'Missing or invalid Authorization header'})),
+          body: Body.fromString(
+              jsonEncode({'error': 'Missing or invalid Authorization header'})),
         );
       }
       final rawToken = authHeader.substring(7);
@@ -47,7 +49,8 @@ class DeploymentUploadRoute extends Route {
       );
       if (client == null) {
         return Response.notFound(
-          body: Body.fromString(jsonEncode({'error': 'Client not found: $slug'})),
+          body: Body.fromString(
+              jsonEncode({'error': 'Client not found: $slug'})),
         );
       }
 
@@ -64,17 +67,10 @@ class DeploymentUploadRoute extends Route {
         );
       }
 
-      // Stream and collect request body with size limit
+      // Read request body with size limit
       final bodyBytes = <int>[];
-      await for (final chunk in request.body) {
+      await for (final chunk in request.read(maxLength: _maxUploadSize)) {
         bodyBytes.addAll(chunk);
-        if (bodyBytes.length > _maxUploadSize) {
-          return Response.badRequest(
-            body: Body.fromString(jsonEncode({
-              'error': 'Upload exceeds maximum size of ${_maxUploadSize ~/ (1024 * 1024)}MB',
-            })),
-          );
-        }
       }
 
       if (bodyBytes.isEmpty) {
@@ -113,7 +109,8 @@ class DeploymentUploadRoute extends Route {
         if (commitHash != null) record.commitHash = commitHash;
         if (metadata != null) record.metadata = metadata;
 
-        record = await CmsDeployment.db.insertRow(session, record, transaction: tx);
+        record =
+            await CmsDeployment.db.insertRow(session, record, transaction: tx);
 
         // Extract tar.gz
         final fileSize = await storage.store(slug, nextVersion, bodyBytes);
@@ -143,7 +140,8 @@ class DeploymentUploadRoute extends Route {
           fileSize: fileSize,
           updatedAt: DateTime.now(),
         );
-        deployment = await CmsDeployment.db.updateRow(session, deployment, transaction: tx);
+        deployment = await CmsDeployment.db.updateRow(session, deployment,
+            transaction: tx);
       });
 
       // Retention: delete old versions beyond limit
@@ -164,7 +162,8 @@ class DeploymentUploadRoute extends Route {
         })),
       );
     } catch (e, st) {
-      session.log('Deployment upload error: $e', level: LogLevel.error, stackTrace: st);
+      session.log('Deployment upload error: $e',
+          level: LogLevel.error, stackTrace: st);
       return Response.internalServerError(
         body: Body.fromString(jsonEncode({'error': 'Upload failed: $e'})),
       );
@@ -225,7 +224,7 @@ class DeploymentUploadRoute extends Route {
 
     final toDelete = allDeployments.sublist(_retentionCount);
     for (final dep in toDelete) {
-      if (dep.status == DeploymentStatus.active) continue; // Never delete active
+      if (dep.status == DeploymentStatus.active) continue;
       await storage.delete(slug, dep.version);
       await CmsDeployment.db.deleteRow(session, dep);
     }

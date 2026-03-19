@@ -1,7 +1,9 @@
 import 'dart:developer' as developer;
 import 'dart:io';
 
+import 'package:flutter_cms_be_server/src/web/routes/deployment_upload.dart';
 import 'package:flutter_cms_be_server/src/web/routes/root.dart';
+import 'package:flutter_cms_be_server/src/web/routes/subdomain_router.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_admin_server/serverpod_admin_server.dart' as admin;
 import 'package:serverpod_auth_idp_server/core.dart';
@@ -10,10 +12,14 @@ import 'package:serverpod_auth_idp_server/providers/google.dart';
 
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
+import 'src/services/deployment_storage.dart';
 import 'src/services/document_crdt_service.dart';
 
 // Global CRDT service instance
 late DocumentCrdtService documentCrdtService;
+
+// Global deployment storage instance
+late DeploymentStorage deploymentStorage;
 
 void run(List<String> args) async {
   // Initialize Serverpod and connect it with your generated code.
@@ -27,6 +33,9 @@ void run(List<String> args) async {
   final nodeId = pod.getPassword('crdtNodeId') ?? 'postgres-main';
   documentCrdtService = DocumentCrdtService(nodeId);
 
+  // Initialize deployment storage
+  deploymentStorage = LocalDeploymentStorage();
+
   // Setup a default page at the web root.
   pod.webServer.addRoute(RouteRoot(), '/');
   pod.webServer.addRoute(RouteRoot(), '/index.html');
@@ -35,6 +44,19 @@ void run(List<String> args) async {
   pod.webServer.addRoute(
     StaticRoute.directory(Directory('storage/public')),
     '/files/*',
+  );
+
+  // Register deployment upload route
+  pod.webServer.addRoute(
+    DeploymentUploadRoute(deploymentStorage),
+    '/deployment/upload',
+  );
+
+  // Subdomain middleware: serves deployed files for {slug}.fluttercms.cloud
+  // requests, passes through for non-subdomain requests.
+  pod.webServer.addMiddleware(
+    subdomainMiddleware(storage: deploymentStorage),
+    '/*',
   );
 
   // Serve all files in the /static directory.

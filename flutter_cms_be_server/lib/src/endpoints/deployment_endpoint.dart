@@ -1,10 +1,7 @@
+import 'package:flutter_cms_be_server/server.dart' show deploymentStorage;
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
-import '../services/deployment_storage.dart';
-
-/// Global deployment storage instance, initialized in server.dart.
-late DeploymentStorage deploymentStorage;
 
 /// Endpoint for managing CMS deployments.
 /// All methods require authenticated admin user.
