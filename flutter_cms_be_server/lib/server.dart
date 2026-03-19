@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:flutter_cms_be_server/src/web/routes/root.dart';
@@ -101,7 +102,8 @@ void _registerAdminModule() {
     registry.register<DocumentCrdtSnapshot>();
     registry.register<CmsApiToken>();
 
-    print('[Admin] Module registered with ${registry.registeredResourceMetadata.length} resources');
+    developer.log(
+        '[Admin] Module registered with ${registry.registeredResourceMetadata.length} resources');
   });
 }
 
@@ -116,7 +118,8 @@ Future<void> _seedAdminUser() async {
     final password = Serverpod.instance.getPassword('adminPassword');
 
     if (email == null || password == null) {
-      print('[Admin] ADMIN_EMAIL and ADMIN_PASSWORD env vars not set, skipping admin seed');
+      developer.log(
+          '[Admin] ADMIN_EMAIL and ADMIN_PASSWORD env vars not set, skipping admin seed');
       return;
     }
 
@@ -139,10 +142,10 @@ Future<void> _seedAdminUser() async {
         email: email,
         password: password,
       );
-      print('[Admin] Created admin user: $email');
+      developer.log('[Admin] Created admin user: $email');
     } else {
       authUserId = existingAccount.authUserId;
-      print('[Admin] Admin user already exists: $email');
+      developer.log('[Admin] Admin user already exists: $email');
     }
 
     // Ensure admin scope is set
@@ -152,7 +155,7 @@ Future<void> _seedAdminUser() async {
       scopes: {Scope.admin},
     );
   } catch (e) {
-    print('[Admin] Error seeding admin user: $e');
+    developer.log('[Admin] Error seeding admin user: $e');
   } finally {
     await session.close();
   }
