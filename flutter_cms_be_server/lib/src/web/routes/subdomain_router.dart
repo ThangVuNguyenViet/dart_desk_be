@@ -17,11 +17,11 @@ class _CacheEntry {
 }
 
 /// Middleware that serves deployed static files based on subdomain.
-/// Extracts slug from Host header ({slug}.fluttercms.cloud).
+/// Extracts slug from Host header ({slug}.dartdesk.dev).
 /// Passes through for non-subdomain requests.
 Middleware subdomainMiddleware({
   required DeploymentStorage storage,
-  String domain = 'fluttercms.cloud',
+  String domain = 'dartdesk.dev',
   Duration cacheTtl = const Duration(seconds: 60),
 }) {
   final cache = <String, _CacheEntry>{};

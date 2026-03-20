@@ -157,7 +157,7 @@ class DeploymentUploadRoute extends Route {
         body: Body.fromString(jsonEncode({
           'version': deployment.version,
           'status': deployment.status.name,
-          'url': 'https://$slug.fluttercms.cloud',
+          'url': 'https://$slug.dartdesk.dev',
           'fileSize': deployment.fileSize,
         })),
       );

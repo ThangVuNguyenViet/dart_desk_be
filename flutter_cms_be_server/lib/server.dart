@@ -52,7 +52,7 @@ void run(List<String> args) async {
     '/deployment/upload',
   );
 
-  // Subdomain middleware: serves deployed files for {slug}.fluttercms.cloud
+  // Subdomain middleware: serves deployed files for {slug}.dartdesk.dev
   // requests, passes through for non-subdomain requests.
   pod.webServer.addMiddleware(
     subdomainMiddleware(storage: deploymentStorage),
