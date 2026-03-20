@@ -13,6 +13,7 @@ dependencies:
     git:
       url: https://github.com/AdamMusa/serverpod_admin.git
       path: serverpod_admin_client
+      ref: 1790997e18370085cd1c91fdff16d54135c6d922
 
   flutter:
     sdk: flutter

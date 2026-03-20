@@ -39,8 +39,10 @@ class ClientPickerScreen extends StatelessWidget {
                 ...clients.map((client) => Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: GestureDetector(
-                        onTap: () =>
-                            coordinator.replace(OverviewRoute(client.slug)),
+                        onTap: () {
+                          initClientContext(client.slug);
+                          coordinator.replace(OverviewRoute(client.slug));
+                        },
                         child: ShadCard(
                           child: Row(
                             children: [

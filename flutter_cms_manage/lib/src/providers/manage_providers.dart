@@ -49,6 +49,26 @@ final currentClient = futureSignal<CmsClient?>(
   dependencies: [currentClientSlug, userClients],
 );
 
+/// Document count for the current client
+final documentCount = futureSignal<int>(
+  () async {
+    final client = currentClient.value.value;
+    if (client == null) return 0;
+    return serverpodClient.document.getDocumentCount();
+  },
+  dependencies: [currentClient],
+);
+
+/// Team member count for the current client
+final memberCount = futureSignal<int>(
+  () async {
+    final client = currentClient.value.value;
+    if (client?.id == null) return 0;
+    return serverpodClient.user.getClientUserCount(client!.id!);
+  },
+  dependencies: [currentClient],
+);
+
 /// Token service for the current client
 TokenService? _tokenService;
 

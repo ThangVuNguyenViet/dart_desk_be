@@ -43,6 +43,7 @@ document:
   - publishDocumentVersion:
   - archiveDocumentVersion:
   - deleteDocumentVersion:
+  - getDocumentCount:
 emailIdp:
   - login:
   - startRegistration:

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:signals/signals_flutter.dart';
 import 'package:zenrouter/zenrouter.dart';
 
 import '../providers/manage_providers.dart';
@@ -89,6 +91,7 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
+    final slug = currentClientSlug.watch(context);
     return Container(
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -108,15 +111,18 @@ class _TopBar extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Open Studio'),
+                Text('Open Studio ($slug.dartdesk.dev)'),
                 const SizedBox(width: 4),
                 Icon(LucideIcons.externalLink, size: 14),
               ],
             ),
-            onPressed: () {},
+            onPressed: () {
+              launchUrl(Uri.parse('https://$slug.dartdesk.dev'));
+            },
           ),
           const SizedBox(width: 8),
           ShadButton.ghost(
+            key: const ValueKey('logout_button'),
             onPressed: () => logout(),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -143,6 +149,12 @@ class _ProjectHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
+    final slugValue = currentClientSlug.watch(context);
+    final clientState = currentClient.watch(context);
+    final client = clientState.value;
+    final name = client?.name ?? slugValue;
+    final slug = client?.slug ?? slugValue;
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Row(
@@ -150,9 +162,7 @@ class _ProjectHeader extends StatelessWidget {
           CircleAvatar(
             radius: 24,
             child: Text(
-              coordinator.clientSlug.isNotEmpty
-                  ? coordinator.clientSlug[0].toUpperCase()
-                  : '?',
+              name.isNotEmpty ? name[0].toUpperCase() : '?',
               style: const TextStyle(fontSize: 20),
             ),
           ),
@@ -160,9 +170,8 @@ class _ProjectHeader extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(coordinator.clientSlug, style: theme.textTheme.h3),
-              Text('Project ID: ${coordinator.clientSlug}',
-                  style: theme.textTheme.muted),
+              Text(name, style: theme.textTheme.h3),
+              Text('Project ID: $slug', style: theme.textTheme.muted),
             ],
           ),
         ],

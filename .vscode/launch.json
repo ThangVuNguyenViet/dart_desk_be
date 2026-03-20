@@ -27,10 +27,6 @@
             "cwd": "flutter_cms_manage",
             "request": "launch",
             "type": "dart",
-            "args": [
-                "--web-port",
-                "60367"
-            ]
         }
     ]
 }

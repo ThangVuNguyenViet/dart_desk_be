@@ -3,6 +3,8 @@ import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
+import 'package:url_launcher/url_launcher.dart';
+
 import '../providers/manage_providers.dart';
 import '../routes/manage_coordinator.dart';
 
@@ -24,6 +26,7 @@ class _DeploymentsScreenState extends State<DeploymentsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
+    final slug = currentClientSlug.watch(context);
     final service = deploymentService;
     final loading = service.isLoading.watch(context);
     final deployments = service.deployments.watch(context);
@@ -45,10 +48,12 @@ class _DeploymentsScreenState extends State<DeploymentsScreen> {
                     children: [
                       Icon(LucideIcons.externalLink, size: 14),
                       const SizedBox(width: 8),
-                      const Text('Open Live Site'),
+                      Text('Open Live Site ($slug.dartdesk.dev)'),
                     ],
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    launchUrl(Uri.parse('https://$slug.dartdesk.dev'));
+                  },
                 ),
             ],
           ),
@@ -177,6 +182,7 @@ class _DeploymentsTable extends StatelessWidget {
                         onPressed: () => onActivate(d.version),
                       ),
                       ShadButton.ghost(
+                        key: ValueKey('delete_deployment_${d.version}'),
                         size: ShadButtonSize.sm,
                         child: Icon(LucideIcons.trash2,
                             size: 14,

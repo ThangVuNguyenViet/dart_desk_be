@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
@@ -32,7 +33,10 @@ class _OverviewScreenState extends State<OverviewScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final slug = coordinator.clientSlug;
+    final slugValue = currentClientSlug.watch(context);
+    final clientState = currentClient.watch(context);
+    final client = clientState.value;
+    final slug = client?.slug ?? slugValue;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -51,33 +55,11 @@ class _OverviewScreenState extends State<OverviewScreen> {
           // Quick stats row
           Row(
             children: [
-              Expanded(
-                child: _StatCard(
-                  icon: LucideIcons.keyRound,
-                  label: 'API Tokens',
-                  value: '\u2014',
-                ),
-              ),
+              Expanded(child: _DocumentStatCard()),
               const SizedBox(width: 16),
-              Expanded(
-                child: _StatCard(
-                  icon: LucideIcons.fileText,
-                  label: 'Documents',
-                  value: '\u2014',
-                ),
-              ),
+              Expanded(child: _MemberStatCard()),
               const SizedBox(width: 16),
-              Expanded(
-                child: _StatCard(
-                  icon: LucideIcons.users,
-                  label: 'Team Members',
-                  value: '\u2014',
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _DeploymentStatCard(),
-              ),
+              Expanded(child: _DeploymentStatCard()),
             ],
           ),
           const SizedBox(height: 24),
@@ -134,9 +116,9 @@ class _OverviewScreenState extends State<OverviewScreen> {
                       child: Icon(LucideIcons.externalLink, size: 16),
                     ),
                     onPressed: () {
-                      // TODO: Open Studio URL
+                      launchUrl(Uri.parse('https://$slug.dartdesk.dev'));
                     },
-                    child: const Text('Open Studio'),
+                    child: Text('Open Studio ($slug.dartdesk.dev)'),
                   ),
                   ShadButton.outline(
                     leading: Padding(
@@ -152,51 +134,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Stat card
-// ---------------------------------------------------------------------------
-
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _StatCard({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
-
-    return ShadCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                label,
-                style: theme.textTheme.muted
-                    .copyWith(fontWeight: FontWeight.w500),
-              ),
-              Icon(icon, size: 16, color: theme.colorScheme.mutedForeground),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: theme.textTheme.h3,
           ),
         ],
       ),
@@ -261,6 +198,76 @@ class _DetailRow extends StatelessWidget {
           ],
         ],
       ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Document stat card
+// ---------------------------------------------------------------------------
+
+class _DocumentStatCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    final count = documentCount.watch(context);
+    final value = count.value?.toString() ?? '\u2014';
+
+    return ShadCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Documents',
+                style: theme.textTheme.muted
+                    .copyWith(fontWeight: FontWeight.w500),
+              ),
+              Icon(LucideIcons.fileText,
+                  size: 16, color: theme.colorScheme.mutedForeground),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(value, style: theme.textTheme.h3),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Member stat card
+// ---------------------------------------------------------------------------
+
+class _MemberStatCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    final count = memberCount.watch(context);
+    final value = count.value?.toString() ?? '\u2014';
+
+    return ShadCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Team Members',
+                style: theme.textTheme.muted
+                    .copyWith(fontWeight: FontWeight.w500),
+              ),
+              Icon(LucideIcons.users,
+                  size: 16, color: theme.colorScheme.mutedForeground),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(value, style: theme.textTheme.h3),
+        ],
+      ),
     );
   }
 }

@@ -4,13 +4,14 @@ import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'src/core/marionette_config.dart';
 import 'src/providers/manage_providers.dart';
 import 'src/routes/manage_coordinator.dart';
 import 'src/widgets/auth_gate.dart';
 
 void main() async {
   if (kDebugMode) {
-    MarionetteBinding.ensureInitialized();
+    MarionetteBinding.ensureInitialized(ManageMarionetteConfig.configuration);
   }
 
   serverpodClient = Client(

@@ -511,6 +511,7 @@ class _ActionsMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
+      key: const ValueKey('token_actions'),
       icon: Icon(LucideIcons.ellipsisVertical, size: 16),
       tooltip: 'Actions',
       onSelected: (value) {

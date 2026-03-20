@@ -22,6 +22,7 @@ dependencies:
   intl: any
   flutter_web_plugins:
     sdk: flutter
+  url_launcher: ^6.2.0
   marionette_flutter:
     path: ../../../marionette_mcp/packages/marionette_flutter
 
@@ -29,6 +30,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: '>=3.0.0 <7.0.0'
+  marionette_mcp: 
+    path: ../../../marionette_mcp/packages/marionette_mcp
 
 flutter:
   uses-material-design: true

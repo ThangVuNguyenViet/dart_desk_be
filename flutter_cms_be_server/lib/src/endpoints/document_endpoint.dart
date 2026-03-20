@@ -607,6 +607,19 @@ class DocumentEndpoint extends Endpoint {
   }
 
   /// Look up the CMS user from the auth user identifier.
+  /// Get total document count for the authenticated user's client.
+  Future<int> getDocumentCount(Session session) async {
+    final authInfo = session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated');
+    }
+    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+    return await CmsDocument.db.count(
+      session,
+      where: (t) => t.clientId.equals(cmsUser.clientId),
+    );
+  }
+
   Future<CmsUser> _getCmsUser(
       Session session, String userIdentifier) async {
     final cmsUser = await CmsUser.db.findFirstRow(

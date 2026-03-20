@@ -560,6 +560,14 @@ class EndpointDocument extends _i1.EndpointRef {
         'deleteDocumentVersion',
         {'versionId': versionId},
       );
+
+  /// Look up the CMS user from the auth user identifier.
+  /// Get total document count for the authenticated user's client.
+  _i2.Future<int> getDocumentCount() => caller.callServerEndpoint<int>(
+    'document',
+    'getDocumentCount',
+    {},
+  );
 }
 
 /// {@category Endpoint}
