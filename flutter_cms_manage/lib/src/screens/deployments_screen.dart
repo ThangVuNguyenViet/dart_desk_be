@@ -31,7 +31,7 @@ class _DeploymentsScreenState extends State<DeploymentsScreen> {
     final loading = service.isLoading.watch(context);
     final deployments = service.deployments.watch(context);
 
-    return SingleChildScrollView(
+    return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,14 +59,16 @@ class _DeploymentsScreenState extends State<DeploymentsScreen> {
           ),
           const SizedBox(height: 16),
           if (loading)
-            const Center(child: CircularProgressIndicator())
+            const Expanded(child: Center(child: CircularProgressIndicator()))
           else if (deployments.isEmpty)
-            _EmptyState()
+            Expanded(child: _EmptyState())
           else
-            _DeploymentsTable(
-              deployments: deployments,
-              onActivate: (version) => service.activateVersion(version),
-              onDelete: (version) => service.deleteVersion(version),
+            Expanded(
+              child: _DeploymentsTable(
+                deployments: deployments,
+                onActivate: (version) => service.activateVersion(version),
+                onDelete: (version) => service.deleteVersion(version),
+              ),
             ),
         ],
       ),
@@ -128,77 +130,75 @@ class _DeploymentsTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    return ShadTable(
-      columnCount: 6,
-      rowCount: deployments.length + 1,
-      header: (context, column) {
-        return ShadTableCell.header(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            child: Text(
-              ['Version', 'Status', 'Size', 'Commit', 'Deployed', 'Actions'][
-                  column],
-              style: theme.textTheme.muted
-                  .copyWith(fontWeight: FontWeight.w600),
-            ),
-          ),
-        );
+    return ShadTable.list(
+      columnSpanExtent: (index) => switch (index) {
+        0 => const FixedTableSpanExtent(100), // Version
+        1 => const FixedTableSpanExtent(120), // Status
+        2 => const FixedTableSpanExtent(100), // Size
+        3 => const FixedTableSpanExtent(200), // Deployed
+        4 => const RemainingTableSpanExtent(), // Actions
+        _ => const RemainingTableSpanExtent(),
       },
-      builder: (context, index) {
-        final d = deployments[index.row];
-        final isActive = d.status == DeploymentStatus.active;
-
-        return ShadTableCell(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            child: switch (index.column) {
-              0 => Text('v${d.version}',
+      header: [
+        for (final h in ['Version', 'Status', 'Size', 'Deployed', 'Actions'])
+          ShadTableCell.header(
+            child: Text(h,
+                style: theme.textTheme.muted
+                    .copyWith(fontWeight: FontWeight.w600)),
+          ),
+      ],
+      children: [
+        for (final d in deployments)
+          [
+            ShadTableCell(
+              child: Text('v${d.version}',
                   style: theme.textTheme.small.copyWith(
-                      fontWeight:
-                          isActive ? FontWeight.bold : FontWeight.normal)),
-              1 => isActive
+                      fontWeight: d.status == DeploymentStatus.active
+                          ? FontWeight.bold
+                          : FontWeight.normal)),
+            ),
+            ShadTableCell(
+              child: d.status == DeploymentStatus.active
                   ? ShadBadge(child: Text(d.status.name))
                   : ShadBadge.secondary(child: Text(d.status.name)),
-              2 => Text(
-                  d.fileSize != null ? _formatBytes(d.fileSize!) : '-'),
-              3 => Text(
-                  d.commitHash?.substring(0, 7) ?? '-',
-                  style: theme.textTheme.small
-                      .copyWith(fontFamily: 'monospace'),
-                ),
-              4 => Text(
-                  d.createdAt != null
-                      ? DateFormat('MMM d, yyyy HH:mm').format(d.createdAt!)
-                      : '-',
-                ),
-              5 => Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (!isActive &&
-                        d.status != DeploymentStatus.uploading) ...[
-                      ShadButton.ghost(
-                        size: ShadButtonSize.sm,
-                        child: const Text('Activate'),
-                        onPressed: () => onActivate(d.version),
-                      ),
-                      ShadButton.ghost(
-                        key: ValueKey('delete_deployment_${d.version}'),
-                        size: ShadButtonSize.sm,
-                        child: Icon(LucideIcons.trash2,
-                            size: 14,
-                            color: theme.colorScheme.destructive),
-                        onPressed: () => onDelete(d.version),
-                      ),
-                    ],
-                    if (isActive)
-                      Text('Current', style: theme.textTheme.muted),
+            ),
+            ShadTableCell(
+              child:
+                  Text(d.fileSize != null ? _formatBytes(d.fileSize!) : '-'),
+            ),
+            ShadTableCell(
+              child: Text(
+                d.createdAt != null
+                    ? DateFormat('MMM d, yyyy HH:mm').format(d.createdAt!)
+                    : '-',
+              ),
+            ),
+            ShadTableCell(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (d.status != DeploymentStatus.active &&
+                      d.status != DeploymentStatus.uploading) ...[
+                    ShadButton.ghost(
+                      size: ShadButtonSize.sm,
+                      child: const Text('Activate'),
+                      onPressed: () => onActivate(d.version),
+                    ),
+                    ShadButton.ghost(
+                      key: ValueKey('delete_deployment_${d.version}'),
+                      size: ShadButtonSize.sm,
+                      child: Icon(LucideIcons.trash2,
+                          size: 14, color: theme.colorScheme.destructive),
+                      onPressed: () => onDelete(d.version),
+                    ),
                   ],
-                ),
-              _ => const SizedBox.shrink(),
-            },
-          ),
-        );
-      },
+                  if (d.status == DeploymentStatus.active)
+                    Text('Current', style: theme.textTheme.muted),
+                ],
+              ),
+            ),
+          ],
+      ],
     );
   }
 
