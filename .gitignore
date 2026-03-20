@@ -13,6 +13,9 @@
 # Server logs
 server.log
 
+# Runtime storage
+flutter_cms_be_server/storage/
+
 # Terraform
 .terraform/
 terraform.tfstate
