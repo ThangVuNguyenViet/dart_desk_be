@@ -53,14 +53,17 @@ class _OverviewScreenState extends State<OverviewScreen> {
           const SizedBox(height: 24),
 
           // Quick stats row
-          Row(
-            children: [
-              Expanded(child: _DocumentStatCard()),
-              const SizedBox(width: 16),
-              Expanded(child: _MemberStatCard()),
-              const SizedBox(width: 16),
-              Expanded(child: _DeploymentStatCard()),
-            ],
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: _DocumentStatCard()),
+                const SizedBox(width: 16),
+                Expanded(child: _MemberStatCard()),
+                const SizedBox(width: 16),
+                Expanded(child: _DeploymentStatCard()),
+              ],
+            ),
           ),
           const SizedBox(height: 24),
 
