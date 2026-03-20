@@ -134,6 +134,33 @@ resource "aws_autoscaling_attachment" "web" {
   lb_target_group_arn    = aws_lb_target_group.web.arn
 }
 
+# Wildcard subdomain routing for deployed studios ({slug}.dartdesk.dev)
+# Routes to the web server where the subdomain router middleware handles requests.
+
+resource "aws_lb_listener_rule" "wildcard_subdomain" {
+  listener_arn = aws_lb_listener.api.arn
+  priority     = 200
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.web.arn
+  }
+
+  condition {
+    host_header {
+      values = ["*.${var.top_domain}"]
+    }
+  }
+}
+
+resource "aws_route53_record" "wildcard" {
+  zone_id = var.hosted_zone_id
+  name    = "*.${var.top_domain}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${aws_lb.serverpod.dns_name}"]
+}
+
 resource "aws_lb_listener" "web" {
   load_balancer_arn = aws_lb.serverpod.arn
   port              = "80"
