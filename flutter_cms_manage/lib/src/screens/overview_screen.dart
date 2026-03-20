@@ -121,7 +121,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     onPressed: () {
                       launchUrl(Uri.parse('https://$slug.dartdesk.dev'));
                     },
-                    child: Text('Open Studio ($slug.dartdesk.dev)'),
+                    child: const Text('Open Studio'),
                   ),
                   ShadButton.outline(
                     leading: Padding(

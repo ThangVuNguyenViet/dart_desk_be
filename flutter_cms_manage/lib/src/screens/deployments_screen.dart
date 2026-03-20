@@ -48,7 +48,7 @@ class _DeploymentsScreenState extends State<DeploymentsScreen> {
                     children: [
                       Icon(LucideIcons.externalLink, size: 14),
                       const SizedBox(width: 8),
-                      Text('Open Live Site ($slug.dartdesk.dev)'),
+                      const Text('Open Live Site'),
                     ],
                   ),
                   onPressed: () {

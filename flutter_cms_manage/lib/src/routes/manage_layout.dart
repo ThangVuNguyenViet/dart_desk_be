@@ -111,7 +111,7 @@ class _TopBar extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Open Studio ($slug.dartdesk.dev)'),
+                const Text('Open Studio'),
                 const SizedBox(width: 4),
                 Icon(LucideIcons.externalLink, size: 14),
               ],
