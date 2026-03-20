@@ -40,7 +40,9 @@ class ManageCoordinator extends Coordinator<ManageRoute> {
     if (segments.first == 'setup') return SetupWizardRoute();
 
     // 3. Everything else: first segment is clientSlug
-    clientSlug = segments.first;
+    final slug = segments.first;
+    if (slug.isEmpty) return ClientPickerRoute();
+    clientSlug = slug;
     final rest = segments.skip(1).toList();
 
     return switch (rest) {

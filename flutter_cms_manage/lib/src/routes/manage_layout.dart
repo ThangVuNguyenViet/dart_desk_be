@@ -186,7 +186,7 @@ class _TabNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final slug = coordinator.clientSlug;
+    final slug = currentClientSlug.watch(context);
 
     return ListenableBuilder(
       listenable:
