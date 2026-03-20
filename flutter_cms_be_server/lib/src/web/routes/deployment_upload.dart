@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' as io;
 
 import 'package:dbcrypt/dbcrypt.dart';
 import 'package:serverpod/serverpod.dart';
@@ -67,10 +68,34 @@ class DeploymentUploadRoute extends Route {
         );
       }
 
-      // Read request body with size limit
+      // Read request body from raw HttpRequest to bypass Relic's UTF-8 decoding
+      final rawRequest = RequestInternal(request).token;
+      if (rawRequest is! io.HttpRequest) {
+        return Response.internalServerError(
+          body: Body.fromString(jsonEncode({'error': 'Cannot access raw request'})),
+        );
+      }
+
+      // Check content length against limit
+      final contentLength = rawRequest.contentLength;
+      if (contentLength > _maxUploadSize) {
+        return Response.badRequest(
+          body: Body.fromString(jsonEncode({
+            'error': 'Request body exceeds maximum size of $_maxUploadSize bytes'
+          })),
+        );
+      }
+
       final bodyBytes = <int>[];
-      await for (final chunk in request.read(maxLength: _maxUploadSize)) {
+      await for (final chunk in rawRequest) {
         bodyBytes.addAll(chunk);
+        if (bodyBytes.length > _maxUploadSize) {
+          return Response.badRequest(
+            body: Body.fromString(jsonEncode({
+              'error': 'Request body exceeds maximum size of $_maxUploadSize bytes'
+            })),
+          );
+        }
       }
 
       if (bodyBytes.isEmpty) {
