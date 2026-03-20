@@ -1,1292 +1,192 @@
-SERVERPOD version: 3.4.3, dart: 3.11.1 (stable) (Tue Feb 24 00:03:07 2026 -0800) on "macos_arm64", time: 2026-03-19 11:53:27.280769Z
+SERVERPOD version: 3.4.3, dart: 3.11.1 (stable) (Tue Feb 24 00:03:07 2026 -0800) on "macos_arm64", time: 2026-03-20 13:30:39.025127Z
 runMode: development
 serverId: default
 role: monolith
 loggingMode: normal
 applyMigrations: false
 applyRepairMigration: false
-SERVERPOD initialized, time: 2026-03-19 11:53:27.331315Z
-2026-03-19 11:53:27.817789Z WebServer  INFO: Webserver listening on http://localhost:8082
+SERVERPOD initialized, time: 2026-03-20 13:30:39.076891Z
+2026-03-20 13:30:39.540931Z WebServer  INFO: Webserver listening on http://localhost:8082
 TIME                        ID         TYPE           CONTEXT                  DETAILS
 --------------------------- ---------- -------------- ------------------------ ------------------------------
-2026-03-19 11:53:27.874261Z  663745264 INTERNAL       n/a                      queries=3, duration=28.4ms
-2026-03-19 11:53:45.299328Z  171000206 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=194ms
-2026-03-19 11:53:45.349046Z  437948525 METHOD         serverpod_auth_core.status.isSignedIn user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=0, duration=1.88ms
-2026-03-19 11:53:45.493437Z  301637415 METHOD         user.ensureUser          user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=5, duration=128ms
-2026-03-19 11:53:46.010692Z  389248373 METHOD         document.getDocuments    user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=3, duration=37.7ms
-2026-03-19 11:53:48.560912Z  815259073 METHOD         document.suggestSlug     user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=1, duration=19.1ms
-2026-03-19 11:53:49.542997Z  372645355 METHOD         document.createDocument  user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=22, duration=170ms
-2026-03-19 11:53:49.585379Z  196668856 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=22.5ms
-2026-03-19 11:53:49.602400Z  742306507 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=26.2ms
-2026-03-19 11:53:49.630482Z  382456391 METHOD         document.getDocuments    user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=3, duration=23.1ms
-2026-03-19 11:53:49.653696Z  145377079 METHOD         document.getDocumentVersion user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=1, duration=13.6ms
-2026-03-19 11:53:49.662728Z  614865117 METHOD         document.getDocumentVersionData user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=19.9ms
-2026-03-19 11:54:22.366385Z  118799639 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=154ms
-2026-03-19 11:54:22.419264Z  796716549 METHOD         serverpod_auth_core.status.isSignedIn user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=0, duration=384µs
-2026-03-19 11:54:22.537365Z 1030779626 METHOD         user.ensureUser          user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=5, duration=102ms
-2026-03-19 11:54:23.041767Z    6417860 METHOD         document.getDocuments    user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=3, duration=17.4ms
-2026-03-19 11:54:23.190203Z  146511430 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=14.5ms
-2026-03-19 11:56:26.766235Z  987805250 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=139ms
-2026-03-19 11:56:26.811301Z  540840773 METHOD         serverpod_auth_core.status.isSignedIn user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=0, duration=538µs
-2026-03-19 11:56:26.931709Z  826512393 METHOD         user.ensureUser          user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=5, duration=100ms
-2026-03-19 11:56:27.451104Z  652701450 METHOD         document.getDocuments    user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=3, duration=32.8ms
-2026-03-19 11:56:27.610871Z  395600433 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=22ms
-2026-03-19 11:56:28.070600Z  599307014 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=12.2ms
-2026-03-19 11:56:28.121663Z   97593111 METHOD         document.getDocument     user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=1, duration=8.3ms
-2026-03-19 11:56:28.181283Z  978671435 METHOD         document.getDocumentVersion user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=1, duration=7.13ms
-2026-03-19 11:56:28.209637Z  191478021 METHOD         document.getDocumentVersionData user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=20.8ms
-2026-03-19 12:10:55.529863Z  692661095 QUERY          n/a                      id=null, duration=34.6ms, query=SELECT "serverpod_auth_core_jwt_refresh_token"."id" AS "serverpod_auth_core_jwt_refresh_token.id", "serverpod_auth_core_jwt_refresh_token"."authUserId" AS "serverpod_auth_core_jwt_refresh_token.authUserId", "serverpod_auth_core_jwt_refresh_token"."scopeNames" AS "serverpod_auth_core_jwt_refresh_token.scopeNames", "serverpod_auth_core_jwt_refresh_token"."extraClaims" AS "serverpod_auth_core_jwt_refresh_token.extraClaims", "serverpod_auth_core_jwt_refresh_token"."method" AS "serverpod_auth_core_jwt_refresh_token.method", "serverpod_auth_core_jwt_refresh_token"."fixedSecret" AS "serverpod_auth_core_jwt_refresh_token.fixedSecret", "serverpod_auth_core_jwt_refresh_token"."rotatingSecretHash" AS "serverpod_auth_core_jwt_refresh_token.rotatingSecretHash", "serverpod_auth_core_jwt_refresh_token"."lastUpdatedAt" AS "serverpod_auth_core_jwt_refresh_token.lastUpdatedAt", "serverpod_auth_core_jwt_refresh_token"."createdAt" AS "serverpod_auth_core_jwt_refresh_token.createdAt" FROM "serverpod_auth_core_jwt_refresh_token" WHERE "serverpod_auth_core_jwt_refresh_token"."id" = '019d05bc-071a-7fd1-bafa-fca38276e28c' LIMIT 1
-2026-03-19 12:10:55.529863Z  692661095 ERROR          n/a                      SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62373
-2026-03-19 12:10:55.529863Z  692661095 STACK TRACE    n/a                      #0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
+2026-03-20 13:30:39.589209Z   26828059 INTERNAL       n/a                      queries=3, duration=23.8ms
+2026-03-20 13:30:48.204821Z  454958059 METHOD         emailIdp.login           user=null, queries=9, duration=415ms
+2026-03-20 13:30:48.276893Z 1030501560 METHOD         user.getUserClients      user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=31.6ms
+2026-03-20 13:30:48.277582Z  477510225 METHOD         user.getUserClients      user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=24.7ms
+2026-03-20 13:30:50.786354Z  902122847 METHOD         user.getClientUserCount  user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=32.2ms
+2026-03-20 13:30:50.787842Z  335058360 METHOD         document.getDocumentCount user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=22.5ms
+2026-03-20 13:30:52.305564Z  954337505 METHOD         studioConfig.getPreviewBaseUrl user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=0, duration=2.17ms
+2026-03-20 13:30:54.016495Z  916538052 WEB            /preview/e2e-client-a/   user=null, queries=2, duration=24.8ms
+2026-03-20 13:30:54.038332Z  889497954 WEB            /favicon.ico             user=null, queries=0, duration=1.73ms
+2026-03-20 13:30:58.786289Z  355678101 WEB            /preview/e2e-client-a/   user=null, queries=0, duration=866µs
+2026-03-20 13:31:09.236022Z  190311355 WEB            /preview/e2e-client-a/   user=null, queries=0, duration=875µs
+2026-03-20 13:35:23.976378Z ERROR: Internal server error. Request handler failed with exception.
+2026-03-20 13:35:23.976378Z ERROR: FormatException: Unexpected extension byte (at offset 1)
+#0      _Utf8Decoder.convertChunked (dart:convert-patch/convert_patch.dart:1964:7)
+#1      _Utf8ConversionSink.addSlice (dart:convert/string_conversion.dart:310:28)
+#2      _Utf8ConversionSink.add (dart:convert/string_conversion.dart:306:5)
+#3      _ConverterStreamEventSink.add (dart:convert/chunked_conversion.dart:70:18)
+#4      _SinkTransformerStreamSubscription._handleData (dart:async/stream_transformers.dart:115:24)
+#5      _rootRunUnary (dart:async/zone_root.dart:48:47)
+#6      _CustomZone.runUnary (dart:async/zone.dart:733:19)
+#7      _CustomZone.runUnaryGuarded (dart:async/zone.dart:633:7)
+#8      _BufferingStreamSubscription._sendData (dart:async/stream_impl.dart:381:11)
+#9      _BufferingStreamSubscription._add (dart:async/stream_impl.dart:312:7)
+#10     _SyncStreamControllerDispatch._sendData (dart:async/stream_controller.dart:798:19)
+#11     _StreamController._add (dart:async/stream_controller.dart:663:7)
+#12     _StreamController.add (dart:async/stream_controller.dart:618:5)
+#13     _AsyncStarStreamController.add (dart:async-patch/async_patch.dart:81:16)
+#14     Body._limitedStream (package:relic_core/src/body/body.dart)
 <asynchronous suspension>
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:14)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._deserializedMappedQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:693:18)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.findFirstRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:100:16)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.findById (package:serverpod/src/database/adapters/postgres/database_connection.dart:129:12)
-<asynchronous suspension>
-#17     JwtAdmin.rotateRefreshToken (package:serverpod_auth_core_server/src/jwt/business/jwt_admin.dart:123:27)
-<asynchronous suspension>
-#18     Jwt.refreshAccessToken.<anonymous closure> (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:219:36)
-<asynchronous suspension>
-#19     Jwt._withReplacedServerJwtException (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:391:14)
-<asynchronous suspension>
-#20     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#21     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#22     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#23     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#24     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#25     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#26     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
+#15     _SinkTransformerStreamSubscription._handleData (dart:async/stream_transformers.dart:113:3)
 <asynchronous suspension>
 
-2026-03-19 12:10:55.531083Z  692661095 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=1, duration=85.5ms
-2026-03-19 12:10:55.531083Z  692661095 ERROR          n/a                      SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62373
-2026-03-19 12:10:55.531083Z  692661095 STACK TRACE    n/a                      #0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
+2026-03-20 13:35:47.441181Z ERROR: Internal server error. Request handler failed with exception.
+2026-03-20 13:35:47.441181Z ERROR: FormatException: Unexpected extension byte (at offset 1)
+#0      _Utf8Decoder.convertChunked (dart:convert-patch/convert_patch.dart:1964:7)
+#1      _Utf8ConversionSink.addSlice (dart:convert/string_conversion.dart:310:28)
+#2      _Utf8ConversionSink.add (dart:convert/string_conversion.dart:306:5)
+#3      _ConverterStreamEventSink.add (dart:convert/chunked_conversion.dart:70:18)
+#4      _SinkTransformerStreamSubscription._handleData (dart:async/stream_transformers.dart:115:24)
+#5      _rootRunUnary (dart:async/zone_root.dart:48:47)
+#6      _CustomZone.runUnary (dart:async/zone.dart:733:19)
+#7      _CustomZone.runUnaryGuarded (dart:async/zone.dart:633:7)
+#8      _BufferingStreamSubscription._sendData (dart:async/stream_impl.dart:381:11)
+#9      _BufferingStreamSubscription._add (dart:async/stream_impl.dart:312:7)
+#10     _SyncStreamControllerDispatch._sendData (dart:async/stream_controller.dart:798:19)
+#11     _StreamController._add (dart:async/stream_controller.dart:663:7)
+#12     _StreamController.add (dart:async/stream_controller.dart:618:5)
+#13     _AsyncStarStreamController.add (dart:async-patch/async_patch.dart:81:16)
+#14     Body._limitedStream (package:relic_core/src/body/body.dart)
 <asynchronous suspension>
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:14)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._deserializedMappedQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:693:18)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.findFirstRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:100:16)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.findById (package:serverpod/src/database/adapters/postgres/database_connection.dart:129:12)
-<asynchronous suspension>
-#17     JwtAdmin.rotateRefreshToken (package:serverpod_auth_core_server/src/jwt/business/jwt_admin.dart:123:27)
-<asynchronous suspension>
-#18     Jwt.refreshAccessToken.<anonymous closure> (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:219:36)
-<asynchronous suspension>
-#19     Jwt._withReplacedServerJwtException (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:391:14)
-<asynchronous suspension>
-#20     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#21     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#22     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#23     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#24     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#25     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#26     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
+#15     _SinkTransformerStreamSubscription._handleData (dart:async/stream_transformers.dart:113:3)
 <asynchronous suspension>
 
-2026-03-19 12:10:55.544902Z FAILED TO LOG SESSION
-CALL: refreshJwtTokens.refreshAccessToken duration: 85ms numQueries: 1 authenticatedUser: null
-CALL error: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62373
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-<asynchronous suspension>
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:14)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._deserializedMappedQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:693:18)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.findFirstRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:100:16)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.findById (package:serverpod/src/database/adapters/postgres/database_connection.dart:129:12)
-<asynchronous suspension>
-#17     JwtAdmin.rotateRefreshToken (package:serverpod_auth_core_server/src/jwt/business/jwt_admin.dart:123:27)
-<asynchronous suspension>
-#18     Jwt.refreshAccessToken.<anonymous closure> (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:219:36)
-<asynchronous suspension>
-#19     Jwt._withReplacedServerJwtException (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:391:14)
-<asynchronous suspension>
-#20     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#21     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#22     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#23     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#24     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#25     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#26     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-LOG ERROR: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62376
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<anonymous closure> (package:serverpod/src/database/adapters/postgres/database_connection.dart:987:12)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.insert (package:serverpod/src/database/adapters/postgres/database_connection.dart:197:13)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.insertRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:212:18)
-<asynchronous suspension>
-#17     DatabaseLogWriter._databaseLog (package:serverpod/src/server/log_manager/log_writers.dart:162:18)
-<asynchronous suspension>
-#18     DatabaseLogWriter.openLog (package:serverpod/src/server/log_manager/log_writers.dart:138:21)
-<asynchronous suspension>
-#19     CachedLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:59:5)
-<asynchronous suspension>
-#20     MultipleLogWriter.closeLog.<anonymous closure> (package:serverpod/src/server/log_manager/log_writers.dart:558:21)
-<asynchronous suspension>
-#21     Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
-<asynchronous suspension>
-#22     MultipleLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:556:21)
-<asynchronous suspension>
-#23     SessionLogManager.finalizeLog (package:serverpod/src/server/log_manager/log_manager.dart:326:16)
-<asynchronous suspension>
-#24     Session.close (package:serverpod/src/server/session.dart:241:14)
-<asynchronous suspension>
-#25     Server._handleEndpointCall (package:serverpod/src/server/server.dart:528:9)
-<asynchronous suspension>
-#26     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#27     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#28     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#29     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#30     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#31     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:10:55.546485Z ERROR: Internal server error. Request handler failed with exception.
-2026-03-19 12:10:55.546485Z ERROR: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62373
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-<asynchronous suspension>
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:14)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._deserializedMappedQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:693:18)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.findFirstRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:100:16)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.findById (package:serverpod/src/database/adapters/postgres/database_connection.dart:129:12)
-<asynchronous suspension>
-#17     JwtAdmin.rotateRefreshToken (package:serverpod_auth_core_server/src/jwt/business/jwt_admin.dart:123:27)
-<asynchronous suspension>
-#18     Jwt.refreshAccessToken.<anonymous closure> (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:219:36)
-<asynchronous suspension>
-#19     Jwt._withReplacedServerJwtException (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:391:14)
-<asynchronous suspension>
-#20     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#21     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#22     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#23     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#24     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#25     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#26     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:10:55.575560Z 1039223456 QUERY          n/a                      id=null, duration=13.2ms, query=SELECT "serverpod_auth_core_jwt_refresh_token"."id" AS "serverpod_auth_core_jwt_refresh_token.id", "serverpod_auth_core_jwt_refresh_token"."authUserId" AS "serverpod_auth_core_jwt_refresh_token.authUserId", "serverpod_auth_core_jwt_refresh_token"."scopeNames" AS "serverpod_auth_core_jwt_refresh_token.scopeNames", "serverpod_auth_core_jwt_refresh_token"."extraClaims" AS "serverpod_auth_core_jwt_refresh_token.extraClaims", "serverpod_auth_core_jwt_refresh_token"."method" AS "serverpod_auth_core_jwt_refresh_token.method", "serverpod_auth_core_jwt_refresh_token"."fixedSecret" AS "serverpod_auth_core_jwt_refresh_token.fixedSecret", "serverpod_auth_core_jwt_refresh_token"."rotatingSecretHash" AS "serverpod_auth_core_jwt_refresh_token.rotatingSecretHash", "serverpod_auth_core_jwt_refresh_token"."lastUpdatedAt" AS "serverpod_auth_core_jwt_refresh_token.lastUpdatedAt", "serverpod_auth_core_jwt_refresh_token"."createdAt" AS "serverpod_auth_core_jwt_refresh_token.createdAt" FROM "serverpod_auth_core_jwt_refresh_token" WHERE "serverpod_auth_core_jwt_refresh_token"."id" = '019d05bc-071a-7fd1-bafa-fca38276e28c' LIMIT 1
-2026-03-19 12:10:55.575560Z 1039223456 ERROR          n/a                      SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62379
-2026-03-19 12:10:55.575560Z 1039223456 STACK TRACE    n/a                      #0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._deserializedMappedQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:693:18)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.findFirstRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:100:16)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.findById (package:serverpod/src/database/adapters/postgres/database_connection.dart:129:12)
-<asynchronous suspension>
-#17     JwtAdmin.rotateRefreshToken (package:serverpod_auth_core_server/src/jwt/business/jwt_admin.dart:123:27)
-<asynchronous suspension>
-#18     Jwt.refreshAccessToken.<anonymous closure> (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:219:36)
-<asynchronous suspension>
-#19     Jwt._withReplacedServerJwtException (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:391:14)
-<asynchronous suspension>
-#20     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#21     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#22     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#23     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#24     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#25     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#26     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:10:55.575795Z 1039223456 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=1, duration=14.1ms
-2026-03-19 12:10:55.575795Z 1039223456 ERROR          n/a                      SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62379
-2026-03-19 12:10:55.575795Z 1039223456 STACK TRACE    n/a                      #0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._deserializedMappedQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:693:18)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.findFirstRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:100:16)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.findById (package:serverpod/src/database/adapters/postgres/database_connection.dart:129:12)
-<asynchronous suspension>
-#17     JwtAdmin.rotateRefreshToken (package:serverpod_auth_core_server/src/jwt/business/jwt_admin.dart:123:27)
-<asynchronous suspension>
-#18     Jwt.refreshAccessToken.<anonymous closure> (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:219:36)
-<asynchronous suspension>
-#19     Jwt._withReplacedServerJwtException (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:391:14)
-<asynchronous suspension>
-#20     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#21     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#22     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#23     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#24     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#25     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#26     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:10:55.589213Z FAILED TO LOG SESSION
-CALL: refreshJwtTokens.refreshAccessToken duration: 14ms numQueries: 1 authenticatedUser: null
-CALL error: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62379
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._deserializedMappedQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:693:18)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.findFirstRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:100:16)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.findById (package:serverpod/src/database/adapters/postgres/database_connection.dart:129:12)
-<asynchronous suspension>
-#17     JwtAdmin.rotateRefreshToken (package:serverpod_auth_core_server/src/jwt/business/jwt_admin.dart:123:27)
-<asynchronous suspension>
-#18     Jwt.refreshAccessToken.<anonymous closure> (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:219:36)
-<asynchronous suspension>
-#19     Jwt._withReplacedServerJwtException (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:391:14)
-<asynchronous suspension>
-#20     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#21     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#22     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#23     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#24     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#25     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#26     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-LOG ERROR: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62381
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<anonymous closure> (package:serverpod/src/database/adapters/postgres/database_connection.dart:987:12)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.insert (package:serverpod/src/database/adapters/postgres/database_connection.dart:197:13)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.insertRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:212:18)
-<asynchronous suspension>
-#17     DatabaseLogWriter._databaseLog (package:serverpod/src/server/log_manager/log_writers.dart:162:18)
-<asynchronous suspension>
-#18     DatabaseLogWriter.openLog (package:serverpod/src/server/log_manager/log_writers.dart:138:21)
-<asynchronous suspension>
-#19     CachedLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:59:5)
-<asynchronous suspension>
-#20     MultipleLogWriter.closeLog.<anonymous closure> (package:serverpod/src/server/log_manager/log_writers.dart:558:21)
-<asynchronous suspension>
-#21     Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
-<asynchronous suspension>
-#22     MultipleLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:556:21)
-<asynchronous suspension>
-#23     SessionLogManager.finalizeLog (package:serverpod/src/server/log_manager/log_manager.dart:326:16)
-<asynchronous suspension>
-#24     Session.close (package:serverpod/src/server/session.dart:241:14)
-<asynchronous suspension>
-#25     Server._handleEndpointCall (package:serverpod/src/server/server.dart:528:9)
-<asynchronous suspension>
-#26     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#27     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#28     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#29     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#30     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#31     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:10:55.589535Z ERROR: Internal server error. Request handler failed with exception.
-2026-03-19 12:10:55.589535Z ERROR: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62379
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._deserializedMappedQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:693:18)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.findFirstRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:100:16)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.findById (package:serverpod/src/database/adapters/postgres/database_connection.dart:129:12)
-<asynchronous suspension>
-#17     JwtAdmin.rotateRefreshToken (package:serverpod_auth_core_server/src/jwt/business/jwt_admin.dart:123:27)
-<asynchronous suspension>
-#18     Jwt.refreshAccessToken.<anonymous closure> (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:219:36)
-<asynchronous suspension>
-#19     Jwt._withReplacedServerJwtException (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:391:14)
-<asynchronous suspension>
-#20     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#21     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#22     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#23     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#24     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#25     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#26     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:10:55.602784Z  730372205 METHOD         serverpod_auth_core.status.isSignedIn user=null, queries=0, duration=8.87ms
-2026-03-19 12:10:55.616660Z FAILED TO LOG SESSION
-CALL: serverpod_auth_core.status.isSignedIn duration: 8ms numQueries: 0 authenticatedUser: null
-LOG ERROR: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62383
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<anonymous closure> (package:serverpod/src/database/adapters/postgres/database_connection.dart:987:12)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.insert (package:serverpod/src/database/adapters/postgres/database_connection.dart:197:13)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.insertRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:212:18)
-<asynchronous suspension>
-#17     DatabaseLogWriter._databaseLog (package:serverpod/src/server/log_manager/log_writers.dart:162:18)
-<asynchronous suspension>
-#18     DatabaseLogWriter.openLog (package:serverpod/src/server/log_manager/log_writers.dart:138:21)
-<asynchronous suspension>
-#19     CachedLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:59:5)
-<asynchronous suspension>
-#20     MultipleLogWriter.closeLog.<anonymous closure> (package:serverpod/src/server/log_manager/log_writers.dart:558:21)
-<asynchronous suspension>
-#21     Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
-<asynchronous suspension>
-#22     MultipleLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:556:21)
-<asynchronous suspension>
-#23     SessionLogManager.finalizeLog (package:serverpod/src/server/log_manager/log_manager.dart:326:16)
-<asynchronous suspension>
-#24     Session.close (package:serverpod/src/server/session.dart:241:14)
-<asynchronous suspension>
-#25     Server._handleEndpointCall (package:serverpod/src/server/server.dart:532:7)
-<asynchronous suspension>
-#26     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#27     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#28     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#29     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#30     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#31     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:10:55.636910Z  133385853 QUERY          n/a                      id=null, duration=13.3ms, query=SELECT "serverpod_auth_core_jwt_refresh_token"."id" AS "serverpod_auth_core_jwt_refresh_token.id", "serverpod_auth_core_jwt_refresh_token"."authUserId" AS "serverpod_auth_core_jwt_refresh_token.authUserId", "serverpod_auth_core_jwt_refresh_token"."scopeNames" AS "serverpod_auth_core_jwt_refresh_token.scopeNames", "serverpod_auth_core_jwt_refresh_token"."extraClaims" AS "serverpod_auth_core_jwt_refresh_token.extraClaims", "serverpod_auth_core_jwt_refresh_token"."method" AS "serverpod_auth_core_jwt_refresh_token.method", "serverpod_auth_core_jwt_refresh_token"."fixedSecret" AS "serverpod_auth_core_jwt_refresh_token.fixedSecret", "serverpod_auth_core_jwt_refresh_token"."rotatingSecretHash" AS "serverpod_auth_core_jwt_refresh_token.rotatingSecretHash", "serverpod_auth_core_jwt_refresh_token"."lastUpdatedAt" AS "serverpod_auth_core_jwt_refresh_token.lastUpdatedAt", "serverpod_auth_core_jwt_refresh_token"."createdAt" AS "serverpod_auth_core_jwt_refresh_token.createdAt" FROM "serverpod_auth_core_jwt_refresh_token" WHERE "serverpod_auth_core_jwt_refresh_token"."id" = '019d05bc-071a-7fd1-bafa-fca38276e28c' LIMIT 1
-2026-03-19 12:10:55.636910Z  133385853 ERROR          n/a                      SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62385
-2026-03-19 12:10:55.636910Z  133385853 STACK TRACE    n/a                      #0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._deserializedMappedQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:693:18)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.findFirstRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:100:16)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.findById (package:serverpod/src/database/adapters/postgres/database_connection.dart:129:12)
-<asynchronous suspension>
-#17     JwtAdmin.rotateRefreshToken (package:serverpod_auth_core_server/src/jwt/business/jwt_admin.dart:123:27)
-<asynchronous suspension>
-#18     Jwt.refreshAccessToken.<anonymous closure> (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:219:36)
-<asynchronous suspension>
-#19     Jwt._withReplacedServerJwtException (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:391:14)
-<asynchronous suspension>
-#20     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#21     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#22     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#23     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#24     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#25     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#26     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:10:55.637106Z  133385853 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=1, duration=13.8ms
-2026-03-19 12:10:55.637106Z  133385853 ERROR          n/a                      SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62385
-2026-03-19 12:10:55.637106Z  133385853 STACK TRACE    n/a                      #0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._deserializedMappedQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:693:18)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.findFirstRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:100:16)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.findById (package:serverpod/src/database/adapters/postgres/database_connection.dart:129:12)
-<asynchronous suspension>
-#17     JwtAdmin.rotateRefreshToken (package:serverpod_auth_core_server/src/jwt/business/jwt_admin.dart:123:27)
-<asynchronous suspension>
-#18     Jwt.refreshAccessToken.<anonymous closure> (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:219:36)
-<asynchronous suspension>
-#19     Jwt._withReplacedServerJwtException (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:391:14)
-<asynchronous suspension>
-#20     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#21     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#22     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#23     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#24     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#25     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#26     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:10:55.650362Z FAILED TO LOG SESSION
-CALL: refreshJwtTokens.refreshAccessToken duration: 13ms numQueries: 1 authenticatedUser: null
-CALL error: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62385
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._deserializedMappedQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:693:18)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.findFirstRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:100:16)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.findById (package:serverpod/src/database/adapters/postgres/database_connection.dart:129:12)
-<asynchronous suspension>
-#17     JwtAdmin.rotateRefreshToken (package:serverpod_auth_core_server/src/jwt/business/jwt_admin.dart:123:27)
-<asynchronous suspension>
-#18     Jwt.refreshAccessToken.<anonymous closure> (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:219:36)
-<asynchronous suspension>
-#19     Jwt._withReplacedServerJwtException (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:391:14)
-<asynchronous suspension>
-#20     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#21     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#22     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#23     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#24     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#25     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#26     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-LOG ERROR: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62387
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<anonymous closure> (package:serverpod/src/database/adapters/postgres/database_connection.dart:987:12)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.insert (package:serverpod/src/database/adapters/postgres/database_connection.dart:197:13)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.insertRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:212:18)
-<asynchronous suspension>
-#17     DatabaseLogWriter._databaseLog (package:serverpod/src/server/log_manager/log_writers.dart:162:18)
-<asynchronous suspension>
-#18     DatabaseLogWriter.openLog (package:serverpod/src/server/log_manager/log_writers.dart:138:21)
-<asynchronous suspension>
-#19     CachedLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:59:5)
-<asynchronous suspension>
-#20     MultipleLogWriter.closeLog.<anonymous closure> (package:serverpod/src/server/log_manager/log_writers.dart:558:21)
-<asynchronous suspension>
-#21     Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
-<asynchronous suspension>
-#22     MultipleLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:556:21)
-<asynchronous suspension>
-#23     SessionLogManager.finalizeLog (package:serverpod/src/server/log_manager/log_manager.dart:326:16)
-<asynchronous suspension>
-#24     Session.close (package:serverpod/src/server/session.dart:241:14)
-<asynchronous suspension>
-#25     Server._handleEndpointCall (package:serverpod/src/server/server.dart:528:9)
-<asynchronous suspension>
-#26     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#27     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#28     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#29     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#30     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#31     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:10:55.650561Z ERROR: Internal server error. Request handler failed with exception.
-2026-03-19 12:10:55.650561Z ERROR: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62385
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._deserializedMappedQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:693:18)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.findFirstRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:100:16)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.findById (package:serverpod/src/database/adapters/postgres/database_connection.dart:129:12)
-<asynchronous suspension>
-#17     JwtAdmin.rotateRefreshToken (package:serverpod_auth_core_server/src/jwt/business/jwt_admin.dart:123:27)
-<asynchronous suspension>
-#18     Jwt.refreshAccessToken.<anonymous closure> (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:219:36)
-<asynchronous suspension>
-#19     Jwt._withReplacedServerJwtException (package:serverpod_auth_core_server/src/jwt/business/jwt.dart:391:14)
-<asynchronous suspension>
-#20     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#21     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#22     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#23     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#24     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#25     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#26     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:10:55.656570Z  643239267 METHOD         serverpod_auth_core.status.signOutDevice user=null, queries=0, duration=2.19ms
-2026-03-19 12:10:55.669210Z FAILED TO LOG SESSION
-CALL: serverpod_auth_core.status.signOutDevice duration: 2ms numQueries: 0 authenticatedUser: null
-LOG ERROR: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62389
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<anonymous closure> (package:serverpod/src/database/adapters/postgres/database_connection.dart:987:12)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.insert (package:serverpod/src/database/adapters/postgres/database_connection.dart:197:13)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.insertRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:212:18)
-<asynchronous suspension>
-#17     DatabaseLogWriter._databaseLog (package:serverpod/src/server/log_manager/log_writers.dart:162:18)
-<asynchronous suspension>
-#18     DatabaseLogWriter.openLog (package:serverpod/src/server/log_manager/log_writers.dart:138:21)
-<asynchronous suspension>
-#19     CachedLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:59:5)
-<asynchronous suspension>
-#20     MultipleLogWriter.closeLog.<anonymous closure> (package:serverpod/src/server/log_manager/log_writers.dart:558:21)
-<asynchronous suspension>
-#21     Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
-<asynchronous suspension>
-#22     MultipleLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:556:21)
-<asynchronous suspension>
-#23     SessionLogManager.finalizeLog (package:serverpod/src/server/log_manager/log_manager.dart:326:16)
-<asynchronous suspension>
-#24     Session.close (package:serverpod/src/server/session.dart:241:14)
-<asynchronous suspension>
-#25     Server._handleEndpointCall (package:serverpod/src/server/server.dart:532:7)
-<asynchronous suspension>
-#26     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#27     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#28     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#29     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#30     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#31     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:11:02.210592Z  505698820 METHOD         emailIdp.login           user=null, queries=0, duration=18.9ms
-2026-03-19 12:11:02.210592Z  505698820 ERROR          n/a                      SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62407
-2026-03-19 12:11:02.210592Z  505698820 STACK TRACE    n/a                      #0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     Database.transaction (package:serverpod/src/database/database.dart:514:12)
-<asynchronous suspension>
-#13     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#14     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#15     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#16     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#17     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#18     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#19     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:11:02.225098Z FAILED TO LOG SESSION
-CALL: emailIdp.login duration: 18ms numQueries: 0 authenticatedUser: null
-CALL error: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62407
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     Database.transaction (package:serverpod/src/database/database.dart:514:12)
-<asynchronous suspension>
-#13     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#14     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#15     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#16     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#17     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#18     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#19     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-LOG ERROR: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62409
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<anonymous closure> (package:serverpod/src/database/adapters/postgres/database_connection.dart:987:12)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.insert (package:serverpod/src/database/adapters/postgres/database_connection.dart:197:13)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.insertRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:212:18)
-<asynchronous suspension>
-#17     DatabaseLogWriter._databaseLog (package:serverpod/src/server/log_manager/log_writers.dart:162:18)
-<asynchronous suspension>
-#18     DatabaseLogWriter.openLog (package:serverpod/src/server/log_manager/log_writers.dart:138:21)
-<asynchronous suspension>
-#19     CachedLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:59:5)
-<asynchronous suspension>
-#20     MultipleLogWriter.closeLog.<anonymous closure> (package:serverpod/src/server/log_manager/log_writers.dart:558:21)
-<asynchronous suspension>
-#21     Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
-<asynchronous suspension>
-#22     MultipleLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:556:21)
-<asynchronous suspension>
-#23     SessionLogManager.finalizeLog (package:serverpod/src/server/log_manager/log_manager.dart:326:16)
-<asynchronous suspension>
-#24     Session.close (package:serverpod/src/server/session.dart:241:14)
-<asynchronous suspension>
-#25     Server._handleEndpointCall (package:serverpod/src/server/server.dart:528:9)
-<asynchronous suspension>
-#26     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#27     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#28     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#29     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#30     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#31     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:11:02.226301Z ERROR: Internal server error. Request handler failed with exception.
-2026-03-19 12:11:02.226301Z ERROR: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62407
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     Database.transaction (package:serverpod/src/database/database.dart:514:12)
-<asynchronous suspension>
-#13     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#14     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#15     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#16     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#17     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#18     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#19     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:11:24.742814Z  894950843 METHOD         emailIdp.login           user=null, queries=0, duration=20.2ms
-2026-03-19 12:11:24.742814Z  894950843 ERROR          n/a                      SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62443
-2026-03-19 12:11:24.742814Z  894950843 STACK TRACE    n/a                      #0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     Database.transaction (package:serverpod/src/database/database.dart:514:12)
-<asynchronous suspension>
-#13     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#14     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#15     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#16     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#17     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#18     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#19     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:11:24.757581Z FAILED TO LOG SESSION
-CALL: emailIdp.login duration: 20ms numQueries: 0 authenticatedUser: null
-CALL error: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62443
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     Database.transaction (package:serverpod/src/database/database.dart:514:12)
-<asynchronous suspension>
-#13     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#14     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#15     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#16     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#17     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#18     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#19     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-LOG ERROR: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62445
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     PostgresDatabaseConnection._query (package:serverpod/src/database/adapters/postgres/database_connection.dart:562:20)
-<asynchronous suspension>
-#13     PostgresDatabaseConnection._mappedResultsQuery (package:serverpod/src/database/adapters/postgres/database_connection.dart:660:18)
-<asynchronous suspension>
-#14     PostgresDatabaseConnection._mergeResultsWithNonPersistedFields.<anonymous closure> (package:serverpod/src/database/adapters/postgres/database_connection.dart:987:12)
-<asynchronous suspension>
-#15     PostgresDatabaseConnection.insert (package:serverpod/src/database/adapters/postgres/database_connection.dart:197:13)
-<asynchronous suspension>
-#16     PostgresDatabaseConnection.insertRow (package:serverpod/src/database/adapters/postgres/database_connection.dart:212:18)
-<asynchronous suspension>
-#17     DatabaseLogWriter._databaseLog (package:serverpod/src/server/log_manager/log_writers.dart:162:18)
-<asynchronous suspension>
-#18     DatabaseLogWriter.openLog (package:serverpod/src/server/log_manager/log_writers.dart:138:21)
-<asynchronous suspension>
-#19     CachedLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:59:5)
-<asynchronous suspension>
-#20     MultipleLogWriter.closeLog.<anonymous closure> (package:serverpod/src/server/log_manager/log_writers.dart:558:21)
-<asynchronous suspension>
-#21     Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
-<asynchronous suspension>
-#22     MultipleLogWriter.closeLog (package:serverpod/src/server/log_manager/log_writers.dart:556:21)
-<asynchronous suspension>
-#23     SessionLogManager.finalizeLog (package:serverpod/src/server/log_manager/log_manager.dart:326:16)
-<asynchronous suspension>
-#24     Session.close (package:serverpod/src/server/session.dart:241:14)
-<asynchronous suspension>
-#25     Server._handleEndpointCall (package:serverpod/src/server/server.dart:528:9)
-<asynchronous suspension>
-#26     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#27     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#28     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#29     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#30     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#31     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:11:24.758915Z ERROR: Internal server error. Request handler failed with exception.
-2026-03-19 12:11:24.758915Z ERROR: SocketException: Connection refused (OS Error: Connection refused, errno = 61), address = localhost, port = 62443
-#0      _NativeSocket.startConnect (dart:io-patch/socket_patch.dart:817:35)
-#1      _NativeSocket.connect (dart:io-patch/socket_patch.dart:1142:12)
-#2      _RawSocket.connect (dart:io-patch/socket_patch.dart:2256:26)
-#3      RawSocket.connect (dart:io-patch/socket_patch.dart:31:23)
-#4      Socket._connect (dart:io-patch/socket_patch.dart:2526:22)
-#5      Socket.connect (dart:io/socket.dart:869:21)
-#6      PgConnectionImplementation._connect (package:postgres/src/v3/connection.dart:298:31)
-#7      PgConnectionImplementation.connect (package:postgres/src/v3/connection.dart:238:35)
-#8      PoolImplementation._selectOrCreate.<anonymous closure> (package:postgres/src/pool/pool_impl.dart:211:44)
-#9      PackagePoolExt.withRequestTimeout (package:postgres/src/utils/package_pool_ext.dart:58:28)
-<asynchronous suspension>
-#10     PoolImplementation._selectOrCreate (package:postgres/src/pool/pool_impl.dart:191:12)
-<asynchronous suspension>
-#11     PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:146:20)
-<asynchronous suspension>
-#12     Database.transaction (package:serverpod/src/database/database.dart:514:12)
-<asynchronous suspension>
-#13     Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#14     Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#15     Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#16     Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#17     _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#18     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#19     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 12:14:59.303244Z  246293392 METHOD         emailIdp.login           user=null, queries=9, duration=449ms
-2026-03-19 12:14:59.514566Z 1036977047 METHOD         user.ensureUser          user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=5, duration=122ms
-2026-03-19 12:14:59.802269Z  434798607 METHOD         document.getDocuments    user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=3, duration=20.5ms
-2026-03-19 12:15:00.361806Z  544218051 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=18.6ms
-2026-03-19 12:15:00.904305Z    1778248 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=13.6ms
-2026-03-19 12:15:00.952309Z  557919741 METHOD         document.getDocument     user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=1, duration=6.57ms
-2026-03-19 12:15:01.026449Z  572133494 METHOD         document.getDocumentVersion user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=1, duration=7.8ms
-2026-03-19 12:15:01.105966Z  895399304 METHOD         document.getDocumentVersionData user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=70.8ms
-2026-03-19 12:43:50.662145Z   13581002 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=216ms
-2026-03-19 12:43:50.857390Z   92390886 METHOD         user.ensureUser          user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=5, duration=137ms
-2026-03-19 12:43:50.920651Z  245517653 METHOD         document.updateDocumentData user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=20, duration=205ms
-2026-03-19 12:43:50.964255Z  504774612 METHOD         document.getDocuments    user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=3, duration=14ms
-2026-03-19 12:43:52.795957Z  104864276 METHOD         document.updateDocumentData user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=20, duration=183ms
-2026-03-19 12:43:52.842864Z   51863035 METHOD         document.getDocuments    user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=3, duration=24.4ms
-2026-03-19 13:25:54.573490Z  483052635 METHOD         emailIdp.login           user=null, queries=3, duration=459ms
-2026-03-19 13:25:54.573490Z  483052635 ERROR          n/a                      EmailAccountLoginException(reason: invalidCredentials)
-2026-03-19 13:25:54.573490Z  483052635 STACK TRACE    n/a                      #0      EmailIdpUtils.withReplacedServerEmailException (package:serverpod_auth_idp_server/src/providers/email/business/email_idp_utils.dart:92:11)
-<asynchronous suspension>
-#1      PgConnectionImplementation.runTx.<anonymous closure> (package:postgres/src/v3/connection.dart:591:24)
-<asynchronous suspension>
-#2      Pool.withResource (package:pool/pool.dart:127:14)
-<asynchronous suspension>
-#3      PoolImplementation.withConnection (package:postgres/src/pool/pool_impl.dart:153:16)
-<asynchronous suspension>
-#4      Database.transaction (package:serverpod/src/database/database.dart:514:12)
-<asynchronous suspension>
-#5      Server._handleEndpointCall (package:serverpod/src/server/server.dart:509:22)
-<asynchronous suspension>
-#6      Server._endpoints (package:serverpod/src/server/server.dart:376:12)
-<asynchronous suspension>
-#7      Server._reportException.<anonymous closure> (package:serverpod/src/server/server.dart:207:16)
-<asynchronous suspension>
-#8      Server._headers.<anonymous closure> (package:serverpod/src/server/server.dart:351:22)
-<asynchronous suspension>
-#9      _RoutingMiddlewareBuilder.call.<anonymous closure> (package:relic_core/src/middleware/routing_middleware.dart:135:18)
-<asynchronous suspension>
-#10     _RelicServer._wrapHandlerWithMiddleware.<anonymous closure> (package:relic_core/src/relic_server.dart:156:24)
-<asynchronous suspension>
-#11     _RelicServer._handleRequest (package:relic_core/src/relic_server.dart:132:22)
-<asynchronous suspension>
-
-2026-03-19 13:25:58.471465Z  829657527 METHOD         emailIdp.login           user=null, queries=9, duration=350ms
-2026-03-19 13:25:58.632913Z  437328143 METHOD         user.ensureUser          user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=5, duration=128ms
-2026-03-19 13:25:59.806787Z  917908929 METHOD         document.getDocuments    user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=3, duration=20.6ms
-2026-03-19 13:25:59.992731Z  937445687 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=6.07ms
-2026-03-19 13:32:44.356290Z  559105537 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=132ms
-2026-03-19 13:32:44.425536Z  567233400 METHOD         serverpod_auth_core.status.isSignedIn user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=0, duration=693µs
-2026-03-19 13:32:44.558611Z  588347836 METHOD         user.ensureUser          user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=5, duration=114ms
-2026-03-19 13:32:45.056399Z   20605237 METHOD         document.getDocuments    user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=3, duration=16.6ms
-2026-03-19 13:32:45.237578Z  289345061 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=10.4ms
-2026-03-19 13:32:46.739137Z  921950526 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=12.1ms
-2026-03-19 13:32:46.801759Z  838557795 METHOD         document.getDocument     user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=1, duration=10.1ms
-2026-03-19 13:32:46.892623Z  143844646 METHOD         document.getDocumentVersion user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=1, duration=8.91ms
-2026-03-19 13:32:46.934664Z   34291332 METHOD         document.getDocumentVersionData user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=4, duration=47.6ms
-2026-03-19 13:39:44.207414Z  792159878 METHOD         document.suggestSlug     user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=1, duration=17.3ms
-2026-03-19 13:39:44.816188Z  952486668 METHOD         document.createDocument  user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=35, duration=132ms
-2026-03-19 13:39:44.839335Z  205266658 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=13ms
-2026-03-19 13:39:44.853384Z  110350018 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=12.5ms
-2026-03-19 13:39:44.867357Z  204263738 METHOD         document.getDocuments    user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=3, duration=8.95ms
-2026-03-19 13:39:44.887736Z  988121909 METHOD         document.getDocumentVersion user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=1, duration=5.7ms
-2026-03-19 13:39:44.890584Z   58998389 METHOD         document.getDocumentVersionData user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=6.78ms
+2026-03-20 13:36:05.023735Z  677639393 WEB            /deployment/upload       user=null, queries=9, duration=511ms
+2026-03-20 13:40:56.339280Z  211930277 WEB            /preview/e2e-client-a/   user=null, queries=2, duration=11.2ms
+2026-03-20 13:40:56.483707Z 1070933566 WEB            /preview/e2e-deploy-test/ user=null, queries=2, duration=7.27ms
+2026-03-20 13:40:56.496262Z  680978270 WEB            /preview/e2e-deploy-test/flutter_bootstrap.js user=null, queries=0, duration=3.49ms
+2026-03-20 13:40:56.497536Z  586568438 WEB            /preview/e2e-deploy-test/manifest.json user=null, queries=0, duration=500µs
+2026-03-20 13:40:56.540113Z  264813292 WEB            /preview/e2e-deploy-test/main.dart.js user=null, queries=0, duration=2.86ms
+2026-03-20 13:40:56.541836Z   29544095 WEB            /preview/e2e-deploy-test/favicon.png user=null, queries=0, duration=1.05ms
+2026-03-20 13:40:56.543243Z  239486234 WEB            /preview/e2e-deploy-test/icons/Icon-192.png user=null, queries=0, duration=521µs
+2026-03-20 13:40:56.669387Z  994639874 WEB            /preview/e2e-deploy-test/assets/FontManifest.json user=null, queries=0, duration=972µs
+2026-03-20 13:40:56.682975Z  173966289 WEB            /preview/e2e-deploy-test/assets/fonts/MaterialIcons-Regular.otf user=null, queries=0, duration=888µs
+2026-03-20 13:40:56.684379Z 1016937438 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/Geist-Thin.otf user=null, queries=0, duration=474µs
+2026-03-20 13:40:56.685305Z  247793012 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/Geist-UltraLight.otf user=null, queries=0, duration=428µs
+2026-03-20 13:40:56.686399Z  605317092 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/Geist-Light.otf user=null, queries=0, duration=361µs
+2026-03-20 13:40:56.687001Z  343863806 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/Geist-Regular.otf user=null, queries=0, duration=299µs
+2026-03-20 13:40:56.687562Z  301122650 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/Geist-Medium.otf user=null, queries=0, duration=281µs
+2026-03-20 13:40:56.698560Z  862712723 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/Geist-SemiBold.otf user=null, queries=0, duration=440µs
+2026-03-20 13:40:56.700986Z  838781837 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/Geist-Bold.otf user=null, queries=0, duration=567µs
+2026-03-20 13:40:56.702315Z 1053509250 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/Geist-Black.otf user=null, queries=0, duration=371µs
+2026-03-20 13:40:56.704704Z  219627110 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/Geist-UltraBlack.otf user=null, queries=0, duration=422µs
+2026-03-20 13:40:56.705658Z  822644220 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/GeistMono-Thin.otf user=null, queries=0, duration=414µs
+2026-03-20 13:40:56.706281Z  304850684 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/GeistMono-UltraLight.otf user=null, queries=0, duration=321µs
+2026-03-20 13:40:56.712490Z  330280148 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/GeistMono-Light.otf user=null, queries=0, duration=464µs
+2026-03-20 13:40:56.715506Z  203016908 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/GeistMono-Regular.otf user=null, queries=0, duration=518µs
+2026-03-20 13:40:56.716742Z  870422462 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/GeistMono-Medium.otf user=null, queries=0, duration=407µs
+2026-03-20 13:40:56.720224Z  777788139 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/GeistMono-SemiBold.otf user=null, queries=0, duration=473µs
+2026-03-20 13:40:56.721114Z  527193437 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/GeistMono-Bold.otf user=null, queries=0, duration=552µs
+2026-03-20 13:40:56.724895Z  199555132 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/GeistMono-Black.otf user=null, queries=0, duration=514µs
+2026-03-20 13:40:56.731097Z  940092620 WEB            /preview/e2e-deploy-test/assets/packages/shadcn_ui/fonts/GeistMono-UltraBlack.otf user=null, queries=0, duration=456µs
+2026-03-20 13:40:56.734537Z  903638900 WEB            /preview/e2e-deploy-test/assets/packages/lucide_icons_flutter/assets/lucide.ttf user=null, queries=0, duration=692µs
+2026-03-20 13:40:56.735633Z  209561431 WEB            /preview/e2e-deploy-test/assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w100.ttf user=null, queries=0, duration=527µs
+2026-03-20 13:40:56.739105Z  265111186 WEB            /preview/e2e-deploy-test/assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w200.ttf user=null, queries=0, duration=538µs
+2026-03-20 13:40:56.740085Z  408398325 WEB            /preview/e2e-deploy-test/assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w300.ttf user=null, queries=0, duration=684µs
+2026-03-20 13:40:56.740897Z  957350228 WEB            /preview/e2e-deploy-test/assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w400.ttf user=null, queries=0, duration=488µs
+2026-03-20 13:40:56.749184Z  191846071 WEB            /preview/e2e-deploy-test/assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w500.ttf user=null, queries=0, duration=559µs
+2026-03-20 13:40:56.750409Z   18135348 WEB            /preview/e2e-deploy-test/assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w600.ttf user=null, queries=0, duration=429µs
+2026-03-20 13:40:56.751081Z   64555457 WEB            /preview/e2e-deploy-test/assets/packages/golden_toolkit/fonts/Roboto-Regular.ttf user=null, queries=0, duration=347µs
+2026-03-20 13:40:56.754647Z  799728505 WEB            /preview/e2e-deploy-test/assets/packages/font_awesome_flutter/lib/fonts/Font-Awesome-7-Brands-Regular-400.otf user=null, queries=0, duration=570µs
+2026-03-20 13:40:56.755361Z  910722623 WEB            /preview/e2e-deploy-test/assets/packages/font_awesome_flutter/lib/fonts/Font-Awesome-7-Free-Regular-400.otf user=null, queries=0, duration=371µs
+2026-03-20 13:40:56.759059Z  624642485 WEB            /preview/e2e-deploy-test/assets/packages/font_awesome_flutter/lib/fonts/Font-Awesome-7-Free-Solid-900.otf user=null, queries=0, duration=397µs
+2026-03-20 13:40:56.765130Z  457131758 WEB            /preview/e2e-deploy-test/assets/packages/cupertino_icons/assets/CupertinoIcons.ttf user=null, queries=0, duration=394µs
+2026-03-20 13:41:03.537714Z 1020498457 METHOD         emailIdp.login           user=null, queries=9, duration=341ms
+2026-03-20 13:41:03.670477Z  964326503 WEB            /preview/e2e-deploy-test/ user=null, queries=0, duration=383µs
+2026-03-20 13:41:03.679407Z 1056330205 METHOD         user.ensureUser          user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=5, duration=126ms
+2026-03-20 13:41:03.711729Z  404012916 METHOD         document.getDocuments    user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=3, duration=11.7ms
+2026-03-20 13:41:03.786719Z  721132504 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=14.1ms
+2026-03-20 13:41:03.787264Z  127115292 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=12.4ms
+2026-03-20 13:41:16.942477Z     152421 WEB            /preview/e2e-client-a/   user=null, queries=0, duration=1.14ms
+2026-03-20 13:41:30.381581Z  753315259 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=127ms
+2026-03-20 13:41:30.394820Z 1023125380 METHOD         serverpod_auth_core.status.isSignedIn user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=0, duration=465µs
+2026-03-20 13:41:30.500649Z  537676747 METHOD         user.getUserClients      user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=6.92ms
+2026-03-20 13:41:30.501058Z  662283460 METHOD         user.getUserClients      user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=8.45ms
+2026-03-20 13:41:30.809812Z   29934627 METHOD         user.getClientUserCount  user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=10.9ms
+2026-03-20 13:41:30.810328Z  888603369 METHOD         document.getDocumentCount user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=8.94ms
+2026-03-20 13:41:31.951221Z 1051832915 METHOD         studioConfig.getPreviewBaseUrl user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=0, duration=916µs
+2026-03-20 13:41:33.753395Z 1012526723 WEB            /preview/e2e-client-a/   user=null, queries=0, duration=833µs
+2026-03-20 13:43:02.718310Z 1049709872 LOG            ERROR                    message=Deployment upload error: FormatException: Filter error, bad data
+2026-03-20 13:43:02.719691Z 1049709872 WEB            /deployment/upload       user=null, queries=4, duration=1.31s
+2026-03-20 13:43:20.976606Z  367105995 WEB            /deployment/upload       user=null, queries=9, duration=494ms
+2026-03-20 13:44:22.826742Z  167990852 WEB            /preview/e2e-client-a/   user=null, queries=2, duration=14.6ms
+2026-03-20 13:44:22.843311Z  776389290 WEB            /preview/e2e-client-a/flutter_bootstrap.js user=null, queries=0, duration=924µs
+2026-03-20 13:44:22.846048Z  155230551 WEB            /preview/e2e-client-a/manifest.json user=null, queries=0, duration=763µs
+2026-03-20 13:44:22.869684Z  965252324 WEB            /preview/e2e-client-a/main.dart.js user=null, queries=0, duration=2.59ms
+2026-03-20 13:44:22.871389Z  548511197 WEB            /preview/e2e-client-a/favicon.png user=null, queries=0, duration=657µs
+2026-03-20 13:44:22.872812Z   84278061 WEB            /preview/e2e-client-a/icons/Icon-192.png user=null, queries=0, duration=614µs
+2026-03-20 13:44:22.997453Z  637247234 WEB            /preview/e2e-client-a/assets/FontManifest.json user=null, queries=0, duration=827µs
+2026-03-20 13:44:23.011950Z   12805766 WEB            /preview/e2e-client-a/assets/fonts/MaterialIcons-Regular.otf user=null, queries=0, duration=891µs
+2026-03-20 13:44:23.013691Z 1056029219 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/Geist-Thin.otf user=null, queries=0, duration=779µs
+2026-03-20 13:44:23.016244Z  947217487 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/Geist-UltraLight.otf user=null, queries=0, duration=1.33ms
+2026-03-20 13:44:23.017831Z  450715848 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/Geist-Light.otf user=null, queries=0, duration=804µs
+2026-03-20 13:44:23.020366Z  507549799 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/Geist-Regular.otf user=null, queries=0, duration=1.11ms
+2026-03-20 13:44:23.021939Z 1021121697 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/Geist-Medium.otf user=null, queries=0, duration=822µs
+2026-03-20 13:44:23.041037Z  193456298 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/Geist-SemiBold.otf user=null, queries=0, duration=990µs
+2026-03-20 13:44:23.043779Z  474615294 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/Geist-Bold.otf user=null, queries=0, duration=871µs
+2026-03-20 13:44:23.045150Z  305580247 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/Geist-Black.otf user=null, queries=0, duration=668µs
+2026-03-20 13:44:23.048150Z  424860802 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/Geist-UltraBlack.otf user=null, queries=0, duration=903µs
+2026-03-20 13:44:23.049486Z  883508692 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/GeistMono-Thin.otf user=null, queries=0, duration=641µs
+2026-03-20 13:44:23.050138Z  858405603 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/GeistMono-UltraLight.otf user=null, queries=0, duration=378µs
+2026-03-20 13:44:23.056889Z  161531654 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/GeistMono-Light.otf user=null, queries=0, duration=516µs
+2026-03-20 13:44:23.060471Z  180461673 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/GeistMono-Regular.otf user=null, queries=0, duration=605µs
+2026-03-20 13:44:23.061250Z  930262771 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/GeistMono-Medium.otf user=null, queries=0, duration=446µs
+2026-03-20 13:44:23.061868Z   43550130 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/GeistMono-SemiBold.otf user=null, queries=0, duration=381µs
+2026-03-20 13:44:23.062516Z  395284972 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/GeistMono-Bold.otf user=null, queries=0, duration=357µs
+2026-03-20 13:44:23.063247Z  505405207 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/GeistMono-Black.otf user=null, queries=0, duration=380µs
+2026-03-20 13:44:23.069185Z  418690500 WEB            /preview/e2e-client-a/assets/packages/shadcn_ui/fonts/GeistMono-UltraBlack.otf user=null, queries=0, duration=529µs
+2026-03-20 13:44:23.072431Z  646248012 WEB            /preview/e2e-client-a/assets/packages/lucide_icons_flutter/assets/lucide.ttf user=null, queries=0, duration=639µs
+2026-03-20 13:44:23.075259Z  406578346 WEB            /preview/e2e-client-a/assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w100.ttf user=null, queries=0, duration=555µs
+2026-03-20 13:44:23.076024Z  692807638 WEB            /preview/e2e-client-a/assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w200.ttf user=null, queries=0, duration=486µs
+2026-03-20 13:44:23.076778Z  158619641 WEB            /preview/e2e-client-a/assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w300.ttf user=null, queries=0, duration=478µs
+2026-03-20 13:44:23.077457Z  798782623 WEB            /preview/e2e-client-a/assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w400.ttf user=null, queries=0, duration=442µs
+2026-03-20 13:44:23.082566Z  768473559 WEB            /preview/e2e-client-a/assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w500.ttf user=null, queries=0, duration=608µs
+2026-03-20 13:44:23.086204Z  826602285 WEB            /preview/e2e-client-a/assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w600.ttf user=null, queries=0, duration=621µs
+2026-03-20 13:44:23.090144Z  789370069 WEB            /preview/e2e-client-a/assets/packages/golden_toolkit/fonts/Roboto-Regular.ttf user=null, queries=0, duration=545µs
+2026-03-20 13:44:23.090948Z   16305486 WEB            /preview/e2e-client-a/assets/packages/font_awesome_flutter/lib/fonts/Font-Awesome-7-Brands-Regular-400.otf user=null, queries=0, duration=536µs
+2026-03-20 13:44:23.091470Z  523462773 WEB            /preview/e2e-client-a/assets/packages/font_awesome_flutter/lib/fonts/Font-Awesome-7-Free-Regular-400.otf user=null, queries=0, duration=282µs
+2026-03-20 13:44:23.092054Z  794482190 WEB            /preview/e2e-client-a/assets/packages/font_awesome_flutter/lib/fonts/Font-Awesome-7-Free-Solid-900.otf user=null, queries=0, duration=319µs
+2026-03-20 13:44:23.098508Z  354157014 WEB            /preview/e2e-client-a/assets/packages/cupertino_icons/assets/CupertinoIcons.ttf user=null, queries=0, duration=373µs
+2026-03-20 13:44:23.278093Z  692970082 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=126ms
+2026-03-20 13:44:23.289697Z 1027378238 METHOD         serverpod_auth_core.status.isSignedIn user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=0, duration=378µs
+2026-03-20 13:44:23.409629Z  462627843 METHOD         user.ensureUser          user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=5, duration=105ms
+2026-03-20 13:44:23.508283Z  910344727 WEB            /preview/e2e-client-a/   user=null, queries=0, duration=351µs
+2026-03-20 13:44:23.581906Z 1073418445 METHOD         document.getDocuments    user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=3, duration=13.8ms
+2026-03-20 13:44:23.659031Z  185952678 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=12.8ms
+2026-03-20 13:44:23.661452Z 1048408680 METHOD         document.getDocumentVersions user=019ce6f7-da78-73b0-b49a-efc282f2f5d6, queries=2, duration=11.3ms
+2026-03-20 14:16:45.439827Z  828253660 METHOD         emailIdp.login           user=null, queries=9, duration=145ms
+2026-03-20 14:16:45.479878Z  872583205 METHOD         user.getUserClients      user=00000000-0000-7000-8000-e2e000000001, queries=2, duration=9.7ms
+2026-03-20 14:16:45.488485Z   90471393 METHOD         user.getUserClients      user=00000000-0000-7000-8000-e2e000000001, queries=2, duration=17.7ms
+2026-03-20 14:16:45.675060Z  250934361 METHOD         user.getClientUserCount  user=00000000-0000-7000-8000-e2e000000001, queries=2, duration=7.34ms
+2026-03-20 14:16:45.675986Z  177786653 METHOD         document.getDocumentCount user=00000000-0000-7000-8000-e2e000000001, queries=2, duration=6.47ms
+2026-03-20 14:17:05.102724Z  643425149 WEB            /                        user=null, queries=0, duration=3.9ms
+2026-03-20 14:17:11.059762Z  709596725 METHOD         studioConfig.getStudioUrlTemplate user=null, queries=0, duration=817µs
+2026-03-20 14:18:24.850845Z  712494544 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=109ms
+2026-03-20 14:18:24.864149Z  540273163 METHOD         serverpod_auth_core.status.isSignedIn user=00000000-0000-7000-8000-e2e000000001, queries=0, duration=292µs
+2026-03-20 14:18:25.265516Z  227461704 METHOD         user.getUserClients      user=00000000-0000-7000-8000-e2e000000001, queries=2, duration=10.4ms
+2026-03-20 14:18:25.267073Z  234708264 METHOD         user.getUserClients      user=00000000-0000-7000-8000-e2e000000001, queries=2, duration=10.4ms
+2026-03-20 14:18:25.688107Z  216384672 METHOD         user.getClientUserCount  user=00000000-0000-7000-8000-e2e000000001, queries=2, duration=19.2ms
+2026-03-20 14:18:25.689988Z  447147264 METHOD         document.getDocumentCount user=00000000-0000-7000-8000-e2e000000001, queries=2, duration=18.3ms
+2026-03-20 14:19:23.126851Z  768094098 METHOD         studioConfig.getStudioUrlTemplate user=null, queries=0, duration=135µs
+2026-03-20 14:20:45.522171Z  770170214 METHOD         studioConfig.getStudioUrlTemplate user=00000000-0000-7000-8000-e2e000000001, queries=0, duration=1.73ms
+2026-03-20 14:21:38.460307Z  286840653 METHOD         refreshJwtTokens.refreshAccessToken user=null, queries=2, duration=95.3ms
+2026-03-20 14:21:38.476971Z  469136491 METHOD         serverpod_auth_core.status.isSignedIn user=00000000-0000-7000-8000-e2e000000001, queries=0, duration=338µs
+2026-03-20 14:21:38.861601Z  896026041 METHOD         user.getUserClients      user=00000000-0000-7000-8000-e2e000000001, queries=2, duration=5.98ms
+2026-03-20 14:21:38.862482Z  629029918 METHOD         user.getUserClients      user=00000000-0000-7000-8000-e2e000000001, queries=2, duration=6.04ms
+2026-03-20 14:21:39.278614Z  442540729 METHOD         user.getClientUserCount  user=00000000-0000-7000-8000-e2e000000001, queries=2, duration=9.99ms
+2026-03-20 14:21:39.279069Z   24785451 METHOD         document.getDocumentCount user=00000000-0000-7000-8000-e2e000000001, queries=2, duration=8.74ms
+2026-03-20 14:21:57.430461Z  207351151 METHOD         studioConfig.getStudioUrlTemplate user=00000000-0000-7000-8000-e2e000000001, queries=0, duration=3.87ms
+SIGTERM (15) received, time: 2026-03-20 14:22:50.768292Z
+SERVERPOD initiating shutdown, time: 2026-03-20 14:22:50.769630Z
+SERVERPOD shutdown completed, time: 2026-03-20 14:22:50.777968Z

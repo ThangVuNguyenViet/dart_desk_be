@@ -52,7 +52,10 @@ class _DeploymentsScreenState extends State<DeploymentsScreen> {
                     ],
                   ),
                   onPressed: () {
-                    launchUrl(Uri.parse('https://$slug.dartdesk.dev'));
+                    final template = studioUrlTemplate.value.value;
+                    if (template != null) {
+                      launchUrl(Uri.parse(studioUrl(template, slug)));
+                    }
                   },
                 ),
             ],

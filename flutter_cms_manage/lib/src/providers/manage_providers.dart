@@ -113,6 +113,17 @@ void initClientContext(String slug) {
   resetTokenService();
 }
 
+/// Studio URL template from server.
+/// Dev: http://localhost:8082/preview/{slug}/
+/// Prod: https://{slug}.app.dartdesk.dev
+final studioUrlTemplate = futureSignal<String>(
+  () => serverpodClient.studioConfig.getStudioUrlTemplate(),
+);
+
+/// Build the actual studio URL by replacing {slug} placeholder.
+String studioUrl(String template, String slug) =>
+    template.replaceAll('{slug}', slug);
+
 /// Sign out and clear all state
 Future<void> logout() async {
   await serverpodClient.auth.signOutDevice();

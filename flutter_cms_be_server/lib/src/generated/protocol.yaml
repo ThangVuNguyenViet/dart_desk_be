@@ -64,6 +64,8 @@ media:
   - listMedia:
 refreshJwtTokens:
   - refreshAccessToken:
+studioConfig:
+  - getStudioUrlTemplate:
 user:
   - ensureUser:
   - getCurrentUser:

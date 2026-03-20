@@ -93,6 +93,11 @@ variable "cloudfront_certificate_arn" {
   type        = string
 }
 
+variable "app_wildcard_certificate_arn" {
+  description = "Certificate covering *.app.dartdesk.dev for deployed studio subdomains"
+  type        = string
+}
+
 variable "top_domain" {
   description = "The domain name for use with Insights api"
   type        = string

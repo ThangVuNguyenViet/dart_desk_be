@@ -884,6 +884,25 @@ class EndpointRefreshJwtTokens extends _i16.EndpointRefreshJwtTokens {
   );
 }
 
+/// {@category Endpoint}
+class EndpointStudioConfig extends _i1.EndpointRef {
+  EndpointStudioConfig(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'studioConfig';
+
+  /// Returns the studio URL template.
+  /// Contains `{slug}` placeholder for the client to substitute.
+  /// Dev: http://localhost:8082/preview/{slug}/
+  /// Prod: https://{slug}.app.dartdesk.dev
+  _i2.Future<String> getStudioUrlTemplate() =>
+      caller.callServerEndpoint<String>(
+        'studioConfig',
+        'getStudioUrlTemplate',
+        {},
+      );
+}
+
 /// Endpoint for managing CMS users
 /// {@category Endpoint}
 class EndpointUser extends _i1.EndpointRef {
@@ -1000,6 +1019,7 @@ class Client extends _i1.ServerpodClientShared {
     googleIdp = EndpointGoogleIdp(this);
     media = EndpointMedia(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
+    studioConfig = EndpointStudioConfig(this);
     user = EndpointUser(this);
     modules = Modules(this);
   }
@@ -1022,6 +1042,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointRefreshJwtTokens refreshJwtTokens;
 
+  late final EndpointStudioConfig studioConfig;
+
   late final EndpointUser user;
 
   late final Modules modules;
@@ -1037,6 +1059,7 @@ class Client extends _i1.ServerpodClientShared {
     'googleIdp': googleIdp,
     'media': media,
     'refreshJwtTokens': refreshJwtTokens,
+    'studioConfig': studioConfig,
     'user': user,
   };
 

@@ -119,7 +119,10 @@ class _OverviewScreenState extends State<OverviewScreen> {
                       child: Icon(LucideIcons.externalLink, size: 16),
                     ),
                     onPressed: () {
-                      launchUrl(Uri.parse('https://$slug.dartdesk.dev'));
+                      final template = studioUrlTemplate.value.value;
+                      if (template != null) {
+                        launchUrl(Uri.parse(studioUrl(template, slug)));
+                      }
                     },
                     child: const Text('Open Studio'),
                   ),

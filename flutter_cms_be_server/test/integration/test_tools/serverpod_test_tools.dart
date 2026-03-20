@@ -165,6 +165,8 @@ class TestEndpoints {
 
   late final _RefreshJwtTokensEndpoint refreshJwtTokens;
 
+  late final _StudioConfigEndpoint studioConfig;
+
   late final _UserEndpoint user;
 }
 
@@ -208,6 +210,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     refreshJwtTokens = _RefreshJwtTokensEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    studioConfig = _StudioConfigEndpoint(
       endpoints,
       serializationManager,
     );
@@ -2218,6 +2224,47 @@ class _RefreshJwtTokensEndpoint {
                   _localCallContext.arguments,
                 )
                 as _i3.Future<_i16.AuthSuccess>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _StudioConfigEndpoint {
+  _StudioConfigEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> getStudioUrlTemplate(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'studioConfig',
+            method: 'getStudioUrlTemplate',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'studioConfig',
+          methodName: 'getStudioUrlTemplate',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

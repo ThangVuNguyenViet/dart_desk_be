@@ -20,15 +20,16 @@ import '../endpoints/email_idp_endpoint.dart' as _i7;
 import '../endpoints/google_idp_endpoint.dart' as _i8;
 import '../endpoints/media_endpoint.dart' as _i9;
 import '../endpoints/refresh_jwt_tokens_endpoint.dart' as _i10;
-import '../endpoints/user_endpoint.dart' as _i11;
+import '../endpoints/studio_config_endpoint.dart' as _i11;
+import '../endpoints/user_endpoint.dart' as _i12;
 import 'package:flutter_cms_be_server/src/generated/document_version_status.dart'
-    as _i12;
-import 'dart:typed_data' as _i13;
+    as _i13;
+import 'dart:typed_data' as _i14;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i14;
-import 'package:serverpod_admin_server/serverpod_admin_server.dart' as _i15;
+    as _i15;
+import 'package:serverpod_admin_server/serverpod_admin_server.dart' as _i16;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i16;
+    as _i17;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -88,7 +89,13 @@ class Endpoints extends _i1.EndpointDispatch {
           'refreshJwtTokens',
           null,
         ),
-      'user': _i11.UserEndpoint()
+      'studioConfig': _i11.StudioConfigEndpoint()
+        ..initialize(
+          server,
+          'studioConfig',
+          null,
+        ),
+      'user': _i12.UserEndpoint()
         ..initialize(
           server,
           'user',
@@ -1048,7 +1055,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'status': _i1.ParameterDescription(
               name: 'status',
-              type: _i1.getType<_i12.DocumentVersionStatus>(),
+              type: _i1.getType<_i13.DocumentVersionStatus>(),
               nullable: false,
             ),
             'changeLog': _i1.ParameterDescription(
@@ -1372,7 +1379,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'fileData': _i1.ParameterDescription(
               name: 'fileData',
-              type: _i1.getType<_i13.ByteData>(),
+              type: _i1.getType<_i14.ByteData>(),
               nullable: false,
             ),
           },
@@ -1396,7 +1403,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'fileData': _i1.ParameterDescription(
               name: 'fileData',
-              type: _i1.getType<_i13.ByteData>(),
+              type: _i1.getType<_i14.ByteData>(),
               nullable: false,
             ),
           },
@@ -1499,6 +1506,23 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['studioConfig'] = _i1.EndpointConnector(
+      name: 'studioConfig',
+      endpoint: endpoints['studioConfig']!,
+      methodConnectors: {
+        'getStudioUrlTemplate': _i1.MethodConnector(
+          name: 'getStudioUrlTemplate',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['studioConfig'] as _i11.StudioConfigEndpoint)
+                      .getStudioUrlTemplate(session),
+        ),
+      },
+    );
     connectors['user'] = _i1.EndpointConnector(
       name: 'user',
       endpoint: endpoints['user']!,
@@ -1521,7 +1545,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i11.UserEndpoint).ensureUser(
+              ) async => (endpoints['user'] as _i12.UserEndpoint).ensureUser(
                 session,
                 params['clientSlug'],
                 params['apiToken'],
@@ -1546,7 +1570,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _i11.UserEndpoint).getCurrentUser(
+                  (endpoints['user'] as _i12.UserEndpoint).getCurrentUser(
                     session,
                     params['clientSlug'],
                     params['apiToken'],
@@ -1559,7 +1583,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i11.UserEndpoint)
+              ) async => (endpoints['user'] as _i12.UserEndpoint)
                   .getUserClients(session),
         ),
         'getCurrentUserBySlug': _i1.MethodConnector(
@@ -1576,7 +1600,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _i11.UserEndpoint).getCurrentUserBySlug(
+                  (endpoints['user'] as _i12.UserEndpoint).getCurrentUserBySlug(
                     session,
                     params['clientSlug'],
                   ),
@@ -1595,17 +1619,17 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _i11.UserEndpoint).getClientUserCount(
+                  (endpoints['user'] as _i12.UserEndpoint).getClientUserCount(
                     session,
                     params['clientId'],
                   ),
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i14.Endpoints()
+    modules['serverpod_auth_idp'] = _i15.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_admin'] = _i15.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i16.Endpoints()
+    modules['serverpod_admin'] = _i16.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth_core'] = _i17.Endpoints()
       ..initializeEndpoints(server);
   }
 }

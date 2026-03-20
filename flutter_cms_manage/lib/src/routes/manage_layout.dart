@@ -117,7 +117,10 @@ class _TopBar extends StatelessWidget {
               ],
             ),
             onPressed: () {
-              launchUrl(Uri.parse('https://$slug.dartdesk.dev'));
+              final template = studioUrlTemplate.value.value;
+              if (template != null) {
+                launchUrl(Uri.parse(studioUrl(template, slug)));
+              }
             },
           ),
           const SizedBox(width: 8),

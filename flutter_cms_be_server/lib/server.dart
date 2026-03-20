@@ -2,11 +2,14 @@ import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:flutter_cms_be_server/src/web/routes/deployment_upload.dart';
+import 'package:flutter_cms_be_server/src/web/routes/preview_route.dart';
 import 'package:flutter_cms_be_server/src/web/routes/root.dart';
 import 'package:flutter_cms_be_server/src/web/routes/subdomain_router.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_admin_server/serverpod_admin_server.dart' as admin;
 import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart'
+    as s3;
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 
@@ -52,6 +55,12 @@ void run(List<String> args) async {
     '/deployment/upload',
   );
 
+  // Preview route: serves deployed files at /preview/{slug}/
+  pod.webServer.addRoute(
+    PreviewRoute(deploymentStorage),
+    '/preview/**',
+  );
+
   // Subdomain middleware: serves deployed files for {slug}.dartdesk.dev
   // requests, passes through for non-subdomain requests.
   pod.webServer.addMiddleware(
@@ -81,6 +90,20 @@ void run(List<String> args) async {
       ),
     ],
   );
+
+  // Configure S3 cloud storage for production file uploads.
+  if (pod.runMode == 'production') {
+    pod.addCloudStorage(
+      s3.S3CloudStorage(
+        serverpod: pod,
+        storageId: 'public',
+        public: true,
+        region: 'us-west-2',
+        bucket: 'dartdesk-uploads',
+        publicHost: 'dartdesk-uploads.s3.us-west-2.amazonaws.com',
+      ),
+    );
+  }
 
   // Start the server.
   await pod.start();

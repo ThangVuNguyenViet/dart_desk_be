@@ -18,6 +18,7 @@ dependencies:
     git:
       url: https://github.com/AdamMusa/serverpod_admin.git
       path: serverpod_admin_server
+  serverpod_cloud_storage_s3: ^3.4.3
 
 dependency_overrides:
   serverpod_serialization:

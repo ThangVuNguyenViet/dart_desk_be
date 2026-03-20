@@ -63,6 +63,7 @@ class LocalDeploymentStorage extends DeploymentStorage {
 
     final versionDir = _versionDir(slug, version);
     final file = File(p.join(versionDir, sanitized));
+    if (!file.existsSync()) return null;
 
     // Double-check the resolved path is within the version directory
     final resolvedPath = file.resolveSymbolicLinksSync();
@@ -71,7 +72,7 @@ class LocalDeploymentStorage extends DeploymentStorage {
       return null; // Path traversal attempt
     }
 
-    return file.existsSync() ? file : null;
+    return file;
   }
 
   @override

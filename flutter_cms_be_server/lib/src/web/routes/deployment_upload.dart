@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io' as io;
 
 import 'package:dbcrypt/dbcrypt.dart';
 import 'package:serverpod/serverpod.dart';
@@ -68,34 +67,19 @@ class DeploymentUploadRoute extends Route {
         );
       }
 
-      // Read request body from raw HttpRequest to bypass Relic's UTF-8 decoding
-      final rawRequest = RequestInternal(request).token;
-      if (rawRequest is! io.HttpRequest) {
-        return Response.internalServerError(
-          body: Body.fromString(jsonEncode({'error': 'Cannot access raw request'})),
-        );
-      }
-
-      // Check content length against limit
-      final contentLength = rawRequest.contentLength;
-      if (contentLength > _maxUploadSize) {
+      // Read request body as binary stream via Relic's body API
+      final bodyBytes = <int>[];
+      try {
+        final stream = request.read(maxLength: _maxUploadSize);
+        await for (final chunk in stream) {
+          bodyBytes.addAll(chunk);
+        }
+      } on MaxBodySizeExceeded {
         return Response.badRequest(
           body: Body.fromString(jsonEncode({
             'error': 'Request body exceeds maximum size of $_maxUploadSize bytes'
           })),
         );
-      }
-
-      final bodyBytes = <int>[];
-      await for (final chunk in rawRequest) {
-        bodyBytes.addAll(chunk);
-        if (bodyBytes.length > _maxUploadSize) {
-          return Response.badRequest(
-            body: Body.fromString(jsonEncode({
-              'error': 'Request body exceeds maximum size of $_maxUploadSize bytes'
-            })),
-          );
-        }
       }
 
       if (bodyBytes.isEmpty) {
@@ -182,7 +166,7 @@ class DeploymentUploadRoute extends Route {
         body: Body.fromString(jsonEncode({
           'version': deployment.version,
           'status': deployment.status.name,
-          'url': 'https://$slug.dartdesk.dev',
+          'url': _buildStudioUrl(slug),
           'fileSize': deployment.fileSize,
         })),
       );
@@ -193,6 +177,20 @@ class DeploymentUploadRoute extends Route {
         body: Body.fromString(jsonEncode({'error': 'Upload failed: $e'})),
       );
     }
+  }
+
+  /// Build the studio URL for a deployed studio using web server config.
+  String _buildStudioUrl(String slug) {
+    final config = Serverpod.instance.config.webServer!;
+    final scheme = config.publicScheme;
+    final host = config.publicHost;
+    final port = config.publicPort;
+
+    if (host == 'localhost' || host == '127.0.0.1') {
+      final portSuffix = (scheme == 'http' && port == 80) ? '' : ':$port';
+      return '$scheme://$host$portSuffix/preview/$slug/';
+    }
+    return '$scheme://$slug.$host';
   }
 
   /// Validate a raw API token against the CmsApiToken table using bcrypt.

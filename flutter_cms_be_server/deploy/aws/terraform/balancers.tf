@@ -134,8 +134,41 @@ resource "aws_autoscaling_attachment" "web" {
   lb_target_group_arn    = aws_lb_target_group.web.arn
 }
 
-# Wildcard subdomain routing for deployed studios ({slug}.dartdesk.dev)
+# Wildcard subdomain routing for deployed studios ({slug}.app.dartdesk.dev)
 # Routes to the web server where the subdomain router middleware handles requests.
+# Note: *.dartdesk.dev cert does NOT cover *.app.dartdesk.dev (two levels deep).
+# A separate certificate with *.app.dartdesk.dev SAN is required.
+
+resource "aws_lb_listener_certificate" "app_wildcard" {
+  listener_arn    = aws_lb_listener.api.arn
+  certificate_arn = var.app_wildcard_certificate_arn
+}
+
+resource "aws_lb_listener_rule" "app_wildcard_subdomain" {
+  listener_arn = aws_lb_listener.api.arn
+  priority     = 150
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.web.arn
+  }
+
+  condition {
+    host_header {
+      values = ["*.app.${var.top_domain}"]
+    }
+  }
+}
+
+resource "aws_route53_record" "app_wildcard" {
+  zone_id = var.hosted_zone_id
+  name    = "*.app.${var.top_domain}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${aws_lb.serverpod.dns_name}"]
+}
+
+# Legacy wildcard for *.dartdesk.dev (manage app, etc.)
 
 resource "aws_lb_listener_rule" "wildcard_subdomain" {
   listener_arn = aws_lb_listener.api.arn
