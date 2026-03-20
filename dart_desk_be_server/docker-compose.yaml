@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: dart_desk_be
-      POSTGRES_PASSWORD: "eV6EEUn3k8unm21DdBvjjYKfRT26ykHV"
+      POSTGRES_PASSWORD: "development_password"
     volumes:
       - dart_desk_be_data:/var/lib/postgresql/data
 
@@ -15,7 +15,7 @@ services:
     image: redis:6.2.6
     ports:
       - "8091:6379"
-    command: redis-server --requirepass "XC3omJ0iAOoMHjC9H_BjIH3bI0XNrzjx"
+    command: redis-server --requirepass "development_password"
     environment:
       - REDIS_REPLICATION_MODE=master
 
@@ -27,7 +27,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: dart_desk_be_test
-      POSTGRES_PASSWORD: "NQIVOtKWq-tjftjLzXoQ13rysmlJgDSg"
+      POSTGRES_PASSWORD: "test_password"
     volumes:
       - dart_desk_be_test_data:/var/lib/postgresql/data
 
@@ -35,7 +35,7 @@ services:
     image: redis:6.2.6
     ports:
       - "9091:6379"
-    command: redis-server --requirepass "SHTat41HepfaW0MxRQMTLyjoGyLYlcJh"
+    command: redis-server --requirepass "test_password"
     environment:
       - REDIS_REPLICATION_MODE=master
 

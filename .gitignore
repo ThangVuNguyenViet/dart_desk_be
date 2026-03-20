@@ -14,7 +14,7 @@
 server.log
 
 # Runtime storage
-flutter_cms_be_server/storage/
+dart_desk_be_server/storage/
 
 # Terraform
 .terraform/
@@ -22,3 +22,10 @@ terraform.tfstate
 terraform.tfstate.*
 tfplan
 secrets.auto.tfvars
+
+# Secrets and credentials
+config/passwords.yaml
+config/google_client_secret.json
+
+# Deploy overrides (use dart_desk_cloud for production)
+deploy/

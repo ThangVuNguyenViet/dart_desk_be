@@ -1,49 +1,40 @@
-# This is the configuration file for your production environment.
-# Typically, you will want to route the traffic through a load balancer
-# which adds SSL security through https. If you use Serverpod's standard
-# Terraform scripts to deploy your server, all you need to change in
-# this file is the dartdesk.dev domain name.
+# Template production configuration — customize for your deployment.
+# Copy this file and replace placeholder values with your actual settings.
 
 # Configuration for the main API server.
 apiServer:
   port: 8080
-  publicHost: api.dartdesk.dev
+  publicHost: api.example.com
   publicPort: 443
   publicScheme: https
 
 # Configuration for the Insights server.
 insightsServer:
   port: 8081
-  publicHost: insights.dartdesk.dev
+  publicHost: insights.example.com
   publicPort: 443
   publicScheme: https
 
 # Configuration for the web server.
 webServer:
   port: 8082
-  publicHost: app.dartdesk.dev
+  publicHost: app.example.com
   publicPort: 443
   publicScheme: https
 
-# This is the database setup for your servers. The default for the Google Cloud
-# Engine Terraform configuration is to connect on a private IP address.
-# If you are connecting on a public IP (e.g. on AWS or Google Cloud Run), you
-# connect on the public IP of the database e.g. database.dartdesk.dev.
+# Database configuration.
 database:
-  host: flutter-cms-be.cf8s0omsogno.us-west-2.rds.amazonaws.com
+  host: database.example.com
   port: 5432
   name: serverpod
   user: postgres
   requireSsl: true
   #isUnixSocket: true # defaults to false
 
-# This is the setup for Redis. The default for the Google Cloud Engine Terraform
-# configuration is to connect on a private IP address.
-# If you are connecting on a public IP (e.g. on AWS or Google Cloud Run), you
-# connect on the public IP of the database e.g. redis.dartdesk.dev.
+# Redis configuration.
 redis:
   enabled: false
-  host: redis.dartdesk.dev
+  host: redis.example.com
   port: 6379
   #user: # defaults to empty
   #requireSsl: true # defaults to false
@@ -56,7 +47,7 @@ storage:
   public:
     type: local
     path: storage/public
-    publicUrl: https://app.dartdesk.dev/files
+    publicUrl: https://app.example.com/files
 
 sessionLogs:
   consoleEnabled: false
