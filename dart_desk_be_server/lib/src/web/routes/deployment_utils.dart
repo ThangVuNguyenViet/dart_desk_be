@@ -71,7 +71,7 @@ String notFoundPage(String slug) {
 <body style="font-family: sans-serif; text-align: center; padding: 80px;">
   <h1>Studio Not Found</h1>
   <p>The studio <strong>$slug</strong> does not have an active deployment.</p>
-  <p style="color: #666;">Powered by Flutter CMS</p>
+  <p style="color: #666;">Powered by Dart Desk</p>
 </body>
 </html>''';
 }

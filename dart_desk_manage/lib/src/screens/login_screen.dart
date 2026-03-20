@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: ShadCard(
             width: 400,
-            title: const Text('Flutter CMS', style: TextStyle(fontSize: 24)),
+            title: const Text('Dart Desk', style: TextStyle(fontSize: 24)),
             description: const Text('Sign in to manage your projects'),
             child: Padding(
               padding: const EdgeInsets.only(top: 24),

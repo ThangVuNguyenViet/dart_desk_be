@@ -33,7 +33,7 @@ class FlutterCmsAuth extends StatefulWidget {
     required this.apiToken,
     required this.serverUrl,
     required this.builder,
-    this.title = 'Welcome to Flutter CMS',
+    this.title = 'Welcome to Dart Desk',
     this.subtitle,
     this.logo,
   });

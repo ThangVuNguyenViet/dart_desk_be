@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR/dart_desk_be_server"
 
-echo "=== Flutter CMS Backend Integration Tests ==="
+echo "=== Dart Desk Backend Integration Tests ==="
 echo ""
 
 echo "[1/3] Starting test Docker services..."

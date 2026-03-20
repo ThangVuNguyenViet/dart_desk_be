@@ -139,7 +139,7 @@ Existing `UserEndpoint.getUserClients()` queries by `serverpodUserId` matching t
 ### LoginScreen
 
 - Stateless widget, fullscreen centered layout (dark background matching app theme)
-- "Flutter CMS" title, "Sign in to manage your projects" subtitle
+- "Dart Desk" title, "Sign in to manage your projects" subtitle
 - Single "Sign in with Google" `ShadButton`
 - Triggers Google OAuth via `serverpod_auth_idp_flutter` package
 - Shows loading indicator during auth handshake

@@ -1,8 +1,8 @@
-# Flutter CMS Manage — Design Spec
+# Dart Desk Manage — Design Spec
 
 ## Overview
 
-A separate Flutter web app ("Manage") for project management of the Flutter CMS platform, inspired by Sanity Manage. Provides project overview, API token management, and client settings. Linked to the existing CMS Studio via header navigation.
+A separate Flutter web app ("Manage") for project management of the Dart Desk platform, inspired by Sanity Manage. Provides project overview, API token management, and client settings. Linked to the existing CMS Studio via header navigation.
 
 ## Decisions
 
@@ -294,7 +294,7 @@ class SettingsRoute extends ManageRoute {
 ### ManageShell (ManageLayout's widget)
 
 Dark theme layout with:
-- **Top bar**: Logo ("Flutter CMS"), project name, "Open Studio →" link, user avatar
+- **Top bar**: Logo ("Dart Desk"), project name, "Open Studio →" link, user avatar
 - **Project header**: Client avatar, client name, client ID, status badge
 - **Tab navigation**: Overview | API | Settings (active tab highlighted with accent border)
 

@@ -28,7 +28,7 @@ class ClientPickerScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Flutter CMS',
+                Text('Dart Desk',
                     style: theme.textTheme.h2
                         .copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),

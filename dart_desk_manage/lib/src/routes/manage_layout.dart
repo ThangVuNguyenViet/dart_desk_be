@@ -103,7 +103,7 @@ class _TopBar extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            'Flutter CMS',
+            'Dart Desk',
             style: theme.textTheme.large.copyWith(fontWeight: FontWeight.bold),
           ),
           const Spacer(),

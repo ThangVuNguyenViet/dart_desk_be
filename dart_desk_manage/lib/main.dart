@@ -44,7 +44,7 @@ class _ManageAppState extends State<ManageApp> {
   @override
   Widget build(BuildContext context) {
     return ShadApp.router(
-      title: 'Flutter CMS Manage',
+      title: 'Dart Desk Manage',
       theme: ShadThemeData(
         brightness: Brightness.dark,
         colorScheme: const ShadSlateColorScheme.dark(),
