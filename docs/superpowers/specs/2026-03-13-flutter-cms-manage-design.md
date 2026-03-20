@@ -8,12 +8,12 @@ A separate Flutter web app ("Manage") for project management of the Flutter CMS 
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| App location | Separate app: `flutter_cms_manage/` | Independent from Studio, clean separation of concerns |
+| App location | Separate app: `dart_desk_manage/` | Independent from Studio, clean separation of concerns |
 | Relationship to Studio | Separate Flutter web deployment, linked via header | Like Sanity Manage — different app from the content editor |
 | UI framework | shadcn_ui (dark theme, Slate color scheme) | Consistent with existing Studio |
 | Router | zenrouter (Coordinator pattern) | Web app needs URL sync, deep linking, browser back button |
 | State management | Signals | Same as existing Studio |
-| Backend integration | Direct Serverpod client (`flutter_cms_be_client`) | Consistent with existing architecture, type-safe auto-generated client |
+| Backend integration | Direct Serverpod client (`dart_desk_be_client`) | Consistent with existing architecture, type-safe auto-generated client |
 | Dashboard sections | Overview, API, Settings | Core set — expandable later |
 | API token model | Multiple named tokens per client (`CmsApiToken`) | Industry standard (Stripe, Sanity, Supabase) |
 | Token permissions | 3 levels: `viewer`, `editor`, `admin` | Simplified Sanity-style, sufficient for CMS use case |
@@ -145,7 +145,7 @@ The existing `getCurrentUser()` method (requiring `clientSlug` + `apiToken`) rem
 ## App Structure
 
 ```
-flutter_cms_manage/
+dart_desk_manage/
 ├── lib/
 │   ├── main.dart                    # ShadApp entry, auth, URL strategy
 │   ├── src/
@@ -356,8 +356,8 @@ dependencies:
   shadcn_ui: ^0.52.0
   zenrouter: ^0.1.0
   signals: # same version as Studio
-  flutter_cms_be_client:
-    path: ../flutter_cms_be_client
+  dart_desk_be_client:
+    path: ../dart_desk_be_client
   serverpod_auth_shared_flutter: ^2.9.2
   lucide_icons_flutter: # included with shadcn_ui
   flutter_animate: # included with shadcn_ui
@@ -368,7 +368,7 @@ dependencies:
 
 1. **Backend: model + migration**: `CmsApiToken` model, `CmsApiTokenWithValue`, `serverpod generate`, `serverpod create-migration`
 2. **Backend: endpoint + token validation**: `CmsApiTokenEndpoint`, update `UserEndpoint.ensureUser()` to check `cms_api_tokens` with prefix-based lookup
-3. **App scaffold**: `flutter_cms_manage/` with ShadApp, zenrouter coordinator, ManageLayout, ApiLayout, shell widgets
+3. **App scaffold**: `dart_desk_manage/` with ShadApp, zenrouter coordinator, ManageLayout, ApiLayout, shell widgets
 4. **Tokens feature**: TokensScreen, CreateTokenDialog, TokenRevealDialog, token service
 5. **Overview screen**: Client details, quick stats, quick links
 6. **Settings screen**: Client config form with ShadForm, save/delete actions

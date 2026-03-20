@@ -2,7 +2,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$SCRIPT_DIR/flutter_cms_be_server"
+cd "$SCRIPT_DIR/dart_desk_be_server"
 
 echo "=== Flutter CMS Backend Integration Tests ==="
 echo ""

@@ -1,8 +1,8 @@
-# Auth Flow & New User Onboarding — flutter_cms_manage
+# Auth Flow & New User Onboarding — dart_desk_manage
 
 ## Problem
 
-The flutter_cms_manage web app assumes users are already authenticated and navigating to a known `/{clientSlug}` URL. Visiting `/` shows "Page not found." New users have no way to sign in or create their first project.
+The dart_desk_manage web app assumes users are already authenticated and navigating to a known `/{clientSlug}` URL. Visiting `/` shows "Page not found." New users have no way to sign in or create their first project.
 
 ## Solution
 
@@ -201,7 +201,7 @@ final authState = signal<AuthState>(AuthState.loading);
 
 ## File Changes Summary
 
-### New Files (flutter_cms_manage)
+### New Files (dart_desk_manage)
 - `lib/src/routes/login_route.dart`
 - `lib/src/routes/setup_wizard_route.dart`
 - `lib/src/routes/client_picker_route.dart`
@@ -210,14 +210,14 @@ final authState = signal<AuthState>(AuthState.loading);
 - `lib/src/screens/client_picker_screen.dart`
 - `lib/src/widgets/auth_gate.dart`
 
-### Modified Files (flutter_cms_manage)
+### Modified Files (dart_desk_manage)
 - `lib/main.dart` — Add `builder` with `AuthGate` to `ShadApp.router`
 - `lib/src/routes/manage_coordinator.dart` — Reserved path handling, root URL logic
 - `lib/src/routes/manage_route.dart` — No changes needed (base class is fine)
 - `lib/src/providers/manage_providers.dart` — Add `authState` signal, `AuthState` enum, logout helper
 
 ### Backend Files
-- `flutter_cms_be_server/lib/src/endpoints/cms_client_endpoint.dart` — Add `createClientWithOwner`
+- `dart_desk_be_server/lib/src/endpoints/cms_client_endpoint.dart` — Add `createClientWithOwner`
 - Run `serverpod generate` after endpoint changes
 
 ## Edge Cases

@@ -1,0 +1,22 @@
+name: dart_desk_be_client
+description: Starting point for a Serverpod client.
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  serverpod_client: 3.4.3
+  serverpod_flutter: 3.4.3
+  serverpod_auth_idp_client: 3.4.3
+  serverpod_auth_idp_flutter: 3.4.3
+  serverpod_admin_client:
+    git:
+      url: https://github.com/AdamMusa/serverpod_admin.git
+      path: serverpod_admin_client
+      ref: 1790997e18370085cd1c91fdff16d54135c6d922
+
+  flutter:
+    sdk: flutter
+  dart_desk:
+    path: ../../dart_desk/packages/dart_desk
+  shadcn_ui: ^0.52.1

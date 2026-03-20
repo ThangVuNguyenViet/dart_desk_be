@@ -36,7 +36,7 @@ jobs:
           aws-region: us-west-2
 
       - name: Create passwords file
-        working-directory: flutter_cms_be_server
+        working-directory: dart_desk_be_server
         shell: bash
         env:
           SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
@@ -46,17 +46,17 @@ jobs:
           ls config/
 
       - name: Get Dart packages
-        working-directory: flutter_cms_be_server
+        working-directory: dart_desk_be_server
         run: dart pub get
 
       - name: Compile server
-        working-directory: flutter_cms_be_server
+        working-directory: dart_desk_be_server
         run: dart compile kernel bin/main.dart
 
       - name: Create CodeDeploy Deployment
         id: deploy
         env:
-          PROJECT_NAME: flutter_cms_be
+          PROJECT_NAME: dart_desk_be
           AWS_NAME: flutter-cms-be
           DEPLOYMENT_BUCKET: flutter-cms-be-deployment-3592567
           TARGET: ${{ github.event.inputs.target }}

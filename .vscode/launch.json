@@ -5,26 +5,26 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "flutter_cms_be_flutter",
-            "cwd": "flutter_cms_be_flutter",
+            "name": "dart_desk_admin",
+            "cwd": "dart_desk_admin",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "flutter_cms_be_server",
-            "cwd": "flutter_cms_be_server",
+            "name": "dart_desk_be_server",
+            "cwd": "dart_desk_be_server",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "flutter_cms_be_flutter",
-            "cwd": "flutter_cms_be_flutter",
+            "name": "dart_desk_admin",
+            "cwd": "dart_desk_admin",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "flutter_cms_manage",
-            "cwd": "flutter_cms_manage",
+            "name": "dart_desk_manage",
+            "cwd": "dart_desk_manage",
             "request": "launch",
             "type": "dart",
         }

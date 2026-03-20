@@ -1,0 +1,34 @@
+name: dart_desk_be_server
+description: Starting point for a Serverpod server.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  serverpod: 3.4.3
+  crdt: ^5.1.3
+  uuid: ^4.5.1
+  dbcrypt: ^2.0.0
+  archive: ^4.0.2
+  mime: ^2.0.0
+  serverpod_auth_idp_server: 3.4.3
+  serverpod_admin_server:
+    git:
+      url: https://github.com/AdamMusa/serverpod_admin.git
+      path: serverpod_admin_server
+  serverpod_cloud_storage_s3: ^3.4.3
+
+dependency_overrides:
+  serverpod_serialization:
+    git:
+      url: https://github.com/ThangVuNguyenViet/serverpod.git
+      ref: fix/dynamic-map-deserialization
+      path: packages/serverpod_serialization
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  test: '^1.24.2'
+  serverpod_test: 3.4.3
+
