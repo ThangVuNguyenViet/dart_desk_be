@@ -33,5 +33,19 @@ dev_dependencies:
   marionette_mcp: 
     path: ../../../marionette_mcp/packages/marionette_mcp
 
+dependency_overrides:
+  signals:
+    git:
+      url: https://github.com/rodydavis/signals.dart.git
+      path: packages/signals
+  signals_core:
+    git:
+      url: https://github.com/rodydavis/signals.dart.git
+      path: packages/signals_core
+  signals_flutter:
+    git:
+      url: https://github.com/rodydavis/signals.dart.git
+      path: packages/signals_flutter
+
 flutter:
   uses-material-design: true

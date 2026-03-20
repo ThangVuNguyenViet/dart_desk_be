@@ -72,67 +72,76 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.only(top: 24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-              children: [
-                if (_error != null) ...[
-                  ShadAlert.destructive(
-                    title: Text(_error!),
+                children: [
+                  if (_error != null) ...[
+                    ShadAlert.destructive(
+                      title: Text(_error!),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  GoogleSignInWidget(
+                    client: serverpodClient,
+                    scopes: const [],
+                    onAuthenticated: () {
+                      // Auth state change is handled by AuthGate's listener
+                    },
+                    onError: (error) {
+                      debugPrint('Google sign-in error: $error');
+                      if (mounted) {
+                        setState(() => _error = 'Sign-in failed: $error');
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      const Expanded(child: Divider()),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text('or', style: theme.textTheme.muted),
+                      ),
+                      const Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  ShadInput(
+                    key: const ValueKey('email_input'),
+                    controller: _emailController,
+                    placeholder: const Text('Email'),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 12),
+                  ShadInput(
+                    key: const ValueKey('password_input'),
+                    controller: _passwordController,
+                    placeholder: const Text('Password'),
+                    obscureText: _obscurePassword,
+                    onSubmitted: (_) => _handleEmailSubmit(),
+                    trailing: GestureDetector(
+                      onTap: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                      child: Icon(
+                        _obscurePassword ? LucideIcons.eyeOff : LucideIcons.eye,
+                        size: 16,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
+                  ShadButton(
+                    onPressed: _isEmailSigningIn ? null : _handleEmailSubmit,
+                    width: double.infinity,
+                    child: _isEmailSigningIn
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Sign in with email'),
+                  ),
                 ],
-                GoogleSignInWidget(
-                  client: serverpodClient,
-                  scopes: const [],
-                  onAuthenticated: () {
-                    // Auth state change is handled by AuthGate's listener
-                  },
-                  onError: (error) {
-                    debugPrint('Google sign-in error: $error');
-                    if (mounted) {
-                      setState(() => _error = 'Sign-in failed: $error');
-                    }
-                  },
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text('or', style: theme.textTheme.muted),
-                    ),
-                    const Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                ShadInput(
-                  controller: _emailController,
-                  placeholder: const Text('Email'),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 12),
-                ShadInput(
-                  key: const ValueKey('password_field'),
-                  controller: _passwordController,
-                  placeholder: const Text('Password'),
-                  obscureText: _obscurePassword,
-                  onSubmitted: (_) => _handleEmailSubmit(),
-                ),
-                const SizedBox(height: 16),
-                ShadButton(
-                  onPressed: _isEmailSigningIn ? null : _handleEmailSubmit,
-                  width: double.infinity,
-                  child: _isEmailSigningIn
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Sign in with email'),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
         ),
       ),
     );
