@@ -1564,6 +1564,13 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'int?',
         ),
         _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
           name: 'metadataStatus',
           columnType: _i2.ColumnType.text,
           isNullable: false,

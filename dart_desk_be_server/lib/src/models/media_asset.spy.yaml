@@ -18,6 +18,7 @@ fields:
   locationLat: double?
   locationLng: double?
   uploadedByUserId: int?
+  createdAt: DateTime?, default=now
   metadataStatus: MediaAssetMetadataStatus
 indexes:
   media_asset_client_id_idx:

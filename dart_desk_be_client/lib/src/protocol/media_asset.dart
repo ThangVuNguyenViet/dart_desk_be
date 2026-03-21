@@ -33,8 +33,9 @@ abstract class MediaAsset implements _i1.SerializableModel {
     this.locationLat,
     this.locationLng,
     this.uploadedByUserId,
+    DateTime? createdAt,
     required this.metadataStatus,
-  });
+  }) : createdAt = createdAt ?? DateTime.now();
 
   factory MediaAsset({
     int? id,
@@ -55,6 +56,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
     double? locationLat,
     double? locationLng,
     int? uploadedByUserId,
+    DateTime? createdAt,
     required _i2.MediaAssetMetadataStatus metadataStatus,
   }) = _MediaAssetImpl;
 
@@ -78,6 +80,9 @@ abstract class MediaAsset implements _i1.SerializableModel {
       locationLat: (jsonSerialization['locationLat'] as num?)?.toDouble(),
       locationLng: (jsonSerialization['locationLng'] as num?)?.toDouble(),
       uploadedByUserId: jsonSerialization['uploadedByUserId'] as int?,
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       metadataStatus: _i2.MediaAssetMetadataStatus.fromJson(
         (jsonSerialization['metadataStatus'] as String),
       ),
@@ -123,6 +128,8 @@ abstract class MediaAsset implements _i1.SerializableModel {
 
   int? uploadedByUserId;
 
+  DateTime? createdAt;
+
   _i2.MediaAssetMetadataStatus metadataStatus;
 
   /// Returns a shallow copy of this [MediaAsset]
@@ -147,6 +154,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
     double? locationLat,
     double? locationLng,
     int? uploadedByUserId,
+    DateTime? createdAt,
     _i2.MediaAssetMetadataStatus? metadataStatus,
   });
   @override
@@ -171,6 +179,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
       if (locationLat != null) 'locationLat': locationLat,
       if (locationLng != null) 'locationLng': locationLng,
       if (uploadedByUserId != null) 'uploadedByUserId': uploadedByUserId,
+      if (createdAt != null) 'createdAt': createdAt?.toJson(),
       'metadataStatus': metadataStatus.toJson(),
     };
   }
@@ -203,6 +212,7 @@ class _MediaAssetImpl extends MediaAsset {
     double? locationLat,
     double? locationLng,
     int? uploadedByUserId,
+    DateTime? createdAt,
     required _i2.MediaAssetMetadataStatus metadataStatus,
   }) : super._(
          id: id,
@@ -223,6 +233,7 @@ class _MediaAssetImpl extends MediaAsset {
          locationLat: locationLat,
          locationLng: locationLng,
          uploadedByUserId: uploadedByUserId,
+         createdAt: createdAt,
          metadataStatus: metadataStatus,
        );
 
@@ -249,6 +260,7 @@ class _MediaAssetImpl extends MediaAsset {
     Object? locationLat = _Undefined,
     Object? locationLng = _Undefined,
     Object? uploadedByUserId = _Undefined,
+    Object? createdAt = _Undefined,
     _i2.MediaAssetMetadataStatus? metadataStatus,
   }) {
     return MediaAsset(
@@ -272,6 +284,7 @@ class _MediaAssetImpl extends MediaAsset {
       uploadedByUserId: uploadedByUserId is int?
           ? uploadedByUserId
           : this.uploadedByUserId,
+      createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       metadataStatus: metadataStatus ?? this.metadataStatus,
     );
   }
