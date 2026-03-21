@@ -29,3 +29,6 @@ config/google_client_secret.json
 
 # Deploy overrides (use dart_desk_cloud for production)
 deploy/
+
+# Git worktrees
+.worktrees/
