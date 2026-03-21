@@ -11,6 +11,10 @@ Add unit tests to dart_desk_be_server and dart_desk_cloud, a CRDT stress test to
 
 **Approach 2 (selected):** Unit tests with mocktail for isolated logic + integration stress test against real Postgres for CRDT performance. Two-tier CI: unit tests on every push, integration tests on PRs to main/master.
 
+## Prerequisites
+
+**dart_desk_cloud Serverpod version alignment:** dart_desk_cloud uses `serverpod: ^2.3.1` while dart_desk_be_server uses `serverpod: 3.4.3`. Since dart_desk_cloud depends on dart_desk_be_server via path, the Serverpod version in dart_desk_cloud must be updated to `3.4.3` (along with `serverpod_cloud_storage_s3`) before adding test infrastructure.
+
 ## Test Structure
 
 ### dart_desk_be_server
@@ -21,7 +25,7 @@ test/
     subdomain_extraction_test.dart        (existing)
     services/
       document_crdt_service_test.dart     (new)
-      metadata_extractor_test.dart        (new)
+      metadata_extractor_test.dart        (new — integration, uses withServerpod)
   integration/
     ...existing 8 test files...
     crdt_stress_test.dart                 (new, @Tag('stress'))
@@ -30,6 +34,8 @@ test/
     test_tools/
       serverpod_test_tools.dart           (existing)
 ```
+
+**Note on metadata_extractor_test.dart location:** Although placed under `unit/services/` for organizational clarity, this test uses `withServerpod()` because `MetadataExtractor.extractAndUpdate` calls `MediaAsset.db.updateRow()` directly — a static Serverpod DB accessor that cannot be mocked via `mocktail`. It requires a real Serverpod session with DB rollback. An alternative is refactoring `MetadataExtractor` to accept a persistence callback, but that's out of scope for this spec.
 
 ### dart_desk_cloud
 
@@ -42,14 +48,22 @@ test/
 
 ### New Dependencies
 
-- `mocktail` in both projects (dev_dependency)
-- `serverpod_test` in dart_desk_cloud (currently missing)
+**dart_desk_be_server:**
+- `mocktail` (dev_dependency)
+
+**dart_desk_cloud:**
+- `test: ^1.24.2` (dev_dependency — currently has no dev_dependencies at all)
+- `mocktail` (dev_dependency)
+
+**Note:** `serverpod_test` is NOT needed in dart_desk_cloud since its tests are pure unit tests with mocks only.
 
 ## Test Specifications
 
 ### 1. `document_crdt_service_test.dart` (Pure Unit Tests)
 
 Tests `reconstructFromOperations` — the public method that takes a list of operations + initial state and returns reconstructed document data. No DB or mocks needed.
+
+**Note:** Test data must construct `DocumentCrdtOperation` objects with dot-notation field paths (e.g., `user.name` for `{"user": {"name": ...}}`), matching the private `_flattenMap` convention. The flatten/unflatten helpers are private and not directly callable from tests.
 
 **Test cases:**
 - Flatten/unflatten round-trip: nested map -> operations -> reconstructed map matches original
@@ -60,16 +74,17 @@ Tests `reconstructFromOperations` — the public method that takes a list of ope
 - Empty state: empty initial state + no operations -> empty map
 - Overwrite: multiple puts to same field path -> last value wins
 
-### 2. `metadata_extractor_test.dart` (Unit Tests with Mocked Session)
+### 2. `metadata_extractor_test.dart` (Integration Test via withServerpod)
 
-Uses `mocktail` to mock `Session.storage`. Tests the full `extractAndUpdate` flow.
+Uses `withServerpod()` for a real Serverpod session because `extractAndUpdate` calls `MediaAsset.db.updateRow()` and `session.storage.retrieveFile()` — static Serverpod accessors that cannot be mocked with `mocktail`.
 
 **Test cases:**
-- Valid image: mock storage returns a small PNG -> verify LQIP generated, palette extracted, metadata status = complete
-- GPS extraction: image with EXIF GPS data -> correct lat/lng with N/S/E/W hemisphere handling
+- Valid image: store a small PNG in test storage -> call extractAndUpdate -> verify LQIP generated, palette extracted, metadata status = complete
 - No EXIF: image without EXIF data -> GPS fields null, status still complete
-- Missing file: storage returns null -> metadata status = failed
-- Corrupt image: undecodable bytes -> metadata status = failed
+- Missing file: call with non-existent storage path -> metadata status = failed
+- Corrupt image: store undecodable bytes -> metadata status = failed
+
+**Note on GPS testing:** Testing GPS extraction requires a real image with EXIF GPS data baked in. If creating such a fixture is impractical, this test case can be deferred.
 
 ### 3. `crdt_stress_test.dart` (Integration, @Tag('stress'))
 
@@ -83,14 +98,12 @@ Runs with Docker/Postgres. Simulates a complex CMS page heavily edited over time
   - `getStateAtHlc` reconstructs historical state at intermediate timestamps correctly
   - `reconstructFromOperations` output matches `getCurrentState` output
   - All operations complete without error
-- Performance guard: `getCurrentState` after 2,000 ops completes under 5 seconds (regression tripwire, not a benchmark)
+- Performance guard: `getCurrentState` after 2,000 ops completes under 15 seconds. This is a generous threshold to avoid flaky failures across different hardware. Intended as a local regression tripwire, not enforced in CI.
 - Compaction: trigger `compactOperations`, verify state still correct and operation count reduced
 
-### 4. `aws_image_storage_provider_test.dart` (Unit Tests with Mocked Session)
+### 4. `aws_image_storage_provider_test.dart` (Unit Tests)
 
-Uses `mocktail` to mock `Session` and `Session.storage`.
-
-**`transformUrl` tests (pure logic, no mocks):**
+**`transformUrl` tests (pure logic, no mocks — instantiate with a dummy session):**
 - Resize with clip/max fit: `width=800, height=600, fit=clip` -> `fit-in/800x600` in URL
 - Resize with crop/fill/scale fit: `width=800, height=600, fit=crop` -> `800x600` (no fit-in)
 - Smart cropping: focal point params -> `smart` segment in URL
@@ -100,18 +113,13 @@ Uses `mocktail` to mock `Session` and `Session.storage`.
 - No transforms: no params -> returns null
 - Path extraction: public URL with leading slash handled correctly
 
-**`store` tests (mocked):**
-- Calls `storeFile` with correct path `media/{assetId}/{fileName}`
-- Calls `getPublicUrl` and returns the result
-
-**`delete` tests (mocked):**
-- Calls `deleteFile` with correct path
+**`store` and `delete` tests:** These call `session.storage.*` methods which are Serverpod internal APIs. Mocking `Session` with `mocktail` is possible (`class MockSession extends Mock implements Session {}`) but may be fragile across Serverpod upgrades. If mocking proves brittle, these tests should be deferred or the provider refactored to accept a storage interface. The `transformUrl` tests are the primary value here.
 
 ## CI Pipeline
 
 ### Location
 
-`dart_desk_cloud/deploy/workflows/ci.yml` (alongside existing deployment workflows)
+`.github/workflows/ci.yml` — standard GitHub Actions location. The existing deployment workflows at `dart_desk_cloud/deploy/workflows/` are custom deployment scripts, not GitHub Actions workflows (they'd need to be copied to `.github/workflows/` to actually run).
 
 ### Tier 1 — Unit Tests (every push & PR)
 
