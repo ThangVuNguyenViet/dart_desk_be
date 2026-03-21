@@ -50,7 +50,7 @@ class MediaEndpoint extends Endpoint {
     }
 
     // Look up CMS user
-    final cmsUser = await CmsUser.db.findFirstRow(
+    final cmsUser = await User.db.findFirstRow(
       session,
       where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
     );
@@ -92,7 +92,7 @@ class MediaEndpoint extends Endpoint {
 
     // Create DB record
     final asset = MediaAsset(
-      clientId: cmsUser.clientId,
+      tenantId: cmsUser.tenantId,
       assetId: assetId,
       fileName: fileName,
       mimeType: mimeType,
@@ -140,7 +140,7 @@ class MediaEndpoint extends Endpoint {
     }
 
     // Look up CMS user
-    final cmsUser = await CmsUser.db.findFirstRow(
+    final cmsUser = await User.db.findFirstRow(
       session,
       where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
     );
@@ -180,7 +180,7 @@ class MediaEndpoint extends Endpoint {
 
     // Create DB record
     final asset = MediaAsset(
-      clientId: cmsUser.clientId,
+      tenantId: cmsUser.tenantId,
       assetId: assetId,
       fileName: fileName,
       mimeType: mimeType,

@@ -15,58 +15,54 @@ import 'dart:async' as _i2;
 import 'package:dart_desk_be_client/src/protocol/cms_api_token.dart' as _i3;
 import 'package:dart_desk_be_client/src/protocol/cms_api_token_with_value.dart'
     as _i4;
-import 'package:dart_desk_be_client/src/protocol/cms_client_list.dart' as _i5;
-import 'package:dart_desk_be_client/src/protocol/cms_client.dart' as _i6;
-import 'package:dart_desk_be_client/src/protocol/client_with_token.dart' as _i7;
-import 'package:dart_desk_be_client/src/protocol/cms_deployment.dart' as _i8;
 import 'package:dart_desk_be_client/src/protocol/document_crdt_operation.dart'
-    as _i9;
-import 'package:dart_desk_be_client/src/protocol/cms_document.dart' as _i10;
-import 'package:dart_desk_be_client/src/protocol/document_list.dart' as _i11;
+    as _i5;
+import 'package:dart_desk_be_client/src/protocol/cms_document.dart' as _i6;
+import 'package:dart_desk_be_client/src/protocol/document_list.dart' as _i7;
 import 'package:dart_desk_be_client/src/protocol/document_version_list_with_operations.dart'
-    as _i12;
-import 'package:dart_desk_be_client/src/protocol/document_version.dart' as _i13;
+    as _i8;
+import 'package:dart_desk_be_client/src/protocol/document_version.dart' as _i9;
 import 'package:dart_desk_be_client/src/protocol/document_version_status.dart'
-    as _i14;
+    as _i10;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i15;
+    as _i11;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i16;
-import 'package:dart_desk_be_client/src/protocol/media_asset.dart' as _i17;
-import 'dart:typed_data' as _i18;
-import 'package:dart_desk_be_client/src/protocol/cms_user.dart' as _i19;
-import 'package:serverpod_admin_client/serverpod_admin_client.dart' as _i20;
-import 'protocol.dart' as _i21;
+    as _i12;
+import 'package:dart_desk_be_client/src/protocol/media_asset.dart' as _i13;
+import 'dart:typed_data' as _i14;
+import 'package:dart_desk_be_client/src/protocol/cms_user.dart' as _i15;
+import 'package:serverpod_admin_client/serverpod_admin_client.dart' as _i16;
+import 'protocol.dart' as _i17;
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
-/// Authorization: caller must be a CmsUser belonging to the target client.
+/// Authorization: caller must be a User belonging to the target client.
 /// {@category Endpoint}
-class EndpointCmsApiToken extends _i1.EndpointRef {
-  EndpointCmsApiToken(_i1.EndpointCaller caller) : super(caller);
+class EndpointApiToken extends _i1.EndpointRef {
+  EndpointApiToken(_i1.EndpointCaller caller) : super(caller);
 
   @override
-  String get name => 'cmsApiToken';
+  String get name => 'apiToken';
 
   /// List all tokens for a client (metadata only, never the hash).
-  _i2.Future<List<_i3.CmsApiToken>> getTokens(int clientId) =>
-      caller.callServerEndpoint<List<_i3.CmsApiToken>>(
-        'cmsApiToken',
+  _i2.Future<List<_i3.ApiToken>> getTokens(int tenantId) =>
+      caller.callServerEndpoint<List<_i3.ApiToken>>(
+        'apiToken',
         'getTokens',
-        {'clientId': clientId},
+        {'tenantId': tenantId},
       );
 
   /// Create a new named token. Returns plaintext token (shown once).
-  _i2.Future<_i4.CmsApiTokenWithValue> createToken(
-    int clientId,
+  _i2.Future<_i4.ApiTokenWithValue> createToken(
+    int tenantId,
     String name,
     String role,
     DateTime? expiresAt,
-  ) => caller.callServerEndpoint<_i4.CmsApiTokenWithValue>(
-    'cmsApiToken',
+  ) => caller.callServerEndpoint<_i4.ApiTokenWithValue>(
+    'apiToken',
     'createToken',
     {
-      'clientId': clientId,
+      'tenantId': tenantId,
       'name': name,
       'role': role,
       'expiresAt': expiresAt,
@@ -74,13 +70,13 @@ class EndpointCmsApiToken extends _i1.EndpointRef {
   );
 
   /// Update token metadata (name, isActive, expiresAt).
-  _i2.Future<_i3.CmsApiToken> updateToken(
+  _i2.Future<_i3.ApiToken> updateToken(
     int tokenId,
     String? name,
     bool? isActive,
     DateTime? expiresAt,
-  ) => caller.callServerEndpoint<_i3.CmsApiToken>(
-    'cmsApiToken',
+  ) => caller.callServerEndpoint<_i3.ApiToken>(
+    'apiToken',
     'updateToken',
     {
       'tokenId': tokenId,
@@ -91,181 +87,18 @@ class EndpointCmsApiToken extends _i1.EndpointRef {
   );
 
   /// Regenerate token value. Returns new plaintext token (shown once).
-  _i2.Future<_i4.CmsApiTokenWithValue> regenerateToken(int tokenId) =>
-      caller.callServerEndpoint<_i4.CmsApiTokenWithValue>(
-        'cmsApiToken',
+  _i2.Future<_i4.ApiTokenWithValue> regenerateToken(int tokenId) =>
+      caller.callServerEndpoint<_i4.ApiTokenWithValue>(
+        'apiToken',
         'regenerateToken',
         {'tokenId': tokenId},
       );
 
   /// Delete a token permanently.
   _i2.Future<bool> deleteToken(int tokenId) => caller.callServerEndpoint<bool>(
-    'cmsApiToken',
+    'apiToken',
     'deleteToken',
     {'tokenId': tokenId},
-  );
-}
-
-/// Endpoint for managing CMS clients
-/// {@category Endpoint}
-class EndpointCmsClient extends _i1.EndpointRef {
-  EndpointCmsClient(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'cmsClient';
-
-  /// Get all clients with pagination and optional search
-  _i2.Future<_i5.CmsClientList> getClients({
-    String? search,
-    required int limit,
-    required int offset,
-  }) => caller.callServerEndpoint<_i5.CmsClientList>(
-    'cmsClient',
-    'getClients',
-    {
-      'search': search,
-      'limit': limit,
-      'offset': offset,
-    },
-  );
-
-  /// Get a client by slug
-  _i2.Future<_i6.CmsClient?> getClientBySlug(String slug) =>
-      caller.callServerEndpoint<_i6.CmsClient?>(
-        'cmsClient',
-        'getClientBySlug',
-        {'slug': slug},
-      );
-
-  /// Get a client by ID
-  _i2.Future<_i6.CmsClient?> getClient(int clientId) =>
-      caller.callServerEndpoint<_i6.CmsClient?>(
-        'cmsClient',
-        'getClient',
-        {'clientId': clientId},
-      );
-
-  /// Create a new client (requires authentication).
-  /// Generates a prefixed API token, stores its bcrypt hash.
-  /// Returns the client and the raw token (shown once only).
-  _i2.Future<_i7.ClientWithToken> createClient(
-    String name,
-    String slug, {
-    String? description,
-    String? settings,
-  }) => caller.callServerEndpoint<_i7.ClientWithToken>(
-    'cmsClient',
-    'createClient',
-    {
-      'name': name,
-      'slug': slug,
-      'description': description,
-      'settings': settings,
-    },
-  );
-
-  /// Update an existing client (requires authentication).
-  /// Note: apiTokenHash cannot be updated through this method — use regenerateApiToken.
-  _i2.Future<_i6.CmsClient?> updateClient(
-    int clientId, {
-    String? name,
-    String? description,
-    bool? isActive,
-    String? settings,
-  }) => caller.callServerEndpoint<_i6.CmsClient?>(
-    'cmsClient',
-    'updateClient',
-    {
-      'clientId': clientId,
-      'name': name,
-      'description': description,
-      'isActive': isActive,
-      'settings': settings,
-    },
-  );
-
-  /// Regenerate the API token for a client (requires authentication).
-  /// Returns the client and the new raw token (shown once only).
-  _i2.Future<_i7.ClientWithToken> regenerateApiToken(int clientId) =>
-      caller.callServerEndpoint<_i7.ClientWithToken>(
-        'cmsClient',
-        'regenerateApiToken',
-        {'clientId': clientId},
-      );
-
-  /// Delete a client (requires authentication)
-  /// Will fail if client has associated users (FK restriction)
-  _i2.Future<bool> deleteClient(int clientId) =>
-      caller.callServerEndpoint<bool>(
-        'cmsClient',
-        'deleteClient',
-        {'clientId': clientId},
-      );
-
-  /// Create a new client and an admin CmsUser for the caller in one transaction.
-  /// Used by the manage app's setup wizard for first-time users.
-  _i2.Future<_i6.CmsClient> createClientWithOwner({
-    required String name,
-    required String slug,
-  }) => caller.callServerEndpoint<_i6.CmsClient>(
-    'cmsClient',
-    'createClientWithOwner',
-    {
-      'name': name,
-      'slug': slug,
-    },
-  );
-}
-
-/// Endpoint for managing CMS deployments.
-/// All methods require authenticated admin user.
-/// {@category Endpoint}
-class EndpointDeployment extends _i1.EndpointRef {
-  EndpointDeployment(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'deployment';
-
-  /// List all deployments for a client by slug.
-  _i2.Future<List<_i8.CmsDeployment>> list(String clientSlug) =>
-      caller.callServerEndpoint<List<_i8.CmsDeployment>>(
-        'deployment',
-        'list',
-        {'clientSlug': clientSlug},
-      );
-
-  /// Get the currently active deployment for a client.
-  _i2.Future<_i8.CmsDeployment?> getActive(String clientSlug) =>
-      caller.callServerEndpoint<_i8.CmsDeployment?>(
-        'deployment',
-        'getActive',
-        {'clientSlug': clientSlug},
-      );
-
-  /// Activate (rollback to) a specific version.
-  _i2.Future<_i8.CmsDeployment> activate(
-    String clientSlug,
-    int version,
-  ) => caller.callServerEndpoint<_i8.CmsDeployment>(
-    'deployment',
-    'activate',
-    {
-      'clientSlug': clientSlug,
-      'version': version,
-    },
-  );
-
-  /// Delete a deployment version and its files.
-  _i2.Future<bool> delete(
-    String clientSlug,
-    int version,
-  ) => caller.callServerEndpoint<bool>(
-    'deployment',
-    'delete',
-    {
-      'clientSlug': clientSlug,
-      'version': version,
-    },
   );
 }
 
@@ -280,11 +113,11 @@ class EndpointDocumentCollaboration extends _i1.EndpointRef {
 
   /// Get CRDT operations since a specific HLC timestamp
   /// Used for polling updates from other users
-  _i2.Future<List<_i9.DocumentCrdtOperation>> getOperationsSince(
+  _i2.Future<List<_i5.DocumentCrdtOperation>> getOperationsSince(
     int documentId,
     String sinceHlc, {
     required int limit,
-  }) => caller.callServerEndpoint<List<_i9.DocumentCrdtOperation>>(
+  }) => caller.callServerEndpoint<List<_i5.DocumentCrdtOperation>>(
     'documentCollaboration',
     'getOperationsSince',
     {
@@ -295,11 +128,11 @@ class EndpointDocumentCollaboration extends _i1.EndpointRef {
   );
 
   /// Submit an edit (partial field updates) for collaborative editing
-  _i2.Future<_i10.CmsDocument> submitEdit(
+  _i2.Future<_i6.Document> submitEdit(
     int documentId,
     String sessionId,
     Map<String, dynamic> fieldUpdates,
-  ) => caller.callServerEndpoint<_i10.CmsDocument>(
+  ) => caller.callServerEndpoint<_i6.Document>(
     'documentCollaboration',
     'submitEdit',
     {
@@ -356,12 +189,12 @@ class EndpointDocument extends _i1.EndpointRef {
   String get name => 'document';
 
   /// Get all documents for a specific document type with pagination
-  _i2.Future<_i11.DocumentList> getDocuments(
+  _i2.Future<_i7.DocumentList> getDocuments(
     String documentType, {
     String? search,
     required int limit,
     required int offset,
-  }) => caller.callServerEndpoint<_i11.DocumentList>(
+  }) => caller.callServerEndpoint<_i7.DocumentList>(
     'document',
     'getDocuments',
     {
@@ -373,38 +206,38 @@ class EndpointDocument extends _i1.EndpointRef {
   );
 
   /// Get a single document by ID
-  _i2.Future<_i10.CmsDocument?> getDocument(int documentId) =>
-      caller.callServerEndpoint<_i10.CmsDocument?>(
+  _i2.Future<_i6.Document?> getDocument(int documentId) =>
+      caller.callServerEndpoint<_i6.Document?>(
         'document',
         'getDocument',
         {'documentId': documentId},
       );
 
   /// Get a document by slug
-  _i2.Future<_i10.CmsDocument?> getDocumentBySlug(String slug) =>
-      caller.callServerEndpoint<_i10.CmsDocument?>(
+  _i2.Future<_i6.Document?> getDocumentBySlug(String slug) =>
+      caller.callServerEndpoint<_i6.Document?>(
         'document',
         'getDocumentBySlug',
         {'slug': slug},
       );
 
   /// Get the default document for a document type
-  _i2.Future<_i10.CmsDocument?> getDefaultDocument(String documentType) =>
-      caller.callServerEndpoint<_i10.CmsDocument?>(
+  _i2.Future<_i6.Document?> getDefaultDocument(String documentType) =>
+      caller.callServerEndpoint<_i6.Document?>(
         'document',
         'getDefaultDocument',
         {'documentType': documentType},
       );
 
   /// Create a new document with an initial version
-  /// This creates both the CmsDocument and its first DocumentVersion
-  _i2.Future<_i10.CmsDocument> createDocument(
+  /// This creates both the Document and its first DocumentVersion
+  _i2.Future<_i6.Document> createDocument(
     String documentType,
     String title,
     Map<String, dynamic> data, {
     String? slug,
     required bool isDefault,
-  }) => caller.callServerEndpoint<_i10.CmsDocument>(
+  }) => caller.callServerEndpoint<_i6.Document>(
     'document',
     'createDocument',
     {
@@ -418,11 +251,11 @@ class EndpointDocument extends _i1.EndpointRef {
 
   /// Update document data using CRDT operations (partial updates)
   /// Only changed fields need to be provided - they will be merged automatically
-  _i2.Future<_i10.CmsDocument> updateDocumentData(
+  _i2.Future<_i6.Document> updateDocumentData(
     int documentId,
     Map<String, dynamic> updates, {
     String? sessionId,
-  }) => caller.callServerEndpoint<_i10.CmsDocument>(
+  }) => caller.callServerEndpoint<_i6.Document>(
     'document',
     'updateDocumentData',
     {
@@ -434,12 +267,12 @@ class EndpointDocument extends _i1.EndpointRef {
 
   /// Update document metadata (title, slug, isDefault)
   /// To update document data, use updateDocumentData instead
-  _i2.Future<_i10.CmsDocument?> updateDocument(
+  _i2.Future<_i6.Document?> updateDocument(
     int documentId, {
     String? title,
     String? slug,
     bool? isDefault,
-  }) => caller.callServerEndpoint<_i10.CmsDocument?>(
+  }) => caller.callServerEndpoint<_i6.Document?>(
     'document',
     'updateDocument',
     {
@@ -484,12 +317,12 @@ class EndpointDocument extends _i1.EndpointRef {
 
   /// Get all versions for a document with pagination
   /// Optionally includes CRDT operations between adjacent versions
-  _i2.Future<_i12.DocumentVersionListWithOperations> getDocumentVersions(
+  _i2.Future<_i8.DocumentVersionListWithOperations> getDocumentVersions(
     int documentId, {
     required int limit,
     required int offset,
     required bool includeOperations,
-  }) => caller.callServerEndpoint<_i12.DocumentVersionListWithOperations>(
+  }) => caller.callServerEndpoint<_i8.DocumentVersionListWithOperations>(
     'document',
     'getDocumentVersions',
     {
@@ -501,8 +334,8 @@ class EndpointDocument extends _i1.EndpointRef {
   );
 
   /// Get a single version by ID
-  _i2.Future<_i13.DocumentVersion?> getDocumentVersion(int versionId) =>
-      caller.callServerEndpoint<_i13.DocumentVersion?>(
+  _i2.Future<_i9.DocumentVersion?> getDocumentVersion(int versionId) =>
+      caller.callServerEndpoint<_i9.DocumentVersion?>(
         'document',
         'getDocumentVersion',
         {'versionId': versionId},
@@ -519,11 +352,11 @@ class EndpointDocument extends _i1.EndpointRef {
 
   /// Create a new version for a document
   /// Captures the current CRDT state as a version snapshot
-  _i2.Future<_i13.DocumentVersion> createDocumentVersion(
+  _i2.Future<_i9.DocumentVersion> createDocumentVersion(
     int documentId, {
-    required _i14.DocumentVersionStatus status,
+    required _i10.DocumentVersionStatus status,
     String? changeLog,
-  }) => caller.callServerEndpoint<_i13.DocumentVersion>(
+  }) => caller.callServerEndpoint<_i9.DocumentVersion>(
     'document',
     'createDocumentVersion',
     {
@@ -534,16 +367,16 @@ class EndpointDocument extends _i1.EndpointRef {
   );
 
   /// Publish a version (set status to 'published' and set publishedAt timestamp)
-  _i2.Future<_i13.DocumentVersion?> publishDocumentVersion(int versionId) =>
-      caller.callServerEndpoint<_i13.DocumentVersion?>(
+  _i2.Future<_i9.DocumentVersion?> publishDocumentVersion(int versionId) =>
+      caller.callServerEndpoint<_i9.DocumentVersion?>(
         'document',
         'publishDocumentVersion',
         {'versionId': versionId},
       );
 
   /// Archive a version (set status to 'archived' and set archivedAt timestamp)
-  _i2.Future<_i13.DocumentVersion?> archiveDocumentVersion(int versionId) =>
-      caller.callServerEndpoint<_i13.DocumentVersion?>(
+  _i2.Future<_i9.DocumentVersion?> archiveDocumentVersion(int versionId) =>
+      caller.callServerEndpoint<_i9.DocumentVersion?>(
         'document',
         'archiveDocumentVersion',
         {'versionId': versionId},
@@ -567,7 +400,7 @@ class EndpointDocument extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointEmailIdp extends _i15.EndpointEmailIdpBase {
+class EndpointEmailIdp extends _i11.EndpointEmailIdpBase {
   EndpointEmailIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -583,10 +416,10 @@ class EndpointEmailIdp extends _i15.EndpointEmailIdpBase {
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
-  _i2.Future<_i16.AuthSuccess> login({
+  _i2.Future<_i12.AuthSuccess> login({
     required String email,
     required String password,
-  }) => caller.callServerEndpoint<_i16.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i12.AuthSuccess>(
     'emailIdp',
     'login',
     {
@@ -651,10 +484,10 @@ class EndpointEmailIdp extends _i15.EndpointEmailIdpBase {
   ///
   /// Returns a session for the newly created user.
   @override
-  _i2.Future<_i16.AuthSuccess> finishRegistration({
+  _i2.Future<_i12.AuthSuccess> finishRegistration({
     required String registrationToken,
     required String password,
-  }) => caller.callServerEndpoint<_i16.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i12.AuthSuccess>(
     'emailIdp',
     'finishRegistration',
     {
@@ -747,7 +580,7 @@ class EndpointEmailIdp extends _i15.EndpointEmailIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointGoogleIdp extends _i15.EndpointGoogleIdpBase {
+class EndpointGoogleIdp extends _i11.EndpointGoogleIdpBase {
   EndpointGoogleIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -758,10 +591,10 @@ class EndpointGoogleIdp extends _i15.EndpointGoogleIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i2.Future<_i16.AuthSuccess> login({
+  _i2.Future<_i12.AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) => caller.callServerEndpoint<_i16.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i12.AuthSuccess>(
     'googleIdp',
     'login',
     {
@@ -791,15 +624,15 @@ class EndpointMedia extends _i1.EndpointRef {
   ///
   /// Performs deduplication based on content hash + dimensions + extension.
   /// If an identical asset already exists, returns the existing record.
-  _i2.Future<_i17.MediaAsset> uploadImage(
+  _i2.Future<_i13.MediaAsset> uploadImage(
     String fileName,
-    _i18.ByteData fileData,
+    _i14.ByteData fileData,
     int width,
     int height,
     bool hasAlpha,
     String blurHash,
     String contentHash,
-  ) => caller.callServerEndpoint<_i17.MediaAsset>(
+  ) => caller.callServerEndpoint<_i13.MediaAsset>(
     'media',
     'uploadImage',
     {
@@ -816,10 +649,10 @@ class EndpointMedia extends _i1.EndpointRef {
   /// Upload a non-image file.
   ///
   /// Content hash is computed server-side via SHA-256.
-  _i2.Future<_i17.MediaAsset> uploadFile(
+  _i2.Future<_i13.MediaAsset> uploadFile(
     String fileName,
-    _i18.ByteData fileData,
-  ) => caller.callServerEndpoint<_i17.MediaAsset>(
+    _i14.ByteData fileData,
+  ) => caller.callServerEndpoint<_i13.MediaAsset>(
     'media',
     'uploadFile',
     {
@@ -839,21 +672,21 @@ class EndpointMedia extends _i1.EndpointRef {
       );
 
   /// Get a single media asset by assetId.
-  _i2.Future<_i17.MediaAsset?> getMedia(String assetId) =>
-      caller.callServerEndpoint<_i17.MediaAsset?>(
+  _i2.Future<_i13.MediaAsset?> getMedia(String assetId) =>
+      caller.callServerEndpoint<_i13.MediaAsset?>(
         'media',
         'getMedia',
         {'assetId': assetId},
       );
 
   /// List media assets with search, filter, sort, and pagination.
-  _i2.Future<List<_i17.MediaAsset>> listMedia({
+  _i2.Future<List<_i13.MediaAsset>> listMedia({
     String? search,
     String? mimeTypePrefix,
     required String sortBy,
     required int limit,
     required int offset,
-  }) => caller.callServerEndpoint<List<_i17.MediaAsset>>(
+  }) => caller.callServerEndpoint<List<_i13.MediaAsset>>(
     'media',
     'listMedia',
     {
@@ -887,10 +720,10 @@ class EndpointMedia extends _i1.EndpointRef {
       );
 
   /// Update a media asset's metadata (currently supports renaming).
-  _i2.Future<_i17.MediaAsset> updateMediaAsset(
+  _i2.Future<_i13.MediaAsset> updateMediaAsset(
     String assetId, {
     String? fileName,
-  }) => caller.callServerEndpoint<_i17.MediaAsset>(
+  }) => caller.callServerEndpoint<_i13.MediaAsset>(
     'media',
     'updateMediaAsset',
     {
@@ -901,7 +734,7 @@ class EndpointMedia extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointRefreshJwtTokens extends _i16.EndpointRefreshJwtTokens {
+class EndpointRefreshJwtTokens extends _i12.EndpointRefreshJwtTokens {
   EndpointRefreshJwtTokens(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -926,9 +759,9 @@ class EndpointRefreshJwtTokens extends _i16.EndpointRefreshJwtTokens {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   @override
-  _i2.Future<_i16.AuthSuccess> refreshAccessToken({
+  _i2.Future<_i12.AuthSuccess> refreshAccessToken({
     required String refreshToken,
-  }) => caller.callServerEndpoint<_i16.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i12.AuthSuccess>(
     'refreshJwtTokens',
     'refreshAccessToken',
     {'refreshToken': refreshToken},
@@ -955,7 +788,8 @@ class EndpointStudioConfig extends _i1.EndpointRef {
       );
 }
 
-/// Endpoint for managing CMS users
+/// Endpoint for managing users.
+/// TODO: Rewrite for multi-tenancy extraction (Task 5).
 /// {@category Endpoint}
 class EndpointUser extends _i1.EndpointRef {
   EndpointUser(_i1.EndpointCaller caller) : super(caller);
@@ -963,74 +797,28 @@ class EndpointUser extends _i1.EndpointRef {
   @override
   String get name => 'user';
 
-  /// Ensure a CMS user exists for the authenticated user in the given client.
-  /// Creates one automatically on first login.
-  /// Validates the API token (bcrypt) before creating the user.
-  _i2.Future<_i19.CmsUser> ensureUser(
-    String clientSlug,
-    String apiToken,
-  ) => caller.callServerEndpoint<_i19.CmsUser>(
-    'user',
-    'ensureUser',
-    {
-      'clientSlug': clientSlug,
-      'apiToken': apiToken,
-    },
-  );
-
-  /// Get the current CMS user for the authenticated user in a given client.
-  /// Validates the API token.
-  _i2.Future<_i19.CmsUser?> getCurrentUser(
-    String clientSlug,
-    String apiToken,
-  ) => caller.callServerEndpoint<_i19.CmsUser?>(
-    'user',
-    'getCurrentUser',
-    {
-      'clientSlug': clientSlug,
-      'apiToken': apiToken,
-    },
-  );
-
-  /// Get all clients the authenticated user belongs to.
-  /// Used by Manage app for client switcher.
-  _i2.Future<List<_i6.CmsClient>> getUserClients() =>
-      caller.callServerEndpoint<List<_i6.CmsClient>>(
+  /// Get the current user by tenant context.
+  /// Placeholder — will be rewritten in Task 5.
+  _i2.Future<_i15.User?> getCurrentUser() =>
+      caller.callServerEndpoint<_i15.User?>(
         'user',
-        'getUserClients',
+        'getCurrentUser',
         {},
-      );
-
-  /// Get the current CMS user by client slug (for Manage app — no API token needed).
-  /// Authenticates via Serverpod auth session only.
-  _i2.Future<_i19.CmsUser?> getCurrentUserBySlug(String clientSlug) =>
-      caller.callServerEndpoint<_i19.CmsUser?>(
-        'user',
-        'getCurrentUserBySlug',
-        {'clientSlug': clientSlug},
-      );
-
-  /// Get count of CmsUsers for a client (for Overview stats).
-  _i2.Future<int> getClientUserCount(int clientId) =>
-      caller.callServerEndpoint<int>(
-        'user',
-        'getClientUserCount',
-        {'clientId': clientId},
       );
 }
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_idp = _i15.Caller(client);
-    serverpod_admin = _i20.Caller(client);
-    serverpod_auth_core = _i16.Caller(client);
+    serverpod_auth_idp = _i11.Caller(client);
+    serverpod_admin = _i16.Caller(client);
+    serverpod_auth_core = _i12.Caller(client);
   }
 
-  late final _i15.Caller serverpod_auth_idp;
+  late final _i11.Caller serverpod_auth_idp;
 
-  late final _i20.Caller serverpod_admin;
+  late final _i16.Caller serverpod_admin;
 
-  late final _i16.Caller serverpod_auth_core;
+  late final _i12.Caller serverpod_auth_core;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -1053,7 +841,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i21.Protocol(),
+         _i17.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -1062,9 +850,7 @@ class Client extends _i1.ServerpodClientShared {
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
        ) {
-    cmsApiToken = EndpointCmsApiToken(this);
-    cmsClient = EndpointCmsClient(this);
-    deployment = EndpointDeployment(this);
+    apiToken = EndpointApiToken(this);
     documentCollaboration = EndpointDocumentCollaboration(this);
     document = EndpointDocument(this);
     emailIdp = EndpointEmailIdp(this);
@@ -1076,11 +862,7 @@ class Client extends _i1.ServerpodClientShared {
     modules = Modules(this);
   }
 
-  late final EndpointCmsApiToken cmsApiToken;
-
-  late final EndpointCmsClient cmsClient;
-
-  late final EndpointDeployment deployment;
+  late final EndpointApiToken apiToken;
 
   late final EndpointDocumentCollaboration documentCollaboration;
 
@@ -1102,9 +884,7 @@ class Client extends _i1.ServerpodClientShared {
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
-    'cmsApiToken': cmsApiToken,
-    'cmsClient': cmsClient,
-    'deployment': deployment,
+    'apiToken': apiToken,
     'documentCollaboration': documentCollaboration,
     'document': document,
     'emailIdp': emailIdp,

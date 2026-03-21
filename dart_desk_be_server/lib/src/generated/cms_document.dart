@@ -12,11 +12,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class CmsDocument
+abstract class Document
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  CmsDocument._({
+  Document._({
     this.id,
-    required this.clientId,
+    this.tenantId,
     required this.documentType,
     required this.title,
     required this.slug,
@@ -26,15 +26,15 @@ abstract class CmsDocument
     this.crdtHlc,
     DateTime? createdAt,
     DateTime? updatedAt,
-    required this.createdByUserId,
+    this.createdByUserId,
     this.updatedByUserId,
   }) : isDefault = isDefault ?? false,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
-  factory CmsDocument({
+  factory Document({
     int? id,
-    required int clientId,
+    int? tenantId,
     required String documentType,
     required String title,
     required String slug,
@@ -44,14 +44,14 @@ abstract class CmsDocument
     String? crdtHlc,
     DateTime? createdAt,
     DateTime? updatedAt,
-    required int createdByUserId,
+    int? createdByUserId,
     int? updatedByUserId,
-  }) = _CmsDocumentImpl;
+  }) = _DocumentImpl;
 
-  factory CmsDocument.fromJson(Map<String, dynamic> jsonSerialization) {
-    return CmsDocument(
+  factory Document.fromJson(Map<String, dynamic> jsonSerialization) {
+    return Document(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int,
+      tenantId: jsonSerialization['tenantId'] as int?,
       documentType: jsonSerialization['documentType'] as String,
       title: jsonSerialization['title'] as String,
       slug: jsonSerialization['slug'] as String,
@@ -67,19 +67,19 @@ abstract class CmsDocument
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
-      createdByUserId: jsonSerialization['createdByUserId'] as int,
+      createdByUserId: jsonSerialization['createdByUserId'] as int?,
       updatedByUserId: jsonSerialization['updatedByUserId'] as int?,
     );
   }
 
-  static final t = CmsDocumentTable();
+  static final t = DocumentTable();
 
-  static const db = CmsDocumentRepository._();
+  static const db = DocumentRepository._();
 
   @override
   int? id;
 
-  int clientId;
+  int? tenantId;
 
   String documentType;
 
@@ -99,19 +99,19 @@ abstract class CmsDocument
 
   DateTime? updatedAt;
 
-  int createdByUserId;
+  int? createdByUserId;
 
   int? updatedByUserId;
 
   @override
   _i1.Table<int?> get table => t;
 
-  /// Returns a shallow copy of this [CmsDocument]
+  /// Returns a shallow copy of this [Document]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CmsDocument copyWith({
+  Document copyWith({
     int? id,
-    int? clientId,
+    int? tenantId,
     String? documentType,
     String? title,
     String? slug,
@@ -127,9 +127,9 @@ abstract class CmsDocument
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'CmsDocument',
+      '__className__': 'Document',
       if (id != null) 'id': id,
-      'clientId': clientId,
+      if (tenantId != null) 'tenantId': tenantId,
       'documentType': documentType,
       'title': title,
       'slug': slug,
@@ -139,7 +139,7 @@ abstract class CmsDocument
       if (crdtHlc != null) 'crdtHlc': crdtHlc,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
-      'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId,
       if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
     };
   }
@@ -147,9 +147,9 @@ abstract class CmsDocument
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'CmsDocument',
+      '__className__': 'Document',
       if (id != null) 'id': id,
-      'clientId': clientId,
+      if (tenantId != null) 'tenantId': tenantId,
       'documentType': documentType,
       'title': title,
       'slug': slug,
@@ -159,31 +159,31 @@ abstract class CmsDocument
       if (crdtHlc != null) 'crdtHlc': crdtHlc,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
-      'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId,
       if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
     };
   }
 
-  static CmsDocumentInclude include() {
-    return CmsDocumentInclude._();
+  static DocumentInclude include() {
+    return DocumentInclude._();
   }
 
-  static CmsDocumentIncludeList includeList({
-    _i1.WhereExpressionBuilder<CmsDocumentTable>? where,
+  static DocumentIncludeList includeList({
+    _i1.WhereExpressionBuilder<DocumentTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsDocumentTable>? orderBy,
+    _i1.OrderByBuilder<DocumentTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsDocumentTable>? orderByList,
-    CmsDocumentInclude? include,
+    _i1.OrderByListBuilder<DocumentTable>? orderByList,
+    DocumentInclude? include,
   }) {
-    return CmsDocumentIncludeList._(
+    return DocumentIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(CmsDocument.t),
+      orderBy: orderBy?.call(Document.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(CmsDocument.t),
+      orderByList: orderByList?.call(Document.t),
       include: include,
     );
   }
@@ -196,10 +196,10 @@ abstract class CmsDocument
 
 class _Undefined {}
 
-class _CmsDocumentImpl extends CmsDocument {
-  _CmsDocumentImpl({
+class _DocumentImpl extends Document {
+  _DocumentImpl({
     int? id,
-    required int clientId,
+    int? tenantId,
     required String documentType,
     required String title,
     required String slug,
@@ -209,11 +209,11 @@ class _CmsDocumentImpl extends CmsDocument {
     String? crdtHlc,
     DateTime? createdAt,
     DateTime? updatedAt,
-    required int createdByUserId,
+    int? createdByUserId,
     int? updatedByUserId,
   }) : super._(
          id: id,
-         clientId: clientId,
+         tenantId: tenantId,
          documentType: documentType,
          title: title,
          slug: slug,
@@ -227,13 +227,13 @@ class _CmsDocumentImpl extends CmsDocument {
          updatedByUserId: updatedByUserId,
        );
 
-  /// Returns a shallow copy of this [CmsDocument]
+  /// Returns a shallow copy of this [Document]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  CmsDocument copyWith({
+  Document copyWith({
     Object? id = _Undefined,
-    int? clientId,
+    Object? tenantId = _Undefined,
     String? documentType,
     String? title,
     String? slug,
@@ -243,12 +243,12 @@ class _CmsDocumentImpl extends CmsDocument {
     Object? crdtHlc = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
-    int? createdByUserId,
+    Object? createdByUserId = _Undefined,
     Object? updatedByUserId = _Undefined,
   }) {
-    return CmsDocument(
+    return Document(
       id: id is int? ? id : this.id,
-      clientId: clientId ?? this.clientId,
+      tenantId: tenantId is int? ? tenantId : this.tenantId,
       documentType: documentType ?? this.documentType,
       title: title ?? this.title,
       slug: slug ?? this.slug,
@@ -258,7 +258,9 @@ class _CmsDocumentImpl extends CmsDocument {
       crdtHlc: crdtHlc is String? ? crdtHlc : this.crdtHlc,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
-      createdByUserId: createdByUserId ?? this.createdByUserId,
+      createdByUserId: createdByUserId is int?
+          ? createdByUserId
+          : this.createdByUserId,
       updatedByUserId: updatedByUserId is int?
           ? updatedByUserId
           : this.updatedByUserId,
@@ -266,11 +268,11 @@ class _CmsDocumentImpl extends CmsDocument {
   }
 }
 
-class CmsDocumentUpdateTable extends _i1.UpdateTable<CmsDocumentTable> {
-  CmsDocumentUpdateTable(super.table);
+class DocumentUpdateTable extends _i1.UpdateTable<DocumentTable> {
+  DocumentUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> clientId(int value) => _i1.ColumnValue(
-    table.clientId,
+  _i1.ColumnValue<int, int> tenantId(int? value) => _i1.ColumnValue(
+    table.tenantId,
     value,
   );
 
@@ -321,7 +323,7 @@ class CmsDocumentUpdateTable extends _i1.UpdateTable<CmsDocumentTable> {
         value,
       );
 
-  _i1.ColumnValue<int, int> createdByUserId(int value) => _i1.ColumnValue(
+  _i1.ColumnValue<int, int> createdByUserId(int? value) => _i1.ColumnValue(
     table.createdByUserId,
     value,
   );
@@ -332,11 +334,11 @@ class CmsDocumentUpdateTable extends _i1.UpdateTable<CmsDocumentTable> {
   );
 }
 
-class CmsDocumentTable extends _i1.Table<int?> {
-  CmsDocumentTable({super.tableRelation}) : super(tableName: 'cms_documents') {
-    updateTable = CmsDocumentUpdateTable(this);
-    clientId = _i1.ColumnInt(
-      'clientId',
+class DocumentTable extends _i1.Table<int?> {
+  DocumentTable({super.tableRelation}) : super(tableName: 'documents') {
+    updateTable = DocumentUpdateTable(this);
+    tenantId = _i1.ColumnInt(
+      'tenantId',
       this,
     );
     documentType = _i1.ColumnString(
@@ -388,9 +390,9 @@ class CmsDocumentTable extends _i1.Table<int?> {
     );
   }
 
-  late final CmsDocumentUpdateTable updateTable;
+  late final DocumentUpdateTable updateTable;
 
-  late final _i1.ColumnInt clientId;
+  late final _i1.ColumnInt tenantId;
 
   late final _i1.ColumnString documentType;
 
@@ -417,7 +419,7 @@ class CmsDocumentTable extends _i1.Table<int?> {
   @override
   List<_i1.Column> get columns => [
     id,
-    clientId,
+    tenantId,
     documentType,
     title,
     slug,
@@ -432,19 +434,19 @@ class CmsDocumentTable extends _i1.Table<int?> {
   ];
 }
 
-class CmsDocumentInclude extends _i1.IncludeObject {
-  CmsDocumentInclude._();
+class DocumentInclude extends _i1.IncludeObject {
+  DocumentInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => CmsDocument.t;
+  _i1.Table<int?> get table => Document.t;
 }
 
-class CmsDocumentIncludeList extends _i1.IncludeList {
-  CmsDocumentIncludeList._({
-    _i1.WhereExpressionBuilder<CmsDocumentTable>? where,
+class DocumentIncludeList extends _i1.IncludeList {
+  DocumentIncludeList._({
+    _i1.WhereExpressionBuilder<DocumentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -452,20 +454,20 @@ class CmsDocumentIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(CmsDocument.t);
+    super.where = where?.call(Document.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => CmsDocument.t;
+  _i1.Table<int?> get table => Document.t;
 }
 
-class CmsDocumentRepository {
-  const CmsDocumentRepository._();
+class DocumentRepository {
+  const DocumentRepository._();
 
-  /// Returns a list of [CmsDocument]s matching the given query parameters.
+  /// Returns a list of [Document]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -487,22 +489,22 @@ class CmsDocumentRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<CmsDocument>> find(
+  Future<List<Document>> find(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CmsDocumentTable>? where,
+    _i1.WhereExpressionBuilder<DocumentTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsDocumentTable>? orderBy,
+    _i1.OrderByBuilder<DocumentTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsDocumentTable>? orderByList,
+    _i1.OrderByListBuilder<DocumentTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    return session.db.find<CmsDocument>(
-      where: where?.call(CmsDocument.t),
-      orderBy: orderBy?.call(CmsDocument.t),
-      orderByList: orderByList?.call(CmsDocument.t),
+    return session.db.find<Document>(
+      where: where?.call(Document.t),
+      orderBy: orderBy?.call(Document.t),
+      orderByList: orderByList?.call(Document.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -512,7 +514,7 @@ class CmsDocumentRepository {
     );
   }
 
-  /// Returns the first matching [CmsDocument] matching the given query parameters.
+  /// Returns the first matching [Document] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -529,21 +531,21 @@ class CmsDocumentRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<CmsDocument?> findFirstRow(
+  Future<Document?> findFirstRow(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CmsDocumentTable>? where,
+    _i1.WhereExpressionBuilder<DocumentTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CmsDocumentTable>? orderBy,
+    _i1.OrderByBuilder<DocumentTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsDocumentTable>? orderByList,
+    _i1.OrderByListBuilder<DocumentTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    return session.db.findFirstRow<CmsDocument>(
-      where: where?.call(CmsDocument.t),
-      orderBy: orderBy?.call(CmsDocument.t),
-      orderByList: orderByList?.call(CmsDocument.t),
+    return session.db.findFirstRow<Document>(
+      where: where?.call(Document.t),
+      orderBy: orderBy?.call(Document.t),
+      orderByList: orderByList?.call(Document.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
@@ -552,15 +554,15 @@ class CmsDocumentRepository {
     );
   }
 
-  /// Finds a single [CmsDocument] by its [id] or null if no such row exists.
-  Future<CmsDocument?> findById(
+  /// Finds a single [Document] by its [id] or null if no such row exists.
+  Future<Document?> findById(
     _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    return session.db.findById<CmsDocument>(
+    return session.db.findById<Document>(
       id,
       transaction: transaction,
       lockMode: lockMode,
@@ -568,9 +570,9 @@ class CmsDocumentRepository {
     );
   }
 
-  /// Inserts all [CmsDocument]s in the list and returns the inserted rows.
+  /// Inserts all [Document]s in the list and returns the inserted rows.
   ///
-  /// The returned [CmsDocument]s will have their `id` fields set.
+  /// The returned [Document]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
@@ -578,141 +580,141 @@ class CmsDocumentRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
-  Future<List<CmsDocument>> insert(
+  Future<List<Document>> insert(
     _i1.DatabaseSession session,
-    List<CmsDocument> rows, {
+    List<Document> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
   }) async {
-    return session.db.insert<CmsDocument>(
+    return session.db.insert<Document>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
     );
   }
 
-  /// Inserts a single [CmsDocument] and returns the inserted row.
+  /// Inserts a single [Document] and returns the inserted row.
   ///
-  /// The returned [CmsDocument] will have its `id` field set.
-  Future<CmsDocument> insertRow(
+  /// The returned [Document] will have its `id` field set.
+  Future<Document> insertRow(
     _i1.DatabaseSession session,
-    CmsDocument row, {
+    Document row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<CmsDocument>(
+    return session.db.insertRow<Document>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [CmsDocument]s in the list and returns the updated rows. If
+  /// Updates all [Document]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<CmsDocument>> update(
+  Future<List<Document>> update(
     _i1.DatabaseSession session,
-    List<CmsDocument> rows, {
-    _i1.ColumnSelections<CmsDocumentTable>? columns,
+    List<Document> rows, {
+    _i1.ColumnSelections<DocumentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<CmsDocument>(
+    return session.db.update<Document>(
       rows,
-      columns: columns?.call(CmsDocument.t),
+      columns: columns?.call(Document.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [CmsDocument]. The row needs to have its id set.
+  /// Updates a single [Document]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<CmsDocument> updateRow(
+  Future<Document> updateRow(
     _i1.DatabaseSession session,
-    CmsDocument row, {
-    _i1.ColumnSelections<CmsDocumentTable>? columns,
+    Document row, {
+    _i1.ColumnSelections<DocumentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<CmsDocument>(
+    return session.db.updateRow<Document>(
       row,
-      columns: columns?.call(CmsDocument.t),
+      columns: columns?.call(Document.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [CmsDocument] by its [id] with the specified [columnValues].
+  /// Updates a single [Document] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
-  Future<CmsDocument?> updateById(
+  Future<Document?> updateById(
     _i1.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<CmsDocumentUpdateTable> columnValues,
+    required _i1.ColumnValueListBuilder<DocumentUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateById<CmsDocument>(
+    return session.db.updateById<Document>(
       id,
-      columnValues: columnValues(CmsDocument.t.updateTable),
+      columnValues: columnValues(Document.t.updateTable),
       transaction: transaction,
     );
   }
 
-  /// Updates all [CmsDocument]s matching the [where] expression with the specified [columnValues].
+  /// Updates all [Document]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
-  Future<List<CmsDocument>> updateWhere(
+  Future<List<Document>> updateWhere(
     _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<CmsDocumentUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<CmsDocumentTable> where,
+    required _i1.ColumnValueListBuilder<DocumentUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<DocumentTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsDocumentTable>? orderBy,
-    _i1.OrderByListBuilder<CmsDocumentTable>? orderByList,
+    _i1.OrderByBuilder<DocumentTable>? orderBy,
+    _i1.OrderByListBuilder<DocumentTable>? orderByList,
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateWhere<CmsDocument>(
-      columnValues: columnValues(CmsDocument.t.updateTable),
-      where: where(CmsDocument.t),
+    return session.db.updateWhere<Document>(
+      columnValues: columnValues(Document.t.updateTable),
+      where: where(Document.t),
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(CmsDocument.t),
-      orderByList: orderByList?.call(CmsDocument.t),
+      orderBy: orderBy?.call(Document.t),
+      orderByList: orderByList?.call(Document.t),
       orderDescending: orderDescending,
       transaction: transaction,
     );
   }
 
-  /// Deletes all [CmsDocument]s in the list and returns the deleted rows.
+  /// Deletes all [Document]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<CmsDocument>> delete(
+  Future<List<Document>> delete(
     _i1.DatabaseSession session,
-    List<CmsDocument> rows, {
+    List<Document> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<CmsDocument>(
+    return session.db.delete<Document>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [CmsDocument].
-  Future<CmsDocument> deleteRow(
+  /// Deletes a single [Document].
+  Future<Document> deleteRow(
     _i1.DatabaseSession session,
-    CmsDocument row, {
+    Document row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<CmsDocument>(
+    return session.db.deleteRow<Document>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<CmsDocument>> deleteWhere(
+  Future<List<Document>> deleteWhere(
     _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CmsDocumentTable> where,
+    required _i1.WhereExpressionBuilder<DocumentTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<CmsDocument>(
-      where: where(CmsDocument.t),
+    return session.db.deleteWhere<Document>(
+      where: where(Document.t),
       transaction: transaction,
     );
   }
@@ -721,27 +723,27 @@ class CmsDocumentRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CmsDocumentTable>? where,
+    _i1.WhereExpressionBuilder<DocumentTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<CmsDocument>(
-      where: where?.call(CmsDocument.t),
+    return session.db.count<Document>(
+      where: where?.call(Document.t),
       limit: limit,
       transaction: transaction,
     );
   }
 
-  /// Acquires row-level locks on [CmsDocument] rows matching the [where] expression.
+  /// Acquires row-level locks on [Document] rows matching the [where] expression.
   Future<void> lockRows(
     _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CmsDocumentTable> where,
+    required _i1.WhereExpressionBuilder<DocumentTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
     _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
   }) async {
-    return session.db.lockRows<CmsDocument>(
-      where: where(CmsDocument.t),
+    return session.db.lockRows<Document>(
+      where: where(Document.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
       transaction: transaction,

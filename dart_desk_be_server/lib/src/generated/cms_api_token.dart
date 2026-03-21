@@ -12,11 +12,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class CmsApiToken
+abstract class ApiToken
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  CmsApiToken._({
+  ApiToken._({
     this.id,
-    required this.clientId,
+    this.tenantId,
     required this.name,
     required this.tokenHash,
     required this.tokenPrefix,
@@ -30,9 +30,9 @@ abstract class CmsApiToken
   }) : isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now();
 
-  factory CmsApiToken({
+  factory ApiToken({
     int? id,
-    required int clientId,
+    int? tenantId,
     required String name,
     required String tokenHash,
     required String tokenPrefix,
@@ -43,12 +43,12 @@ abstract class CmsApiToken
     DateTime? expiresAt,
     bool? isActive,
     DateTime? createdAt,
-  }) = _CmsApiTokenImpl;
+  }) = _ApiTokenImpl;
 
-  factory CmsApiToken.fromJson(Map<String, dynamic> jsonSerialization) {
-    return CmsApiToken(
+  factory ApiToken.fromJson(Map<String, dynamic> jsonSerialization) {
+    return ApiToken(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int,
+      tenantId: jsonSerialization['tenantId'] as int?,
       name: jsonSerialization['name'] as String,
       tokenHash: jsonSerialization['tokenHash'] as String,
       tokenPrefix: jsonSerialization['tokenPrefix'] as String,
@@ -70,14 +70,14 @@ abstract class CmsApiToken
     );
   }
 
-  static final t = CmsApiTokenTable();
+  static final t = ApiTokenTable();
 
-  static const db = CmsApiTokenRepository._();
+  static const db = ApiTokenRepository._();
 
   @override
   int? id;
 
-  int clientId;
+  int? tenantId;
 
   String name;
 
@@ -102,12 +102,12 @@ abstract class CmsApiToken
   @override
   _i1.Table<int?> get table => t;
 
-  /// Returns a shallow copy of this [CmsApiToken]
+  /// Returns a shallow copy of this [ApiToken]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CmsApiToken copyWith({
+  ApiToken copyWith({
     int? id,
-    int? clientId,
+    int? tenantId,
     String? name,
     String? tokenHash,
     String? tokenPrefix,
@@ -122,9 +122,9 @@ abstract class CmsApiToken
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'CmsApiToken',
+      '__className__': 'ApiToken',
       if (id != null) 'id': id,
-      'clientId': clientId,
+      if (tenantId != null) 'tenantId': tenantId,
       'name': name,
       'tokenHash': tokenHash,
       'tokenPrefix': tokenPrefix,
@@ -141,9 +141,9 @@ abstract class CmsApiToken
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'CmsApiToken',
+      '__className__': 'ApiToken',
       if (id != null) 'id': id,
-      'clientId': clientId,
+      if (tenantId != null) 'tenantId': tenantId,
       'name': name,
       'tokenHash': tokenHash,
       'tokenPrefix': tokenPrefix,
@@ -157,26 +157,26 @@ abstract class CmsApiToken
     };
   }
 
-  static CmsApiTokenInclude include() {
-    return CmsApiTokenInclude._();
+  static ApiTokenInclude include() {
+    return ApiTokenInclude._();
   }
 
-  static CmsApiTokenIncludeList includeList({
-    _i1.WhereExpressionBuilder<CmsApiTokenTable>? where,
+  static ApiTokenIncludeList includeList({
+    _i1.WhereExpressionBuilder<ApiTokenTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsApiTokenTable>? orderBy,
+    _i1.OrderByBuilder<ApiTokenTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsApiTokenTable>? orderByList,
-    CmsApiTokenInclude? include,
+    _i1.OrderByListBuilder<ApiTokenTable>? orderByList,
+    ApiTokenInclude? include,
   }) {
-    return CmsApiTokenIncludeList._(
+    return ApiTokenIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(CmsApiToken.t),
+      orderBy: orderBy?.call(ApiToken.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(CmsApiToken.t),
+      orderByList: orderByList?.call(ApiToken.t),
       include: include,
     );
   }
@@ -189,10 +189,10 @@ abstract class CmsApiToken
 
 class _Undefined {}
 
-class _CmsApiTokenImpl extends CmsApiToken {
-  _CmsApiTokenImpl({
+class _ApiTokenImpl extends ApiToken {
+  _ApiTokenImpl({
     int? id,
-    required int clientId,
+    int? tenantId,
     required String name,
     required String tokenHash,
     required String tokenPrefix,
@@ -205,7 +205,7 @@ class _CmsApiTokenImpl extends CmsApiToken {
     DateTime? createdAt,
   }) : super._(
          id: id,
-         clientId: clientId,
+         tenantId: tenantId,
          name: name,
          tokenHash: tokenHash,
          tokenPrefix: tokenPrefix,
@@ -218,13 +218,13 @@ class _CmsApiTokenImpl extends CmsApiToken {
          createdAt: createdAt,
        );
 
-  /// Returns a shallow copy of this [CmsApiToken]
+  /// Returns a shallow copy of this [ApiToken]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  CmsApiToken copyWith({
+  ApiToken copyWith({
     Object? id = _Undefined,
-    int? clientId,
+    Object? tenantId = _Undefined,
     String? name,
     String? tokenHash,
     String? tokenPrefix,
@@ -236,9 +236,9 @@ class _CmsApiTokenImpl extends CmsApiToken {
     bool? isActive,
     Object? createdAt = _Undefined,
   }) {
-    return CmsApiToken(
+    return ApiToken(
       id: id is int? ? id : this.id,
-      clientId: clientId ?? this.clientId,
+      tenantId: tenantId is int? ? tenantId : this.tenantId,
       name: name ?? this.name,
       tokenHash: tokenHash ?? this.tokenHash,
       tokenPrefix: tokenPrefix ?? this.tokenPrefix,
@@ -255,11 +255,11 @@ class _CmsApiTokenImpl extends CmsApiToken {
   }
 }
 
-class CmsApiTokenUpdateTable extends _i1.UpdateTable<CmsApiTokenTable> {
-  CmsApiTokenUpdateTable(super.table);
+class ApiTokenUpdateTable extends _i1.UpdateTable<ApiTokenTable> {
+  ApiTokenUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> clientId(int value) => _i1.ColumnValue(
-    table.clientId,
+  _i1.ColumnValue<int, int> tenantId(int? value) => _i1.ColumnValue(
+    table.tenantId,
     value,
   );
 
@@ -317,11 +317,11 @@ class CmsApiTokenUpdateTable extends _i1.UpdateTable<CmsApiTokenTable> {
       );
 }
 
-class CmsApiTokenTable extends _i1.Table<int?> {
-  CmsApiTokenTable({super.tableRelation}) : super(tableName: 'cms_api_tokens') {
-    updateTable = CmsApiTokenUpdateTable(this);
-    clientId = _i1.ColumnInt(
-      'clientId',
+class ApiTokenTable extends _i1.Table<int?> {
+  ApiTokenTable({super.tableRelation}) : super(tableName: 'api_tokens') {
+    updateTable = ApiTokenUpdateTable(this);
+    tenantId = _i1.ColumnInt(
+      'tenantId',
       this,
     );
     name = _i1.ColumnString(
@@ -368,9 +368,9 @@ class CmsApiTokenTable extends _i1.Table<int?> {
     );
   }
 
-  late final CmsApiTokenUpdateTable updateTable;
+  late final ApiTokenUpdateTable updateTable;
 
-  late final _i1.ColumnInt clientId;
+  late final _i1.ColumnInt tenantId;
 
   late final _i1.ColumnString name;
 
@@ -395,7 +395,7 @@ class CmsApiTokenTable extends _i1.Table<int?> {
   @override
   List<_i1.Column> get columns => [
     id,
-    clientId,
+    tenantId,
     name,
     tokenHash,
     tokenPrefix,
@@ -409,19 +409,19 @@ class CmsApiTokenTable extends _i1.Table<int?> {
   ];
 }
 
-class CmsApiTokenInclude extends _i1.IncludeObject {
-  CmsApiTokenInclude._();
+class ApiTokenInclude extends _i1.IncludeObject {
+  ApiTokenInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => CmsApiToken.t;
+  _i1.Table<int?> get table => ApiToken.t;
 }
 
-class CmsApiTokenIncludeList extends _i1.IncludeList {
-  CmsApiTokenIncludeList._({
-    _i1.WhereExpressionBuilder<CmsApiTokenTable>? where,
+class ApiTokenIncludeList extends _i1.IncludeList {
+  ApiTokenIncludeList._({
+    _i1.WhereExpressionBuilder<ApiTokenTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -429,20 +429,20 @@ class CmsApiTokenIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(CmsApiToken.t);
+    super.where = where?.call(ApiToken.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => CmsApiToken.t;
+  _i1.Table<int?> get table => ApiToken.t;
 }
 
-class CmsApiTokenRepository {
-  const CmsApiTokenRepository._();
+class ApiTokenRepository {
+  const ApiTokenRepository._();
 
-  /// Returns a list of [CmsApiToken]s matching the given query parameters.
+  /// Returns a list of [ApiToken]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -464,22 +464,22 @@ class CmsApiTokenRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<CmsApiToken>> find(
+  Future<List<ApiToken>> find(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CmsApiTokenTable>? where,
+    _i1.WhereExpressionBuilder<ApiTokenTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsApiTokenTable>? orderBy,
+    _i1.OrderByBuilder<ApiTokenTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsApiTokenTable>? orderByList,
+    _i1.OrderByListBuilder<ApiTokenTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    return session.db.find<CmsApiToken>(
-      where: where?.call(CmsApiToken.t),
-      orderBy: orderBy?.call(CmsApiToken.t),
-      orderByList: orderByList?.call(CmsApiToken.t),
+    return session.db.find<ApiToken>(
+      where: where?.call(ApiToken.t),
+      orderBy: orderBy?.call(ApiToken.t),
+      orderByList: orderByList?.call(ApiToken.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -489,7 +489,7 @@ class CmsApiTokenRepository {
     );
   }
 
-  /// Returns the first matching [CmsApiToken] matching the given query parameters.
+  /// Returns the first matching [ApiToken] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -506,21 +506,21 @@ class CmsApiTokenRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<CmsApiToken?> findFirstRow(
+  Future<ApiToken?> findFirstRow(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CmsApiTokenTable>? where,
+    _i1.WhereExpressionBuilder<ApiTokenTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CmsApiTokenTable>? orderBy,
+    _i1.OrderByBuilder<ApiTokenTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsApiTokenTable>? orderByList,
+    _i1.OrderByListBuilder<ApiTokenTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    return session.db.findFirstRow<CmsApiToken>(
-      where: where?.call(CmsApiToken.t),
-      orderBy: orderBy?.call(CmsApiToken.t),
-      orderByList: orderByList?.call(CmsApiToken.t),
+    return session.db.findFirstRow<ApiToken>(
+      where: where?.call(ApiToken.t),
+      orderBy: orderBy?.call(ApiToken.t),
+      orderByList: orderByList?.call(ApiToken.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
@@ -529,15 +529,15 @@ class CmsApiTokenRepository {
     );
   }
 
-  /// Finds a single [CmsApiToken] by its [id] or null if no such row exists.
-  Future<CmsApiToken?> findById(
+  /// Finds a single [ApiToken] by its [id] or null if no such row exists.
+  Future<ApiToken?> findById(
     _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    return session.db.findById<CmsApiToken>(
+    return session.db.findById<ApiToken>(
       id,
       transaction: transaction,
       lockMode: lockMode,
@@ -545,9 +545,9 @@ class CmsApiTokenRepository {
     );
   }
 
-  /// Inserts all [CmsApiToken]s in the list and returns the inserted rows.
+  /// Inserts all [ApiToken]s in the list and returns the inserted rows.
   ///
-  /// The returned [CmsApiToken]s will have their `id` fields set.
+  /// The returned [ApiToken]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
@@ -555,141 +555,141 @@ class CmsApiTokenRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
-  Future<List<CmsApiToken>> insert(
+  Future<List<ApiToken>> insert(
     _i1.DatabaseSession session,
-    List<CmsApiToken> rows, {
+    List<ApiToken> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
   }) async {
-    return session.db.insert<CmsApiToken>(
+    return session.db.insert<ApiToken>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
     );
   }
 
-  /// Inserts a single [CmsApiToken] and returns the inserted row.
+  /// Inserts a single [ApiToken] and returns the inserted row.
   ///
-  /// The returned [CmsApiToken] will have its `id` field set.
-  Future<CmsApiToken> insertRow(
+  /// The returned [ApiToken] will have its `id` field set.
+  Future<ApiToken> insertRow(
     _i1.DatabaseSession session,
-    CmsApiToken row, {
+    ApiToken row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<CmsApiToken>(
+    return session.db.insertRow<ApiToken>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [CmsApiToken]s in the list and returns the updated rows. If
+  /// Updates all [ApiToken]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<CmsApiToken>> update(
+  Future<List<ApiToken>> update(
     _i1.DatabaseSession session,
-    List<CmsApiToken> rows, {
-    _i1.ColumnSelections<CmsApiTokenTable>? columns,
+    List<ApiToken> rows, {
+    _i1.ColumnSelections<ApiTokenTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<CmsApiToken>(
+    return session.db.update<ApiToken>(
       rows,
-      columns: columns?.call(CmsApiToken.t),
+      columns: columns?.call(ApiToken.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [CmsApiToken]. The row needs to have its id set.
+  /// Updates a single [ApiToken]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<CmsApiToken> updateRow(
+  Future<ApiToken> updateRow(
     _i1.DatabaseSession session,
-    CmsApiToken row, {
-    _i1.ColumnSelections<CmsApiTokenTable>? columns,
+    ApiToken row, {
+    _i1.ColumnSelections<ApiTokenTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<CmsApiToken>(
+    return session.db.updateRow<ApiToken>(
       row,
-      columns: columns?.call(CmsApiToken.t),
+      columns: columns?.call(ApiToken.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [CmsApiToken] by its [id] with the specified [columnValues].
+  /// Updates a single [ApiToken] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
-  Future<CmsApiToken?> updateById(
+  Future<ApiToken?> updateById(
     _i1.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<CmsApiTokenUpdateTable> columnValues,
+    required _i1.ColumnValueListBuilder<ApiTokenUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateById<CmsApiToken>(
+    return session.db.updateById<ApiToken>(
       id,
-      columnValues: columnValues(CmsApiToken.t.updateTable),
+      columnValues: columnValues(ApiToken.t.updateTable),
       transaction: transaction,
     );
   }
 
-  /// Updates all [CmsApiToken]s matching the [where] expression with the specified [columnValues].
+  /// Updates all [ApiToken]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
-  Future<List<CmsApiToken>> updateWhere(
+  Future<List<ApiToken>> updateWhere(
     _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<CmsApiTokenUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<CmsApiTokenTable> where,
+    required _i1.ColumnValueListBuilder<ApiTokenUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<ApiTokenTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsApiTokenTable>? orderBy,
-    _i1.OrderByListBuilder<CmsApiTokenTable>? orderByList,
+    _i1.OrderByBuilder<ApiTokenTable>? orderBy,
+    _i1.OrderByListBuilder<ApiTokenTable>? orderByList,
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateWhere<CmsApiToken>(
-      columnValues: columnValues(CmsApiToken.t.updateTable),
-      where: where(CmsApiToken.t),
+    return session.db.updateWhere<ApiToken>(
+      columnValues: columnValues(ApiToken.t.updateTable),
+      where: where(ApiToken.t),
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(CmsApiToken.t),
-      orderByList: orderByList?.call(CmsApiToken.t),
+      orderBy: orderBy?.call(ApiToken.t),
+      orderByList: orderByList?.call(ApiToken.t),
       orderDescending: orderDescending,
       transaction: transaction,
     );
   }
 
-  /// Deletes all [CmsApiToken]s in the list and returns the deleted rows.
+  /// Deletes all [ApiToken]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<CmsApiToken>> delete(
+  Future<List<ApiToken>> delete(
     _i1.DatabaseSession session,
-    List<CmsApiToken> rows, {
+    List<ApiToken> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<CmsApiToken>(
+    return session.db.delete<ApiToken>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [CmsApiToken].
-  Future<CmsApiToken> deleteRow(
+  /// Deletes a single [ApiToken].
+  Future<ApiToken> deleteRow(
     _i1.DatabaseSession session,
-    CmsApiToken row, {
+    ApiToken row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<CmsApiToken>(
+    return session.db.deleteRow<ApiToken>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<CmsApiToken>> deleteWhere(
+  Future<List<ApiToken>> deleteWhere(
     _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CmsApiTokenTable> where,
+    required _i1.WhereExpressionBuilder<ApiTokenTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<CmsApiToken>(
-      where: where(CmsApiToken.t),
+    return session.db.deleteWhere<ApiToken>(
+      where: where(ApiToken.t),
       transaction: transaction,
     );
   }
@@ -698,27 +698,27 @@ class CmsApiTokenRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CmsApiTokenTable>? where,
+    _i1.WhereExpressionBuilder<ApiTokenTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<CmsApiToken>(
-      where: where?.call(CmsApiToken.t),
+    return session.db.count<ApiToken>(
+      where: where?.call(ApiToken.t),
       limit: limit,
       transaction: transaction,
     );
   }
 
-  /// Acquires row-level locks on [CmsApiToken] rows matching the [where] expression.
+  /// Acquires row-level locks on [ApiToken] rows matching the [where] expression.
   Future<void> lockRows(
     _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CmsApiTokenTable> where,
+    required _i1.WhereExpressionBuilder<ApiTokenTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
     _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
   }) async {
-    return session.db.lockRows<CmsApiToken>(
-      where: where(CmsApiToken.t),
+    return session.db.lockRows<ApiToken>(
+      where: where(ApiToken.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
       transaction: transaction,

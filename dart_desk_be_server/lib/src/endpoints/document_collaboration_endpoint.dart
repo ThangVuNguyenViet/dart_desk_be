@@ -29,7 +29,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
   }
 
   /// Submit an edit (partial field updates) for collaborative editing
-  Future<CmsDocument> submitEdit(
+  Future<Document> submitEdit(
     Session session,
     int documentId,
     String sessionId,
@@ -42,7 +42,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
     }
 
     // Resolve CMS user for attribution
-    final cmsUser = await CmsUser.db.findFirstRow(
+    final cmsUser = await User.db.findFirstRow(
       session,
       where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
     );

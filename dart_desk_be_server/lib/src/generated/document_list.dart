@@ -24,7 +24,7 @@ abstract class DocumentList
   });
 
   factory DocumentList({
-    required List<_i2.CmsDocument> documents,
+    required List<_i2.Document> documents,
     required int total,
     required int page,
     required int pageSize,
@@ -32,7 +32,7 @@ abstract class DocumentList
 
   factory DocumentList.fromJson(Map<String, dynamic> jsonSerialization) {
     return DocumentList(
-      documents: _i3.Protocol().deserialize<List<_i2.CmsDocument>>(
+      documents: _i3.Protocol().deserialize<List<_i2.Document>>(
         jsonSerialization['documents'],
       ),
       total: jsonSerialization['total'] as int,
@@ -41,7 +41,7 @@ abstract class DocumentList
     );
   }
 
-  List<_i2.CmsDocument> documents;
+  List<_i2.Document> documents;
 
   int total;
 
@@ -53,7 +53,7 @@ abstract class DocumentList
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   DocumentList copyWith({
-    List<_i2.CmsDocument>? documents,
+    List<_i2.Document>? documents,
     int? total,
     int? page,
     int? pageSize,
@@ -88,7 +88,7 @@ abstract class DocumentList
 
 class _DocumentListImpl extends DocumentList {
   _DocumentListImpl({
-    required List<_i2.CmsDocument> documents,
+    required List<_i2.Document> documents,
     required int total,
     required int page,
     required int pageSize,
@@ -104,7 +104,7 @@ class _DocumentListImpl extends DocumentList {
   @_i1.useResult
   @override
   DocumentList copyWith({
-    List<_i2.CmsDocument>? documents,
+    List<_i2.Document>? documents,
     int? total,
     int? page,
     int? pageSize,

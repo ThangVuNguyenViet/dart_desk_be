@@ -12,8 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class CmsDocumentData implements _i1.SerializableModel {
-  CmsDocumentData._({
+abstract class DocumentData implements _i1.SerializableModel {
+  DocumentData._({
     this.id,
     required this.documentType,
     required this.data,
@@ -24,7 +24,7 @@ abstract class CmsDocumentData implements _i1.SerializableModel {
   }) : createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
-  factory CmsDocumentData({
+  factory DocumentData({
     int? id,
     required String documentType,
     required String data,
@@ -32,10 +32,10 @@ abstract class CmsDocumentData implements _i1.SerializableModel {
     DateTime? updatedAt,
     int? createdByUserId,
     int? updatedByUserId,
-  }) = _CmsDocumentDataImpl;
+  }) = _DocumentDataImpl;
 
-  factory CmsDocumentData.fromJson(Map<String, dynamic> jsonSerialization) {
-    return CmsDocumentData(
+  factory DocumentData.fromJson(Map<String, dynamic> jsonSerialization) {
+    return DocumentData(
       id: jsonSerialization['id'] as int?,
       documentType: jsonSerialization['documentType'] as String,
       data: jsonSerialization['data'] as String,
@@ -67,10 +67,10 @@ abstract class CmsDocumentData implements _i1.SerializableModel {
 
   int? updatedByUserId;
 
-  /// Returns a shallow copy of this [CmsDocumentData]
+  /// Returns a shallow copy of this [DocumentData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CmsDocumentData copyWith({
+  DocumentData copyWith({
     int? id,
     String? documentType,
     String? data,
@@ -82,7 +82,7 @@ abstract class CmsDocumentData implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'CmsDocumentData',
+      '__className__': 'DocumentData',
       if (id != null) 'id': id,
       'documentType': documentType,
       'data': data,
@@ -101,8 +101,8 @@ abstract class CmsDocumentData implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _CmsDocumentDataImpl extends CmsDocumentData {
-  _CmsDocumentDataImpl({
+class _DocumentDataImpl extends DocumentData {
+  _DocumentDataImpl({
     int? id,
     required String documentType,
     required String data,
@@ -120,11 +120,11 @@ class _CmsDocumentDataImpl extends CmsDocumentData {
          updatedByUserId: updatedByUserId,
        );
 
-  /// Returns a shallow copy of this [CmsDocumentData]
+  /// Returns a shallow copy of this [DocumentData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  CmsDocumentData copyWith({
+  DocumentData copyWith({
     Object? id = _Undefined,
     String? documentType,
     String? data,
@@ -133,7 +133,7 @@ class _CmsDocumentDataImpl extends CmsDocumentData {
     Object? createdByUserId = _Undefined,
     Object? updatedByUserId = _Undefined,
   }) {
-    return CmsDocumentData(
+    return DocumentData(
       id: id is int? ? id : this.id,
       documentType: documentType ?? this.documentType,
       data: data ?? this.data,

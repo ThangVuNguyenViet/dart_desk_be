@@ -1,23 +1,9 @@
-cmsApiToken:
+apiToken:
   - getTokens:
   - createToken:
   - updateToken:
   - regenerateToken:
   - deleteToken:
-cmsClient:
-  - getClients:
-  - getClientBySlug:
-  - getClient:
-  - createClient:
-  - updateClient:
-  - regenerateApiToken:
-  - deleteClient:
-  - createClientWithOwner:
-deployment:
-  - list:
-  - getActive:
-  - activate:
-  - delete:
 documentCollaboration:
   - getOperationsSince:
   - submitEdit:
@@ -70,8 +56,4 @@ refreshJwtTokens:
 studioConfig:
   - getStudioUrlTemplate:
 user:
-  - ensureUser:
   - getCurrentUser:
-  - getUserClients:
-  - getCurrentUserBySlug:
-  - getClientUserCount:

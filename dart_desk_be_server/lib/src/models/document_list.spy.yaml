@@ -1,6 +1,6 @@
 class: DocumentList
 fields:
-  documents: List<protocol:CmsDocument>
+  documents: List<protocol:Document>
   total: int
   page: int
   pageSize: int

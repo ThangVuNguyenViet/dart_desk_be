@@ -44,18 +44,18 @@ class DocumentCrdtService {
     }
 
     // Update document with CRDT metadata
-    final document = await CmsDocument.db.findById(session, documentId);
+    final document = await Document.db.findById(session, documentId);
     if (document != null) {
       final updated = document.copyWith(
         crdtNodeId: nodeId,
         crdtHlc: hlcString,
       );
-      await CmsDocument.db.updateRow(session, updated);
+      await Document.db.updateRow(session, updated);
     }
   }
 
   /// Apply partial updates (only changed fields) and merge with existing state
-  Future<CmsDocument> applyOperations(
+  Future<Document> applyOperations(
     Session session,
     int documentId,
     Map<String, dynamic> updates,
@@ -65,7 +65,7 @@ class DocumentCrdtService {
     final userId = cmsUserId;
 
     // Get current document
-    final doc = await CmsDocument.db.findById(session, documentId);
+    final doc = await Document.db.findById(session, documentId);
     if (doc == null) {
       throw Exception('Document not found: $documentId');
     }
@@ -109,7 +109,7 @@ class DocumentCrdtService {
       updatedByUserId: userId,
     );
 
-    await CmsDocument.db.updateRow(session, updated);
+    await Document.db.updateRow(session, updated);
 
     // Check if compaction is needed
     final opCount = await getOperationCount(session, documentId);
@@ -179,7 +179,7 @@ class DocumentCrdtService {
     String targetHlc,
   ) async {
     // Optimization: if targetHlc matches current document HLC, return cached data
-    final doc = await CmsDocument.db.findById(session, documentId);
+    final doc = await Document.db.findById(session, documentId);
     if (doc != null && doc.crdtHlc == targetHlc && doc.data != null) {
       return jsonDecode(doc.data!) as Map<String, dynamic>;
     }
@@ -231,7 +231,7 @@ class DocumentCrdtService {
     if (opCount > threshold) {
       // Get current state and HLC
       final currentState = await getCurrentState(session, documentId);
-      final doc = await CmsDocument.db.findById(session, documentId);
+      final doc = await Document.db.findById(session, documentId);
 
       if (doc?.crdtHlc == null) {
         session.log('Cannot compact: document has no CRDT HLC');
@@ -289,7 +289,7 @@ class DocumentCrdtService {
 
   /// Get current HLC timestamp for document
   Future<String?> getCurrentHlc(Session session, int documentId) async {
-    final doc = await CmsDocument.db.findById(session, documentId);
+    final doc = await Document.db.findById(session, documentId);
     return doc?.crdtHlc;
   }
 

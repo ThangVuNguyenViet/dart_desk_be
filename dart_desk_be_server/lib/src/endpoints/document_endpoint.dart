@@ -22,22 +22,22 @@ class DocumentEndpoint extends Endpoint {
       throw Exception('User must be authenticated to list documents');
     }
 
-    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+    final cmsUser = await _getUser(session, authInfo.userIdentifier);
 
-    // Get total count filtered by clientId
-    final total = await CmsDocument.db.count(
+    // Get total count filtered by tenantId
+    final total = await Document.db.count(
       session,
       where: (t) =>
           t.documentType.equals(documentType) &
-          t.clientId.equals(cmsUser.clientId),
+          t.tenantId.equals(cmsUser.tenantId),
     );
 
-    // Get paginated documents filtered by clientId
-    final documents = await CmsDocument.db.find(
+    // Get paginated documents filtered by tenantId
+    final documents = await Document.db.find(
       session,
       where: (t) {
         var expr = t.documentType.equals(documentType) &
-            t.clientId.equals(cmsUser.clientId);
+            t.tenantId.equals(cmsUser.tenantId);
         if (search != null && search.isNotEmpty) {
           // Search in title and data (cached latest version)
           expr = expr & (t.title.like('%$search%') | t.data.like('%$search%'));
@@ -59,19 +59,19 @@ class DocumentEndpoint extends Endpoint {
   }
 
   /// Get a single document by ID
-  Future<CmsDocument?> getDocument(
+  Future<Document?> getDocument(
     Session session,
     int documentId,
   ) async {
-    return await CmsDocument.db.findById(session, documentId);
+    return await Document.db.findById(session, documentId);
   }
 
   /// Get a document by slug
-  Future<CmsDocument?> getDocumentBySlug(
+  Future<Document?> getDocumentBySlug(
     Session session,
     String slug,
   ) async {
-    final documents = await CmsDocument.db.find(
+    final documents = await Document.db.find(
       session,
       where: (t) => t.slug.equals(slug),
       limit: 1,
@@ -80,11 +80,11 @@ class DocumentEndpoint extends Endpoint {
   }
 
   /// Get the default document for a document type
-  Future<CmsDocument?> getDefaultDocument(
+  Future<Document?> getDefaultDocument(
     Session session,
     String documentType,
   ) async {
-    final documents = await CmsDocument.db.find(
+    final documents = await Document.db.find(
       session,
       where: (t) =>
           t.documentType.equals(documentType) & t.isDefault.equals(true),
@@ -94,8 +94,8 @@ class DocumentEndpoint extends Endpoint {
   }
 
   /// Create a new document with an initial version
-  /// This creates both the CmsDocument and its first DocumentVersion
-  Future<CmsDocument> createDocument(
+  /// This creates both the Document and its first DocumentVersion
+  Future<Document> createDocument(
     Session session,
     String documentType,
     String title,
@@ -109,14 +109,14 @@ class DocumentEndpoint extends Endpoint {
       throw Exception('User must be authenticated to create documents');
     }
 
-    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+    final cmsUser = await _getUser(session, authInfo.userIdentifier);
     final userId = cmsUser.id!;
 
     // Create the document — encode data as JSON for storage
     final encodedData = jsonEncode(data);
     final effectiveSlug = slug ?? title.toLowerCase().replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(RegExp(r'\s+'), '-').replaceAll(RegExp(r'-+'), '-').trim();
-    final document = CmsDocument(
-      clientId: cmsUser.clientId,
+    final document = Document(
+      tenantId: cmsUser.tenantId,
       documentType: documentType,
       title: title,
       slug: effectiveSlug,
@@ -131,10 +131,10 @@ class DocumentEndpoint extends Endpoint {
     );
 
     // Check if a document with the same slug already exists for this type
-    final existing = await CmsDocument.db.findFirstRow(
+    final existing = await Document.db.findFirstRow(
       session,
       where: (t) =>
-          t.clientId.equals(document.clientId) &
+          t.tenantId.equals(document.tenantId) &
           t.documentType.equals(documentType) &
           t.slug.equals(effectiveSlug),
     );
@@ -144,7 +144,7 @@ class DocumentEndpoint extends Endpoint {
       );
     }
 
-    final created = await CmsDocument.db.insertRow(session, document);
+    final created = await Document.db.insertRow(session, document);
 
     // Initialize CRDT for this document
     if (created.id != null) {
@@ -156,7 +156,7 @@ class DocumentEndpoint extends Endpoint {
       );
 
       // Get the HLC that was set during initialization
-      final updatedDoc = await CmsDocument.db.findById(session, created.id!);
+      final updatedDoc = await Document.db.findById(session, created.id!);
       final currentHlc = updatedDoc?.crdtHlc;
 
       // Create initial version pointing to initial HLC
@@ -185,7 +185,7 @@ class DocumentEndpoint extends Endpoint {
 
   /// Update document data using CRDT operations (partial updates)
   /// Only changed fields need to be provided - they will be merged automatically
-  Future<CmsDocument> updateDocumentData(
+  Future<Document> updateDocumentData(
     Session session,
     int documentId,
     Map<String, dynamic> updates, {
@@ -197,7 +197,7 @@ class DocumentEndpoint extends Endpoint {
       throw Exception('User must be authenticated to update documents');
     }
 
-    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+    final cmsUser = await _getUser(session, authInfo.userIdentifier);
 
     // Use user identifier as session ID if not provided
     final editSessionId = sessionId ?? 'user-${authInfo.userIdentifier}';
@@ -214,7 +214,7 @@ class DocumentEndpoint extends Endpoint {
 
   /// Update document metadata (title, slug, isDefault)
   /// To update document data, use updateDocumentData instead
-  Future<CmsDocument?> updateDocument(
+  Future<Document?> updateDocument(
     Session session,
     int documentId, {
     String? title,
@@ -227,17 +227,17 @@ class DocumentEndpoint extends Endpoint {
       throw Exception('User must be authenticated to update documents');
     }
 
-    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+    final cmsUser = await _getUser(session, authInfo.userIdentifier);
     final userId = cmsUser.id!;
 
-    final existing = await CmsDocument.db.findById(session, documentId);
+    final existing = await Document.db.findById(session, documentId);
 
     if (existing == null) {
       return null;
     }
 
     // Verify the document belongs to the user's client
-    if (existing.clientId != cmsUser.clientId) {
+    if (existing.tenantId != cmsUser.tenantId) {
       throw Exception('Access denied: document belongs to a different client');
     }
 
@@ -249,7 +249,7 @@ class DocumentEndpoint extends Endpoint {
       updatedByUserId: userId,
     );
 
-    await CmsDocument.db.updateRow(session, updated);
+    await Document.db.updateRow(session, updated);
     return updated;
   }
 
@@ -264,20 +264,20 @@ class DocumentEndpoint extends Endpoint {
       throw Exception('User must be authenticated to delete documents');
     }
 
-    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+    final cmsUser = await _getUser(session, authInfo.userIdentifier);
 
-    final existing = await CmsDocument.db.findById(session, documentId);
+    final existing = await Document.db.findById(session, documentId);
 
     if (existing == null) {
       return false;
     }
 
     // Verify the document belongs to the user's client
-    if (existing.clientId != cmsUser.clientId) {
+    if (existing.tenantId != cmsUser.tenantId) {
       throw Exception('Access denied: document belongs to a different client');
     }
 
-    await CmsDocument.db.deleteRow(session, existing);
+    await Document.db.deleteRow(session, existing);
     return true;
   }
 
@@ -306,7 +306,7 @@ class DocumentEndpoint extends Endpoint {
     baseSlug = baseSlug.replaceAll(RegExp(r'-$'), '');
 
     // Check if this slug already exists
-    final existing = await CmsDocument.db.findFirstRow(
+    final existing = await Document.db.findFirstRow(
       session,
       where: (t) =>
           t.slug.equals(baseSlug) & t.documentType.equals(documentType),
@@ -318,7 +318,7 @@ class DocumentEndpoint extends Endpoint {
 
     // Find the next available suffix
     // Query all slugs that match the pattern "baseSlug" or "baseSlug-N"
-    final similarDocs = await CmsDocument.db.find(
+    final similarDocs = await Document.db.find(
       session,
       where: (t) =>
           t.slug.like('$baseSlug%') & t.documentType.equals(documentType),
@@ -337,7 +337,7 @@ class DocumentEndpoint extends Endpoint {
   /// Get all document types (unique document type names)
   Future<List<String>> getDocumentTypes(Session session) async {
     final result = await session.db.unsafeQuery(
-      'SELECT DISTINCT document_type FROM cms_documents ORDER BY document_type',
+      'SELECT DISTINCT document_type FROM documents ORDER BY document_type',
     );
 
     return result.map((row) => row.first as String).toList();
@@ -489,7 +489,7 @@ class DocumentEndpoint extends Endpoint {
       throw Exception('User must be authenticated to create versions');
     }
 
-    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
+    final cmsUser = await _getUser(session, authInfo.userIdentifier);
     final userId = cmsUser.id!;
 
     // Get the next version number for this document
@@ -613,16 +613,16 @@ class DocumentEndpoint extends Endpoint {
     if (authInfo == null) {
       throw Exception('User must be authenticated');
     }
-    final cmsUser = await _getCmsUser(session, authInfo.userIdentifier);
-    return await CmsDocument.db.count(
+    final cmsUser = await _getUser(session, authInfo.userIdentifier);
+    return await Document.db.count(
       session,
-      where: (t) => t.clientId.equals(cmsUser.clientId),
+      where: (t) => t.tenantId.equals(cmsUser.tenantId),
     );
   }
 
-  Future<CmsUser> _getCmsUser(
+  Future<User> _getUser(
       Session session, String userIdentifier) async {
-    final cmsUser = await CmsUser.db.findFirstRow(
+    final cmsUser = await User.db.findFirstRow(
       session,
       where: (t) => t.serverpodUserId.equals(userIdentifier),
     );

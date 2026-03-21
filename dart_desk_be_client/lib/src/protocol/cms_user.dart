@@ -12,10 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class CmsUser implements _i1.SerializableModel {
-  CmsUser._({
+abstract class User implements _i1.SerializableModel {
+  User._({
     this.id,
-    required this.clientId,
+    this.tenantId,
     required this.email,
     this.name,
     String? role,
@@ -28,9 +28,9 @@ abstract class CmsUser implements _i1.SerializableModel {
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
-  factory CmsUser({
+  factory User({
     int? id,
-    required int clientId,
+    int? tenantId,
     required String email,
     String? name,
     String? role,
@@ -38,12 +38,12 @@ abstract class CmsUser implements _i1.SerializableModel {
     String? serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) = _CmsUserImpl;
+  }) = _UserImpl;
 
-  factory CmsUser.fromJson(Map<String, dynamic> jsonSerialization) {
-    return CmsUser(
+  factory User.fromJson(Map<String, dynamic> jsonSerialization) {
+    return User(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int,
+      tenantId: jsonSerialization['tenantId'] as int?,
       email: jsonSerialization['email'] as String,
       name: jsonSerialization['name'] as String?,
       role: jsonSerialization['role'] as String?,
@@ -65,7 +65,7 @@ abstract class CmsUser implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int clientId;
+  int? tenantId;
 
   String email;
 
@@ -81,12 +81,12 @@ abstract class CmsUser implements _i1.SerializableModel {
 
   DateTime? updatedAt;
 
-  /// Returns a shallow copy of this [CmsUser]
+  /// Returns a shallow copy of this [User]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CmsUser copyWith({
+  User copyWith({
     int? id,
-    int? clientId,
+    int? tenantId,
     String? email,
     String? name,
     String? role,
@@ -98,9 +98,9 @@ abstract class CmsUser implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'CmsUser',
+      '__className__': 'User',
       if (id != null) 'id': id,
-      'clientId': clientId,
+      if (tenantId != null) 'tenantId': tenantId,
       'email': email,
       if (name != null) 'name': name,
       'role': role,
@@ -119,10 +119,10 @@ abstract class CmsUser implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _CmsUserImpl extends CmsUser {
-  _CmsUserImpl({
+class _UserImpl extends User {
+  _UserImpl({
     int? id,
-    required int clientId,
+    int? tenantId,
     required String email,
     String? name,
     String? role,
@@ -132,7 +132,7 @@ class _CmsUserImpl extends CmsUser {
     DateTime? updatedAt,
   }) : super._(
          id: id,
-         clientId: clientId,
+         tenantId: tenantId,
          email: email,
          name: name,
          role: role,
@@ -142,13 +142,13 @@ class _CmsUserImpl extends CmsUser {
          updatedAt: updatedAt,
        );
 
-  /// Returns a shallow copy of this [CmsUser]
+  /// Returns a shallow copy of this [User]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  CmsUser copyWith({
+  User copyWith({
     Object? id = _Undefined,
-    int? clientId,
+    Object? tenantId = _Undefined,
     String? email,
     Object? name = _Undefined,
     String? role,
@@ -157,9 +157,9 @@ class _CmsUserImpl extends CmsUser {
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
   }) {
-    return CmsUser(
+    return User(
       id: id is int? ? id : this.id,
-      clientId: clientId ?? this.clientId,
+      tenantId: tenantId is int? ? tenantId : this.tenantId,
       email: email ?? this.email,
       name: name is String? ? name : this.name,
       role: role ?? this.role,

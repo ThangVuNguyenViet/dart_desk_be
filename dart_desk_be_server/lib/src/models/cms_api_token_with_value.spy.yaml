@@ -1,4 +1,4 @@
-class: CmsApiTokenWithValue
+class: ApiTokenWithValue
 fields:
-  token: CmsApiToken
+  token: ApiToken
   plaintextToken: String

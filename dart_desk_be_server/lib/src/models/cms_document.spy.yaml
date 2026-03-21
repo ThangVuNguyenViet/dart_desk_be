@@ -1,25 +1,25 @@
-class: CmsDocument
-table: cms_documents
+class: Document
+table: documents
 fields:
-  clientId: int, relation(parent=cms_clients, onDelete=Restrict)
+  tenantId: int?
   documentType: String
   title: String
   slug: String
   isDefault: bool, default=false
-  data: String?  # Latest CRDT-merged document state (JSON)
-  crdtNodeId: String?  # CRDT node identifier
-  crdtHlc: String?  # Hybrid Logical Clock timestamp
+  data: String?
+  crdtNodeId: String?
+  crdtHlc: String?
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
-  createdByUserId: int, relation(parent=cms_users, onDelete=SetNull)
-  updatedByUserId: int?, relation(parent=cms_users, onDelete=SetNull)
+  createdByUserId: int?, relation(parent=users, onDelete=SetNull)
+  updatedByUserId: int?, relation(parent=users, onDelete=SetNull)
 indexes:
-  cms_documents_client_type_idx:
-    fields: clientId, documentType
-  cms_documents_client_type_slug_idx:
-    fields: clientId, documentType, slug
+  documents_tenant_type_idx:
+    fields: tenantId, documentType
+  documents_tenant_type_slug_idx:
+    fields: tenantId, documentType, slug
     unique: true
-  cms_documents_type_default_idx:
+  documents_type_default_idx:
     fields: documentType, isDefault
-  cms_documents_created_at_idx:
+  documents_created_at_idx:
     fields: createdAt

@@ -1,20 +1,20 @@
-class: CmsApiToken
-table: cms_api_tokens
+class: ApiToken
+table: api_tokens
 fields:
-  clientId: int, relation(parent=cms_clients, onDelete=Restrict)
+  tenantId: int?
   name: String
   tokenHash: String
   tokenPrefix: String
   tokenSuffix: String
   role: String
-  createdByUserId: int?, relation(parent=cms_users, onDelete=SetNull)
+  createdByUserId: int?, relation(parent=users, onDelete=SetNull)
   lastUsedAt: DateTime?
   expiresAt: DateTime?
   isActive: bool, default=true
   createdAt: DateTime?, default=now
 indexes:
-  cms_api_token_client_idx:
-    fields: clientId
-  cms_api_token_lookup_idx:
-    fields: clientId, tokenPrefix, tokenSuffix
+  api_token_tenant_idx:
+    fields: tenantId
+  api_token_lookup_idx:
+    fields: tenantId, tokenPrefix, tokenSuffix
     unique: true

@@ -1,7 +1,7 @@
-class: CmsUser
-table: cms_users
+class: User
+table: users
 fields:
-  clientId: int, relation(parent=cms_clients, onDelete=Restrict)
+  tenantId: int?
   email: String
   name: String?
   role: String, default='viewer'
@@ -10,12 +10,12 @@ fields:
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
 indexes:
-  cms_users_client_email_idx:
-    fields: clientId, email
+  users_tenant_email_idx:
+    fields: tenantId, email
     unique: true
-  cms_users_client_id_idx:
-    fields: clientId
-  cms_users_serverpod_user_id_idx:
+  users_tenant_id_idx:
+    fields: tenantId
+  users_serverpod_user_id_idx:
     fields: serverpodUserId
-  cms_users_is_active_idx:
+  users_is_active_idx:
     fields: isActive

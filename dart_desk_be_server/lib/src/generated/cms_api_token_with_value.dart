@@ -14,44 +14,42 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'cms_api_token.dart' as _i2;
 import 'package:dart_desk_be_server/src/generated/protocol.dart' as _i3;
 
-abstract class CmsApiTokenWithValue
+abstract class ApiTokenWithValue
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  CmsApiTokenWithValue._({
+  ApiTokenWithValue._({
     required this.token,
     required this.plaintextToken,
   });
 
-  factory CmsApiTokenWithValue({
-    required _i2.CmsApiToken token,
+  factory ApiTokenWithValue({
+    required _i2.ApiToken token,
     required String plaintextToken,
-  }) = _CmsApiTokenWithValueImpl;
+  }) = _ApiTokenWithValueImpl;
 
-  factory CmsApiTokenWithValue.fromJson(
-    Map<String, dynamic> jsonSerialization,
-  ) {
-    return CmsApiTokenWithValue(
-      token: _i3.Protocol().deserialize<_i2.CmsApiToken>(
+  factory ApiTokenWithValue.fromJson(Map<String, dynamic> jsonSerialization) {
+    return ApiTokenWithValue(
+      token: _i3.Protocol().deserialize<_i2.ApiToken>(
         jsonSerialization['token'],
       ),
       plaintextToken: jsonSerialization['plaintextToken'] as String,
     );
   }
 
-  _i2.CmsApiToken token;
+  _i2.ApiToken token;
 
   String plaintextToken;
 
-  /// Returns a shallow copy of this [CmsApiTokenWithValue]
+  /// Returns a shallow copy of this [ApiTokenWithValue]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CmsApiTokenWithValue copyWith({
-    _i2.CmsApiToken? token,
+  ApiTokenWithValue copyWith({
+    _i2.ApiToken? token,
     String? plaintextToken,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'CmsApiTokenWithValue',
+      '__className__': 'ApiTokenWithValue',
       'token': token.toJson(),
       'plaintextToken': plaintextToken,
     };
@@ -60,7 +58,7 @@ abstract class CmsApiTokenWithValue
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'CmsApiTokenWithValue',
+      '__className__': 'ApiTokenWithValue',
       'token': token.toJsonForProtocol(),
       'plaintextToken': plaintextToken,
     };
@@ -72,24 +70,24 @@ abstract class CmsApiTokenWithValue
   }
 }
 
-class _CmsApiTokenWithValueImpl extends CmsApiTokenWithValue {
-  _CmsApiTokenWithValueImpl({
-    required _i2.CmsApiToken token,
+class _ApiTokenWithValueImpl extends ApiTokenWithValue {
+  _ApiTokenWithValueImpl({
+    required _i2.ApiToken token,
     required String plaintextToken,
   }) : super._(
          token: token,
          plaintextToken: plaintextToken,
        );
 
-  /// Returns a shallow copy of this [CmsApiTokenWithValue]
+  /// Returns a shallow copy of this [ApiTokenWithValue]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  CmsApiTokenWithValue copyWith({
-    _i2.CmsApiToken? token,
+  ApiTokenWithValue copyWith({
+    _i2.ApiToken? token,
     String? plaintextToken,
   }) {
-    return CmsApiTokenWithValue(
+    return ApiTokenWithValue(
       token: token ?? this.token.copyWith(),
       plaintextToken: plaintextToken ?? this.plaintextToken,
     );

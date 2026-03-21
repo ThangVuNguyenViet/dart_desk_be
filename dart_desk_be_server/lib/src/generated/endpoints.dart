@@ -12,105 +12,91 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/cms_api_token_endpoint.dart' as _i2;
-import '../endpoints/cms_client_endpoint.dart' as _i3;
-import '../endpoints/deployment_endpoint.dart' as _i4;
-import '../endpoints/document_collaboration_endpoint.dart' as _i5;
-import '../endpoints/document_endpoint.dart' as _i6;
-import '../endpoints/email_idp_endpoint.dart' as _i7;
-import '../endpoints/google_idp_endpoint.dart' as _i8;
-import '../endpoints/media_endpoint.dart' as _i9;
-import '../endpoints/refresh_jwt_tokens_endpoint.dart' as _i10;
-import '../endpoints/studio_config_endpoint.dart' as _i11;
-import '../endpoints/user_endpoint.dart' as _i12;
+import '../endpoints/document_collaboration_endpoint.dart' as _i3;
+import '../endpoints/document_endpoint.dart' as _i4;
+import '../endpoints/email_idp_endpoint.dart' as _i5;
+import '../endpoints/google_idp_endpoint.dart' as _i6;
+import '../endpoints/media_endpoint.dart' as _i7;
+import '../endpoints/refresh_jwt_tokens_endpoint.dart' as _i8;
+import '../endpoints/studio_config_endpoint.dart' as _i9;
+import '../endpoints/user_endpoint.dart' as _i10;
 import 'package:dart_desk_be_server/src/generated/document_version_status.dart'
-    as _i13;
-import 'dart:typed_data' as _i14;
+    as _i11;
+import 'dart:typed_data' as _i12;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i15;
-import 'package:serverpod_admin_server/serverpod_admin_server.dart' as _i16;
+    as _i13;
+import 'package:serverpod_admin_server/serverpod_admin_server.dart' as _i14;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i17;
+    as _i15;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'cmsApiToken': _i2.CmsApiTokenEndpoint()
+      'apiToken': _i2.ApiTokenEndpoint()
         ..initialize(
           server,
-          'cmsApiToken',
+          'apiToken',
           null,
         ),
-      'cmsClient': _i3.CmsClientEndpoint()
-        ..initialize(
-          server,
-          'cmsClient',
-          null,
-        ),
-      'deployment': _i4.DeploymentEndpoint()
-        ..initialize(
-          server,
-          'deployment',
-          null,
-        ),
-      'documentCollaboration': _i5.DocumentCollaborationEndpoint()
+      'documentCollaboration': _i3.DocumentCollaborationEndpoint()
         ..initialize(
           server,
           'documentCollaboration',
           null,
         ),
-      'document': _i6.DocumentEndpoint()
+      'document': _i4.DocumentEndpoint()
         ..initialize(
           server,
           'document',
           null,
         ),
-      'emailIdp': _i7.EmailIdpEndpoint()
+      'emailIdp': _i5.EmailIdpEndpoint()
         ..initialize(
           server,
           'emailIdp',
           null,
         ),
-      'googleIdp': _i8.GoogleIdpEndpoint()
+      'googleIdp': _i6.GoogleIdpEndpoint()
         ..initialize(
           server,
           'googleIdp',
           null,
         ),
-      'media': _i9.MediaEndpoint()
+      'media': _i7.MediaEndpoint()
         ..initialize(
           server,
           'media',
           null,
         ),
-      'refreshJwtTokens': _i10.RefreshJwtTokensEndpoint()
+      'refreshJwtTokens': _i8.RefreshJwtTokensEndpoint()
         ..initialize(
           server,
           'refreshJwtTokens',
           null,
         ),
-      'studioConfig': _i11.StudioConfigEndpoint()
+      'studioConfig': _i9.StudioConfigEndpoint()
         ..initialize(
           server,
           'studioConfig',
           null,
         ),
-      'user': _i12.UserEndpoint()
+      'user': _i10.UserEndpoint()
         ..initialize(
           server,
           'user',
           null,
         ),
     };
-    connectors['cmsApiToken'] = _i1.EndpointConnector(
-      name: 'cmsApiToken',
-      endpoint: endpoints['cmsApiToken']!,
+    connectors['apiToken'] = _i1.EndpointConnector(
+      name: 'apiToken',
+      endpoint: endpoints['apiToken']!,
       methodConnectors: {
         'getTokens': _i1.MethodConnector(
           name: 'getTokens',
           params: {
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
+            'tenantId': _i1.ParameterDescription(
+              name: 'tenantId',
               type: _i1.getType<int>(),
               nullable: false,
             ),
@@ -119,17 +105,17 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['cmsApiToken'] as _i2.CmsApiTokenEndpoint)
-                  .getTokens(
+              ) async =>
+                  (endpoints['apiToken'] as _i2.ApiTokenEndpoint).getTokens(
                     session,
-                    params['clientId'],
+                    params['tenantId'],
                   ),
         ),
         'createToken': _i1.MethodConnector(
           name: 'createToken',
           params: {
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
+            'tenantId': _i1.ParameterDescription(
+              name: 'tenantId',
               type: _i1.getType<int>(),
               nullable: false,
             ),
@@ -153,10 +139,10 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['cmsApiToken'] as _i2.CmsApiTokenEndpoint)
-                  .createToken(
+              ) async =>
+                  (endpoints['apiToken'] as _i2.ApiTokenEndpoint).createToken(
                     session,
-                    params['clientId'],
+                    params['tenantId'],
                     params['name'],
                     params['role'],
                     params['expiresAt'],
@@ -190,8 +176,8 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['cmsApiToken'] as _i2.CmsApiTokenEndpoint)
-                  .updateToken(
+              ) async =>
+                  (endpoints['apiToken'] as _i2.ApiTokenEndpoint).updateToken(
                     session,
                     params['tokenId'],
                     params['name'],
@@ -212,7 +198,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['cmsApiToken'] as _i2.CmsApiTokenEndpoint)
+              ) async => (endpoints['apiToken'] as _i2.ApiTokenEndpoint)
                   .regenerateToken(
                     session,
                     params['tokenId'],
@@ -231,322 +217,10 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['cmsApiToken'] as _i2.CmsApiTokenEndpoint)
-                  .deleteToken(
+              ) async =>
+                  (endpoints['apiToken'] as _i2.ApiTokenEndpoint).deleteToken(
                     session,
                     params['tokenId'],
-                  ),
-        ),
-      },
-    );
-    connectors['cmsClient'] = _i1.EndpointConnector(
-      name: 'cmsClient',
-      endpoint: endpoints['cmsClient']!,
-      methodConnectors: {
-        'getClients': _i1.MethodConnector(
-          name: 'getClients',
-          params: {
-            'search': _i1.ParameterDescription(
-              name: 'search',
-              type: _i1.getType<String?>(),
-              nullable: true,
-            ),
-            'limit': _i1.ParameterDescription(
-              name: 'limit',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-            'offset': _i1.ParameterDescription(
-              name: 'offset',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['cmsClient'] as _i3.CmsClientEndpoint).getClients(
-                    session,
-                    search: params['search'],
-                    limit: params['limit'],
-                    offset: params['offset'],
-                  ),
-        ),
-        'getClientBySlug': _i1.MethodConnector(
-          name: 'getClientBySlug',
-          params: {
-            'slug': _i1.ParameterDescription(
-              name: 'slug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['cmsClient'] as _i3.CmsClientEndpoint)
-                  .getClientBySlug(
-                    session,
-                    params['slug'],
-                  ),
-        ),
-        'getClient': _i1.MethodConnector(
-          name: 'getClient',
-          params: {
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['cmsClient'] as _i3.CmsClientEndpoint).getClient(
-                    session,
-                    params['clientId'],
-                  ),
-        ),
-        'createClient': _i1.MethodConnector(
-          name: 'createClient',
-          params: {
-            'name': _i1.ParameterDescription(
-              name: 'name',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'slug': _i1.ParameterDescription(
-              name: 'slug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'description': _i1.ParameterDescription(
-              name: 'description',
-              type: _i1.getType<String?>(),
-              nullable: true,
-            ),
-            'settings': _i1.ParameterDescription(
-              name: 'settings',
-              type: _i1.getType<String?>(),
-              nullable: true,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['cmsClient'] as _i3.CmsClientEndpoint)
-                  .createClient(
-                    session,
-                    params['name'],
-                    params['slug'],
-                    description: params['description'],
-                    settings: params['settings'],
-                  ),
-        ),
-        'updateClient': _i1.MethodConnector(
-          name: 'updateClient',
-          params: {
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-            'name': _i1.ParameterDescription(
-              name: 'name',
-              type: _i1.getType<String?>(),
-              nullable: true,
-            ),
-            'description': _i1.ParameterDescription(
-              name: 'description',
-              type: _i1.getType<String?>(),
-              nullable: true,
-            ),
-            'isActive': _i1.ParameterDescription(
-              name: 'isActive',
-              type: _i1.getType<bool?>(),
-              nullable: true,
-            ),
-            'settings': _i1.ParameterDescription(
-              name: 'settings',
-              type: _i1.getType<String?>(),
-              nullable: true,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['cmsClient'] as _i3.CmsClientEndpoint)
-                  .updateClient(
-                    session,
-                    params['clientId'],
-                    name: params['name'],
-                    description: params['description'],
-                    isActive: params['isActive'],
-                    settings: params['settings'],
-                  ),
-        ),
-        'regenerateApiToken': _i1.MethodConnector(
-          name: 'regenerateApiToken',
-          params: {
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['cmsClient'] as _i3.CmsClientEndpoint)
-                  .regenerateApiToken(
-                    session,
-                    params['clientId'],
-                  ),
-        ),
-        'deleteClient': _i1.MethodConnector(
-          name: 'deleteClient',
-          params: {
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['cmsClient'] as _i3.CmsClientEndpoint)
-                  .deleteClient(
-                    session,
-                    params['clientId'],
-                  ),
-        ),
-        'createClientWithOwner': _i1.MethodConnector(
-          name: 'createClientWithOwner',
-          params: {
-            'name': _i1.ParameterDescription(
-              name: 'name',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'slug': _i1.ParameterDescription(
-              name: 'slug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['cmsClient'] as _i3.CmsClientEndpoint)
-                  .createClientWithOwner(
-                    session,
-                    name: params['name'],
-                    slug: params['slug'],
-                  ),
-        ),
-      },
-    );
-    connectors['deployment'] = _i1.EndpointConnector(
-      name: 'deployment',
-      endpoint: endpoints['deployment']!,
-      methodConnectors: {
-        'list': _i1.MethodConnector(
-          name: 'list',
-          params: {
-            'clientSlug': _i1.ParameterDescription(
-              name: 'clientSlug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['deployment'] as _i4.DeploymentEndpoint).list(
-                    session,
-                    params['clientSlug'],
-                  ),
-        ),
-        'getActive': _i1.MethodConnector(
-          name: 'getActive',
-          params: {
-            'clientSlug': _i1.ParameterDescription(
-              name: 'clientSlug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['deployment'] as _i4.DeploymentEndpoint).getActive(
-                    session,
-                    params['clientSlug'],
-                  ),
-        ),
-        'activate': _i1.MethodConnector(
-          name: 'activate',
-          params: {
-            'clientSlug': _i1.ParameterDescription(
-              name: 'clientSlug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'version': _i1.ParameterDescription(
-              name: 'version',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['deployment'] as _i4.DeploymentEndpoint).activate(
-                    session,
-                    params['clientSlug'],
-                    params['version'],
-                  ),
-        ),
-        'delete': _i1.MethodConnector(
-          name: 'delete',
-          params: {
-            'clientSlug': _i1.ParameterDescription(
-              name: 'clientSlug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'version': _i1.ParameterDescription(
-              name: 'version',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['deployment'] as _i4.DeploymentEndpoint).delete(
-                    session,
-                    params['clientSlug'],
-                    params['version'],
                   ),
         ),
       },
@@ -580,7 +254,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['documentCollaboration']
-                          as _i5.DocumentCollaborationEndpoint)
+                          as _i3.DocumentCollaborationEndpoint)
                       .getOperationsSince(
                         session,
                         params['documentId'],
@@ -613,7 +287,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['documentCollaboration']
-                          as _i5.DocumentCollaborationEndpoint)
+                          as _i3.DocumentCollaborationEndpoint)
                       .submitEdit(
                         session,
                         params['documentId'],
@@ -636,7 +310,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['documentCollaboration']
-                          as _i5.DocumentCollaborationEndpoint)
+                          as _i3.DocumentCollaborationEndpoint)
                       .getActiveEditors(
                         session,
                         params['documentId'],
@@ -657,7 +331,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['documentCollaboration']
-                          as _i5.DocumentCollaborationEndpoint)
+                          as _i3.DocumentCollaborationEndpoint)
                       .getCurrentHlc(
                         session,
                         params['documentId'],
@@ -678,7 +352,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['documentCollaboration']
-                          as _i5.DocumentCollaborationEndpoint)
+                          as _i3.DocumentCollaborationEndpoint)
                       .getOperationCount(
                         session,
                         params['documentId'],
@@ -699,7 +373,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['documentCollaboration']
-                          as _i5.DocumentCollaborationEndpoint)
+                          as _i3.DocumentCollaborationEndpoint)
                       .compactOperations(
                         session,
                         params['documentId'],
@@ -740,7 +414,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['document'] as _i6.DocumentEndpoint).getDocuments(
+                  (endpoints['document'] as _i4.DocumentEndpoint).getDocuments(
                     session,
                     params['documentType'],
                     search: params['search'],
@@ -762,7 +436,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['document'] as _i6.DocumentEndpoint).getDocument(
+                  (endpoints['document'] as _i4.DocumentEndpoint).getDocument(
                     session,
                     params['documentId'],
                   ),
@@ -780,7 +454,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .getDocumentBySlug(
                     session,
                     params['slug'],
@@ -799,7 +473,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .getDefaultDocument(
                     session,
                     params['documentType'],
@@ -838,7 +512,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .createDocument(
                     session,
                     params['documentType'],
@@ -871,7 +545,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .updateDocumentData(
                     session,
                     params['documentId'],
@@ -907,7 +581,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .updateDocument(
                     session,
                     params['documentId'],
@@ -929,7 +603,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .deleteDocument(
                     session,
                     params['documentId'],
@@ -954,7 +628,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['document'] as _i6.DocumentEndpoint).suggestSlug(
+                  (endpoints['document'] as _i4.DocumentEndpoint).suggestSlug(
                     session,
                     params['title'],
                     params['documentType'],
@@ -967,7 +641,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .getDocumentTypes(session),
         ),
         'getDocumentVersions': _i1.MethodConnector(
@@ -998,7 +672,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .getDocumentVersions(
                     session,
                     params['documentId'],
@@ -1020,7 +694,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .getDocumentVersion(
                     session,
                     params['versionId'],
@@ -1039,7 +713,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .getDocumentVersionData(
                     session,
                     params['versionId'],
@@ -1055,7 +729,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'status': _i1.ParameterDescription(
               name: 'status',
-              type: _i1.getType<_i13.DocumentVersionStatus>(),
+              type: _i1.getType<_i11.DocumentVersionStatus>(),
               nullable: false,
             ),
             'changeLog': _i1.ParameterDescription(
@@ -1068,7 +742,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .createDocumentVersion(
                     session,
                     params['documentId'],
@@ -1089,7 +763,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .publishDocumentVersion(
                     session,
                     params['versionId'],
@@ -1108,7 +782,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .archiveDocumentVersion(
                     session,
                     params['versionId'],
@@ -1127,7 +801,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .deleteDocumentVersion(
                     session,
                     params['versionId'],
@@ -1140,7 +814,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+              ) async => (endpoints['document'] as _i4.DocumentEndpoint)
                   .getDocumentCount(session),
         ),
       },
@@ -1167,7 +841,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['emailIdp'] as _i7.EmailIdpEndpoint).login(
+              ) async => (endpoints['emailIdp'] as _i5.EmailIdpEndpoint).login(
                 session,
                 email: params['email'],
                 password: params['password'],
@@ -1186,7 +860,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['emailIdp'] as _i7.EmailIdpEndpoint)
+              ) async => (endpoints['emailIdp'] as _i5.EmailIdpEndpoint)
                   .startRegistration(
                     session,
                     email: params['email'],
@@ -1210,7 +884,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['emailIdp'] as _i7.EmailIdpEndpoint)
+              ) async => (endpoints['emailIdp'] as _i5.EmailIdpEndpoint)
                   .verifyRegistrationCode(
                     session,
                     accountRequestId: params['accountRequestId'],
@@ -1235,7 +909,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['emailIdp'] as _i7.EmailIdpEndpoint)
+              ) async => (endpoints['emailIdp'] as _i5.EmailIdpEndpoint)
                   .finishRegistration(
                     session,
                     registrationToken: params['registrationToken'],
@@ -1255,7 +929,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['emailIdp'] as _i7.EmailIdpEndpoint)
+              ) async => (endpoints['emailIdp'] as _i5.EmailIdpEndpoint)
                   .startPasswordReset(
                     session,
                     email: params['email'],
@@ -1279,7 +953,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['emailIdp'] as _i7.EmailIdpEndpoint)
+              ) async => (endpoints['emailIdp'] as _i5.EmailIdpEndpoint)
                   .verifyPasswordResetCode(
                     session,
                     passwordResetRequestId: params['passwordResetRequestId'],
@@ -1304,7 +978,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['emailIdp'] as _i7.EmailIdpEndpoint)
+              ) async => (endpoints['emailIdp'] as _i5.EmailIdpEndpoint)
                   .finishPasswordReset(
                     session,
                     finishPasswordResetToken:
@@ -1319,7 +993,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['emailIdp'] as _i7.EmailIdpEndpoint)
+              ) async => (endpoints['emailIdp'] as _i5.EmailIdpEndpoint)
                   .hasAccount(session),
         ),
       },
@@ -1347,7 +1021,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['googleIdp'] as _i8.GoogleIdpEndpoint).login(
+                  (endpoints['googleIdp'] as _i6.GoogleIdpEndpoint).login(
                     session,
                     idToken: params['idToken'],
                     accessToken: params['accessToken'],
@@ -1360,7 +1034,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['googleIdp'] as _i8.GoogleIdpEndpoint)
+              ) async => (endpoints['googleIdp'] as _i6.GoogleIdpEndpoint)
                   .hasAccount(session),
         ),
       },
@@ -1379,7 +1053,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'fileData': _i1.ParameterDescription(
               name: 'fileData',
-              type: _i1.getType<_i14.ByteData>(),
+              type: _i1.getType<_i12.ByteData>(),
               nullable: false,
             ),
             'width': _i1.ParameterDescription(
@@ -1412,7 +1086,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['media'] as _i9.MediaEndpoint).uploadImage(
+              ) async => (endpoints['media'] as _i7.MediaEndpoint).uploadImage(
                 session,
                 params['fileName'],
                 params['fileData'],
@@ -1433,7 +1107,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'fileData': _i1.ParameterDescription(
               name: 'fileData',
-              type: _i1.getType<_i14.ByteData>(),
+              type: _i1.getType<_i12.ByteData>(),
               nullable: false,
             ),
           },
@@ -1441,7 +1115,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['media'] as _i9.MediaEndpoint).uploadFile(
+              ) async => (endpoints['media'] as _i7.MediaEndpoint).uploadFile(
                 session,
                 params['fileName'],
                 params['fileData'],
@@ -1460,7 +1134,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['media'] as _i9.MediaEndpoint).deleteMedia(
+              ) async => (endpoints['media'] as _i7.MediaEndpoint).deleteMedia(
                 session,
                 params['assetId'],
               ),
@@ -1478,7 +1152,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['media'] as _i9.MediaEndpoint).getMedia(
+              ) async => (endpoints['media'] as _i7.MediaEndpoint).getMedia(
                 session,
                 params['assetId'],
               ),
@@ -1516,7 +1190,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['media'] as _i9.MediaEndpoint).listMedia(
+              ) async => (endpoints['media'] as _i7.MediaEndpoint).listMedia(
                 session,
                 search: params['search'],
                 mimeTypePrefix: params['mimeTypePrefix'],
@@ -1544,7 +1218,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['media'] as _i9.MediaEndpoint).listMediaCount(
+                  (endpoints['media'] as _i7.MediaEndpoint).listMediaCount(
                     session,
                     search: params['search'],
                     mimeTypePrefix: params['mimeTypePrefix'],
@@ -1564,7 +1238,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['media'] as _i9.MediaEndpoint).getMediaUsageCount(
+                  (endpoints['media'] as _i7.MediaEndpoint).getMediaUsageCount(
                     session,
                     params['assetId'],
                   ),
@@ -1588,7 +1262,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['media'] as _i9.MediaEndpoint).updateMediaAsset(
+                  (endpoints['media'] as _i7.MediaEndpoint).updateMediaAsset(
                     session,
                     params['assetId'],
                     fileName: params['fileName'],
@@ -1615,7 +1289,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['refreshJwtTokens']
-                          as _i10.RefreshJwtTokensEndpoint)
+                          as _i8.RefreshJwtTokensEndpoint)
                       .refreshAccessToken(
                         session,
                         refreshToken: params['refreshToken'],
@@ -1634,9 +1308,8 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['studioConfig'] as _i11.StudioConfigEndpoint)
-                      .getStudioUrlTemplate(session),
+              ) async => (endpoints['studioConfig'] as _i9.StudioConfigEndpoint)
+                  .getStudioUrlTemplate(session),
         ),
       },
     );
@@ -1644,109 +1317,22 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'user',
       endpoint: endpoints['user']!,
       methodConnectors: {
-        'ensureUser': _i1.MethodConnector(
-          name: 'ensureUser',
-          params: {
-            'clientSlug': _i1.ParameterDescription(
-              name: 'clientSlug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'apiToken': _i1.ParameterDescription(
-              name: 'apiToken',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i12.UserEndpoint).ensureUser(
-                session,
-                params['clientSlug'],
-                params['apiToken'],
-              ),
-        ),
         'getCurrentUser': _i1.MethodConnector(
           name: 'getCurrentUser',
-          params: {
-            'clientSlug': _i1.ParameterDescription(
-              name: 'clientSlug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'apiToken': _i1.ParameterDescription(
-              name: 'apiToken',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['user'] as _i12.UserEndpoint).getCurrentUser(
-                    session,
-                    params['clientSlug'],
-                    params['apiToken'],
-                  ),
-        ),
-        'getUserClients': _i1.MethodConnector(
-          name: 'getUserClients',
           params: {},
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i12.UserEndpoint)
-                  .getUserClients(session),
-        ),
-        'getCurrentUserBySlug': _i1.MethodConnector(
-          name: 'getCurrentUserBySlug',
-          params: {
-            'clientSlug': _i1.ParameterDescription(
-              name: 'clientSlug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['user'] as _i12.UserEndpoint).getCurrentUserBySlug(
-                    session,
-                    params['clientSlug'],
-                  ),
-        ),
-        'getClientUserCount': _i1.MethodConnector(
-          name: 'getClientUserCount',
-          params: {
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['user'] as _i12.UserEndpoint).getClientUserCount(
-                    session,
-                    params['clientId'],
-                  ),
+              ) async => (endpoints['user'] as _i10.UserEndpoint)
+                  .getCurrentUser(session),
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i15.Endpoints()
+    modules['serverpod_auth_idp'] = _i13.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_admin'] = _i16.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i17.Endpoints()
+    modules['serverpod_admin'] = _i14.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth_core'] = _i15.Endpoints()
       ..initializeEndpoints(server);
   }
 }

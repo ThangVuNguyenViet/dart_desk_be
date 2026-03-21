@@ -12,10 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class CmsDocument implements _i1.SerializableModel {
-  CmsDocument._({
+abstract class Document implements _i1.SerializableModel {
+  Document._({
     this.id,
-    required this.clientId,
+    this.tenantId,
     required this.documentType,
     required this.title,
     required this.slug,
@@ -25,15 +25,15 @@ abstract class CmsDocument implements _i1.SerializableModel {
     this.crdtHlc,
     DateTime? createdAt,
     DateTime? updatedAt,
-    required this.createdByUserId,
+    this.createdByUserId,
     this.updatedByUserId,
   }) : isDefault = isDefault ?? false,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
-  factory CmsDocument({
+  factory Document({
     int? id,
-    required int clientId,
+    int? tenantId,
     required String documentType,
     required String title,
     required String slug,
@@ -43,14 +43,14 @@ abstract class CmsDocument implements _i1.SerializableModel {
     String? crdtHlc,
     DateTime? createdAt,
     DateTime? updatedAt,
-    required int createdByUserId,
+    int? createdByUserId,
     int? updatedByUserId,
-  }) = _CmsDocumentImpl;
+  }) = _DocumentImpl;
 
-  factory CmsDocument.fromJson(Map<String, dynamic> jsonSerialization) {
-    return CmsDocument(
+  factory Document.fromJson(Map<String, dynamic> jsonSerialization) {
+    return Document(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int,
+      tenantId: jsonSerialization['tenantId'] as int?,
       documentType: jsonSerialization['documentType'] as String,
       title: jsonSerialization['title'] as String,
       slug: jsonSerialization['slug'] as String,
@@ -66,7 +66,7 @@ abstract class CmsDocument implements _i1.SerializableModel {
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
-      createdByUserId: jsonSerialization['createdByUserId'] as int,
+      createdByUserId: jsonSerialization['createdByUserId'] as int?,
       updatedByUserId: jsonSerialization['updatedByUserId'] as int?,
     );
   }
@@ -76,7 +76,7 @@ abstract class CmsDocument implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int clientId;
+  int? tenantId;
 
   String documentType;
 
@@ -96,16 +96,16 @@ abstract class CmsDocument implements _i1.SerializableModel {
 
   DateTime? updatedAt;
 
-  int createdByUserId;
+  int? createdByUserId;
 
   int? updatedByUserId;
 
-  /// Returns a shallow copy of this [CmsDocument]
+  /// Returns a shallow copy of this [Document]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CmsDocument copyWith({
+  Document copyWith({
     int? id,
-    int? clientId,
+    int? tenantId,
     String? documentType,
     String? title,
     String? slug,
@@ -121,9 +121,9 @@ abstract class CmsDocument implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'CmsDocument',
+      '__className__': 'Document',
       if (id != null) 'id': id,
-      'clientId': clientId,
+      if (tenantId != null) 'tenantId': tenantId,
       'documentType': documentType,
       'title': title,
       'slug': slug,
@@ -133,7 +133,7 @@ abstract class CmsDocument implements _i1.SerializableModel {
       if (crdtHlc != null) 'crdtHlc': crdtHlc,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
-      'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId,
       if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
     };
   }
@@ -146,10 +146,10 @@ abstract class CmsDocument implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _CmsDocumentImpl extends CmsDocument {
-  _CmsDocumentImpl({
+class _DocumentImpl extends Document {
+  _DocumentImpl({
     int? id,
-    required int clientId,
+    int? tenantId,
     required String documentType,
     required String title,
     required String slug,
@@ -159,11 +159,11 @@ class _CmsDocumentImpl extends CmsDocument {
     String? crdtHlc,
     DateTime? createdAt,
     DateTime? updatedAt,
-    required int createdByUserId,
+    int? createdByUserId,
     int? updatedByUserId,
   }) : super._(
          id: id,
-         clientId: clientId,
+         tenantId: tenantId,
          documentType: documentType,
          title: title,
          slug: slug,
@@ -177,13 +177,13 @@ class _CmsDocumentImpl extends CmsDocument {
          updatedByUserId: updatedByUserId,
        );
 
-  /// Returns a shallow copy of this [CmsDocument]
+  /// Returns a shallow copy of this [Document]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  CmsDocument copyWith({
+  Document copyWith({
     Object? id = _Undefined,
-    int? clientId,
+    Object? tenantId = _Undefined,
     String? documentType,
     String? title,
     String? slug,
@@ -193,12 +193,12 @@ class _CmsDocumentImpl extends CmsDocument {
     Object? crdtHlc = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
-    int? createdByUserId,
+    Object? createdByUserId = _Undefined,
     Object? updatedByUserId = _Undefined,
   }) {
-    return CmsDocument(
+    return Document(
       id: id is int? ? id : this.id,
-      clientId: clientId ?? this.clientId,
+      tenantId: tenantId is int? ? tenantId : this.tenantId,
       documentType: documentType ?? this.documentType,
       title: title ?? this.title,
       slug: slug ?? this.slug,
@@ -208,7 +208,9 @@ class _CmsDocumentImpl extends CmsDocument {
       crdtHlc: crdtHlc is String? ? crdtHlc : this.crdtHlc,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
-      createdByUserId: createdByUserId ?? this.createdByUserId,
+      createdByUserId: createdByUserId is int?
+          ? createdByUserId
+          : this.createdByUserId,
       updatedByUserId: updatedByUserId is int?
           ? updatedByUserId
           : this.updatedByUserId,

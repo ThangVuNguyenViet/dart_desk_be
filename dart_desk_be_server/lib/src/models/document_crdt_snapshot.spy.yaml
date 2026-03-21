@@ -1,7 +1,7 @@
 class: DocumentCrdtSnapshot
 table: document_crdt_snapshots
 fields:
-  documentId: int, relation(parent=cms_documents, onDelete=Cascade)
+  documentId: int, relation(parent=documents, onDelete=Cascade)
   snapshotHlc: String  # HLC of this snapshot
   snapshotData: String  # Complete JSON document at this HLC
   operationCountAtSnapshot: int

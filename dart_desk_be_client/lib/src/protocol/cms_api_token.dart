@@ -12,10 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class CmsApiToken implements _i1.SerializableModel {
-  CmsApiToken._({
+abstract class ApiToken implements _i1.SerializableModel {
+  ApiToken._({
     this.id,
-    required this.clientId,
+    this.tenantId,
     required this.name,
     required this.tokenHash,
     required this.tokenPrefix,
@@ -29,9 +29,9 @@ abstract class CmsApiToken implements _i1.SerializableModel {
   }) : isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now();
 
-  factory CmsApiToken({
+  factory ApiToken({
     int? id,
-    required int clientId,
+    int? tenantId,
     required String name,
     required String tokenHash,
     required String tokenPrefix,
@@ -42,12 +42,12 @@ abstract class CmsApiToken implements _i1.SerializableModel {
     DateTime? expiresAt,
     bool? isActive,
     DateTime? createdAt,
-  }) = _CmsApiTokenImpl;
+  }) = _ApiTokenImpl;
 
-  factory CmsApiToken.fromJson(Map<String, dynamic> jsonSerialization) {
-    return CmsApiToken(
+  factory ApiToken.fromJson(Map<String, dynamic> jsonSerialization) {
+    return ApiToken(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int,
+      tenantId: jsonSerialization['tenantId'] as int?,
       name: jsonSerialization['name'] as String,
       tokenHash: jsonSerialization['tokenHash'] as String,
       tokenPrefix: jsonSerialization['tokenPrefix'] as String,
@@ -74,7 +74,7 @@ abstract class CmsApiToken implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int clientId;
+  int? tenantId;
 
   String name;
 
@@ -96,12 +96,12 @@ abstract class CmsApiToken implements _i1.SerializableModel {
 
   DateTime? createdAt;
 
-  /// Returns a shallow copy of this [CmsApiToken]
+  /// Returns a shallow copy of this [ApiToken]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CmsApiToken copyWith({
+  ApiToken copyWith({
     int? id,
-    int? clientId,
+    int? tenantId,
     String? name,
     String? tokenHash,
     String? tokenPrefix,
@@ -116,9 +116,9 @@ abstract class CmsApiToken implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'CmsApiToken',
+      '__className__': 'ApiToken',
       if (id != null) 'id': id,
-      'clientId': clientId,
+      if (tenantId != null) 'tenantId': tenantId,
       'name': name,
       'tokenHash': tokenHash,
       'tokenPrefix': tokenPrefix,
@@ -140,10 +140,10 @@ abstract class CmsApiToken implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _CmsApiTokenImpl extends CmsApiToken {
-  _CmsApiTokenImpl({
+class _ApiTokenImpl extends ApiToken {
+  _ApiTokenImpl({
     int? id,
-    required int clientId,
+    int? tenantId,
     required String name,
     required String tokenHash,
     required String tokenPrefix,
@@ -156,7 +156,7 @@ class _CmsApiTokenImpl extends CmsApiToken {
     DateTime? createdAt,
   }) : super._(
          id: id,
-         clientId: clientId,
+         tenantId: tenantId,
          name: name,
          tokenHash: tokenHash,
          tokenPrefix: tokenPrefix,
@@ -169,13 +169,13 @@ class _CmsApiTokenImpl extends CmsApiToken {
          createdAt: createdAt,
        );
 
-  /// Returns a shallow copy of this [CmsApiToken]
+  /// Returns a shallow copy of this [ApiToken]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  CmsApiToken copyWith({
+  ApiToken copyWith({
     Object? id = _Undefined,
-    int? clientId,
+    Object? tenantId = _Undefined,
     String? name,
     String? tokenHash,
     String? tokenPrefix,
@@ -187,9 +187,9 @@ class _CmsApiTokenImpl extends CmsApiToken {
     bool? isActive,
     Object? createdAt = _Undefined,
   }) {
-    return CmsApiToken(
+    return ApiToken(
       id: id is int? ? id : this.id,
-      clientId: clientId ?? this.clientId,
+      tenantId: tenantId is int? ? tenantId : this.tenantId,
       name: name ?? this.name,
       tokenHash: tokenHash ?? this.tokenHash,
       tokenPrefix: tokenPrefix ?? this.tokenPrefix,

@@ -1,14 +1,14 @@
 class: DocumentCrdtOperation
 table: document_crdt_operations
 fields:
-  documentId: int, relation(parent=cms_documents, onDelete=Cascade)
+  documentId: int, relation(parent=documents, onDelete=Cascade)
   hlc: String  # Hybrid Logical Clock (sortable, unique)
   nodeId: String  # Node that created operation
   operationType: CrdtOperationType
   fieldPath: String  # Dot-notation path (e.g., "metadata.author")
   fieldValue: String?  # JSON-encoded value (null for deletes)
   createdAt: DateTime?, default=now
-  createdByUserId: int?, relation(parent=cms_users, onDelete=SetNull)
+  createdByUserId: int?, relation(parent=users, onDelete=SetNull)
 indexes:
   document_crdt_operations_document_hlc_idx:
     fields: documentId, hlc

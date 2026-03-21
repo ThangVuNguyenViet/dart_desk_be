@@ -1,7 +1,7 @@
 class: DocumentVersion
 table: document_versions
 fields:
-  documentId: int, relation(parent=cms_documents, onDelete=Cascade)
+  documentId: int, relation(parent=documents, onDelete=Cascade)
   versionNumber: int
   status: DocumentVersionStatus
   snapshotHlc: String?  # HLC timestamp for this version snapshot
@@ -11,7 +11,7 @@ fields:
   scheduledAt: DateTime?
   archivedAt: DateTime?
   createdAt: DateTime?, default=now
-  createdByUserId: int, relation(parent=cms_users, onDelete=SetNull)
+  createdByUserId: int?, relation(parent=users, onDelete=SetNull)
 indexes:
   document_versions_document_id_idx:
     fields: documentId

@@ -17,44 +17,32 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
 import 'package:serverpod_admin_server/serverpod_admin_server.dart' as _i4;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i5;
-import 'client_with_token.dart' as _i6;
-import 'cms_api_token.dart' as _i7;
-import 'cms_api_token_with_value.dart' as _i8;
-import 'cms_client.dart' as _i9;
-import 'cms_client_list.dart' as _i10;
-import 'cms_deployment.dart' as _i11;
-import 'cms_document.dart' as _i12;
-import 'cms_document_data.dart' as _i13;
-import 'cms_user.dart' as _i14;
-import 'crdt_operation_type.dart' as _i15;
-import 'deployment_status.dart' as _i16;
-import 'document_crdt_operation.dart' as _i17;
-import 'document_crdt_snapshot.dart' as _i18;
-import 'document_list.dart' as _i19;
-import 'document_version.dart' as _i20;
-import 'document_version_list.dart' as _i21;
-import 'document_version_list_with_operations.dart' as _i22;
-import 'document_version_status.dart' as _i23;
-import 'document_version_with_operations.dart' as _i24;
-import 'media_asset.dart' as _i25;
-import 'media_asset_metadata_status.dart' as _i26;
-import 'package:dart_desk_be_server/src/generated/cms_api_token.dart' as _i27;
-import 'package:dart_desk_be_server/src/generated/cms_deployment.dart' as _i28;
+import 'cms_api_token.dart' as _i6;
+import 'cms_api_token_with_value.dart' as _i7;
+import 'cms_document.dart' as _i8;
+import 'cms_document_data.dart' as _i9;
+import 'cms_user.dart' as _i10;
+import 'crdt_operation_type.dart' as _i11;
+import 'document_crdt_operation.dart' as _i12;
+import 'document_crdt_snapshot.dart' as _i13;
+import 'document_list.dart' as _i14;
+import 'document_version.dart' as _i15;
+import 'document_version_list.dart' as _i16;
+import 'document_version_list_with_operations.dart' as _i17;
+import 'document_version_status.dart' as _i18;
+import 'document_version_with_operations.dart' as _i19;
+import 'media_asset.dart' as _i20;
+import 'media_asset_metadata_status.dart' as _i21;
+import 'package:dart_desk_be_server/src/generated/cms_api_token.dart' as _i22;
 import 'package:dart_desk_be_server/src/generated/document_crdt_operation.dart'
-    as _i29;
-import 'package:dart_desk_be_server/src/generated/media_asset.dart' as _i30;
-import 'package:dart_desk_be_server/src/generated/cms_client.dart' as _i31;
-export 'client_with_token.dart';
+    as _i23;
+import 'package:dart_desk_be_server/src/generated/media_asset.dart' as _i24;
 export 'cms_api_token.dart';
 export 'cms_api_token_with_value.dart';
-export 'cms_client.dart';
-export 'cms_client_list.dart';
-export 'cms_deployment.dart';
 export 'cms_document.dart';
 export 'cms_document_data.dart';
 export 'cms_user.dart';
 export 'crdt_operation_type.dart';
-export 'deployment_status.dart';
 export 'document_crdt_operation.dart';
 export 'document_crdt_snapshot.dart';
 export 'document_list.dart';
@@ -75,8 +63,8 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
     _i2.TableDefinition(
-      name: 'cms_api_tokens',
-      dartName: 'CmsApiToken',
+      name: 'api_tokens',
+      dartName: 'ApiToken',
       schema: 'public',
       module: 'dart_desk_be',
       columns: [
@@ -85,13 +73,13 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'nextval(\'cms_api_tokens_id_seq\'::regclass)',
+          columnDefault: 'nextval(\'api_tokens_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'clientId',
+          name: 'tenantId',
           columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
+          isNullable: true,
+          dartType: 'int?',
         ),
         _i2.ColumnDefinition(
           name: 'name',
@@ -158,19 +146,9 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
-          constraintName: 'cms_api_tokens_fk_0',
-          columns: ['clientId'],
-          referenceTable: 'cms_clients',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.restrict,
-          matchType: null,
-        ),
-        _i2.ForeignKeyDefinition(
-          constraintName: 'cms_api_tokens_fk_1',
+          constraintName: 'api_tokens_fk_0',
           columns: ['createdByUserId'],
-          referenceTable: 'cms_users',
+          referenceTable: 'users',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -180,7 +158,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'cms_api_tokens_pkey',
+          indexName: 'api_tokens_pkey',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -193,12 +171,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'cms_api_token_client_idx',
+          indexName: 'api_token_tenant_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
+              definition: 'tenantId',
             ),
           ],
           type: 'btree',
@@ -206,12 +184,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'cms_api_token_lookup_idx',
+          indexName: 'api_token_lookup_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
+              definition: 'tenantId',
             ),
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
@@ -224,755 +202,6 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'cms_clients',
-      dartName: 'CmsClient',
-      schema: 'public',
-      module: 'dart_desk_be',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'cms_clients_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'slug',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'apiTokenHash',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'description',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'isActive',
-          columnType: _i2.ColumnType.boolean,
-          isNullable: false,
-          dartType: 'bool',
-          columnDefault: 'true',
-        ),
-        _i2.ColumnDefinition(
-          name: 'apiTokenPrefix',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'lastUsedAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'settings',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
-        ),
-        _i2.ColumnDefinition(
-          name: 'updatedAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'cms_clients_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_clients_slug_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'slug',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_clients_is_active_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'isActive',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'cms_deployments',
-      dartName: 'CmsDeployment',
-      schema: 'public',
-      module: 'dart_desk_be',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'cms_deployments_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'clientId',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'version',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'status',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'protocol:DeploymentStatus',
-        ),
-        _i2.ColumnDefinition(
-          name: 'filePath',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'fileSize',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'uploadedByUserId',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'commitHash',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'metadata',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
-        ),
-        _i2.ColumnDefinition(
-          name: 'updatedAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'cms_deployments_fk_0',
-          columns: ['clientId'],
-          referenceTable: 'cms_clients',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.restrict,
-          matchType: null,
-        ),
-        _i2.ForeignKeyDefinition(
-          constraintName: 'cms_deployments_fk_1',
-          columns: ['uploadedByUserId'],
-          referenceTable: 'cms_users',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.setNull,
-          matchType: null,
-        ),
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'cms_deployments_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_deployment_client_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_deployment_client_version_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'version',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_deployment_client_status_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'status',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'cms_documents',
-      dartName: 'CmsDocument',
-      schema: 'public',
-      module: 'dart_desk_be',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'cms_documents_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'clientId',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'documentType',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'title',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'slug',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'isDefault',
-          columnType: _i2.ColumnType.boolean,
-          isNullable: false,
-          dartType: 'bool',
-          columnDefault: 'false',
-        ),
-        _i2.ColumnDefinition(
-          name: 'data',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'crdtNodeId',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'crdtHlc',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
-        ),
-        _i2.ColumnDefinition(
-          name: 'updatedAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
-        ),
-        _i2.ColumnDefinition(
-          name: 'createdByUserId',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'updatedByUserId',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'cms_documents_fk_0',
-          columns: ['clientId'],
-          referenceTable: 'cms_clients',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.restrict,
-          matchType: null,
-        ),
-        _i2.ForeignKeyDefinition(
-          constraintName: 'cms_documents_fk_1',
-          columns: ['createdByUserId'],
-          referenceTable: 'cms_users',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.setNull,
-          matchType: null,
-        ),
-        _i2.ForeignKeyDefinition(
-          constraintName: 'cms_documents_fk_2',
-          columns: ['updatedByUserId'],
-          referenceTable: 'cms_users',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.setNull,
-          matchType: null,
-        ),
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'cms_documents_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_documents_client_type_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'documentType',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_documents_client_type_slug_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'documentType',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'slug',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_documents_type_default_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'documentType',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'isDefault',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_documents_created_at_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'createdAt',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'cms_documents_data',
-      dartName: 'CmsDocumentData',
-      schema: 'public',
-      module: 'dart_desk_be',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'cms_documents_data_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'documentType',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'data',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
-        ),
-        _i2.ColumnDefinition(
-          name: 'updatedAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
-        ),
-        _i2.ColumnDefinition(
-          name: 'createdByUserId',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'updatedByUserId',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'cms_documents_data_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_documents_data_document_type_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'documentType',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_documents_data_created_at_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'createdAt',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_documents_data_updated_at_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'updatedAt',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'cms_users',
-      dartName: 'CmsUser',
-      schema: 'public',
-      module: 'dart_desk_be',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'cms_users_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'clientId',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'email',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'role',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-          columnDefault: '\'viewer\'::text',
-        ),
-        _i2.ColumnDefinition(
-          name: 'isActive',
-          columnType: _i2.ColumnType.boolean,
-          isNullable: false,
-          dartType: 'bool',
-          columnDefault: 'true',
-        ),
-        _i2.ColumnDefinition(
-          name: 'serverpodUserId',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
-        ),
-        _i2.ColumnDefinition(
-          name: 'updatedAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'cms_users_fk_0',
-          columns: ['clientId'],
-          referenceTable: 'cms_clients',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.restrict,
-          matchType: null,
-        ),
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'cms_users_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_users_client_email_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'email',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_users_client_id_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_users_serverpod_user_id_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'serverpodUserId',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'cms_users_is_active_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'isActive',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
           isPrimary: false,
         ),
       ],
@@ -1046,7 +275,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'document_crdt_operations_fk_0',
           columns: ['documentId'],
-          referenceTable: 'cms_documents',
+          referenceTable: 'documents',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -1056,7 +285,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'document_crdt_operations_fk_1',
           columns: ['createdByUserId'],
-          referenceTable: 'cms_users',
+          referenceTable: 'users',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -1174,7 +403,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'document_crdt_snapshots_fk_0',
           columns: ['documentId'],
-          referenceTable: 'cms_documents',
+          referenceTable: 'documents',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -1307,15 +536,15 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'createdByUserId',
           columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
+          isNullable: true,
+          dartType: 'int?',
         ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
           constraintName: 'document_versions_fk_0',
           columns: ['documentId'],
-          referenceTable: 'cms_documents',
+          referenceTable: 'documents',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -1325,7 +554,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'document_versions_fk_1',
           columns: ['createdByUserId'],
-          referenceTable: 'cms_users',
+          referenceTable: 'users',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -1450,6 +679,311 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'documents',
+      dartName: 'Document',
+      schema: 'public',
+      module: 'dart_desk_be',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'documents_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'tenantId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'documentType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'title',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'slug',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDefault',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'data',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'crdtNodeId',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'crdtHlc',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdByUserId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedByUserId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'documents_fk_0',
+          columns: ['createdByUserId'],
+          referenceTable: 'users',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.setNull,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'documents_fk_1',
+          columns: ['updatedByUserId'],
+          referenceTable: 'users',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.setNull,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'documents_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'documents_tenant_type_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'tenantId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentType',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'documents_tenant_type_slug_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'tenantId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentType',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'slug',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'documents_type_default_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentType',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'isDefault',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'documents_created_at_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'createdAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'documents_data',
+      dartName: 'DocumentData',
+      schema: 'public',
+      module: 'dart_desk_be',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'documents_data_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'documentType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'data',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdByUserId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedByUserId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'documents_data_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'documents_data_document_type_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentType',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'documents_data_created_at_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'createdAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'documents_data_updated_at_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'updatedAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'media_assets',
       dartName: 'MediaAsset',
       schema: 'public',
@@ -1463,10 +997,10 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'media_assets_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'clientId',
+          name: 'tenantId',
           columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
+          isNullable: true,
+          dartType: 'int?',
         ),
         _i2.ColumnDefinition(
           name: 'assetId',
@@ -1578,18 +1112,7 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'protocol:MediaAssetMetadataStatus',
         ),
       ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'media_assets_fk_0',
-          columns: ['clientId'],
-          referenceTable: 'cms_clients',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.restrict,
-          matchType: null,
-        ),
-      ],
+      foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
           indexName: 'media_assets_pkey',
@@ -1605,12 +1128,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'media_asset_client_id_idx',
+          indexName: 'media_asset_tenant_id_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
+              definition: 'tenantId',
             ),
           ],
           type: 'btree',
@@ -1659,6 +1182,146 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
+    _i2.TableDefinition(
+      name: 'users',
+      dartName: 'User',
+      schema: 'public',
+      module: 'dart_desk_be',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'users_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'tenantId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'role',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'viewer\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isActive',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'true',
+        ),
+        _i2.ColumnDefinition(
+          name: 'serverpodUserId',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'users_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'users_tenant_email_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'tenantId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'users_tenant_id_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'tenantId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'users_serverpod_user_id_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'serverpodUserId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'users_is_active_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'isActive',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
     ..._i3.Protocol.targetTableDefinitions,
     ..._i4.Protocol.targetTableDefinitions,
     ..._i5.Protocol.targetTableDefinitions,
@@ -1692,189 +1355,144 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
 
-    if (t == _i6.ClientWithToken) {
-      return _i6.ClientWithToken.fromJson(data) as T;
+    if (t == _i6.ApiToken) {
+      return _i6.ApiToken.fromJson(data) as T;
     }
-    if (t == _i7.CmsApiToken) {
-      return _i7.CmsApiToken.fromJson(data) as T;
+    if (t == _i7.ApiTokenWithValue) {
+      return _i7.ApiTokenWithValue.fromJson(data) as T;
     }
-    if (t == _i8.CmsApiTokenWithValue) {
-      return _i8.CmsApiTokenWithValue.fromJson(data) as T;
+    if (t == _i8.Document) {
+      return _i8.Document.fromJson(data) as T;
     }
-    if (t == _i9.CmsClient) {
-      return _i9.CmsClient.fromJson(data) as T;
+    if (t == _i9.DocumentData) {
+      return _i9.DocumentData.fromJson(data) as T;
     }
-    if (t == _i10.CmsClientList) {
-      return _i10.CmsClientList.fromJson(data) as T;
+    if (t == _i10.User) {
+      return _i10.User.fromJson(data) as T;
     }
-    if (t == _i11.CmsDeployment) {
-      return _i11.CmsDeployment.fromJson(data) as T;
+    if (t == _i11.CrdtOperationType) {
+      return _i11.CrdtOperationType.fromJson(data) as T;
     }
-    if (t == _i12.CmsDocument) {
-      return _i12.CmsDocument.fromJson(data) as T;
+    if (t == _i12.DocumentCrdtOperation) {
+      return _i12.DocumentCrdtOperation.fromJson(data) as T;
     }
-    if (t == _i13.CmsDocumentData) {
-      return _i13.CmsDocumentData.fromJson(data) as T;
+    if (t == _i13.DocumentCrdtSnapshot) {
+      return _i13.DocumentCrdtSnapshot.fromJson(data) as T;
     }
-    if (t == _i14.CmsUser) {
-      return _i14.CmsUser.fromJson(data) as T;
+    if (t == _i14.DocumentList) {
+      return _i14.DocumentList.fromJson(data) as T;
     }
-    if (t == _i15.CrdtOperationType) {
-      return _i15.CrdtOperationType.fromJson(data) as T;
+    if (t == _i15.DocumentVersion) {
+      return _i15.DocumentVersion.fromJson(data) as T;
     }
-    if (t == _i16.DeploymentStatus) {
-      return _i16.DeploymentStatus.fromJson(data) as T;
+    if (t == _i16.DocumentVersionList) {
+      return _i16.DocumentVersionList.fromJson(data) as T;
     }
-    if (t == _i17.DocumentCrdtOperation) {
-      return _i17.DocumentCrdtOperation.fromJson(data) as T;
+    if (t == _i17.DocumentVersionListWithOperations) {
+      return _i17.DocumentVersionListWithOperations.fromJson(data) as T;
     }
-    if (t == _i18.DocumentCrdtSnapshot) {
-      return _i18.DocumentCrdtSnapshot.fromJson(data) as T;
+    if (t == _i18.DocumentVersionStatus) {
+      return _i18.DocumentVersionStatus.fromJson(data) as T;
     }
-    if (t == _i19.DocumentList) {
-      return _i19.DocumentList.fromJson(data) as T;
+    if (t == _i19.DocumentVersionWithOperations) {
+      return _i19.DocumentVersionWithOperations.fromJson(data) as T;
     }
-    if (t == _i20.DocumentVersion) {
-      return _i20.DocumentVersion.fromJson(data) as T;
+    if (t == _i20.MediaAsset) {
+      return _i20.MediaAsset.fromJson(data) as T;
     }
-    if (t == _i21.DocumentVersionList) {
-      return _i21.DocumentVersionList.fromJson(data) as T;
+    if (t == _i21.MediaAssetMetadataStatus) {
+      return _i21.MediaAssetMetadataStatus.fromJson(data) as T;
     }
-    if (t == _i22.DocumentVersionListWithOperations) {
-      return _i22.DocumentVersionListWithOperations.fromJson(data) as T;
+    if (t == _i1.getType<_i6.ApiToken?>()) {
+      return (data != null ? _i6.ApiToken.fromJson(data) : null) as T;
     }
-    if (t == _i23.DocumentVersionStatus) {
-      return _i23.DocumentVersionStatus.fromJson(data) as T;
+    if (t == _i1.getType<_i7.ApiTokenWithValue?>()) {
+      return (data != null ? _i7.ApiTokenWithValue.fromJson(data) : null) as T;
     }
-    if (t == _i24.DocumentVersionWithOperations) {
-      return _i24.DocumentVersionWithOperations.fromJson(data) as T;
+    if (t == _i1.getType<_i8.Document?>()) {
+      return (data != null ? _i8.Document.fromJson(data) : null) as T;
     }
-    if (t == _i25.MediaAsset) {
-      return _i25.MediaAsset.fromJson(data) as T;
+    if (t == _i1.getType<_i9.DocumentData?>()) {
+      return (data != null ? _i9.DocumentData.fromJson(data) : null) as T;
     }
-    if (t == _i26.MediaAssetMetadataStatus) {
-      return _i26.MediaAssetMetadataStatus.fromJson(data) as T;
+    if (t == _i1.getType<_i10.User?>()) {
+      return (data != null ? _i10.User.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.ClientWithToken?>()) {
-      return (data != null ? _i6.ClientWithToken.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i11.CrdtOperationType?>()) {
+      return (data != null ? _i11.CrdtOperationType.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.CmsApiToken?>()) {
-      return (data != null ? _i7.CmsApiToken.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i8.CmsApiTokenWithValue?>()) {
-      return (data != null ? _i8.CmsApiTokenWithValue.fromJson(data) : null)
+    if (t == _i1.getType<_i12.DocumentCrdtOperation?>()) {
+      return (data != null ? _i12.DocumentCrdtOperation.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i9.CmsClient?>()) {
-      return (data != null ? _i9.CmsClient.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i10.CmsClientList?>()) {
-      return (data != null ? _i10.CmsClientList.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.CmsDeployment?>()) {
-      return (data != null ? _i11.CmsDeployment.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i12.CmsDocument?>()) {
-      return (data != null ? _i12.CmsDocument.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i13.CmsDocumentData?>()) {
-      return (data != null ? _i13.CmsDocumentData.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i14.CmsUser?>()) {
-      return (data != null ? _i14.CmsUser.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i15.CrdtOperationType?>()) {
-      return (data != null ? _i15.CrdtOperationType.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i16.DeploymentStatus?>()) {
-      return (data != null ? _i16.DeploymentStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i17.DocumentCrdtOperation?>()) {
-      return (data != null ? _i17.DocumentCrdtOperation.fromJson(data) : null)
+    if (t == _i1.getType<_i13.DocumentCrdtSnapshot?>()) {
+      return (data != null ? _i13.DocumentCrdtSnapshot.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i18.DocumentCrdtSnapshot?>()) {
-      return (data != null ? _i18.DocumentCrdtSnapshot.fromJson(data) : null)
+    if (t == _i1.getType<_i14.DocumentList?>()) {
+      return (data != null ? _i14.DocumentList.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i15.DocumentVersion?>()) {
+      return (data != null ? _i15.DocumentVersion.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i16.DocumentVersionList?>()) {
+      return (data != null ? _i16.DocumentVersionList.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i19.DocumentList?>()) {
-      return (data != null ? _i19.DocumentList.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.DocumentVersion?>()) {
-      return (data != null ? _i20.DocumentVersion.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i21.DocumentVersionList?>()) {
-      return (data != null ? _i21.DocumentVersionList.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i22.DocumentVersionListWithOperations?>()) {
+    if (t == _i1.getType<_i17.DocumentVersionListWithOperations?>()) {
       return (data != null
-              ? _i22.DocumentVersionListWithOperations.fromJson(data)
+              ? _i17.DocumentVersionListWithOperations.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i23.DocumentVersionStatus?>()) {
-      return (data != null ? _i23.DocumentVersionStatus.fromJson(data) : null)
+    if (t == _i1.getType<_i18.DocumentVersionStatus?>()) {
+      return (data != null ? _i18.DocumentVersionStatus.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i24.DocumentVersionWithOperations?>()) {
+    if (t == _i1.getType<_i19.DocumentVersionWithOperations?>()) {
       return (data != null
-              ? _i24.DocumentVersionWithOperations.fromJson(data)
+              ? _i19.DocumentVersionWithOperations.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i25.MediaAsset?>()) {
-      return (data != null ? _i25.MediaAsset.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i20.MediaAsset?>()) {
+      return (data != null ? _i20.MediaAsset.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i26.MediaAssetMetadataStatus?>()) {
+    if (t == _i1.getType<_i21.MediaAssetMetadataStatus?>()) {
       return (data != null
-              ? _i26.MediaAssetMetadataStatus.fromJson(data)
+              ? _i21.MediaAssetMetadataStatus.fromJson(data)
               : null)
           as T;
     }
-    if (t == List<_i9.CmsClient>) {
-      return (data as List).map((e) => deserialize<_i9.CmsClient>(e)).toList()
+    if (t == List<_i8.Document>) {
+      return (data as List).map((e) => deserialize<_i8.Document>(e)).toList()
           as T;
     }
-    if (t == List<_i12.CmsDocument>) {
+    if (t == List<_i15.DocumentVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i12.CmsDocument>(e))
+              .map((e) => deserialize<_i15.DocumentVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i20.DocumentVersion>) {
+    if (t == List<_i19.DocumentVersionWithOperations>) {
       return (data as List)
-              .map((e) => deserialize<_i20.DocumentVersion>(e))
+              .map((e) => deserialize<_i19.DocumentVersionWithOperations>(e))
               .toList()
           as T;
     }
-    if (t == List<_i24.DocumentVersionWithOperations>) {
+    if (t == List<_i12.DocumentCrdtOperation>) {
       return (data as List)
-              .map((e) => deserialize<_i24.DocumentVersionWithOperations>(e))
+              .map((e) => deserialize<_i12.DocumentCrdtOperation>(e))
               .toList()
           as T;
     }
-    if (t == List<_i17.DocumentCrdtOperation>) {
-      return (data as List)
-              .map((e) => deserialize<_i17.DocumentCrdtOperation>(e))
-              .toList()
+    if (t == List<_i22.ApiToken>) {
+      return (data as List).map((e) => deserialize<_i22.ApiToken>(e)).toList()
           as T;
     }
-    if (t == List<_i27.CmsApiToken>) {
+    if (t == List<_i23.DocumentCrdtOperation>) {
       return (data as List)
-              .map((e) => deserialize<_i27.CmsApiToken>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i28.CmsDeployment>) {
-      return (data as List)
-              .map((e) => deserialize<_i28.CmsDeployment>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i29.DocumentCrdtOperation>) {
-      return (data as List)
-              .map((e) => deserialize<_i29.DocumentCrdtOperation>(e))
+              .map((e) => deserialize<_i23.DocumentCrdtOperation>(e))
               .toList()
           as T;
     }
@@ -1902,12 +1520,8 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == List<_i30.MediaAsset>) {
-      return (data as List).map((e) => deserialize<_i30.MediaAsset>(e)).toList()
-          as T;
-    }
-    if (t == List<_i31.CmsClient>) {
-      return (data as List).map((e) => deserialize<_i31.CmsClient>(e)).toList()
+    if (t == List<_i24.MediaAsset>) {
+      return (data as List).map((e) => deserialize<_i24.MediaAsset>(e)).toList()
           as T;
     }
     try {
@@ -1927,28 +1541,23 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i6.ClientWithToken => 'ClientWithToken',
-      _i7.CmsApiToken => 'CmsApiToken',
-      _i8.CmsApiTokenWithValue => 'CmsApiTokenWithValue',
-      _i9.CmsClient => 'CmsClient',
-      _i10.CmsClientList => 'CmsClientList',
-      _i11.CmsDeployment => 'CmsDeployment',
-      _i12.CmsDocument => 'CmsDocument',
-      _i13.CmsDocumentData => 'CmsDocumentData',
-      _i14.CmsUser => 'CmsUser',
-      _i15.CrdtOperationType => 'CrdtOperationType',
-      _i16.DeploymentStatus => 'DeploymentStatus',
-      _i17.DocumentCrdtOperation => 'DocumentCrdtOperation',
-      _i18.DocumentCrdtSnapshot => 'DocumentCrdtSnapshot',
-      _i19.DocumentList => 'DocumentList',
-      _i20.DocumentVersion => 'DocumentVersion',
-      _i21.DocumentVersionList => 'DocumentVersionList',
-      _i22.DocumentVersionListWithOperations =>
+      _i6.ApiToken => 'ApiToken',
+      _i7.ApiTokenWithValue => 'ApiTokenWithValue',
+      _i8.Document => 'Document',
+      _i9.DocumentData => 'DocumentData',
+      _i10.User => 'User',
+      _i11.CrdtOperationType => 'CrdtOperationType',
+      _i12.DocumentCrdtOperation => 'DocumentCrdtOperation',
+      _i13.DocumentCrdtSnapshot => 'DocumentCrdtSnapshot',
+      _i14.DocumentList => 'DocumentList',
+      _i15.DocumentVersion => 'DocumentVersion',
+      _i16.DocumentVersionList => 'DocumentVersionList',
+      _i17.DocumentVersionListWithOperations =>
         'DocumentVersionListWithOperations',
-      _i23.DocumentVersionStatus => 'DocumentVersionStatus',
-      _i24.DocumentVersionWithOperations => 'DocumentVersionWithOperations',
-      _i25.MediaAsset => 'MediaAsset',
-      _i26.MediaAssetMetadataStatus => 'MediaAssetMetadataStatus',
+      _i18.DocumentVersionStatus => 'DocumentVersionStatus',
+      _i19.DocumentVersionWithOperations => 'DocumentVersionWithOperations',
+      _i20.MediaAsset => 'MediaAsset',
+      _i21.MediaAssetMetadataStatus => 'MediaAssetMetadataStatus',
       _ => null,
     };
   }
@@ -1966,47 +1575,37 @@ class Protocol extends _i1.SerializationManagerServer {
     }
 
     switch (data) {
-      case _i6.ClientWithToken():
-        return 'ClientWithToken';
-      case _i7.CmsApiToken():
-        return 'CmsApiToken';
-      case _i8.CmsApiTokenWithValue():
-        return 'CmsApiTokenWithValue';
-      case _i9.CmsClient():
-        return 'CmsClient';
-      case _i10.CmsClientList():
-        return 'CmsClientList';
-      case _i11.CmsDeployment():
-        return 'CmsDeployment';
-      case _i12.CmsDocument():
-        return 'CmsDocument';
-      case _i13.CmsDocumentData():
-        return 'CmsDocumentData';
-      case _i14.CmsUser():
-        return 'CmsUser';
-      case _i15.CrdtOperationType():
+      case _i6.ApiToken():
+        return 'ApiToken';
+      case _i7.ApiTokenWithValue():
+        return 'ApiTokenWithValue';
+      case _i8.Document():
+        return 'Document';
+      case _i9.DocumentData():
+        return 'DocumentData';
+      case _i10.User():
+        return 'User';
+      case _i11.CrdtOperationType():
         return 'CrdtOperationType';
-      case _i16.DeploymentStatus():
-        return 'DeploymentStatus';
-      case _i17.DocumentCrdtOperation():
+      case _i12.DocumentCrdtOperation():
         return 'DocumentCrdtOperation';
-      case _i18.DocumentCrdtSnapshot():
+      case _i13.DocumentCrdtSnapshot():
         return 'DocumentCrdtSnapshot';
-      case _i19.DocumentList():
+      case _i14.DocumentList():
         return 'DocumentList';
-      case _i20.DocumentVersion():
+      case _i15.DocumentVersion():
         return 'DocumentVersion';
-      case _i21.DocumentVersionList():
+      case _i16.DocumentVersionList():
         return 'DocumentVersionList';
-      case _i22.DocumentVersionListWithOperations():
+      case _i17.DocumentVersionListWithOperations():
         return 'DocumentVersionListWithOperations';
-      case _i23.DocumentVersionStatus():
+      case _i18.DocumentVersionStatus():
         return 'DocumentVersionStatus';
-      case _i24.DocumentVersionWithOperations():
+      case _i19.DocumentVersionWithOperations():
         return 'DocumentVersionWithOperations';
-      case _i25.MediaAsset():
+      case _i20.MediaAsset():
         return 'MediaAsset';
-      case _i26.MediaAssetMetadataStatus():
+      case _i21.MediaAssetMetadataStatus():
         return 'MediaAssetMetadataStatus';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -2034,68 +1633,53 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName == 'ClientWithToken') {
-      return deserialize<_i6.ClientWithToken>(data['data']);
+    if (dataClassName == 'ApiToken') {
+      return deserialize<_i6.ApiToken>(data['data']);
     }
-    if (dataClassName == 'CmsApiToken') {
-      return deserialize<_i7.CmsApiToken>(data['data']);
+    if (dataClassName == 'ApiTokenWithValue') {
+      return deserialize<_i7.ApiTokenWithValue>(data['data']);
     }
-    if (dataClassName == 'CmsApiTokenWithValue') {
-      return deserialize<_i8.CmsApiTokenWithValue>(data['data']);
+    if (dataClassName == 'Document') {
+      return deserialize<_i8.Document>(data['data']);
     }
-    if (dataClassName == 'CmsClient') {
-      return deserialize<_i9.CmsClient>(data['data']);
+    if (dataClassName == 'DocumentData') {
+      return deserialize<_i9.DocumentData>(data['data']);
     }
-    if (dataClassName == 'CmsClientList') {
-      return deserialize<_i10.CmsClientList>(data['data']);
-    }
-    if (dataClassName == 'CmsDeployment') {
-      return deserialize<_i11.CmsDeployment>(data['data']);
-    }
-    if (dataClassName == 'CmsDocument') {
-      return deserialize<_i12.CmsDocument>(data['data']);
-    }
-    if (dataClassName == 'CmsDocumentData') {
-      return deserialize<_i13.CmsDocumentData>(data['data']);
-    }
-    if (dataClassName == 'CmsUser') {
-      return deserialize<_i14.CmsUser>(data['data']);
+    if (dataClassName == 'User') {
+      return deserialize<_i10.User>(data['data']);
     }
     if (dataClassName == 'CrdtOperationType') {
-      return deserialize<_i15.CrdtOperationType>(data['data']);
-    }
-    if (dataClassName == 'DeploymentStatus') {
-      return deserialize<_i16.DeploymentStatus>(data['data']);
+      return deserialize<_i11.CrdtOperationType>(data['data']);
     }
     if (dataClassName == 'DocumentCrdtOperation') {
-      return deserialize<_i17.DocumentCrdtOperation>(data['data']);
+      return deserialize<_i12.DocumentCrdtOperation>(data['data']);
     }
     if (dataClassName == 'DocumentCrdtSnapshot') {
-      return deserialize<_i18.DocumentCrdtSnapshot>(data['data']);
+      return deserialize<_i13.DocumentCrdtSnapshot>(data['data']);
     }
     if (dataClassName == 'DocumentList') {
-      return deserialize<_i19.DocumentList>(data['data']);
+      return deserialize<_i14.DocumentList>(data['data']);
     }
     if (dataClassName == 'DocumentVersion') {
-      return deserialize<_i20.DocumentVersion>(data['data']);
+      return deserialize<_i15.DocumentVersion>(data['data']);
     }
     if (dataClassName == 'DocumentVersionList') {
-      return deserialize<_i21.DocumentVersionList>(data['data']);
+      return deserialize<_i16.DocumentVersionList>(data['data']);
     }
     if (dataClassName == 'DocumentVersionListWithOperations') {
-      return deserialize<_i22.DocumentVersionListWithOperations>(data['data']);
+      return deserialize<_i17.DocumentVersionListWithOperations>(data['data']);
     }
     if (dataClassName == 'DocumentVersionStatus') {
-      return deserialize<_i23.DocumentVersionStatus>(data['data']);
+      return deserialize<_i18.DocumentVersionStatus>(data['data']);
     }
     if (dataClassName == 'DocumentVersionWithOperations') {
-      return deserialize<_i24.DocumentVersionWithOperations>(data['data']);
+      return deserialize<_i19.DocumentVersionWithOperations>(data['data']);
     }
     if (dataClassName == 'MediaAsset') {
-      return deserialize<_i25.MediaAsset>(data['data']);
+      return deserialize<_i20.MediaAsset>(data['data']);
     }
     if (dataClassName == 'MediaAssetMetadataStatus') {
-      return deserialize<_i26.MediaAssetMetadataStatus>(data['data']);
+      return deserialize<_i21.MediaAssetMetadataStatus>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -2143,26 +1727,22 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     switch (t) {
-      case _i7.CmsApiToken:
-        return _i7.CmsApiToken.t;
-      case _i9.CmsClient:
-        return _i9.CmsClient.t;
-      case _i11.CmsDeployment:
-        return _i11.CmsDeployment.t;
-      case _i12.CmsDocument:
-        return _i12.CmsDocument.t;
-      case _i13.CmsDocumentData:
-        return _i13.CmsDocumentData.t;
-      case _i14.CmsUser:
-        return _i14.CmsUser.t;
-      case _i17.DocumentCrdtOperation:
-        return _i17.DocumentCrdtOperation.t;
-      case _i18.DocumentCrdtSnapshot:
-        return _i18.DocumentCrdtSnapshot.t;
-      case _i20.DocumentVersion:
-        return _i20.DocumentVersion.t;
-      case _i25.MediaAsset:
-        return _i25.MediaAsset.t;
+      case _i6.ApiToken:
+        return _i6.ApiToken.t;
+      case _i8.Document:
+        return _i8.Document.t;
+      case _i9.DocumentData:
+        return _i9.DocumentData.t;
+      case _i10.User:
+        return _i10.User.t;
+      case _i12.DocumentCrdtOperation:
+        return _i12.DocumentCrdtOperation.t;
+      case _i13.DocumentCrdtSnapshot:
+        return _i13.DocumentCrdtSnapshot.t;
+      case _i15.DocumentVersion:
+        return _i15.DocumentVersion.t;
+      case _i20.MediaAsset:
+        return _i20.MediaAsset.t;
     }
     return null;
   }

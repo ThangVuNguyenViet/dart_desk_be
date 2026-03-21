@@ -27,7 +27,7 @@ abstract class DocumentVersion
     this.scheduledAt,
     this.archivedAt,
     DateTime? createdAt,
-    required this.createdByUserId,
+    this.createdByUserId,
   }) : operationCount = operationCount ?? 0,
        createdAt = createdAt ?? DateTime.now();
 
@@ -43,7 +43,7 @@ abstract class DocumentVersion
     DateTime? scheduledAt,
     DateTime? archivedAt,
     DateTime? createdAt,
-    required int createdByUserId,
+    int? createdByUserId,
   }) = _DocumentVersionImpl;
 
   factory DocumentVersion.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -73,7 +73,7 @@ abstract class DocumentVersion
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      createdByUserId: jsonSerialization['createdByUserId'] as int,
+      createdByUserId: jsonSerialization['createdByUserId'] as int?,
     );
   }
 
@@ -104,7 +104,7 @@ abstract class DocumentVersion
 
   DateTime? createdAt;
 
-  int createdByUserId;
+  int? createdByUserId;
 
   @override
   _i1.Table<int?> get table => t;
@@ -141,7 +141,7 @@ abstract class DocumentVersion
       if (scheduledAt != null) 'scheduledAt': scheduledAt?.toJson(),
       if (archivedAt != null) 'archivedAt': archivedAt?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
-      'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId,
     };
   }
 
@@ -160,7 +160,7 @@ abstract class DocumentVersion
       if (scheduledAt != null) 'scheduledAt': scheduledAt?.toJson(),
       if (archivedAt != null) 'archivedAt': archivedAt?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
-      'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId,
     };
   }
 
@@ -209,7 +209,7 @@ class _DocumentVersionImpl extends DocumentVersion {
     DateTime? scheduledAt,
     DateTime? archivedAt,
     DateTime? createdAt,
-    required int createdByUserId,
+    int? createdByUserId,
   }) : super._(
          id: id,
          documentId: documentId,
@@ -241,7 +241,7 @@ class _DocumentVersionImpl extends DocumentVersion {
     Object? scheduledAt = _Undefined,
     Object? archivedAt = _Undefined,
     Object? createdAt = _Undefined,
-    int? createdByUserId,
+    Object? createdByUserId = _Undefined,
   }) {
     return DocumentVersion(
       id: id is int? ? id : this.id,
@@ -255,7 +255,9 @@ class _DocumentVersionImpl extends DocumentVersion {
       scheduledAt: scheduledAt is DateTime? ? scheduledAt : this.scheduledAt,
       archivedAt: archivedAt is DateTime? ? archivedAt : this.archivedAt,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
-      createdByUserId: createdByUserId ?? this.createdByUserId,
+      createdByUserId: createdByUserId is int?
+          ? createdByUserId
+          : this.createdByUserId,
     );
   }
 }
@@ -319,7 +321,7 @@ class DocumentVersionUpdateTable extends _i1.UpdateTable<DocumentVersionTable> {
         value,
       );
 
-  _i1.ColumnValue<int, int> createdByUserId(int value) => _i1.ColumnValue(
+  _i1.ColumnValue<int, int> createdByUserId(int? value) => _i1.ColumnValue(
     table.createdByUserId,
     value,
   );

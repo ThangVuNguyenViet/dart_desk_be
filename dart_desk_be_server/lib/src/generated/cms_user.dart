@@ -12,11 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class CmsUser
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  CmsUser._({
+abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+  User._({
     this.id,
-    required this.clientId,
+    this.tenantId,
     required this.email,
     this.name,
     String? role,
@@ -29,9 +28,9 @@ abstract class CmsUser
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
-  factory CmsUser({
+  factory User({
     int? id,
-    required int clientId,
+    int? tenantId,
     required String email,
     String? name,
     String? role,
@@ -39,12 +38,12 @@ abstract class CmsUser
     String? serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) = _CmsUserImpl;
+  }) = _UserImpl;
 
-  factory CmsUser.fromJson(Map<String, dynamic> jsonSerialization) {
-    return CmsUser(
+  factory User.fromJson(Map<String, dynamic> jsonSerialization) {
+    return User(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int,
+      tenantId: jsonSerialization['tenantId'] as int?,
       email: jsonSerialization['email'] as String,
       name: jsonSerialization['name'] as String?,
       role: jsonSerialization['role'] as String?,
@@ -61,14 +60,14 @@ abstract class CmsUser
     );
   }
 
-  static final t = CmsUserTable();
+  static final t = UserTable();
 
-  static const db = CmsUserRepository._();
+  static const db = UserRepository._();
 
   @override
   int? id;
 
-  int clientId;
+  int? tenantId;
 
   String email;
 
@@ -87,12 +86,12 @@ abstract class CmsUser
   @override
   _i1.Table<int?> get table => t;
 
-  /// Returns a shallow copy of this [CmsUser]
+  /// Returns a shallow copy of this [User]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CmsUser copyWith({
+  User copyWith({
     int? id,
-    int? clientId,
+    int? tenantId,
     String? email,
     String? name,
     String? role,
@@ -104,9 +103,9 @@ abstract class CmsUser
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'CmsUser',
+      '__className__': 'User',
       if (id != null) 'id': id,
-      'clientId': clientId,
+      if (tenantId != null) 'tenantId': tenantId,
       'email': email,
       if (name != null) 'name': name,
       'role': role,
@@ -120,9 +119,9 @@ abstract class CmsUser
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'CmsUser',
+      '__className__': 'User',
       if (id != null) 'id': id,
-      'clientId': clientId,
+      if (tenantId != null) 'tenantId': tenantId,
       'email': email,
       if (name != null) 'name': name,
       'role': role,
@@ -133,26 +132,26 @@ abstract class CmsUser
     };
   }
 
-  static CmsUserInclude include() {
-    return CmsUserInclude._();
+  static UserInclude include() {
+    return UserInclude._();
   }
 
-  static CmsUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+  static UserIncludeList includeList({
+    _i1.WhereExpressionBuilder<UserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsUserTable>? orderBy,
+    _i1.OrderByBuilder<UserTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsUserTable>? orderByList,
-    CmsUserInclude? include,
+    _i1.OrderByListBuilder<UserTable>? orderByList,
+    UserInclude? include,
   }) {
-    return CmsUserIncludeList._(
+    return UserIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(CmsUser.t),
+      orderBy: orderBy?.call(User.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(CmsUser.t),
+      orderByList: orderByList?.call(User.t),
       include: include,
     );
   }
@@ -165,10 +164,10 @@ abstract class CmsUser
 
 class _Undefined {}
 
-class _CmsUserImpl extends CmsUser {
-  _CmsUserImpl({
+class _UserImpl extends User {
+  _UserImpl({
     int? id,
-    required int clientId,
+    int? tenantId,
     required String email,
     String? name,
     String? role,
@@ -178,7 +177,7 @@ class _CmsUserImpl extends CmsUser {
     DateTime? updatedAt,
   }) : super._(
          id: id,
-         clientId: clientId,
+         tenantId: tenantId,
          email: email,
          name: name,
          role: role,
@@ -188,13 +187,13 @@ class _CmsUserImpl extends CmsUser {
          updatedAt: updatedAt,
        );
 
-  /// Returns a shallow copy of this [CmsUser]
+  /// Returns a shallow copy of this [User]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  CmsUser copyWith({
+  User copyWith({
     Object? id = _Undefined,
-    int? clientId,
+    Object? tenantId = _Undefined,
     String? email,
     Object? name = _Undefined,
     String? role,
@@ -203,9 +202,9 @@ class _CmsUserImpl extends CmsUser {
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
   }) {
-    return CmsUser(
+    return User(
       id: id is int? ? id : this.id,
-      clientId: clientId ?? this.clientId,
+      tenantId: tenantId is int? ? tenantId : this.tenantId,
       email: email ?? this.email,
       name: name is String? ? name : this.name,
       role: role ?? this.role,
@@ -219,11 +218,11 @@ class _CmsUserImpl extends CmsUser {
   }
 }
 
-class CmsUserUpdateTable extends _i1.UpdateTable<CmsUserTable> {
-  CmsUserUpdateTable(super.table);
+class UserUpdateTable extends _i1.UpdateTable<UserTable> {
+  UserUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> clientId(int value) => _i1.ColumnValue(
-    table.clientId,
+  _i1.ColumnValue<int, int> tenantId(int? value) => _i1.ColumnValue(
+    table.tenantId,
     value,
   );
 
@@ -266,11 +265,11 @@ class CmsUserUpdateTable extends _i1.UpdateTable<CmsUserTable> {
       );
 }
 
-class CmsUserTable extends _i1.Table<int?> {
-  CmsUserTable({super.tableRelation}) : super(tableName: 'cms_users') {
-    updateTable = CmsUserUpdateTable(this);
-    clientId = _i1.ColumnInt(
-      'clientId',
+class UserTable extends _i1.Table<int?> {
+  UserTable({super.tableRelation}) : super(tableName: 'users') {
+    updateTable = UserUpdateTable(this);
+    tenantId = _i1.ColumnInt(
+      'tenantId',
       this,
     );
     email = _i1.ColumnString(
@@ -307,9 +306,9 @@ class CmsUserTable extends _i1.Table<int?> {
     );
   }
 
-  late final CmsUserUpdateTable updateTable;
+  late final UserUpdateTable updateTable;
 
-  late final _i1.ColumnInt clientId;
+  late final _i1.ColumnInt tenantId;
 
   late final _i1.ColumnString email;
 
@@ -328,7 +327,7 @@ class CmsUserTable extends _i1.Table<int?> {
   @override
   List<_i1.Column> get columns => [
     id,
-    clientId,
+    tenantId,
     email,
     name,
     role,
@@ -339,19 +338,19 @@ class CmsUserTable extends _i1.Table<int?> {
   ];
 }
 
-class CmsUserInclude extends _i1.IncludeObject {
-  CmsUserInclude._();
+class UserInclude extends _i1.IncludeObject {
+  UserInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => CmsUser.t;
+  _i1.Table<int?> get table => User.t;
 }
 
-class CmsUserIncludeList extends _i1.IncludeList {
-  CmsUserIncludeList._({
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+class UserIncludeList extends _i1.IncludeList {
+  UserIncludeList._({
+    _i1.WhereExpressionBuilder<UserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -359,20 +358,20 @@ class CmsUserIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(CmsUser.t);
+    super.where = where?.call(User.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => CmsUser.t;
+  _i1.Table<int?> get table => User.t;
 }
 
-class CmsUserRepository {
-  const CmsUserRepository._();
+class UserRepository {
+  const UserRepository._();
 
-  /// Returns a list of [CmsUser]s matching the given query parameters.
+  /// Returns a list of [User]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -394,22 +393,22 @@ class CmsUserRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<CmsUser>> find(
+  Future<List<User>> find(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+    _i1.WhereExpressionBuilder<UserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsUserTable>? orderBy,
+    _i1.OrderByBuilder<UserTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsUserTable>? orderByList,
+    _i1.OrderByListBuilder<UserTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    return session.db.find<CmsUser>(
-      where: where?.call(CmsUser.t),
-      orderBy: orderBy?.call(CmsUser.t),
-      orderByList: orderByList?.call(CmsUser.t),
+    return session.db.find<User>(
+      where: where?.call(User.t),
+      orderBy: orderBy?.call(User.t),
+      orderByList: orderByList?.call(User.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -419,7 +418,7 @@ class CmsUserRepository {
     );
   }
 
-  /// Returns the first matching [CmsUser] matching the given query parameters.
+  /// Returns the first matching [User] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -436,21 +435,21 @@ class CmsUserRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<CmsUser?> findFirstRow(
+  Future<User?> findFirstRow(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+    _i1.WhereExpressionBuilder<UserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CmsUserTable>? orderBy,
+    _i1.OrderByBuilder<UserTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CmsUserTable>? orderByList,
+    _i1.OrderByListBuilder<UserTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    return session.db.findFirstRow<CmsUser>(
-      where: where?.call(CmsUser.t),
-      orderBy: orderBy?.call(CmsUser.t),
-      orderByList: orderByList?.call(CmsUser.t),
+    return session.db.findFirstRow<User>(
+      where: where?.call(User.t),
+      orderBy: orderBy?.call(User.t),
+      orderByList: orderByList?.call(User.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
@@ -459,15 +458,15 @@ class CmsUserRepository {
     );
   }
 
-  /// Finds a single [CmsUser] by its [id] or null if no such row exists.
-  Future<CmsUser?> findById(
+  /// Finds a single [User] by its [id] or null if no such row exists.
+  Future<User?> findById(
     _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    return session.db.findById<CmsUser>(
+    return session.db.findById<User>(
       id,
       transaction: transaction,
       lockMode: lockMode,
@@ -475,9 +474,9 @@ class CmsUserRepository {
     );
   }
 
-  /// Inserts all [CmsUser]s in the list and returns the inserted rows.
+  /// Inserts all [User]s in the list and returns the inserted rows.
   ///
-  /// The returned [CmsUser]s will have their `id` fields set.
+  /// The returned [User]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
@@ -485,141 +484,141 @@ class CmsUserRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
-  Future<List<CmsUser>> insert(
+  Future<List<User>> insert(
     _i1.DatabaseSession session,
-    List<CmsUser> rows, {
+    List<User> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
   }) async {
-    return session.db.insert<CmsUser>(
+    return session.db.insert<User>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
     );
   }
 
-  /// Inserts a single [CmsUser] and returns the inserted row.
+  /// Inserts a single [User] and returns the inserted row.
   ///
-  /// The returned [CmsUser] will have its `id` field set.
-  Future<CmsUser> insertRow(
+  /// The returned [User] will have its `id` field set.
+  Future<User> insertRow(
     _i1.DatabaseSession session,
-    CmsUser row, {
+    User row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<CmsUser>(
+    return session.db.insertRow<User>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [CmsUser]s in the list and returns the updated rows. If
+  /// Updates all [User]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<CmsUser>> update(
+  Future<List<User>> update(
     _i1.DatabaseSession session,
-    List<CmsUser> rows, {
-    _i1.ColumnSelections<CmsUserTable>? columns,
+    List<User> rows, {
+    _i1.ColumnSelections<UserTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<CmsUser>(
+    return session.db.update<User>(
       rows,
-      columns: columns?.call(CmsUser.t),
+      columns: columns?.call(User.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [CmsUser]. The row needs to have its id set.
+  /// Updates a single [User]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<CmsUser> updateRow(
+  Future<User> updateRow(
     _i1.DatabaseSession session,
-    CmsUser row, {
-    _i1.ColumnSelections<CmsUserTable>? columns,
+    User row, {
+    _i1.ColumnSelections<UserTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<CmsUser>(
+    return session.db.updateRow<User>(
       row,
-      columns: columns?.call(CmsUser.t),
+      columns: columns?.call(User.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [CmsUser] by its [id] with the specified [columnValues].
+  /// Updates a single [User] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
-  Future<CmsUser?> updateById(
+  Future<User?> updateById(
     _i1.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<CmsUserUpdateTable> columnValues,
+    required _i1.ColumnValueListBuilder<UserUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateById<CmsUser>(
+    return session.db.updateById<User>(
       id,
-      columnValues: columnValues(CmsUser.t.updateTable),
+      columnValues: columnValues(User.t.updateTable),
       transaction: transaction,
     );
   }
 
-  /// Updates all [CmsUser]s matching the [where] expression with the specified [columnValues].
+  /// Updates all [User]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
-  Future<List<CmsUser>> updateWhere(
+  Future<List<User>> updateWhere(
     _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<CmsUserUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<CmsUserTable> where,
+    required _i1.ColumnValueListBuilder<UserUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<UserTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CmsUserTable>? orderBy,
-    _i1.OrderByListBuilder<CmsUserTable>? orderByList,
+    _i1.OrderByBuilder<UserTable>? orderBy,
+    _i1.OrderByListBuilder<UserTable>? orderByList,
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateWhere<CmsUser>(
-      columnValues: columnValues(CmsUser.t.updateTable),
-      where: where(CmsUser.t),
+    return session.db.updateWhere<User>(
+      columnValues: columnValues(User.t.updateTable),
+      where: where(User.t),
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(CmsUser.t),
-      orderByList: orderByList?.call(CmsUser.t),
+      orderBy: orderBy?.call(User.t),
+      orderByList: orderByList?.call(User.t),
       orderDescending: orderDescending,
       transaction: transaction,
     );
   }
 
-  /// Deletes all [CmsUser]s in the list and returns the deleted rows.
+  /// Deletes all [User]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<CmsUser>> delete(
+  Future<List<User>> delete(
     _i1.DatabaseSession session,
-    List<CmsUser> rows, {
+    List<User> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<CmsUser>(
+    return session.db.delete<User>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [CmsUser].
-  Future<CmsUser> deleteRow(
+  /// Deletes a single [User].
+  Future<User> deleteRow(
     _i1.DatabaseSession session,
-    CmsUser row, {
+    User row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<CmsUser>(
+    return session.db.deleteRow<User>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<CmsUser>> deleteWhere(
+  Future<List<User>> deleteWhere(
     _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CmsUserTable> where,
+    required _i1.WhereExpressionBuilder<UserTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<CmsUser>(
-      where: where(CmsUser.t),
+    return session.db.deleteWhere<User>(
+      where: where(User.t),
       transaction: transaction,
     );
   }
@@ -628,27 +627,27 @@ class CmsUserRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CmsUserTable>? where,
+    _i1.WhereExpressionBuilder<UserTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<CmsUser>(
-      where: where?.call(CmsUser.t),
+    return session.db.count<User>(
+      where: where?.call(User.t),
       limit: limit,
       transaction: transaction,
     );
   }
 
-  /// Acquires row-level locks on [CmsUser] rows matching the [where] expression.
+  /// Acquires row-level locks on [User] rows matching the [where] expression.
   Future<void> lockRows(
     _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CmsUserTable> where,
+    required _i1.WhereExpressionBuilder<UserTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
     _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
   }) async {
-    return session.db.lockRows<CmsUser>(
-      where: where(CmsUser.t),
+    return session.db.lockRows<User>(
+      where: where(User.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
       transaction: transaction,
