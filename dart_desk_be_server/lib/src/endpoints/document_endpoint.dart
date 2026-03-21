@@ -4,6 +4,7 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../../server.dart' as server;
 import '../generated/protocol.dart';
+import '../tenancy.dart';
 
 /// Endpoint for managing CMS documents
 /// All write operations require authentication
@@ -335,6 +336,7 @@ class DocumentEndpoint extends Endpoint {
   }
 
   /// Get all document types (unique document type names)
+  /// TODO(cloud): Add tenant filtering when cloud plugin provides tenant context.
   Future<List<String>> getDocumentTypes(Session session) async {
     final result = await session.db.unsafeQuery(
       'SELECT DISTINCT document_type FROM documents ORDER BY document_type',
@@ -622,12 +624,19 @@ class DocumentEndpoint extends Endpoint {
 
   Future<User> _getUser(
       Session session, String userIdentifier) async {
+    final tenantId = await DartDeskTenancy.resolveTenantId(session);
     final cmsUser = await User.db.findFirstRow(
       session,
-      where: (t) => t.serverpodUserId.equals(userIdentifier),
+      where: (t) {
+        var expr = t.serverpodUserId.equals(userIdentifier);
+        if (tenantId != null) {
+          expr = expr & t.tenantId.equals(tenantId);
+        }
+        return expr;
+      },
     );
     if (cmsUser == null) {
-      throw Exception('CMS user not found for authenticated user');
+      throw Exception('User not found for authenticated user');
     }
     return cmsUser;
   }
