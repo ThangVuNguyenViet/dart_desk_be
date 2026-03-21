@@ -34,7 +34,9 @@ import 'package:dart_desk_be_server/src/generated/document_version_status.dart'
     as _i15;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i16;
-import 'package:dart_desk_be_server/src/generated/cms_user.dart' as _i17;
+import 'package:dart_desk_be_server/src/generated/media_asset.dart' as _i17;
+import 'dart:typed_data' as _i18;
+import 'package:dart_desk_be_server/src/generated/cms_user.dart' as _i19;
 import 'package:dart_desk_be_server/src/generated/protocol.dart';
 import 'package:dart_desk_be_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -156,6 +158,8 @@ class TestEndpoints {
 
   late final _GoogleIdpEndpoint googleIdp;
 
+  late final _MediaEndpoint media;
+
   late final _RefreshJwtTokensEndpoint refreshJwtTokens;
 
   late final _StudioConfigEndpoint studioConfig;
@@ -195,6 +199,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     googleIdp = _GoogleIdpEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    media = _MediaEndpoint(
       endpoints,
       serializationManager,
     );
@@ -2001,6 +2009,301 @@ class _GoogleIdpEndpoint {
   }
 }
 
+class _MediaEndpoint {
+  _MediaEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i17.MediaAsset> uploadImage(
+    _i1.TestSessionBuilder sessionBuilder,
+    String fileName,
+    _i18.ByteData fileData,
+    int width,
+    int height,
+    bool hasAlpha,
+    String blurHash,
+    String contentHash,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'media',
+            method: 'uploadImage',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'media',
+          methodName: 'uploadImage',
+          parameters: _i1.testObjectToJson({
+            'fileName': fileName,
+            'fileData': fileData,
+            'width': width,
+            'height': height,
+            'hasAlpha': hasAlpha,
+            'blurHash': blurHash,
+            'contentHash': contentHash,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i17.MediaAsset>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i17.MediaAsset> uploadFile(
+    _i1.TestSessionBuilder sessionBuilder,
+    String fileName,
+    _i18.ByteData fileData,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'media',
+            method: 'uploadFile',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'media',
+          methodName: 'uploadFile',
+          parameters: _i1.testObjectToJson({
+            'fileName': fileName,
+            'fileData': fileData,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i17.MediaAsset>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<bool> deleteMedia(
+    _i1.TestSessionBuilder sessionBuilder,
+    String assetId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'media',
+            method: 'deleteMedia',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'media',
+          methodName: 'deleteMedia',
+          parameters: _i1.testObjectToJson({'assetId': assetId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i17.MediaAsset?> getMedia(
+    _i1.TestSessionBuilder sessionBuilder,
+    String assetId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'media',
+            method: 'getMedia',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'media',
+          methodName: 'getMedia',
+          parameters: _i1.testObjectToJson({'assetId': assetId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i17.MediaAsset?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i17.MediaAsset>> listMedia(
+    _i1.TestSessionBuilder sessionBuilder, {
+    String? search,
+    String? mimeTypePrefix,
+    required String sortBy,
+    required int limit,
+    required int offset,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'media',
+            method: 'listMedia',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'media',
+          methodName: 'listMedia',
+          parameters: _i1.testObjectToJson({
+            'search': search,
+            'mimeTypePrefix': mimeTypePrefix,
+            'sortBy': sortBy,
+            'limit': limit,
+            'offset': offset,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i17.MediaAsset>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<int> listMediaCount(
+    _i1.TestSessionBuilder sessionBuilder, {
+    String? search,
+    String? mimeTypePrefix,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'media',
+            method: 'listMediaCount',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'media',
+          methodName: 'listMediaCount',
+          parameters: _i1.testObjectToJson({
+            'search': search,
+            'mimeTypePrefix': mimeTypePrefix,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<int>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<int> getMediaUsageCount(
+    _i1.TestSessionBuilder sessionBuilder,
+    String assetId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'media',
+            method: 'getMediaUsageCount',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'media',
+          methodName: 'getMediaUsageCount',
+          parameters: _i1.testObjectToJson({'assetId': assetId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<int>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i17.MediaAsset> updateMediaAsset(
+    _i1.TestSessionBuilder sessionBuilder,
+    String assetId, {
+    String? fileName,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'media',
+            method: 'updateMediaAsset',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'media',
+          methodName: 'updateMediaAsset',
+          parameters: _i1.testObjectToJson({
+            'assetId': assetId,
+            'fileName': fileName,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i17.MediaAsset>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _RefreshJwtTokensEndpoint {
   _RefreshJwtTokensEndpoint(
     this._endpointDispatch,
@@ -2094,7 +2397,7 @@ class _UserEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i17.CmsUser> ensureUser(
+  _i3.Future<_i19.CmsUser> ensureUser(
     _i1.TestSessionBuilder sessionBuilder,
     String clientSlug,
     String apiToken,
@@ -2121,7 +2424,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i17.CmsUser>);
+                as _i3.Future<_i19.CmsUser>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2129,7 +2432,7 @@ class _UserEndpoint {
     });
   }
 
-  _i3.Future<_i17.CmsUser?> getCurrentUser(
+  _i3.Future<_i19.CmsUser?> getCurrentUser(
     _i1.TestSessionBuilder sessionBuilder,
     String clientSlug,
     String apiToken,
@@ -2156,7 +2459,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i17.CmsUser?>);
+                as _i3.Future<_i19.CmsUser?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2194,7 +2497,7 @@ class _UserEndpoint {
     });
   }
 
-  _i3.Future<_i17.CmsUser?> getCurrentUserBySlug(
+  _i3.Future<_i19.CmsUser?> getCurrentUserBySlug(
     _i1.TestSessionBuilder sessionBuilder,
     String clientSlug,
   ) async {
@@ -2217,7 +2520,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i17.CmsUser?>);
+                as _i3.Future<_i19.CmsUser?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

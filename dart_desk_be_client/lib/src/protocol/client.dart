@@ -32,9 +32,11 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i15;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i16;
-import 'package:dart_desk_be_client/src/protocol/cms_user.dart' as _i17;
-import 'package:serverpod_admin_client/serverpod_admin_client.dart' as _i18;
-import 'protocol.dart' as _i19;
+import 'package:dart_desk_be_client/src/protocol/media_asset.dart' as _i17;
+import 'dart:typed_data' as _i18;
+import 'package:dart_desk_be_client/src/protocol/cms_user.dart' as _i19;
+import 'package:serverpod_admin_client/serverpod_admin_client.dart' as _i20;
+import 'protocol.dart' as _i21;
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
@@ -776,6 +778,128 @@ class EndpointGoogleIdp extends _i15.EndpointGoogleIdpBase {
   );
 }
 
+/// Endpoint for managing media assets (images and files).
+/// All operations require authentication.
+/// {@category Endpoint}
+class EndpointMedia extends _i1.EndpointRef {
+  EndpointMedia(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'media';
+
+  /// Upload an image file with client-provided quick metadata.
+  ///
+  /// Performs deduplication based on content hash + dimensions + extension.
+  /// If an identical asset already exists, returns the existing record.
+  _i2.Future<_i17.MediaAsset> uploadImage(
+    String fileName,
+    _i18.ByteData fileData,
+    int width,
+    int height,
+    bool hasAlpha,
+    String blurHash,
+    String contentHash,
+  ) => caller.callServerEndpoint<_i17.MediaAsset>(
+    'media',
+    'uploadImage',
+    {
+      'fileName': fileName,
+      'fileData': fileData,
+      'width': width,
+      'height': height,
+      'hasAlpha': hasAlpha,
+      'blurHash': blurHash,
+      'contentHash': contentHash,
+    },
+  );
+
+  /// Upload a non-image file.
+  ///
+  /// Content hash is computed server-side via SHA-256.
+  _i2.Future<_i17.MediaAsset> uploadFile(
+    String fileName,
+    _i18.ByteData fileData,
+  ) => caller.callServerEndpoint<_i17.MediaAsset>(
+    'media',
+    'uploadFile',
+    {
+      'fileName': fileName,
+      'fileData': fileData,
+    },
+  );
+
+  /// Delete a media asset by assetId.
+  ///
+  /// Refuses to delete if the asset is still referenced in any document.
+  _i2.Future<bool> deleteMedia(String assetId) =>
+      caller.callServerEndpoint<bool>(
+        'media',
+        'deleteMedia',
+        {'assetId': assetId},
+      );
+
+  /// Get a single media asset by assetId.
+  _i2.Future<_i17.MediaAsset?> getMedia(String assetId) =>
+      caller.callServerEndpoint<_i17.MediaAsset?>(
+        'media',
+        'getMedia',
+        {'assetId': assetId},
+      );
+
+  /// List media assets with search, filter, sort, and pagination.
+  _i2.Future<List<_i17.MediaAsset>> listMedia({
+    String? search,
+    String? mimeTypePrefix,
+    required String sortBy,
+    required int limit,
+    required int offset,
+  }) => caller.callServerEndpoint<List<_i17.MediaAsset>>(
+    'media',
+    'listMedia',
+    {
+      'search': search,
+      'mimeTypePrefix': mimeTypePrefix,
+      'sortBy': sortBy,
+      'limit': limit,
+      'offset': offset,
+    },
+  );
+
+  /// Count total media assets matching the given filters.
+  _i2.Future<int> listMediaCount({
+    String? search,
+    String? mimeTypePrefix,
+  }) => caller.callServerEndpoint<int>(
+    'media',
+    'listMediaCount',
+    {
+      'search': search,
+      'mimeTypePrefix': mimeTypePrefix,
+    },
+  );
+
+  /// Count how many distinct documents reference the given assetId.
+  _i2.Future<int> getMediaUsageCount(String assetId) =>
+      caller.callServerEndpoint<int>(
+        'media',
+        'getMediaUsageCount',
+        {'assetId': assetId},
+      );
+
+  /// Update a media asset's metadata (currently supports renaming).
+  _i2.Future<_i17.MediaAsset> updateMediaAsset(
+    String assetId, {
+    String? fileName,
+  }) => caller.callServerEndpoint<_i17.MediaAsset>(
+    'media',
+    'updateMediaAsset',
+    {
+      'assetId': assetId,
+      'fileName': fileName,
+    },
+  );
+}
+
 /// {@category Endpoint}
 class EndpointRefreshJwtTokens extends _i16.EndpointRefreshJwtTokens {
   EndpointRefreshJwtTokens(_i1.EndpointCaller caller) : super(caller);
@@ -842,10 +966,10 @@ class EndpointUser extends _i1.EndpointRef {
   /// Ensure a CMS user exists for the authenticated user in the given client.
   /// Creates one automatically on first login.
   /// Validates the API token (bcrypt) before creating the user.
-  _i2.Future<_i17.CmsUser> ensureUser(
+  _i2.Future<_i19.CmsUser> ensureUser(
     String clientSlug,
     String apiToken,
-  ) => caller.callServerEndpoint<_i17.CmsUser>(
+  ) => caller.callServerEndpoint<_i19.CmsUser>(
     'user',
     'ensureUser',
     {
@@ -856,10 +980,10 @@ class EndpointUser extends _i1.EndpointRef {
 
   /// Get the current CMS user for the authenticated user in a given client.
   /// Validates the API token.
-  _i2.Future<_i17.CmsUser?> getCurrentUser(
+  _i2.Future<_i19.CmsUser?> getCurrentUser(
     String clientSlug,
     String apiToken,
-  ) => caller.callServerEndpoint<_i17.CmsUser?>(
+  ) => caller.callServerEndpoint<_i19.CmsUser?>(
     'user',
     'getCurrentUser',
     {
@@ -879,8 +1003,8 @@ class EndpointUser extends _i1.EndpointRef {
 
   /// Get the current CMS user by client slug (for Manage app — no API token needed).
   /// Authenticates via Serverpod auth session only.
-  _i2.Future<_i17.CmsUser?> getCurrentUserBySlug(String clientSlug) =>
-      caller.callServerEndpoint<_i17.CmsUser?>(
+  _i2.Future<_i19.CmsUser?> getCurrentUserBySlug(String clientSlug) =>
+      caller.callServerEndpoint<_i19.CmsUser?>(
         'user',
         'getCurrentUserBySlug',
         {'clientSlug': clientSlug},
@@ -898,13 +1022,13 @@ class EndpointUser extends _i1.EndpointRef {
 class Modules {
   Modules(Client client) {
     serverpod_auth_idp = _i15.Caller(client);
-    serverpod_admin = _i18.Caller(client);
+    serverpod_admin = _i20.Caller(client);
     serverpod_auth_core = _i16.Caller(client);
   }
 
   late final _i15.Caller serverpod_auth_idp;
 
-  late final _i18.Caller serverpod_admin;
+  late final _i20.Caller serverpod_admin;
 
   late final _i16.Caller serverpod_auth_core;
 }
@@ -929,7 +1053,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i19.Protocol(),
+         _i21.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -945,6 +1069,7 @@ class Client extends _i1.ServerpodClientShared {
     document = EndpointDocument(this);
     emailIdp = EndpointEmailIdp(this);
     googleIdp = EndpointGoogleIdp(this);
+    media = EndpointMedia(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
     studioConfig = EndpointStudioConfig(this);
     user = EndpointUser(this);
@@ -965,6 +1090,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointGoogleIdp googleIdp;
 
+  late final EndpointMedia media;
+
   late final EndpointRefreshJwtTokens refreshJwtTokens;
 
   late final EndpointStudioConfig studioConfig;
@@ -982,6 +1109,7 @@ class Client extends _i1.ServerpodClientShared {
     'document': document,
     'emailIdp': emailIdp,
     'googleIdp': googleIdp,
+    'media': media,
     'refreshJwtTokens': refreshJwtTokens,
     'studioConfig': studioConfig,
     'user': user,

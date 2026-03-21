@@ -18,16 +18,18 @@ import '../endpoints/document_collaboration_endpoint.dart' as _i5;
 import '../endpoints/document_endpoint.dart' as _i6;
 import '../endpoints/email_idp_endpoint.dart' as _i7;
 import '../endpoints/google_idp_endpoint.dart' as _i8;
-import '../endpoints/refresh_jwt_tokens_endpoint.dart' as _i9;
-import '../endpoints/studio_config_endpoint.dart' as _i10;
-import '../endpoints/user_endpoint.dart' as _i11;
+import '../endpoints/media_endpoint.dart' as _i9;
+import '../endpoints/refresh_jwt_tokens_endpoint.dart' as _i10;
+import '../endpoints/studio_config_endpoint.dart' as _i11;
+import '../endpoints/user_endpoint.dart' as _i12;
 import 'package:dart_desk_be_server/src/generated/document_version_status.dart'
-    as _i12;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i13;
-import 'package:serverpod_admin_server/serverpod_admin_server.dart' as _i14;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+import 'dart:typed_data' as _i14;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i15;
+import 'package:serverpod_admin_server/serverpod_admin_server.dart' as _i16;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i17;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -75,19 +77,25 @@ class Endpoints extends _i1.EndpointDispatch {
           'googleIdp',
           null,
         ),
-      'refreshJwtTokens': _i9.RefreshJwtTokensEndpoint()
+      'media': _i9.MediaEndpoint()
+        ..initialize(
+          server,
+          'media',
+          null,
+        ),
+      'refreshJwtTokens': _i10.RefreshJwtTokensEndpoint()
         ..initialize(
           server,
           'refreshJwtTokens',
           null,
         ),
-      'studioConfig': _i10.StudioConfigEndpoint()
+      'studioConfig': _i11.StudioConfigEndpoint()
         ..initialize(
           server,
           'studioConfig',
           null,
         ),
-      'user': _i11.UserEndpoint()
+      'user': _i12.UserEndpoint()
         ..initialize(
           server,
           'user',
@@ -1047,7 +1055,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'status': _i1.ParameterDescription(
               name: 'status',
-              type: _i1.getType<_i12.DocumentVersionStatus>(),
+              type: _i1.getType<_i13.DocumentVersionStatus>(),
               nullable: false,
             ),
             'changeLog': _i1.ParameterDescription(
@@ -1357,6 +1365,237 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['media'] = _i1.EndpointConnector(
+      name: 'media',
+      endpoint: endpoints['media']!,
+      methodConnectors: {
+        'uploadImage': _i1.MethodConnector(
+          name: 'uploadImage',
+          params: {
+            'fileName': _i1.ParameterDescription(
+              name: 'fileName',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'fileData': _i1.ParameterDescription(
+              name: 'fileData',
+              type: _i1.getType<_i14.ByteData>(),
+              nullable: false,
+            ),
+            'width': _i1.ParameterDescription(
+              name: 'width',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'height': _i1.ParameterDescription(
+              name: 'height',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'hasAlpha': _i1.ParameterDescription(
+              name: 'hasAlpha',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+            'blurHash': _i1.ParameterDescription(
+              name: 'blurHash',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'contentHash': _i1.ParameterDescription(
+              name: 'contentHash',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['media'] as _i9.MediaEndpoint).uploadImage(
+                session,
+                params['fileName'],
+                params['fileData'],
+                params['width'],
+                params['height'],
+                params['hasAlpha'],
+                params['blurHash'],
+                params['contentHash'],
+              ),
+        ),
+        'uploadFile': _i1.MethodConnector(
+          name: 'uploadFile',
+          params: {
+            'fileName': _i1.ParameterDescription(
+              name: 'fileName',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'fileData': _i1.ParameterDescription(
+              name: 'fileData',
+              type: _i1.getType<_i14.ByteData>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['media'] as _i9.MediaEndpoint).uploadFile(
+                session,
+                params['fileName'],
+                params['fileData'],
+              ),
+        ),
+        'deleteMedia': _i1.MethodConnector(
+          name: 'deleteMedia',
+          params: {
+            'assetId': _i1.ParameterDescription(
+              name: 'assetId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['media'] as _i9.MediaEndpoint).deleteMedia(
+                session,
+                params['assetId'],
+              ),
+        ),
+        'getMedia': _i1.MethodConnector(
+          name: 'getMedia',
+          params: {
+            'assetId': _i1.ParameterDescription(
+              name: 'assetId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['media'] as _i9.MediaEndpoint).getMedia(
+                session,
+                params['assetId'],
+              ),
+        ),
+        'listMedia': _i1.MethodConnector(
+          name: 'listMedia',
+          params: {
+            'search': _i1.ParameterDescription(
+              name: 'search',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'mimeTypePrefix': _i1.ParameterDescription(
+              name: 'mimeTypePrefix',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'sortBy': _i1.ParameterDescription(
+              name: 'sortBy',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['media'] as _i9.MediaEndpoint).listMedia(
+                session,
+                search: params['search'],
+                mimeTypePrefix: params['mimeTypePrefix'],
+                sortBy: params['sortBy'],
+                limit: params['limit'],
+                offset: params['offset'],
+              ),
+        ),
+        'listMediaCount': _i1.MethodConnector(
+          name: 'listMediaCount',
+          params: {
+            'search': _i1.ParameterDescription(
+              name: 'search',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'mimeTypePrefix': _i1.ParameterDescription(
+              name: 'mimeTypePrefix',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['media'] as _i9.MediaEndpoint).listMediaCount(
+                    session,
+                    search: params['search'],
+                    mimeTypePrefix: params['mimeTypePrefix'],
+                  ),
+        ),
+        'getMediaUsageCount': _i1.MethodConnector(
+          name: 'getMediaUsageCount',
+          params: {
+            'assetId': _i1.ParameterDescription(
+              name: 'assetId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['media'] as _i9.MediaEndpoint).getMediaUsageCount(
+                    session,
+                    params['assetId'],
+                  ),
+        ),
+        'updateMediaAsset': _i1.MethodConnector(
+          name: 'updateMediaAsset',
+          params: {
+            'assetId': _i1.ParameterDescription(
+              name: 'assetId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'fileName': _i1.ParameterDescription(
+              name: 'fileName',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['media'] as _i9.MediaEndpoint).updateMediaAsset(
+                    session,
+                    params['assetId'],
+                    fileName: params['fileName'],
+                  ),
+        ),
+      },
+    );
     connectors['refreshJwtTokens'] = _i1.EndpointConnector(
       name: 'refreshJwtTokens',
       endpoint: endpoints['refreshJwtTokens']!,
@@ -1376,7 +1615,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['refreshJwtTokens']
-                          as _i9.RefreshJwtTokensEndpoint)
+                          as _i10.RefreshJwtTokensEndpoint)
                       .refreshAccessToken(
                         session,
                         refreshToken: params['refreshToken'],
@@ -1396,7 +1635,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['studioConfig'] as _i10.StudioConfigEndpoint)
+                  (endpoints['studioConfig'] as _i11.StudioConfigEndpoint)
                       .getStudioUrlTemplate(session),
         ),
       },
@@ -1423,7 +1662,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i11.UserEndpoint).ensureUser(
+              ) async => (endpoints['user'] as _i12.UserEndpoint).ensureUser(
                 session,
                 params['clientSlug'],
                 params['apiToken'],
@@ -1448,7 +1687,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _i11.UserEndpoint).getCurrentUser(
+                  (endpoints['user'] as _i12.UserEndpoint).getCurrentUser(
                     session,
                     params['clientSlug'],
                     params['apiToken'],
@@ -1461,7 +1700,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i11.UserEndpoint)
+              ) async => (endpoints['user'] as _i12.UserEndpoint)
                   .getUserClients(session),
         ),
         'getCurrentUserBySlug': _i1.MethodConnector(
@@ -1478,7 +1717,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _i11.UserEndpoint).getCurrentUserBySlug(
+                  (endpoints['user'] as _i12.UserEndpoint).getCurrentUserBySlug(
                     session,
                     params['clientSlug'],
                   ),
@@ -1497,17 +1736,17 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _i11.UserEndpoint).getClientUserCount(
+                  (endpoints['user'] as _i12.UserEndpoint).getClientUserCount(
                     session,
                     params['clientId'],
                   ),
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i13.Endpoints()
+    modules['serverpod_auth_idp'] = _i15.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_admin'] = _i14.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i15.Endpoints()
+    modules['serverpod_admin'] = _i16.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth_core'] = _i17.Endpoints()
       ..initializeEndpoints(server);
   }
 }

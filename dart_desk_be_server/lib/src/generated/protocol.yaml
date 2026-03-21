@@ -56,6 +56,15 @@ emailIdp:
 googleIdp:
   - login:
   - hasAccount:
+media:
+  - uploadImage:
+  - uploadFile:
+  - deleteMedia:
+  - getMedia:
+  - listMedia:
+  - listMediaCount:
+  - getMediaUsageCount:
+  - updateMediaAsset:
 refreshJwtTokens:
   - refreshAccessToken:
 studioConfig:

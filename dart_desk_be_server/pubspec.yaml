@@ -12,6 +12,7 @@ dependencies:
   uuid: ^4.5.1
   dbcrypt: ^2.0.0
   archive: ^4.0.2
+  crypto: ^3.0.0
   mime: ^2.0.0
   serverpod_auth_idp_server: 3.4.3
   serverpod_admin_server:

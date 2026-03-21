@@ -42,7 +42,8 @@ import 'package:dart_desk_be_server/src/generated/cms_api_token.dart' as _i27;
 import 'package:dart_desk_be_server/src/generated/cms_deployment.dart' as _i28;
 import 'package:dart_desk_be_server/src/generated/document_crdt_operation.dart'
     as _i29;
-import 'package:dart_desk_be_server/src/generated/cms_client.dart' as _i30;
+import 'package:dart_desk_be_server/src/generated/media_asset.dart' as _i30;
+import 'package:dart_desk_be_server/src/generated/cms_client.dart' as _i31;
 export 'client_with_token.dart';
 export 'cms_api_token.dart';
 export 'cms_api_token_with_value.dart';
@@ -1901,8 +1902,12 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == List<_i30.CmsClient>) {
-      return (data as List).map((e) => deserialize<_i30.CmsClient>(e)).toList()
+    if (t == List<_i30.MediaAsset>) {
+      return (data as List).map((e) => deserialize<_i30.MediaAsset>(e)).toList()
+          as T;
+    }
+    if (t == List<_i31.CmsClient>) {
+      return (data as List).map((e) => deserialize<_i31.CmsClient>(e)).toList()
           as T;
     }
     try {

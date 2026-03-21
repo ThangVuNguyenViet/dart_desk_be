@@ -1,180 +1,362 @@
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
+import 'package:mime/mime.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
+import '../services/local_image_storage_provider.dart';
 
-/// Endpoint for managing media files and uploads
-/// All operations require authentication
+/// Allowed image MIME types for upload validation.
+const _allowedImageMimeTypes = {
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/svg+xml',
+  'image/avif',
+  'image/heic',
+  'image/heif',
+  'image/tiff',
+  'image/bmp',
+};
+
+/// Maximum file size: 10 MB.
+const _maxFileSize = 10 * 1024 * 1024;
+
+/// Endpoint for managing media assets (images and files).
+/// All operations require authentication.
 class MediaEndpoint extends Endpoint {
-  /// Upload an image file
-  /// Returns the public URL and file ID
-  Future<UploadResponse> uploadImage(
+  /// Upload an image file with client-provided quick metadata.
+  ///
+  /// Performs deduplication based on content hash + dimensions + extension.
+  /// If an identical asset already exists, returns the existing record.
+  Future<MediaAsset> uploadImage(
     Session session,
     String fileName,
     ByteData fileData,
+    int width,
+    int height,
+    bool hasAlpha,
+    String blurHash,
+    String contentHash,
   ) async {
-    return _uploadFile(
-      session,
-      fileName,
-      fileData,
-      allowedTypes: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-      fileCategory: 'image',
-    );
-  }
-
-  /// Upload a general file (PDF, documents, etc.)
-  /// Returns the public URL, file ID, and filename
-  Future<UploadResponse> uploadFile(
-    Session session,
-    String fileName,
-    ByteData fileData,
-  ) async {
-    return _uploadFile(
-      session,
-      fileName,
-      fileData,
-      allowedTypes: ['pdf', 'doc', 'docx', 'txt', 'csv', 'xlsx'],
-      fileCategory: 'file',
-    );
-  }
-
-  /// Internal method to handle file uploads
-  Future<UploadResponse> _uploadFile(
-    Session session,
-    String fileName,
-    ByteData fileData, {
-    required List<String> allowedTypes,
-    required String fileCategory,
-  }) async {
-    // Validate file extension
-    final extension = fileName.split('.').last.toLowerCase();
-    if (!allowedTypes.contains(extension)) {
-      throw Exception(
-        'Invalid file type. Allowed types: ${allowedTypes.join(", ")}',
-      );
-    }
-
-    // Validate file size (10MB max)
-    const maxFileSize = 10 * 1024 * 1024; // 10MB
-    if (fileData.lengthInBytes > maxFileSize) {
-      throw Exception('File size exceeds maximum allowed size of 10MB');
-    }
-
-    // Require authentication
+    // Authenticate
     final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('User must be authenticated to upload files');
     }
 
-    // Generate unique filename
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final uniqueFileName = '${timestamp}_$fileName';
-    final storagePath = '$fileCategory/$uniqueFileName';
+    // Look up CMS user
+    final cmsUser = await CmsUser.db.findFirstRow(
+      session,
+      where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
+    );
+    if (cmsUser == null) {
+      throw Exception('CMS user not found for authenticated user');
+    }
+
+    // Validate MIME type
+    final mimeType = lookupMimeType(fileName);
+    if (mimeType == null || !_allowedImageMimeTypes.contains(mimeType)) {
+      throw Exception(
+        'Invalid image type. Allowed types: ${_allowedImageMimeTypes.join(", ")}',
+      );
+    }
+
+    // Validate file size
+    if (fileData.lengthInBytes > _maxFileSize) {
+      throw Exception('File size exceeds maximum allowed size of 10MB');
+    }
+
+    // Build asset ID for deduplication
+    final ext = fileName.split('.').last.toLowerCase();
+    final assetId = 'image-$contentHash-${width}x$height-$ext';
+
+    // Check for existing asset (deduplication)
+    final existing = await MediaAsset.db.findFirstRow(
+      session,
+      where: (t) => t.assetId.equals(assetId),
+    );
+    if (existing != null) {
+      return existing;
+    }
+
+    // Store file
+    final provider = LocalImageStorageProvider(session);
+    final bytes = fileData.buffer.asUint8List();
+    final publicUrl = await provider.store(assetId, fileName, bytes);
+    final storagePath = 'media/$assetId/$fileName';
+
+    // Create DB record
+    final asset = MediaAsset(
+      clientId: cmsUser.clientId,
+      assetId: assetId,
+      fileName: fileName,
+      mimeType: mimeType,
+      fileSize: fileData.lengthInBytes,
+      storagePath: storagePath,
+      publicUrl: publicUrl,
+      width: width,
+      height: height,
+      hasAlpha: hasAlpha,
+      blurHash: blurHash,
+      uploadedByUserId: cmsUser.id!,
+      metadataStatus: MediaAssetMetadataStatus.pending,
+    );
 
     try {
-      // Store file using Serverpod's storage
-      await session.storage.storeFile(
-        storageId: 'public',
-        path: storagePath,
-        byteData: fileData,
-      );
-
-      // Get public URL
-      final publicUri = await session.storage.getPublicUrl(
-        storageId: 'public',
-        path: storagePath,
-      );
-
-      if (publicUri == null) {
-        throw Exception('Failed to get public URL for uploaded file');
-      }
-
-      final publicUrl = publicUri.toString();
-
-      // Get the CMS user to find their clientId
-      final cmsUser = await CmsUser.db.findFirstRow(
-        session,
-        where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
-      );
-
-      if (cmsUser == null) {
-        throw Exception('CMS user not found for authenticated user');
-      }
-
-      // Save file metadata to database
-      final mediaFile = MediaFile(
-        clientId: cmsUser.clientId,
-        fileName: fileName,
-        fileType: extension,
-        fileSize: fileData.lengthInBytes,
-        storagePath: storagePath,
-        publicUrl: publicUrl,
-        uploadedByUserId: cmsUser.id!,
-        createdAt: DateTime.now(),
-      );
-
-      final savedFile = await MediaFile.db.insertRow(session, mediaFile);
-
-      return UploadResponse(
-        url: publicUrl,
-        id: savedFile.id!.toString(),
-        fileName: fileName,
-      );
+      return await MediaAsset.db.insertRow(session, asset);
     } catch (e) {
-      session.log('Error uploading file: $e', level: LogLevel.error);
-      throw Exception('Failed to upload file: $e');
+      // Race condition: another request may have inserted the same assetId.
+      // Re-fetch and return.
+      final reFetched = await MediaAsset.db.findFirstRow(
+        session,
+        where: (t) => t.assetId.equals(assetId),
+      );
+      if (reFetched != null) {
+        return reFetched;
+      }
+      rethrow;
     }
   }
 
-  /// Delete a media file by ID
-  Future<bool> deleteMedia(
+  /// Upload a non-image file.
+  ///
+  /// Content hash is computed server-side via SHA-256.
+  Future<MediaAsset> uploadFile(
     Session session,
-    int fileId,
+    String fileName,
+    ByteData fileData,
   ) async {
+    // Authenticate
+    final authInfo = session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to upload files');
+    }
+
+    // Look up CMS user
+    final cmsUser = await CmsUser.db.findFirstRow(
+      session,
+      where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
+    );
+    if (cmsUser == null) {
+      throw Exception('CMS user not found for authenticated user');
+    }
+
+    // Validate file size
+    if (fileData.lengthInBytes > _maxFileSize) {
+      throw Exception('File size exceeds maximum allowed size of 10MB');
+    }
+
+    // Determine MIME type (allow any for generic files)
+    final mimeType = lookupMimeType(fileName) ?? 'application/octet-stream';
+
+    // Compute content hash server-side
+    final bytes = fileData.buffer.asUint8List();
+    final contentHash = sha256.convert(bytes).toString();
+
+    // Build asset ID
+    final ext = fileName.split('.').last.toLowerCase();
+    final assetId = 'file-$contentHash-$ext';
+
+    // Check for existing asset (deduplication)
+    final existing = await MediaAsset.db.findFirstRow(
+      session,
+      where: (t) => t.assetId.equals(assetId),
+    );
+    if (existing != null) {
+      return existing;
+    }
+
+    // Store file
+    final provider = LocalImageStorageProvider(session);
+    final publicUrl = await provider.store(assetId, fileName, bytes);
+    final storagePath = 'media/$assetId/$fileName';
+
+    // Create DB record
+    final asset = MediaAsset(
+      clientId: cmsUser.clientId,
+      assetId: assetId,
+      fileName: fileName,
+      mimeType: mimeType,
+      fileSize: fileData.lengthInBytes,
+      storagePath: storagePath,
+      publicUrl: publicUrl,
+      width: 0,
+      height: 0,
+      hasAlpha: false,
+      blurHash: '',
+      uploadedByUserId: cmsUser.id!,
+      metadataStatus: MediaAssetMetadataStatus.pending,
+    );
+
     try {
-      final mediaFile = await MediaFile.db.findById(session, fileId);
-
-      if (mediaFile == null) {
-        return false;
-      }
-
-      // Delete file from storage
-      await session.storage.deleteFile(
-        storageId: 'public',
-        path: mediaFile.storagePath,
-      );
-
-      // Delete record from database
-      await MediaFile.db.deleteRow(session, mediaFile);
-
-      return true;
+      return await MediaAsset.db.insertRow(session, asset);
     } catch (e) {
-      session.log('Error deleting media file: $e', level: LogLevel.warning);
+      // Race condition: another request may have inserted the same assetId.
+      final reFetched = await MediaAsset.db.findFirstRow(
+        session,
+        where: (t) => t.assetId.equals(assetId),
+      );
+      if (reFetched != null) {
+        return reFetched;
+      }
+      rethrow;
+    }
+  }
+
+  /// Delete a media asset by assetId.
+  ///
+  /// Refuses to delete if the asset is still referenced in any document.
+  Future<bool> deleteMedia(Session session, String assetId) async {
+    final authInfo = session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to delete media');
+    }
+
+    // Safety check: refuse delete if asset is in use
+    final usageCount = await getMediaUsageCount(session, assetId);
+    if (usageCount > 0) {
+      throw Exception(
+        'Cannot delete asset "$assetId": it is referenced in $usageCount document(s)',
+      );
+    }
+
+    // Find the asset
+    final asset = await MediaAsset.db.findFirstRow(
+      session,
+      where: (t) => t.assetId.equals(assetId),
+    );
+    if (asset == null) {
       return false;
     }
+
+    // Delete from storage
+    final provider = LocalImageStorageProvider(session);
+    await provider.delete(asset.storagePath);
+
+    // Delete DB record
+    await MediaAsset.db.deleteRow(session, asset);
+
+    return true;
   }
 
-  /// Get media file metadata by ID
-  Future<MediaFile?> getMedia(
-    Session session,
-    int fileId,
-  ) async {
-    return await MediaFile.db.findById(session, fileId);
+  /// Get a single media asset by assetId.
+  Future<MediaAsset?> getMedia(Session session, String assetId) async {
+    return await MediaAsset.db.findFirstRow(
+      session,
+      where: (t) => t.assetId.equals(assetId),
+    );
   }
 
-  /// List all media files with pagination
-  Future<List<MediaFile>> listMedia(
+  /// List media assets with search, filter, sort, and pagination.
+  Future<List<MediaAsset>> listMedia(
     Session session, {
+    String? search,
+    String? mimeTypePrefix,
+    String sortBy = 'dateDesc',
     int limit = 50,
     int offset = 0,
   }) async {
-    return await MediaFile.db.find(
+    return await MediaAsset.db.find(
       session,
-      orderBy: (t) => t.createdAt,
-      orderDescending: true,
+      where: (t) => _buildWhereClause(t, search: search, mimeTypePrefix: mimeTypePrefix),
+      orderBy: (t) => _buildOrderBy(t, sortBy),
+      orderDescending: sortBy.endsWith('Desc'),
       limit: limit,
       offset: offset,
     );
+  }
+
+  /// Count total media assets matching the given filters.
+  Future<int> listMediaCount(
+    Session session, {
+    String? search,
+    String? mimeTypePrefix,
+  }) async {
+    return await MediaAsset.db.count(
+      session,
+      where: (t) => _buildWhereClause(t, search: search, mimeTypePrefix: mimeTypePrefix),
+    );
+  }
+
+  /// Count how many distinct documents reference the given assetId.
+  Future<int> getMediaUsageCount(Session session, String assetId) async {
+    final result = await session.db.unsafeQuery(
+      'SELECT COUNT(DISTINCT "documentId") FROM "document_crdt_snapshots" '
+      "WHERE data::text LIKE \$1",
+      parameters: QueryParameters.positional(['%$assetId%']),
+    );
+    if (result.isEmpty || result.first.isEmpty) {
+      return 0;
+    }
+    return result.first.first as int;
+  }
+
+  /// Update a media asset's metadata (currently supports renaming).
+  Future<MediaAsset> updateMediaAsset(
+    Session session,
+    String assetId, {
+    String? fileName,
+  }) async {
+    final authInfo = session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to update media');
+    }
+
+    final asset = await MediaAsset.db.findFirstRow(
+      session,
+      where: (t) => t.assetId.equals(assetId),
+    );
+    if (asset == null) {
+      throw Exception('Media asset not found: $assetId');
+    }
+
+    if (fileName != null) {
+      asset.fileName = fileName;
+    }
+
+    return await MediaAsset.db.updateRow(session, asset);
+  }
+
+  // ------------------------------------------------------------------
+  // Private helpers
+  // ------------------------------------------------------------------
+
+  /// Build a WHERE expression from search and mimeTypePrefix filters.
+  Expression _buildWhereClause(
+    MediaAssetTable t, {
+    String? search,
+    String? mimeTypePrefix,
+  }) {
+    Expression where = Constant.bool(true);
+
+    if (search != null && search.isNotEmpty) {
+      where = where & t.fileName.like('%$search%');
+    }
+
+    if (mimeTypePrefix != null && mimeTypePrefix.isNotEmpty) {
+      where = where & t.mimeType.like('$mimeTypePrefix%');
+    }
+
+    return where;
+  }
+
+  /// Build an ORDER BY column from a sort key string.
+  Column _buildOrderBy(MediaAssetTable t, String sortBy) {
+    switch (sortBy) {
+      case 'dateAsc':
+      case 'dateDesc':
+        return t.createdAt;
+      case 'nameAsc':
+      case 'nameDesc':
+        return t.fileName;
+      case 'sizeAsc':
+      case 'sizeDesc':
+        return t.fileSize;
+      default:
+        return t.createdAt;
+    }
   }
 }
