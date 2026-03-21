@@ -88,7 +88,7 @@ class TestDataFactory {
     );
   }
 
-  /// Rich test data with mixed types for verifying Map<String, dynamic> round-trips.
+  /// Rich test data with mixed types for verifying `Map<String, dynamic>` round-trips.
   static Map<String, dynamic> get complexTestData => {
         'title': 'Test Page',
         'isActive': true,

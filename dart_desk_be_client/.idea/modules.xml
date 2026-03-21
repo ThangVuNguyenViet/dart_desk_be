@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/flutter_cms_be_client.iml" filepath="$PROJECT_DIR$/flutter_cms_be_client.iml" />
-      <module fileurl="file://$PROJECT_DIR$/android/flutter_cms_be_client_android.iml" filepath="$PROJECT_DIR$/android/flutter_cms_be_client_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dart_desk_be_client.iml" filepath="$PROJECT_DIR$/dart_desk_be_client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/dart_desk_be_client_android.iml" filepath="$PROJECT_DIR$/android/dart_desk_be_client_android.iml" />
     </modules>
   </component>
 </project>

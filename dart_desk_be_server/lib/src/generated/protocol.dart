@@ -36,15 +36,13 @@ import 'document_version_list.dart' as _i21;
 import 'document_version_list_with_operations.dart' as _i22;
 import 'document_version_status.dart' as _i23;
 import 'document_version_with_operations.dart' as _i24;
-import 'media_file.dart' as _i25;
-import 'upload_response.dart' as _i26;
+import 'media_asset.dart' as _i25;
+import 'media_asset_metadata_status.dart' as _i26;
 import 'package:dart_desk_be_server/src/generated/cms_api_token.dart' as _i27;
-import 'package:dart_desk_be_server/src/generated/cms_deployment.dart'
-    as _i28;
+import 'package:dart_desk_be_server/src/generated/cms_deployment.dart' as _i28;
 import 'package:dart_desk_be_server/src/generated/document_crdt_operation.dart'
     as _i29;
-import 'package:dart_desk_be_server/src/generated/media_file.dart' as _i30;
-import 'package:dart_desk_be_server/src/generated/cms_client.dart' as _i31;
+import 'package:dart_desk_be_server/src/generated/cms_client.dart' as _i30;
 export 'client_with_token.dart';
 export 'cms_api_token.dart';
 export 'cms_api_token_with_value.dart';
@@ -64,8 +62,8 @@ export 'document_version_list.dart';
 export 'document_version_list_with_operations.dart';
 export 'document_version_status.dart';
 export 'document_version_with_operations.dart';
-export 'media_file.dart';
-export 'upload_response.dart';
+export 'media_asset.dart';
+export 'media_asset_metadata_status.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -1451,8 +1449,8 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
-      name: 'media_files',
-      dartName: 'MediaFile',
+      name: 'media_assets',
+      dartName: 'MediaAsset',
       schema: 'public',
       module: 'dart_desk_be',
       columns: [
@@ -1461,7 +1459,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'nextval(\'media_files_id_seq\'::regclass)',
+          columnDefault: 'nextval(\'media_assets_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
           name: 'clientId',
@@ -1470,13 +1468,19 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'int',
         ),
         _i2.ColumnDefinition(
+          name: 'assetId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
           name: 'fileName',
           columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
         _i2.ColumnDefinition(
-          name: 'fileType',
+          name: 'mimeType',
           columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
@@ -1500,34 +1504,75 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String',
         ),
         _i2.ColumnDefinition(
-          name: 'altText',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'metadata',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'uploadedByUserId',
+          name: 'width',
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
         _i2.ColumnDefinition(
-          name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          name: 'height',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'hasAlpha',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+        ),
+        _i2.ColumnDefinition(
+          name: 'blurHash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lqip',
+          columnType: _i2.ColumnType.text,
           isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'paletteJson',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'exifJson',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'locationLat',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: true,
+          dartType: 'double?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'locationLng',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: true,
+          dartType: 'double?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'uploadedByUserId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'metadataStatus',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'protocol:MediaAssetMetadataStatus',
         ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
-          constraintName: 'media_files_fk_0',
+          constraintName: 'media_assets_fk_0',
           columns: ['clientId'],
           referenceTable: 'cms_clients',
           referenceTableSchema: 'public',
@@ -1536,20 +1581,10 @@ class Protocol extends _i1.SerializationManagerServer {
           onDelete: _i2.ForeignKeyAction.restrict,
           matchType: null,
         ),
-        _i2.ForeignKeyDefinition(
-          constraintName: 'media_files_fk_1',
-          columns: ['uploadedByUserId'],
-          referenceTable: 'cms_users',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.setNull,
-          matchType: null,
-        ),
       ],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'media_files_pkey',
+          indexName: 'media_assets_pkey',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -1562,7 +1597,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'media_files_client_id_idx',
+          indexName: 'media_asset_client_id_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -1575,12 +1610,25 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'media_files_uploaded_by_idx',
+          indexName: 'media_asset_asset_id_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'uploadedByUserId',
+              definition: 'assetId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'media_asset_file_name_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'fileName',
             ),
           ],
           type: 'btree',
@@ -1588,25 +1636,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'media_files_created_at_idx',
+          indexName: 'media_asset_mime_type_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'createdAt',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'media_files_file_type_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'fileType',
+              definition: 'mimeType',
             ),
           ],
           type: 'btree',
@@ -1706,11 +1741,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i24.DocumentVersionWithOperations) {
       return _i24.DocumentVersionWithOperations.fromJson(data) as T;
     }
-    if (t == _i25.MediaFile) {
-      return _i25.MediaFile.fromJson(data) as T;
+    if (t == _i25.MediaAsset) {
+      return _i25.MediaAsset.fromJson(data) as T;
     }
-    if (t == _i26.UploadResponse) {
-      return _i26.UploadResponse.fromJson(data) as T;
+    if (t == _i26.MediaAssetMetadataStatus) {
+      return _i26.MediaAssetMetadataStatus.fromJson(data) as T;
     }
     if (t == _i1.getType<_i6.ClientWithToken?>()) {
       return (data != null ? _i6.ClientWithToken.fromJson(data) : null) as T;
@@ -1780,11 +1815,14 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == _i1.getType<_i25.MediaFile?>()) {
-      return (data != null ? _i25.MediaFile.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i25.MediaAsset?>()) {
+      return (data != null ? _i25.MediaAsset.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i26.UploadResponse?>()) {
-      return (data != null ? _i26.UploadResponse.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i26.MediaAssetMetadataStatus?>()) {
+      return (data != null
+              ? _i26.MediaAssetMetadataStatus.fromJson(data)
+              : null)
+          as T;
     }
     if (t == List<_i9.CmsClient>) {
       return (data as List).map((e) => deserialize<_i9.CmsClient>(e)).toList()
@@ -1856,12 +1894,8 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == List<_i30.MediaFile>) {
-      return (data as List).map((e) => deserialize<_i30.MediaFile>(e)).toList()
-          as T;
-    }
-    if (t == List<_i31.CmsClient>) {
-      return (data as List).map((e) => deserialize<_i31.CmsClient>(e)).toList()
+    if (t == List<_i30.CmsClient>) {
+      return (data as List).map((e) => deserialize<_i30.CmsClient>(e)).toList()
           as T;
     }
     try {
@@ -1901,8 +1935,8 @@ class Protocol extends _i1.SerializationManagerServer {
         'DocumentVersionListWithOperations',
       _i23.DocumentVersionStatus => 'DocumentVersionStatus',
       _i24.DocumentVersionWithOperations => 'DocumentVersionWithOperations',
-      _i25.MediaFile => 'MediaFile',
-      _i26.UploadResponse => 'UploadResponse',
+      _i25.MediaAsset => 'MediaAsset',
+      _i26.MediaAssetMetadataStatus => 'MediaAssetMetadataStatus',
       _ => null,
     };
   }
@@ -1958,10 +1992,10 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'DocumentVersionStatus';
       case _i24.DocumentVersionWithOperations():
         return 'DocumentVersionWithOperations';
-      case _i25.MediaFile():
-        return 'MediaFile';
-      case _i26.UploadResponse():
-        return 'UploadResponse';
+      case _i25.MediaAsset():
+        return 'MediaAsset';
+      case _i26.MediaAssetMetadataStatus():
+        return 'MediaAssetMetadataStatus';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -2045,11 +2079,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'DocumentVersionWithOperations') {
       return deserialize<_i24.DocumentVersionWithOperations>(data['data']);
     }
-    if (dataClassName == 'MediaFile') {
-      return deserialize<_i25.MediaFile>(data['data']);
+    if (dataClassName == 'MediaAsset') {
+      return deserialize<_i25.MediaAsset>(data['data']);
     }
-    if (dataClassName == 'UploadResponse') {
-      return deserialize<_i26.UploadResponse>(data['data']);
+    if (dataClassName == 'MediaAssetMetadataStatus') {
+      return deserialize<_i26.MediaAssetMetadataStatus>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -2115,8 +2149,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i18.DocumentCrdtSnapshot.t;
       case _i20.DocumentVersion:
         return _i20.DocumentVersion.t;
-      case _i25.MediaFile:
-        return _i25.MediaFile.t;
+      case _i25.MediaAsset:
+        return _i25.MediaAsset.t;
     }
     return null;
   }

@@ -10,7 +10,6 @@ abstract final class ManageMarionetteConfig {
   static const configuration = MarionetteConfiguration(
     isInteractiveWidget: _isInteractiveWidget,
     extractText: _extractText,
-    shouldStopTraversal: _shouldStopTraversal,
   );
 
   static bool _isInteractiveWidget(Type type) {
@@ -48,10 +47,6 @@ abstract final class ManageMarionetteConfig {
     return null;
   }
 
-  static bool _shouldStopTraversal(Type type) {
-    return type == ShadInput || type == ShadInputFormField;
-  }
-
   static String? _extractInputFormFieldText(Element element) {
     final parts = <String>[];
 
@@ -59,8 +54,7 @@ abstract final class ManageMarionetteConfig {
     if (decorator != null) {
       final decoratorWidget = decorator.widget as ShadInputDecorator;
       if (decoratorWidget.label != null) {
-        final labelText =
-            _findTextUnderSlot(decorator, decoratorWidget.label!);
+        final labelText = _findTextUnderSlot(decorator, decoratorWidget.label!);
         if (labelText != null) parts.add(labelText);
       }
     }

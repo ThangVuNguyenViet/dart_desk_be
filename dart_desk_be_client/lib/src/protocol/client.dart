@@ -17,8 +17,7 @@ import 'package:dart_desk_be_client/src/protocol/cms_api_token_with_value.dart'
     as _i4;
 import 'package:dart_desk_be_client/src/protocol/cms_client_list.dart' as _i5;
 import 'package:dart_desk_be_client/src/protocol/cms_client.dart' as _i6;
-import 'package:dart_desk_be_client/src/protocol/client_with_token.dart'
-    as _i7;
+import 'package:dart_desk_be_client/src/protocol/client_with_token.dart' as _i7;
 import 'package:dart_desk_be_client/src/protocol/cms_deployment.dart' as _i8;
 import 'package:dart_desk_be_client/src/protocol/document_crdt_operation.dart'
     as _i9;
@@ -26,21 +25,16 @@ import 'package:dart_desk_be_client/src/protocol/cms_document.dart' as _i10;
 import 'package:dart_desk_be_client/src/protocol/document_list.dart' as _i11;
 import 'package:dart_desk_be_client/src/protocol/document_version_list_with_operations.dart'
     as _i12;
-import 'package:dart_desk_be_client/src/protocol/document_version.dart'
-    as _i13;
+import 'package:dart_desk_be_client/src/protocol/document_version.dart' as _i13;
 import 'package:dart_desk_be_client/src/protocol/document_version_status.dart'
     as _i14;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i15;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i16;
-import 'package:dart_desk_be_client/src/protocol/upload_response.dart'
-    as _i17;
-import 'dart:typed_data' as _i18;
-import 'package:dart_desk_be_client/src/protocol/media_file.dart' as _i19;
-import 'package:dart_desk_be_client/src/protocol/cms_user.dart' as _i20;
-import 'package:serverpod_admin_client/serverpod_admin_client.dart' as _i21;
-import 'protocol.dart' as _i22;
+import 'package:dart_desk_be_client/src/protocol/cms_user.dart' as _i17;
+import 'package:serverpod_admin_client/serverpod_admin_client.dart' as _i18;
+import 'protocol.dart' as _i19;
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
@@ -782,72 +776,6 @@ class EndpointGoogleIdp extends _i15.EndpointGoogleIdpBase {
   );
 }
 
-/// Endpoint for managing media files and uploads
-/// All operations require authentication
-/// {@category Endpoint}
-class EndpointMedia extends _i1.EndpointRef {
-  EndpointMedia(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'media';
-
-  /// Upload an image file
-  /// Returns the public URL and file ID
-  _i2.Future<_i17.UploadResponse> uploadImage(
-    String fileName,
-    _i18.ByteData fileData,
-  ) => caller.callServerEndpoint<_i17.UploadResponse>(
-    'media',
-    'uploadImage',
-    {
-      'fileName': fileName,
-      'fileData': fileData,
-    },
-  );
-
-  /// Upload a general file (PDF, documents, etc.)
-  /// Returns the public URL, file ID, and filename
-  _i2.Future<_i17.UploadResponse> uploadFile(
-    String fileName,
-    _i18.ByteData fileData,
-  ) => caller.callServerEndpoint<_i17.UploadResponse>(
-    'media',
-    'uploadFile',
-    {
-      'fileName': fileName,
-      'fileData': fileData,
-    },
-  );
-
-  /// Delete a media file by ID
-  _i2.Future<bool> deleteMedia(int fileId) => caller.callServerEndpoint<bool>(
-    'media',
-    'deleteMedia',
-    {'fileId': fileId},
-  );
-
-  /// Get media file metadata by ID
-  _i2.Future<_i19.MediaFile?> getMedia(int fileId) =>
-      caller.callServerEndpoint<_i19.MediaFile?>(
-        'media',
-        'getMedia',
-        {'fileId': fileId},
-      );
-
-  /// List all media files with pagination
-  _i2.Future<List<_i19.MediaFile>> listMedia({
-    required int limit,
-    required int offset,
-  }) => caller.callServerEndpoint<List<_i19.MediaFile>>(
-    'media',
-    'listMedia',
-    {
-      'limit': limit,
-      'offset': offset,
-    },
-  );
-}
-
 /// {@category Endpoint}
 class EndpointRefreshJwtTokens extends _i16.EndpointRefreshJwtTokens {
   EndpointRefreshJwtTokens(_i1.EndpointCaller caller) : super(caller);
@@ -914,10 +842,10 @@ class EndpointUser extends _i1.EndpointRef {
   /// Ensure a CMS user exists for the authenticated user in the given client.
   /// Creates one automatically on first login.
   /// Validates the API token (bcrypt) before creating the user.
-  _i2.Future<_i20.CmsUser> ensureUser(
+  _i2.Future<_i17.CmsUser> ensureUser(
     String clientSlug,
     String apiToken,
-  ) => caller.callServerEndpoint<_i20.CmsUser>(
+  ) => caller.callServerEndpoint<_i17.CmsUser>(
     'user',
     'ensureUser',
     {
@@ -928,10 +856,10 @@ class EndpointUser extends _i1.EndpointRef {
 
   /// Get the current CMS user for the authenticated user in a given client.
   /// Validates the API token.
-  _i2.Future<_i20.CmsUser?> getCurrentUser(
+  _i2.Future<_i17.CmsUser?> getCurrentUser(
     String clientSlug,
     String apiToken,
-  ) => caller.callServerEndpoint<_i20.CmsUser?>(
+  ) => caller.callServerEndpoint<_i17.CmsUser?>(
     'user',
     'getCurrentUser',
     {
@@ -951,8 +879,8 @@ class EndpointUser extends _i1.EndpointRef {
 
   /// Get the current CMS user by client slug (for Manage app — no API token needed).
   /// Authenticates via Serverpod auth session only.
-  _i2.Future<_i20.CmsUser?> getCurrentUserBySlug(String clientSlug) =>
-      caller.callServerEndpoint<_i20.CmsUser?>(
+  _i2.Future<_i17.CmsUser?> getCurrentUserBySlug(String clientSlug) =>
+      caller.callServerEndpoint<_i17.CmsUser?>(
         'user',
         'getCurrentUserBySlug',
         {'clientSlug': clientSlug},
@@ -970,13 +898,13 @@ class EndpointUser extends _i1.EndpointRef {
 class Modules {
   Modules(Client client) {
     serverpod_auth_idp = _i15.Caller(client);
-    serverpod_admin = _i21.Caller(client);
+    serverpod_admin = _i18.Caller(client);
     serverpod_auth_core = _i16.Caller(client);
   }
 
   late final _i15.Caller serverpod_auth_idp;
 
-  late final _i21.Caller serverpod_admin;
+  late final _i18.Caller serverpod_admin;
 
   late final _i16.Caller serverpod_auth_core;
 }
@@ -1001,7 +929,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i22.Protocol(),
+         _i19.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -1017,7 +945,6 @@ class Client extends _i1.ServerpodClientShared {
     document = EndpointDocument(this);
     emailIdp = EndpointEmailIdp(this);
     googleIdp = EndpointGoogleIdp(this);
-    media = EndpointMedia(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
     studioConfig = EndpointStudioConfig(this);
     user = EndpointUser(this);
@@ -1038,8 +965,6 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointGoogleIdp googleIdp;
 
-  late final EndpointMedia media;
-
   late final EndpointRefreshJwtTokens refreshJwtTokens;
 
   late final EndpointStudioConfig studioConfig;
@@ -1057,7 +982,6 @@ class Client extends _i1.ServerpodClientShared {
     'document': document,
     'emailIdp': emailIdp,
     'googleIdp': googleIdp,
-    'media': media,
     'refreshJwtTokens': refreshJwtTokens,
     'studioConfig': studioConfig,
     'user': user,

@@ -1,0 +1,5 @@
+enum: MediaAssetMetadataStatus
+values:
+  - pending
+  - complete
+  - failed

@@ -1,0 +1,31 @@
+class: MediaAsset
+table: media_assets
+fields:
+  clientId: int, relation(parent=cms_clients, onDelete=Restrict)
+  assetId: String
+  fileName: String
+  mimeType: String
+  fileSize: int
+  storagePath: String
+  publicUrl: String
+  width: int
+  height: int
+  hasAlpha: bool
+  blurHash: String
+  lqip: String?
+  paletteJson: String?
+  exifJson: String?
+  locationLat: double?
+  locationLng: double?
+  uploadedByUserId: int?
+  metadataStatus: MediaAssetMetadataStatus
+indexes:
+  media_asset_client_id_idx:
+    fields: clientId
+  media_asset_asset_id_idx:
+    fields: assetId
+    unique: true
+  media_asset_file_name_idx:
+    fields: fileName
+  media_asset_mime_type_idx:
+    fields: mimeType
