@@ -19,8 +19,6 @@ import '../dart_desk_be_client.dart';
 /// )
 /// ```
 class FlutterCmsAuth extends StatefulWidget {
-  final String clientId;
-  final String apiToken;
   final String serverUrl;
   final Widget Function(BuildContext context, Client client) builder;
   final String title;
@@ -29,8 +27,6 @@ class FlutterCmsAuth extends StatefulWidget {
 
   const FlutterCmsAuth({
     super.key,
-    required this.clientId,
-    required this.apiToken,
     required this.serverUrl,
     required this.builder,
     this.title = 'Welcome to Dart Desk',
@@ -121,7 +117,7 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
   Future<void> _ensureUser() async {
     _isEnsuringUser = true;
     try {
-      await _client.user.ensureUser(widget.clientId, widget.apiToken);
+      await _client.user.ensureUser();
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -200,8 +196,6 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
     if (_auth.isAuthenticated) {
       return _FlutterCmsAuthProvider(
         client: _client,
-        clientId: widget.clientId,
-        apiToken: widget.apiToken,
         authSessionManager: _auth,
         authSuccess: _auth.authInfo!,
         onSignOut: _handleSignOut,
@@ -377,16 +371,12 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
 /// InheritedWidget that provides authentication data to descendant widgets
 class _FlutterCmsAuthProvider extends InheritedWidget {
   final Client client;
-  final String clientId;
-  final String apiToken;
   final FlutterAuthSessionManager authSessionManager;
   final AuthSuccess authSuccess;
   final VoidCallback onSignOut;
 
   const _FlutterCmsAuthProvider({
     required this.client,
-    required this.clientId,
-    required this.apiToken,
     required this.authSessionManager,
     required this.authSuccess,
     required this.onSignOut,
@@ -402,9 +392,7 @@ class _FlutterCmsAuthProvider extends InheritedWidget {
   bool updateShouldNotify(_FlutterCmsAuthProvider oldWidget) {
     return authSuccess != oldWidget.authSuccess ||
         authSessionManager != oldWidget.authSessionManager ||
-        client != oldWidget.client ||
-        clientId != oldWidget.clientId ||
-        apiToken != oldWidget.apiToken;
+        client != oldWidget.client;
   }
 }
 
@@ -413,16 +401,6 @@ extension FlutterCmsAuthContext on BuildContext {
   /// Get the CMS Client instance
   Client? get cmsClient {
     return _FlutterCmsAuthProvider.of(this)?.client;
-  }
-
-  /// Get the CMS client ID (slug)
-  String? get cmsClientId {
-    return _FlutterCmsAuthProvider.of(this)?.clientId;
-  }
-
-  /// Get the CMS API token
-  String? get cmsApiToken {
-    return _FlutterCmsAuthProvider.of(this)?.apiToken;
   }
 
   /// Get the current auth success info
