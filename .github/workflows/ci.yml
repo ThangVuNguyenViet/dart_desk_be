@@ -23,7 +23,7 @@ jobs:
 
       - name: Run unit tests
         working-directory: dart_desk_be_server
-        run: dart test test/unit/ -v
+        run: dart test test/unit/ --reporter expanded
 
   integration-tests:
     name: Integration Tests
@@ -67,4 +67,4 @@ jobs:
 
       - name: Run integration tests (excludes stress)
         working-directory: dart_desk_be_server
-        run: dart test test/integration/ --exclude-tags=stress -v
+        run: dart test test/integration/ --exclude-tags=stress --reporter expanded
