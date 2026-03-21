@@ -13,7 +13,9 @@ Add unit tests to dart_desk_be_server and dart_desk_cloud, a CRDT stress test to
 
 ## Prerequisites
 
-**dart_desk_cloud Serverpod version alignment:** dart_desk_cloud uses `serverpod: ^2.3.1` while dart_desk_be_server uses `serverpod: 3.4.3`. Since dart_desk_cloud depends on dart_desk_be_server via path, the Serverpod version in dart_desk_cloud must be updated to `3.4.3` (along with `serverpod_cloud_storage_s3`) before adding test infrastructure.
+**Serverpod version alignment:** Bump all Serverpod packages to **3.4.4** (latest) across both projects:
+- dart_desk_be_server: `serverpod` 3.4.3 → 3.4.4, `serverpod_test` 3.4.3 → 3.4.4, `serverpod_auth_idp_server` 3.4.3 → 3.4.4
+- dart_desk_cloud: `serverpod` ^2.3.1 → 3.4.4, `serverpod_cloud_storage_s3` ^2.3.1 → 3.4.4
 
 ## Test Structure
 
@@ -49,11 +51,12 @@ test/
 ### New Dependencies
 
 **dart_desk_be_server:**
-- `mocktail` (dev_dependency)
+- `mocktail: ^1.0.4` (dev_dependency)
+- Bump `serverpod_test` 3.4.3 → 3.4.4
 
 **dart_desk_cloud:**
-- `test: ^1.24.2` (dev_dependency — currently has no dev_dependencies at all)
-- `mocktail` (dev_dependency)
+- `test: ^1.31.0` (dev_dependency — currently has no dev_dependencies at all)
+- `mocktail: ^1.0.4` (dev_dependency)
 
 **Note:** `serverpod_test` is NOT needed in dart_desk_cloud since its tests are pure unit tests with mocks only.
 
