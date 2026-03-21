@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.5.0'
+
+      - name: Get dependencies
+        working-directory: dart_desk_be_server
+        run: dart pub get
+
+      - name: Run unit tests
+        working-directory: dart_desk_be_server
+        run: dart test test/unit/ -v
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: dart_desk_be_test
+        ports:
+          - 9090:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:6.2.6
+        ports:
+          - 9091:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.5.0'
+
+      - name: Get dependencies
+        working-directory: dart_desk_be_server
+        run: dart pub get
+
+      - name: Run integration tests (excludes stress)
+        working-directory: dart_desk_be_server
+        run: dart test test/integration/ --exclude-tags=stress -v
