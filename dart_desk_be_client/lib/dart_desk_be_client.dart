@@ -6,5 +6,6 @@ export 'package:serverpod_client/serverpod_client.dart';
 export 'package:serverpod_flutter/serverpod_flutter.dart';
 
 export 'src/data_source/cloud_data_source.dart';
+export 'src/dart_desk_app.dart';
 export 'src/dart_desk_auth.dart';
 export 'src/protocol/protocol.dart' hide EndpointRefreshJwtTokens;

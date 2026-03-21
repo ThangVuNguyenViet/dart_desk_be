@@ -21,7 +21,7 @@ import 'package:dart_desk_be_client/dart_desk_be_client.dart' as serverpod;
 /// // Use the data source
 /// final documents = await dataSource.getDocuments('article');
 /// ```
-class CloudDataSource implements CmsDataSource {
+class CloudDataSource implements DataSource {
   /// The Serverpod client used for API calls
   final serverpod.Client _client;
 
@@ -307,14 +307,23 @@ class CloudDataSource implements CmsDataSource {
   // ============================================================
 
   @override
-  Future<MediaUploadResult> uploadImage(
+  Future<MediaAsset> uploadImage(
     String fileName,
     Uint8List fileData,
+    QuickImageMetadata metadata,
   ) async {
     try {
       final byteData = ByteData.view(fileData.buffer);
-      final response = await _client.media.uploadImage(fileName, byteData);
-      return _toUploadResult(response);
+      final response = await _client.media.uploadImage(
+        fileName,
+        byteData,
+        metadata.width,
+        metadata.height,
+        metadata.hasAlpha,
+        metadata.blurHash,
+        metadata.contentHash,
+      );
+      return _toMediaAsset(response);
     } on serverpod.ServerpodClientException catch (e) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
@@ -326,14 +335,11 @@ class CloudDataSource implements CmsDataSource {
   }
 
   @override
-  Future<MediaUploadResult> uploadFile(
-    String fileName,
-    Uint8List fileData,
-  ) async {
+  Future<MediaAsset> uploadFile(String fileName, Uint8List fileData) async {
     try {
       final byteData = ByteData.view(fileData.buffer);
       final response = await _client.media.uploadFile(fileName, byteData);
-      return _toUploadResult(response);
+      return _toMediaAsset(response);
     } on serverpod.ServerpodClientException catch (e) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
@@ -345,9 +351,9 @@ class CloudDataSource implements CmsDataSource {
   }
 
   @override
-  Future<bool> deleteMedia(int fileId) async {
+  Future<bool> deleteMedia(String assetId) async {
     try {
-      return await _client.media.deleteMedia(fileId);
+      return await _client.media.deleteMedia(assetId);
     } on serverpod.ServerpodClientException catch (e) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
@@ -359,26 +365,82 @@ class CloudDataSource implements CmsDataSource {
   }
 
   @override
-  Future<MediaFile?> getMedia(int fileId) async {
+  Future<MediaAsset?> getMediaAsset(String assetId) async {
     try {
-      final response = await _client.media.getMedia(fileId);
+      final response = await _client.media.getMedia(assetId);
       if (response == null) return null;
-      return _toMediaFile(response);
+      return _toMediaAsset(response);
     } catch (e) {
-      throw CmsDataSourceException('Failed to get media', e);
+      throw CmsDataSourceException('Failed to get media asset', e);
     }
   }
 
   @override
-  Future<List<MediaFile>> listMedia({int limit = 50, int offset = 0}) async {
+  Future<MediaPage> listMedia({
+    String? search,
+    MediaTypeFilter? type,
+    MediaSort sort = MediaSort.dateDesc,
+    int limit = 50,
+    int offset = 0,
+  }) async {
     try {
+      final sortBy = switch (sort) {
+        MediaSort.dateDesc => 'date_desc',
+        MediaSort.dateAsc => 'date_asc',
+        MediaSort.nameAsc => 'name_asc',
+        MediaSort.nameDesc => 'name_desc',
+        MediaSort.sizeDesc => 'size_desc',
+        MediaSort.sizeAsc => 'size_asc',
+      };
+      final mimeTypePrefix = switch (type) {
+        MediaTypeFilter.image => 'image/',
+        MediaTypeFilter.video => 'video/',
+        MediaTypeFilter.file => null,
+        MediaTypeFilter.all => null,
+        null => null,
+      };
       final response = await _client.media.listMedia(
+        search: search,
+        mimeTypePrefix: mimeTypePrefix,
+        sortBy: sortBy,
         limit: limit,
         offset: offset,
       );
-      return response.map(_toMediaFile).toList();
+      final total = await _client.media.listMediaCount(
+        search: search,
+        mimeTypePrefix: mimeTypePrefix,
+      );
+      final items = response.map(_toMediaAsset).toList();
+      return MediaPage(items: items, total: total);
     } catch (e) {
       throw CmsDataSourceException('Failed to list media', e);
+    }
+  }
+
+  @override
+  Future<MediaAsset> updateMediaAsset(String assetId, {String? fileName}) async {
+    try {
+      final response = await _client.media.updateMediaAsset(
+        assetId,
+        fileName: fileName,
+      );
+      return _toMediaAsset(response);
+    } on serverpod.ServerpodClientException catch (e) {
+      if (e.statusCode == 401) {
+        throw const CmsAuthenticationException();
+      }
+      throw CmsDataSourceException('Failed to update media asset', e);
+    } catch (e) {
+      throw CmsDataSourceException('Failed to update media asset', e);
+    }
+  }
+
+  @override
+  Future<int> getMediaUsageCount(String assetId) async {
+    try {
+      return await _client.media.getMediaUsageCount(assetId);
+    } catch (e) {
+      throw CmsDataSourceException('Failed to get media usage count', e);
     }
   }
 
@@ -415,28 +477,64 @@ class CloudDataSource implements CmsDataSource {
     );
   }
 
-  /// Converts a Serverpod MediaFile to a platform-agnostic MediaFile.
-  MediaFile _toMediaFile(serverpod.MediaFile file) {
-    return MediaFile(
-      id: file.id,
-      fileName: file.fileName,
-      fileType: file.fileType,
-      fileSize: file.fileSize,
-      publicUrl: file.publicUrl,
-      altText: file.altText,
-      metadata: file.metadata,
-      createdAt: file.createdAt,
-      uploadedByUserId: file.uploadedByUserId,
+  /// Converts a Serverpod MediaAsset to a platform-agnostic MediaAsset.
+  MediaAsset _toMediaAsset(serverpod.MediaAsset asset) {
+    MediaPalette? palette;
+    if (asset.paletteJson != null) {
+      try {
+        palette = MediaPalette.fromJson(
+          jsonDecode(asset.paletteJson!) as Map<String, dynamic>,
+        );
+      } catch (_) {}
+    }
+
+    Map<String, dynamic>? exif;
+    if (asset.exifJson != null) {
+      try {
+        exif = jsonDecode(asset.exifJson!) as Map<String, dynamic>;
+      } catch (_) {}
+    }
+
+    MediaGeoLocation? location;
+    if (asset.locationLat != null && asset.locationLng != null) {
+      location = MediaGeoLocation(
+        lat: asset.locationLat!,
+        lng: asset.locationLng!,
+      );
+    }
+
+    return MediaAsset(
+      id: asset.id ?? 0,
+      assetId: asset.assetId,
+      fileName: asset.fileName,
+      mimeType: asset.mimeType,
+      fileSize: asset.fileSize,
+      publicUrl: asset.publicUrl,
+      width: asset.width,
+      height: asset.height,
+      hasAlpha: asset.hasAlpha,
+      blurHash: asset.blurHash,
+      lqip: asset.lqip,
+      palette: palette,
+      exif: exif,
+      location: location,
+      uploadedByUserId: asset.uploadedByUserId,
+      createdAt: asset.createdAt ?? DateTime.now(),
+      metadataStatus: _toMetadataStatus(asset.metadataStatus),
     );
   }
 
-  /// Converts a Serverpod UploadResponse to a platform-agnostic MediaUploadResult.
-  MediaUploadResult _toUploadResult(serverpod.UploadResponse response) {
-    return MediaUploadResult(
-      id: response.id,
-      url: response.url,
-      fileName: response.fileName,
-    );
+  MediaAssetMetadataStatus _toMetadataStatus(
+    serverpod.MediaAssetMetadataStatus status,
+  ) {
+    return switch (status) {
+      serverpod.MediaAssetMetadataStatus.pending =>
+        MediaAssetMetadataStatus.pending,
+      serverpod.MediaAssetMetadataStatus.complete =>
+        MediaAssetMetadataStatus.complete,
+      serverpod.MediaAssetMetadataStatus.failed =>
+        MediaAssetMetadataStatus.failed,
+    };
   }
 
   /// Converts a Serverpod DocumentVersion to a platform-agnostic DocumentVersion.
