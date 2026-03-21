@@ -448,8 +448,8 @@ class CloudDataSource implements DataSource {
   // Conversion Helpers
   // ============================================================
 
-  /// Converts a Serverpod CmsDocument to a platform-agnostic CmsDocument.
-  CmsDocument _toCmsDocument(serverpod.CmsDocument doc) {
+  /// Converts a Serverpod Document to a platform-agnostic CmsDocument.
+  CmsDocument _toCmsDocument(serverpod.Document doc) {
     // Parse the data JSON string into a map if present
     // Note: 'data' now contains the latest CRDT-merged document state
     Map<String, dynamic>? parsedData;
@@ -463,7 +463,7 @@ class CloudDataSource implements DataSource {
 
     return CmsDocument(
       id: doc.id,
-      clientId: doc.clientId,
+      clientId: doc.tenantId ?? 0,
       documentType: doc.documentType,
       title: doc.title,
       slug: doc.slug,

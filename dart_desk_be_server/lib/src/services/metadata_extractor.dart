@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:exif/exif.dart';
 import 'package:image/image.dart' as img;
