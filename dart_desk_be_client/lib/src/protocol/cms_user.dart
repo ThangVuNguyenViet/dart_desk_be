@@ -21,6 +21,8 @@ abstract class User implements _i1.SerializableModel {
     String? role,
     bool? isActive,
     this.serverpodUserId,
+    this.externalId,
+    this.externalProvider,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : role = role ?? 'viewer',
@@ -36,6 +38,8 @@ abstract class User implements _i1.SerializableModel {
     String? role,
     bool? isActive,
     String? serverpodUserId,
+    String? externalId,
+    String? externalProvider,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _UserImpl;
@@ -51,6 +55,8 @@ abstract class User implements _i1.SerializableModel {
           ? null
           : _i1.BoolJsonExtension.fromJson(jsonSerialization['isActive']),
       serverpodUserId: jsonSerialization['serverpodUserId'] as String?,
+      externalId: jsonSerialization['externalId'] as String?,
+      externalProvider: jsonSerialization['externalProvider'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -77,6 +83,10 @@ abstract class User implements _i1.SerializableModel {
 
   String? serverpodUserId;
 
+  String? externalId;
+
+  String? externalProvider;
+
   DateTime? createdAt;
 
   DateTime? updatedAt;
@@ -92,6 +102,8 @@ abstract class User implements _i1.SerializableModel {
     String? role,
     bool? isActive,
     String? serverpodUserId,
+    String? externalId,
+    String? externalProvider,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -106,6 +118,8 @@ abstract class User implements _i1.SerializableModel {
       'role': role,
       'isActive': isActive,
       if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
+      if (externalId != null) 'externalId': externalId,
+      if (externalProvider != null) 'externalProvider': externalProvider,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
     };
@@ -128,6 +142,8 @@ class _UserImpl extends User {
     String? role,
     bool? isActive,
     String? serverpodUserId,
+    String? externalId,
+    String? externalProvider,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super._(
@@ -138,6 +154,8 @@ class _UserImpl extends User {
          role: role,
          isActive: isActive,
          serverpodUserId: serverpodUserId,
+         externalId: externalId,
+         externalProvider: externalProvider,
          createdAt: createdAt,
          updatedAt: updatedAt,
        );
@@ -154,6 +172,8 @@ class _UserImpl extends User {
     String? role,
     bool? isActive,
     Object? serverpodUserId = _Undefined,
+    Object? externalId = _Undefined,
+    Object? externalProvider = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
   }) {
@@ -167,6 +187,10 @@ class _UserImpl extends User {
       serverpodUserId: serverpodUserId is String?
           ? serverpodUserId
           : this.serverpodUserId,
+      externalId: externalId is String? ? externalId : this.externalId,
+      externalProvider: externalProvider is String?
+          ? externalProvider
+          : this.externalProvider,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
     );

@@ -5,10 +5,10 @@ import 'package:crypto/crypto.dart';
 import 'package:mime/mime.dart';
 import 'package:serverpod/serverpod.dart';
 
+import '../auth/dart_desk_auth.dart';
 import '../generated/protocol.dart';
 import '../services/local_image_storage_provider.dart';
 import '../services/metadata_extractor.dart';
-import '../tenancy.dart';
 
 /// Allowed image MIME types for upload validation.
 const _allowedImageMimeTypes = {
@@ -304,19 +304,11 @@ class MediaEndpoint extends Endpoint {
   // ------------------------------------------------------------------
 
   Future<(User, int?)> _authenticateAndResolve(Session session) async {
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
+    final user = await DartDeskAuth.authenticateRequest(session);
+    if (user == null) {
       throw Exception('User must be authenticated');
     }
-    final user = await User.db.findFirstRow(
-      session,
-      where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
-    );
-    if (user == null) {
-      throw Exception('User not found for authenticated user');
-    }
-    final tenantId = await DartDeskTenancy.resolveTenantId(session);
-    return (user, tenantId);
+    return (user, user.tenantId);
   }
 
   /// Build a WHERE expression from search and mimeTypePrefix filters.

@@ -14,39 +14,32 @@ void main() {
       );
     });
 
-    group('ensureUser', () {
-      test('creates user if not exists', () async {
-        final authed = factory.authenticatedSession();
-        final user = await endpoints.user.ensureUser(authed);
-
-        expect(user.id, isNotNull);
-        expect(user.email, isNotEmpty);
-      });
-
-      test('returns existing user on second call', () async {
-        final authed = factory.authenticatedSession();
-        final user1 = await endpoints.user.ensureUser(authed);
-        final user2 = await endpoints.user.ensureUser(authed);
-
-        expect(user1.id, equals(user2.id));
-      });
-    });
-
     group('getCurrentUser', () {
-      test('returns user after ensureUser', () async {
+      test('returns user when User record exists', () async {
+        await factory.ensureTestUser();
         final authed = factory.authenticatedSession();
-        await endpoints.user.ensureUser(authed);
 
         final user = await endpoints.user.getCurrentUser(authed);
 
         expect(user, isNotNull);
+        expect(user!.email, equals('test@example.com'));
+      });
+
+      test('returns null when no User record exists', () async {
+        final authed = factory.authenticatedSession(
+          userIdentifier: 'nonexistent-user',
+        );
+
+        final user = await endpoints.user.getCurrentUser(authed);
+
+        expect(user, isNull);
       });
     });
 
     group('getUserCount', () {
       test('returns count of active users', () async {
+        await factory.ensureTestUser();
         final authed = factory.authenticatedSession();
-        await endpoints.user.ensureUser(authed);
 
         final count = await endpoints.user.getUserCount(authed);
 
@@ -56,8 +49,8 @@ void main() {
 
     group('user association with documents', () {
       test('document tracks createdByUserId', () async {
+        final user = await factory.ensureTestUser();
         final authed = factory.authenticatedSession();
-        final user = await endpoints.user.ensureUser(authed);
 
         final doc = await endpoints.document.createDocument(
           authed, 'assoc_test', 'User Assoc Doc', {},

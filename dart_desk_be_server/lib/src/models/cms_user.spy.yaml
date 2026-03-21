@@ -7,11 +7,16 @@ fields:
   role: String, default='viewer'
   isActive: bool, default=true
   serverpodUserId: String?
+  externalId: String?
+  externalProvider: String?
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
 indexes:
   users_tenant_email_idx:
     fields: tenantId, email
+    unique: true
+  users_external_id_idx:
+    fields: externalId, externalProvider, tenantId
     unique: true
   users_tenant_id_idx:
     fields: tenantId

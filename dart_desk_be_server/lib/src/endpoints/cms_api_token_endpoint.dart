@@ -4,8 +4,8 @@ import 'dart:math';
 import 'package:dbcrypt/dbcrypt.dart';
 import 'package:serverpod/serverpod.dart';
 
+import '../auth/dart_desk_auth.dart';
 import '../generated/protocol.dart';
-import '../tenancy.dart';
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
@@ -163,28 +163,11 @@ class ApiTokenEndpoint extends Endpoint {
 
   /// Verify the caller is an authenticated User and resolve tenant.
   Future<(User, int?)> _requireUser(Session session) async {
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
+    final user = await DartDeskAuth.authenticateRequest(session);
+    if (user == null) {
       throw Exception('User must be authenticated');
     }
-
-    final tenantId = await DartDeskTenancy.resolveTenantId(session);
-
-    final user = await User.db.findFirstRow(
-      session,
-      where: (t) {
-        var expr = t.serverpodUserId.equals(authInfo.userIdentifier) &
-            t.isActive.equals(true);
-        if (tenantId != null) {
-          expr = expr & t.tenantId.equals(tenantId);
-        }
-        return expr;
-      },
-    );
-    if (user == null) {
-      throw Exception('User not found');
-    }
-    return (user, tenantId);
+    return (user, user.tenantId);
   }
 
   /// Generate a crypto-random API token with the given prefix.

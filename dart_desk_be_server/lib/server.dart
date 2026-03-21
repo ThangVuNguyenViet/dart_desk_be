@@ -8,6 +8,7 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 
+import 'src/auth/dart_desk_auth.dart';
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
 import 'src/services/document_crdt_service.dart';
@@ -64,6 +65,9 @@ void run(List<String> args) async {
 
   // Start the server.
   await pod.start();
+
+  // Initialize external auth strategies (if any configured).
+  await DartDeskAuth.initialize();
 
   // Register admin module with all CMS models.
   _registerAdminModule();

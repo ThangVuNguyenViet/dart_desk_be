@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../../server.dart' as server;
+import '../auth/dart_desk_auth.dart';
 import '../generated/protocol.dart';
 
 /// Endpoint for real-time document collaboration features
@@ -35,17 +36,10 @@ class DocumentCollaborationEndpoint extends Endpoint {
     String sessionId,
     Map<String, dynamic> fieldUpdates,
   ) async {
-    // Require authentication
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
+    final cmsUser = await DartDeskAuth.authenticateRequest(session);
+    if (cmsUser == null) {
       throw Exception('User must be authenticated to submit edits');
     }
-
-    // Resolve CMS user for attribution
-    final cmsUser = await User.db.findFirstRow(
-      session,
-      where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
-    );
 
     // Apply CRDT operations
     return await server.documentCrdtService.applyOperations(
@@ -53,7 +47,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
       documentId,
       fieldUpdates,
       sessionId,
-      cmsUserId: cmsUser?.id,
+      cmsUserId: cmsUser.id,
     );
   }
 
@@ -131,9 +125,8 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
-    // Require authentication
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
+    final user = await DartDeskAuth.authenticateRequest(session);
+    if (user == null) {
       throw Exception('User must be authenticated to compact operations');
     }
 

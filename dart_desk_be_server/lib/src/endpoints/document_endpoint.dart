@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:serverpod/serverpod.dart';
 
 import '../../../server.dart' as server;
+import '../auth/dart_desk_auth.dart';
 import '../generated/protocol.dart';
-import '../tenancy.dart';
 
 /// Endpoint for managing CMS documents
 /// All write operations require authentication
@@ -17,13 +17,7 @@ class DocumentEndpoint extends Endpoint {
     int limit = 20,
     int offset = 0,
   }) async {
-    // Require authentication for client-scoped queries
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to list documents');
-    }
-
-    final cmsUser = await _getUser(session, authInfo.userIdentifier);
+    final cmsUser = await _requireAuth(session);
 
     // Get total count filtered by tenantId
     final total = await Document.db.count(
@@ -104,13 +98,7 @@ class DocumentEndpoint extends Endpoint {
     String? slug,
     bool isDefault = false,
   }) async {
-    // Require authentication
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to create documents');
-    }
-
-    final cmsUser = await _getUser(session, authInfo.userIdentifier);
+    final cmsUser = await _requireAuth(session);
     final userId = cmsUser.id!;
 
     // Create the document — encode data as JSON for storage
@@ -192,16 +180,10 @@ class DocumentEndpoint extends Endpoint {
     Map<String, dynamic> updates, {
     String? sessionId,
   }) async {
-    // Require authentication
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to update documents');
-    }
+    final cmsUser = await _requireAuth(session);
 
-    final cmsUser = await _getUser(session, authInfo.userIdentifier);
-
-    // Use user identifier as session ID if not provided
-    final editSessionId = sessionId ?? 'user-${authInfo.userIdentifier}';
+    // Use user ID as session ID if not provided
+    final editSessionId = sessionId ?? 'user-${cmsUser.id}';
 
     // Apply CRDT operations
     return await server.documentCrdtService.applyOperations(
@@ -222,13 +204,7 @@ class DocumentEndpoint extends Endpoint {
     String? slug,
     bool? isDefault,
   }) async {
-    // Require authentication
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to update documents');
-    }
-
-    final cmsUser = await _getUser(session, authInfo.userIdentifier);
+    final cmsUser = await _requireAuth(session);
     final userId = cmsUser.id!;
 
     final existing = await Document.db.findById(session, documentId);
@@ -259,13 +235,7 @@ class DocumentEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
-    // Require authentication
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to delete documents');
-    }
-
-    final cmsUser = await _getUser(session, authInfo.userIdentifier);
+    final cmsUser = await _requireAuth(session);
 
     final existing = await Document.db.findById(session, documentId);
 
@@ -485,13 +455,7 @@ class DocumentEndpoint extends Endpoint {
     DocumentVersionStatus status = DocumentVersionStatus.draft,
     String? changeLog,
   }) async {
-    // Require authentication
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to create versions');
-    }
-
-    final cmsUser = await _getUser(session, authInfo.userIdentifier);
+    final cmsUser = await _requireAuth(session);
     final userId = cmsUser.id!;
 
     // Get the next version number for this document
@@ -537,11 +501,7 @@ class DocumentEndpoint extends Endpoint {
     Session session,
     int versionId,
   ) async {
-    // Require authentication
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to publish versions');
-    }
+    await _requireAuth(session);
 
     final existing = await DocumentVersion.db.findById(session, versionId);
 
@@ -564,11 +524,7 @@ class DocumentEndpoint extends Endpoint {
     Session session,
     int versionId,
   ) async {
-    // Require authentication
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to archive versions');
-    }
+    await _requireAuth(session);
 
     final existing = await DocumentVersion.db.findById(session, versionId);
 
@@ -591,11 +547,7 @@ class DocumentEndpoint extends Endpoint {
     Session session,
     int versionId,
   ) async {
-    // Require authentication
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to delete versions');
-    }
+    await _requireAuth(session);
 
     final existing = await DocumentVersion.db.findById(session, versionId);
 
@@ -608,36 +560,21 @@ class DocumentEndpoint extends Endpoint {
     return true;
   }
 
-  /// Look up the CMS user from the auth user identifier.
   /// Get total document count for the authenticated user's client.
   Future<int> getDocumentCount(Session session) async {
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated');
-    }
-    final cmsUser = await _getUser(session, authInfo.userIdentifier);
+    final cmsUser = await _requireAuth(session);
     return await Document.db.count(
       session,
       where: (t) => t.tenantId.equals(cmsUser.tenantId),
     );
   }
 
-  Future<User> _getUser(
-      Session session, String userIdentifier) async {
-    final tenantId = await DartDeskTenancy.resolveTenantId(session);
-    final cmsUser = await User.db.findFirstRow(
-      session,
-      where: (t) {
-        var expr = t.serverpodUserId.equals(userIdentifier);
-        if (tenantId != null) {
-          expr = expr & t.tenantId.equals(tenantId);
-        }
-        return expr;
-      },
-    );
-    if (cmsUser == null) {
-      throw Exception('User not found for authenticated user');
+  /// Authenticate the current request via DartDeskAuth.
+  Future<User> _requireAuth(Session session) async {
+    final user = await DartDeskAuth.authenticateRequest(session);
+    if (user == null) {
+      throw Exception('User must be authenticated');
     }
-    return cmsUser;
+    return user;
   }
 }

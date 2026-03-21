@@ -1302,16 +1302,6 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'user',
       endpoint: endpoints['user']!,
       methodConnectors: {
-        'ensureUser': _i1.MethodConnector(
-          name: 'ensureUser',
-          params: {},
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['user'] as _i10.UserEndpoint).ensureUser(session),
-        ),
         'getCurrentUser': _i1.MethodConnector(
           name: 'getCurrentUser',
           params: {},

@@ -56,6 +56,5 @@ refreshJwtTokens:
 studioConfig:
   - getStudioUrlTemplate:
 user:
-  - ensureUser:
   - getCurrentUser:
   - getUserCount:

@@ -117,7 +117,7 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
   Future<void> _ensureUser() async {
     _isEnsuringUser = true;
     try {
-      await _client.user.ensureUser();
+      await _client.user.getCurrentUser();
     } catch (e) {
       if (mounted) {
         setState(() {

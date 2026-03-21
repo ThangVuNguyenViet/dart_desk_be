@@ -389,7 +389,6 @@ class EndpointDocument extends _i1.EndpointRef {
         {'versionId': versionId},
       );
 
-  /// Look up the CMS user from the auth user identifier.
   /// Get total document count for the authenticated user's client.
   _i2.Future<int> getDocumentCount() => caller.callServerEndpoint<int>(
     'document',
@@ -787,7 +786,7 @@ class EndpointStudioConfig extends _i1.EndpointRef {
       );
 }
 
-/// Endpoint for managing users
+/// Endpoint for managing users.
 /// {@category Endpoint}
 class EndpointUser extends _i1.EndpointRef {
   EndpointUser(_i1.EndpointCaller caller) : super(caller);
@@ -795,15 +794,9 @@ class EndpointUser extends _i1.EndpointRef {
   @override
   String get name => 'user';
 
-  /// Ensure a user exists for the authenticated Serverpod user.
-  /// Creates one automatically on first login.
-  _i2.Future<_i15.User> ensureUser() => caller.callServerEndpoint<_i15.User>(
-    'user',
-    'ensureUser',
-    {},
-  );
-
-  /// Get the current user for the authenticated session.
+  /// Get the current authenticated user.
+  /// For Serverpod IDP: returns existing User (must exist via seed or prior creation).
+  /// For external auth: auto-creates User on first call.
   _i2.Future<_i15.User?> getCurrentUser() =>
       caller.callServerEndpoint<_i15.User?>(
         'user',
@@ -811,7 +804,7 @@ class EndpointUser extends _i1.EndpointRef {
         {},
       );
 
-  /// Get count of users (for overview stats).
+  /// Get count of active users in the current tenant.
   _i2.Future<int> getUserCount() => caller.callServerEndpoint<int>(
     'user',
     'getUserCount',
