@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
@@ -6,6 +7,7 @@ import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
 import '../services/local_image_storage_provider.dart';
+import '../services/metadata_extractor.dart';
 
 /// Allowed image MIME types for upload validation.
 const _allowedImageMimeTypes = {
@@ -106,7 +108,9 @@ class MediaEndpoint extends Endpoint {
     );
 
     try {
-      return await MediaAsset.db.insertRow(session, asset);
+      final inserted = await MediaAsset.db.insertRow(session, asset);
+      unawaited(MetadataExtractor.extractAndUpdate(session, inserted));
+      return inserted;
     } catch (e) {
       // Race condition: another request may have inserted the same assetId.
       // Re-fetch and return.
