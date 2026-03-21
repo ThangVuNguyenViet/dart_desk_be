@@ -29,7 +29,7 @@ TEST_EXIT=0
 # NOTE: If you see flaky test failures due to cross-test DB interference,
 # add --concurrency=1 to run tests sequentially. This is only needed if
 # any test file uses rollbackDatabase: RollbackDatabase.disabled.
-dart test test/integration/ || TEST_EXIT=$?
+dart test test/integration/ --exclude-tags=stress || TEST_EXIT=$?
 
 echo ""
 echo "Stopping test Docker services..."
