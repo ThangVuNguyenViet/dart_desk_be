@@ -155,6 +155,23 @@ Future<void> _seedAdminUser() async {
       authUserId: authUserId,
       scopes: {Scope.admin},
     );
+
+    // Ensure User record exists (single-tenant: tenantId = null)
+    final existingUser = await User.db.findFirstRow(
+      session,
+      where: (t) => t.serverpodUserId.equals(authUserId.toString()),
+    );
+    if (existingUser == null) {
+      await User.db.insertRow(session, User(
+        tenantId: null,
+        email: email,
+        name: 'Admin',
+        role: 'admin',
+        isActive: true,
+        serverpodUserId: authUserId.toString(),
+      ));
+      developer.log('[Admin] Created User record for admin');
+    }
   } catch (e) {
     developer.log('[Admin] Error seeding admin user: $e');
   } finally {
