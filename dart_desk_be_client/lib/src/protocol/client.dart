@@ -36,7 +36,7 @@ import 'protocol.dart' as _i17;
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
-/// Authorization: caller must be a User belonging to the target client.
+/// Authorization: caller must be a User belonging to the resolved tenant.
 /// {@category Endpoint}
 class EndpointApiToken extends _i1.EndpointRef {
   EndpointApiToken(_i1.EndpointCaller caller) : super(caller);
@@ -44,17 +44,16 @@ class EndpointApiToken extends _i1.EndpointRef {
   @override
   String get name => 'apiToken';
 
-  /// List all tokens for a client (metadata only, never the hash).
-  _i2.Future<List<_i3.ApiToken>> getTokens(int tenantId) =>
+  /// List all tokens for the current tenant (metadata only, never the hash).
+  _i2.Future<List<_i3.ApiToken>> getTokens() =>
       caller.callServerEndpoint<List<_i3.ApiToken>>(
         'apiToken',
         'getTokens',
-        {'tenantId': tenantId},
+        {},
       );
 
   /// Create a new named token. Returns plaintext token (shown once).
   _i2.Future<_i4.ApiTokenWithValue> createToken(
-    int tenantId,
     String name,
     String role,
     DateTime? expiresAt,
@@ -62,7 +61,6 @@ class EndpointApiToken extends _i1.EndpointRef {
     'apiToken',
     'createToken',
     {
-      'tenantId': tenantId,
       'name': name,
       'role': role,
       'expiresAt': expiresAt,
@@ -308,6 +306,7 @@ class EndpointDocument extends _i1.EndpointRef {
   );
 
   /// Get all document types (unique document type names)
+  /// TODO(cloud): Add tenant filtering when cloud plugin provides tenant context.
   _i2.Future<List<String>> getDocumentTypes() =>
       caller.callServerEndpoint<List<String>>(
         'document',
@@ -788,8 +787,7 @@ class EndpointStudioConfig extends _i1.EndpointRef {
       );
 }
 
-/// Endpoint for managing users.
-/// TODO: Rewrite for multi-tenancy extraction (Task 5).
+/// Endpoint for managing users
 /// {@category Endpoint}
 class EndpointUser extends _i1.EndpointRef {
   EndpointUser(_i1.EndpointCaller caller) : super(caller);
@@ -797,14 +795,28 @@ class EndpointUser extends _i1.EndpointRef {
   @override
   String get name => 'user';
 
-  /// Get the current user by tenant context.
-  /// Placeholder — will be rewritten in Task 5.
+  /// Ensure a user exists for the authenticated Serverpod user.
+  /// Creates one automatically on first login.
+  _i2.Future<_i15.User> ensureUser() => caller.callServerEndpoint<_i15.User>(
+    'user',
+    'ensureUser',
+    {},
+  );
+
+  /// Get the current user for the authenticated session.
   _i2.Future<_i15.User?> getCurrentUser() =>
       caller.callServerEndpoint<_i15.User?>(
         'user',
         'getCurrentUser',
         {},
       );
+
+  /// Get count of users (for overview stats).
+  _i2.Future<int> getUserCount() => caller.callServerEndpoint<int>(
+    'user',
+    'getUserCount',
+    {},
+  );
 }
 
 class Modules {

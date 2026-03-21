@@ -94,31 +94,17 @@ class Endpoints extends _i1.EndpointDispatch {
       methodConnectors: {
         'getTokens': _i1.MethodConnector(
           name: 'getTokens',
-          params: {
-            'tenantId': _i1.ParameterDescription(
-              name: 'tenantId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-          },
+          params: {},
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['apiToken'] as _i2.ApiTokenEndpoint).getTokens(
-                    session,
-                    params['tenantId'],
-                  ),
+              ) async => (endpoints['apiToken'] as _i2.ApiTokenEndpoint)
+                  .getTokens(session),
         ),
         'createToken': _i1.MethodConnector(
           name: 'createToken',
           params: {
-            'tenantId': _i1.ParameterDescription(
-              name: 'tenantId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
             'name': _i1.ParameterDescription(
               name: 'name',
               type: _i1.getType<String>(),
@@ -142,7 +128,6 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['apiToken'] as _i2.ApiTokenEndpoint).createToken(
                     session,
-                    params['tenantId'],
                     params['name'],
                     params['role'],
                     params['expiresAt'],
@@ -1317,6 +1302,16 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'user',
       endpoint: endpoints['user']!,
       methodConnectors: {
+        'ensureUser': _i1.MethodConnector(
+          name: 'ensureUser',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['user'] as _i10.UserEndpoint).ensureUser(session),
+        ),
         'getCurrentUser': _i1.MethodConnector(
           name: 'getCurrentUser',
           params: {},
@@ -1326,6 +1321,17 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['user'] as _i10.UserEndpoint)
                   .getCurrentUser(session),
+        ),
+        'getUserCount': _i1.MethodConnector(
+          name: 'getUserCount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _i10.UserEndpoint).getUserCount(
+                session,
+              ),
         ),
       },
     );

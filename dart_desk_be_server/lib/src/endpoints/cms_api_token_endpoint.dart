@@ -5,10 +5,11 @@ import 'package:dbcrypt/dbcrypt.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
+import '../tenancy.dart';
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
-/// Authorization: caller must be a User belonging to the target client.
+/// Authorization: caller must be a User belonging to the resolved tenant.
 class ApiTokenEndpoint extends Endpoint {
   static const _maxRetries = 5;
   static const _rolePrefixes = {
@@ -17,16 +18,13 @@ class ApiTokenEndpoint extends Endpoint {
     'admin': 'cms_ad_',
   };
 
-  /// List all tokens for a client (metadata only, never the hash).
-  Future<List<ApiToken>> getTokens(
-    Session session,
-    int tenantId,
-  ) async {
-    await _requireUser(session, tenantId);
+  /// List all tokens for the current tenant (metadata only, never the hash).
+  Future<List<ApiToken>> getTokens(Session session) async {
+    final (_, tenantId) = await _requireUser(session);
 
     return await ApiToken.db.find(
       session,
-      where: (t) => t.tenantId.equals(tenantId),
+      where: (t) => tenantId != null ? t.tenantId.equals(tenantId) : t.tenantId.equals(null),
       orderBy: (t) => t.createdAt,
       orderDescending: true,
     );
@@ -35,12 +33,11 @@ class ApiTokenEndpoint extends Endpoint {
   /// Create a new named token. Returns plaintext token (shown once).
   Future<ApiTokenWithValue> createToken(
     Session session,
-    int tenantId,
     String name,
     String role,
     DateTime? expiresAt,
   ) async {
-    final user = await _requireUser(session, tenantId);
+    final (user, tenantId) = await _requireUser(session);
 
     if (!_rolePrefixes.containsKey(role)) {
       throw Exception('Invalid role: $role. Must be viewer, editor, or admin.');
@@ -57,7 +54,7 @@ class ApiTokenEndpoint extends Endpoint {
       final existing = await ApiToken.db.findFirstRow(
         session,
         where: (t) =>
-            t.tenantId.equals(tenantId) &
+            (tenantId != null ? t.tenantId.equals(tenantId) : t.tenantId.equals(null)) &
             t.tokenPrefix.equals(prefix) &
             t.tokenSuffix.equals(suffix),
       );
@@ -98,7 +95,7 @@ class ApiTokenEndpoint extends Endpoint {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) throw Exception('Token not found: $tokenId');
 
-    if (token.tenantId != null) await _requireUser(session, token.tenantId!);
+    await _requireUser(session);
 
     final updated = token.copyWith(
       name: name ?? token.name,
@@ -117,7 +114,7 @@ class ApiTokenEndpoint extends Endpoint {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) throw Exception('Token not found: $tokenId');
 
-    if (token.tenantId != null) await _requireUser(session, token.tenantId!);
+    await _requireUser(session);
 
     final prefix = _rolePrefixes[token.role]!;
 
@@ -130,7 +127,7 @@ class ApiTokenEndpoint extends Endpoint {
       final existing = await ApiToken.db.findFirstRow(
         session,
         where: (t) =>
-            t.tenantId.equals(token.tenantId) &
+            (token.tenantId != null ? t.tenantId.equals(token.tenantId) : t.tenantId.equals(null)) &
             t.tokenPrefix.equals(prefix) &
             t.tokenSuffix.equals(suffix) &
             t.id.notEquals(tokenId),
@@ -158,30 +155,36 @@ class ApiTokenEndpoint extends Endpoint {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) return false;
 
-    if (token.tenantId != null) await _requireUser(session, token.tenantId!);
+    await _requireUser(session);
 
     await ApiToken.db.deleteRow(session, token);
     return true;
   }
 
-  /// Verify the caller is an authenticated User of the given client.
-  Future<User> _requireUser(Session session, int tenantId) async {
+  /// Verify the caller is an authenticated User and resolve tenant.
+  Future<(User, int?)> _requireUser(Session session) async {
     final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('User must be authenticated');
     }
 
+    final tenantId = await DartDeskTenancy.resolveTenantId(session);
+
     final user = await User.db.findFirstRow(
       session,
-      where: (t) =>
-          t.serverpodUserId.equals(authInfo.userIdentifier) &
-          t.tenantId.equals(tenantId) &
-          t.isActive.equals(true),
+      where: (t) {
+        var expr = t.serverpodUserId.equals(authInfo.userIdentifier) &
+            t.isActive.equals(true);
+        if (tenantId != null) {
+          expr = expr & t.tenantId.equals(tenantId);
+        }
+        return expr;
+      },
     );
     if (user == null) {
-      throw Exception('User does not belong to client $tenantId');
+      throw Exception('User not found');
     }
-    return user;
+    return (user, tenantId);
   }
 
   /// Generate a crypto-random API token with the given prefix.

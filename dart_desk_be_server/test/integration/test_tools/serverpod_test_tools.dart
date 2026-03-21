@@ -216,7 +216,6 @@ class _ApiTokenEndpoint {
 
   _i3.Future<List<_i4.ApiToken>> getTokens(
     _i1.TestSessionBuilder sessionBuilder,
-    int tenantId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -229,7 +228,7 @@ class _ApiTokenEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'apiToken',
           methodName: 'getTokens',
-          parameters: _i1.testObjectToJson({'tenantId': tenantId}),
+          parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -247,7 +246,6 @@ class _ApiTokenEndpoint {
 
   _i3.Future<_i5.ApiTokenWithValue> createToken(
     _i1.TestSessionBuilder sessionBuilder,
-    int tenantId,
     String name,
     String role,
     DateTime? expiresAt,
@@ -264,7 +262,6 @@ class _ApiTokenEndpoint {
           endpointPath: 'apiToken',
           methodName: 'createToken',
           parameters: _i1.testObjectToJson({
-            'tenantId': tenantId,
             'name': name,
             'role': role,
             'expiresAt': expiresAt,
@@ -1950,6 +1947,36 @@ class _UserEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
+  _i3.Future<_i15.User> ensureUser(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'user',
+            method: 'ensureUser',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'user',
+          methodName: 'ensureUser',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i15.User>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<_i15.User?> getCurrentUser(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
@@ -1973,6 +2000,34 @@ class _UserEndpoint {
                   _localCallContext.arguments,
                 )
                 as _i3.Future<_i15.User?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<int> getUserCount(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'user',
+            method: 'getUserCount',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'user',
+          methodName: 'getUserCount',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
