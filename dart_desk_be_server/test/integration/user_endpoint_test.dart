@@ -16,29 +16,17 @@ void main() {
 
     group('ensureUser', () {
       test('creates user if not exists', () async {
-        final client = await factory.createTestClient(slug: 'user-test');
         final authed = factory.authenticatedSession();
-
-        final user = await endpoints.user.ensureUser(
-          authed,
-          'user-test',
-          client.apiToken,
-        );
+        final user = await endpoints.user.ensureUser(authed);
 
         expect(user.id, isNotNull);
-        expect(user.clientId, equals(client.client.id));
+        expect(user.email, isNotEmpty);
       });
 
       test('returns existing user on second call', () async {
-        final client = await factory.createTestClient(slug: 'user-idempotent');
         final authed = factory.authenticatedSession();
-
-        final user1 = await endpoints.user.ensureUser(
-          authed, 'user-idempotent', client.apiToken,
-        );
-        final user2 = await endpoints.user.ensureUser(
-          authed, 'user-idempotent', client.apiToken,
-        );
+        final user1 = await endpoints.user.ensureUser(authed);
+        final user2 = await endpoints.user.ensureUser(authed);
 
         expect(user1.id, equals(user2.id));
       });
@@ -46,43 +34,30 @@ void main() {
 
     group('getCurrentUser', () {
       test('returns user after ensureUser', () async {
-        final client = await factory.createTestClient(slug: 'current-user');
         final authed = factory.authenticatedSession();
-        await endpoints.user.ensureUser(authed, 'current-user', client.apiToken);
+        await endpoints.user.ensureUser(authed);
 
-        final user = await endpoints.user.getCurrentUser(
-          authed,
-          'current-user',
-          client.apiToken,
-        );
+        final user = await endpoints.user.getCurrentUser(authed);
 
         expect(user, isNotNull);
       });
     });
 
-    group('getUserClients', () {
-      test('returns clients the user belongs to', () async {
-        final client = await factory.createTestClient(slug: 'user-clients');
+    group('getUserCount', () {
+      test('returns count of active users', () async {
         final authed = factory.authenticatedSession();
-        await endpoints.user.ensureUser(authed, 'user-clients', client.apiToken);
+        await endpoints.user.ensureUser(authed);
 
-        final clients = await endpoints.user.getUserClients(authed);
+        final count = await endpoints.user.getUserCount(authed);
 
-        expect(clients, isNotEmpty);
-        expect(
-          clients.any((c) => c.slug == 'user-clients'),
-          isTrue,
-        );
+        expect(count, greaterThanOrEqualTo(1));
       });
     });
 
     group('user association with documents', () {
       test('document tracks createdByUserId', () async {
-        final client = await factory.createTestClient(slug: 'user-doc-assoc');
         final authed = factory.authenticatedSession();
-        final user = await endpoints.user.ensureUser(
-          authed, 'user-doc-assoc', client.apiToken,
-        );
+        final user = await endpoints.user.ensureUser(authed);
 
         final doc = await endpoints.document.createDocument(
           authed, 'assoc_test', 'User Assoc Doc', {},

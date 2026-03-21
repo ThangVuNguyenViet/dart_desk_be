@@ -1,5 +1,4 @@
 import 'package:test/test.dart';
-import 'package:dart_desk_be_server/src/generated/protocol.dart';
 import 'test_tools/serverpod_test_tools.dart';
 import 'helpers/test_data_factory.dart';
 
@@ -7,21 +6,13 @@ void main() {
   withServerpod('Document endpoint', (sessionBuilder, endpoints) {
     late TestDataFactory factory;
 
-    late ClientWithToken testClient;
-
     setUp(() async {
       TestDataFactory.initializeCrdtService();
       factory = TestDataFactory(
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      // Create a client and associate the test user with it.
-      // createDocument derives clientId from the authenticated user's CmsUser.
-      testClient = await factory.createTestClient(slug: 'test-client-doc');
-      final authed = factory.authenticatedSession();
-      await endpoints.user.ensureUser(
-        authed, 'test-client-doc', testClient.apiToken,
-      );
+      await factory.ensureTestUser();
     });
 
     group('createDocument', () {

@@ -13,19 +13,15 @@ void main() {
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      final client = await factory.createTestClient(slug: 'test-client-media');
-      final authed = factory.authenticatedSession();
-      await endpoints.user.ensureUser(authed, 'test-client-media', client.apiToken);
+      await factory.ensureTestUser();
     });
 
     group('uploadImage', () {
-      test('uploads PNG and returns URL', () async {
-        final result = await factory.uploadTestImage(
-          fileName: 'hero.png',
-        );
+      test('uploads PNG and returns asset', () async {
+        final result = await factory.uploadTestImage(fileName: 'hero.png');
 
-        expect(result.url, isNotEmpty);
-        expect(result.id, isNotEmpty);
+        expect(result.publicUrl, isNotEmpty);
+        expect(result.assetId, isNotEmpty);
       });
 
       test('rejects non-image file type', () async {
@@ -34,31 +30,32 @@ void main() {
         final byteData = ByteData.sublistView(Uint8List.fromList(bytes));
 
         expect(
-          () => endpoints.media.uploadImage(authed, 'bad.xyz', byteData),
+          () => endpoints.media.uploadImage(
+            authed, 'bad.xyz', byteData, 1, 1, false, '', 'hash',
+          ),
           throwsA(isA<Exception>()),
         );
       });
     });
 
     group('uploadFile', () {
-      test('uploads text file and returns URL', () async {
+      test('uploads text file and returns asset', () async {
         final result = await factory.uploadTestFile(
           fileName: 'document.txt',
           content: 'Hello, world!',
         );
 
-        expect(result.url, isNotEmpty);
-        expect(result.id, isNotEmpty);
+        expect(result.publicUrl, isNotEmpty);
+        expect(result.assetId, isNotEmpty);
       });
     });
 
     group('getMedia', () {
-      test('returns media metadata by ID', () async {
+      test('returns media metadata by assetId', () async {
         final uploaded = await factory.uploadTestImage();
         final authed = factory.authenticatedSession();
-        final mediaId = int.parse(uploaded.id);
 
-        final media = await endpoints.media.getMedia(authed, mediaId);
+        final media = await endpoints.media.getMedia(authed, uploaded.assetId);
 
         expect(media, isNotNull);
         expect(media!.fileName, contains('test_image'));
@@ -73,9 +70,7 @@ void main() {
 
         final authed = factory.authenticatedSession();
         final list = await endpoints.media.listMedia(
-          authed,
-          limit: 10,
-          offset: 0,
+          authed, sortBy: 'createdAt', limit: 10, offset: 0,
         );
 
         expect(list.length, greaterThanOrEqualTo(3));
@@ -86,14 +81,11 @@ void main() {
       test('deletes media file', () async {
         final uploaded = await factory.uploadTestImage();
         final authed = factory.authenticatedSession();
-        // UploadResponse.id is a String — may be numeric or UUID.
-        // Adjust parsing if int.parse throws FormatException.
-        final mediaId = int.parse(uploaded.id);
 
-        final deleted = await endpoints.media.deleteMedia(authed, mediaId);
+        final deleted = await endpoints.media.deleteMedia(authed, uploaded.assetId);
         expect(deleted, isTrue);
 
-        final fetched = await endpoints.media.getMedia(authed, mediaId);
+        final fetched = await endpoints.media.getMedia(authed, uploaded.assetId);
         expect(fetched, isNull);
       });
     });
@@ -101,10 +93,11 @@ void main() {
     group('file size limits', () {
       test('rejects file exceeding 10MB', () async {
         final authed = factory.authenticatedSession();
-        // Create a ByteData slightly over 10MB
         final oversized = ByteData(10 * 1024 * 1024 + 1);
         expect(
-          () => endpoints.media.uploadImage(authed, 'huge.png', oversized),
+          () => endpoints.media.uploadImage(
+            authed, 'huge.png', oversized, 1, 1, false, '', 'hash',
+          ),
           throwsA(isA<Exception>()),
         );
       });

@@ -13,9 +13,7 @@ void main() {
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      final client = await factory.createTestClient(slug: 'test-client-ver');
-      final authed = factory.authenticatedSession();
-      await endpoints.user.ensureUser(authed, 'test-client-ver', client.apiToken);
+      await factory.ensureTestUser();
     });
 
     group('createDocumentVersion', () {

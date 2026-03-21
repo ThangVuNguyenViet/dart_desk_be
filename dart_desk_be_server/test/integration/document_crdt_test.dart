@@ -13,9 +13,7 @@ void main() {
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      final client = await factory.createTestClient(slug: 'test-client-crdt');
-      final authed = factory.authenticatedSession();
-      await endpoints.user.ensureUser(authed, 'test-client-crdt', client.apiToken);
+      await factory.ensureTestUser();
     });
 
     group('updateDocumentData', () {
@@ -148,7 +146,7 @@ void main() {
         expect(data['scores'][0], isA<int>());
       });
 
-      test('deeply nested List→Map→List→Map round-trips correctly', () async {
+      test('deeply nested List->Map->List->Map round-trips correctly', () async {
         final doc = await factory.createTestDocument(
           title: 'Deep Nesting Doc',
           data: {
