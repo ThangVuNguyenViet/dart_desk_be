@@ -1,6 +1,13 @@
 BEGIN;
 
 --
+-- Breaking change: invalidate all existing API tokens.
+-- Old tokens use bcrypt hashes and legacy prefixes (cms_vi_, cms_ed_, cms_ad_).
+-- Users must create new tokens after this migration.
+--
+DELETE FROM api_tokens;
+
+--
 -- ACTION ALTER TABLE
 --
 ALTER TABLE "projects" DROP COLUMN "apiTokenHash";
