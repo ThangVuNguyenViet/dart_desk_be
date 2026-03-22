@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:dbcrypt/dbcrypt.dart';
 import 'package:serverpod/serverpod.dart';
 
+import '../auth/api_key_validator.dart';
 import '../auth/dart_desk_auth.dart';
 import '../generated/protocol.dart';
 
@@ -13,9 +13,8 @@ import '../generated/protocol.dart';
 class ApiTokenEndpoint extends Endpoint {
   static const _maxRetries = 5;
   static const _rolePrefixes = {
-    'viewer': 'cms_vi_',
-    'editor': 'cms_ed_',
-    'admin': 'cms_ad_',
+    'read': 'cms_r_',
+    'write': 'cms_w_',
   };
 
   /// List all tokens for the current tenant (metadata only, never the hash).
@@ -40,7 +39,7 @@ class ApiTokenEndpoint extends Endpoint {
     final (user, tenantId) = await _requireUser(session);
 
     if (!_rolePrefixes.containsKey(role)) {
-      throw Exception('Invalid role: $role. Must be viewer, editor, or admin.');
+      throw Exception('Invalid role: $role. Must be read or write.');
     }
 
     final prefix = _rolePrefixes[role]!;
@@ -48,7 +47,7 @@ class ApiTokenEndpoint extends Endpoint {
     for (var attempt = 0; attempt < _maxRetries; attempt++) {
       final rawToken = _generateToken(prefix);
       final suffix = rawToken.substring(rawToken.length - 4);
-      final hash = DBCrypt().hashpw(rawToken, DBCrypt().gensalt());
+      final hash = ApiKeyValidator.hashToken(rawToken);
 
       // Check for collision on (tenantId, tokenPrefix, tokenSuffix)
       final existing = await ApiToken.db.findFirstRow(
@@ -121,7 +120,7 @@ class ApiTokenEndpoint extends Endpoint {
     for (var attempt = 0; attempt < _maxRetries; attempt++) {
       final rawToken = _generateToken(prefix);
       final suffix = rawToken.substring(rawToken.length - 4);
-      final hash = DBCrypt().hashpw(rawToken, DBCrypt().gensalt());
+      final hash = ApiKeyValidator.hashToken(rawToken);
 
       // Check collision (skip self)
       final existing = await ApiToken.db.findFirstRow(
