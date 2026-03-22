@@ -2,18 +2,18 @@
 
 ## Goal
 
-Make `x-api-key` mandatory on every API request. The API key resolves the tenant (project). Remove `DartDeskTenancy` — the API key system is the sole tenant resolver. Expose `ApiKeyContext` to endpoints so they can enforce read/write authorization.
+Make `x-api-key` mandatory on every API request. The API key resolves the client (project). Remove `DartDeskTenancy` — the API key system is the sole client resolver. Expose `ApiKeyContext` to endpoints so they can enforce read/write authorization.
 
 ## Architecture
 
 **Two-pass auth (updated):**
 
-1. **x-api-key** (required) → resolves tenant + role via `ApiKeyValidator.validate`
+1. **x-api-key** (required) → resolves client + role via `ApiKeyValidator.validate`
 2. **Authorization: Bearer** (optional) → resolves user identity via Serverpod IDP or external strategies
 
 If `x-api-key` is missing or invalid, the request fails with 401 immediately. No fallback.
 
-**Exception:** Auth-related endpoints that don't need tenant context (e.g., `emailIdp.login`, `googleIdp`, `refreshJwtTokens`) are exempt — they run before the user has a project context.
+**Exception:** Auth-related endpoints that don't need client context (e.g., `emailIdp.login`, `googleIdp`, `refreshJwtTokens`) are exempt — they run before the user has a project context.
 
 ## Backend Changes
 
@@ -28,29 +28,29 @@ typedef AuthResult = ({ApiKeyContext apiKey, User? user});
 `authenticateRequest` becomes:
 - Extract `x-api-key` header → validate → get `ApiKeyContext`
 - If missing/invalid: throw `ServerpodException(401)` (not return null)
-- Resolve user via Serverpod IDP or external strategies (using `apiKey.tenantId`)
+- Resolve user via Serverpod IDP or external strategies (using `apiKey.clientId`)
 - Return `AuthResult(apiKey: apiKeyCtx, user: user)`
 
 ### 2. Remove `DartDeskTenancy`
 
 - Delete `lib/src/tenancy.dart`
 - Remove `DartDeskTenancy.configure(...)` call from `server.dart`
-- Remove tenant resolver from `DartDeskRegistry` (`_tenantResolver`, `setTenantResolver`, `resolveTenantId`)
+- Remove tenant resolver from `DartDeskRegistry` (currently named `_tenantResolver`, `setTenantResolver`, `resolveTenantId`)
 - Remove `DartDeskSession.resolveTenantId` (if it exists as a convenience wrapper)
 
 ### 3. Update all endpoint callers
 
 Every endpoint that calls `DartDeskAuth.authenticateRequest` must update to handle the new `AuthResult` return type:
 
-All endpoints that call `DartDeskAuth.authenticateRequest` must update to use `AuthResult`. The key change: **tenant ID now comes from `authResult.apiKey.tenantId`** (the API key), not from `user.tenantId`.
+All endpoints that call `DartDeskAuth.authenticateRequest` must update to use `AuthResult`. The key change: **client ID now comes from `authResult.apiKey.clientId`** (the API key), not from `user.clientId`.
 
 | File | Notes |
 |---|---|
-| `cms_api_token_endpoint.dart` | `_requireUser` returns `(User, int?)` — change to extract tenantId from `authResult.apiKey.tenantId` |
+| `cms_api_token_endpoint.dart` | `_requireUser` returns `(User, int?)` — change to extract clientId from `authResult.apiKey.clientId` |
 | `document_endpoint.dart` | `_authenticateRequest` helper — update to return `AuthResult` |
-| `document_collaboration_endpoint.dart` | Uses auth for identity + tenant |
-| `media_endpoint.dart` | Uses auth for identity + tenant |
-| `user_endpoint.dart` | Uses auth for identity + tenant |
+| `document_collaboration_endpoint.dart` | Uses auth for identity + client |
+| `media_endpoint.dart` | Uses auth for identity + client |
+| `user_endpoint.dart` | Uses auth for identity + client |
 | `deployment_endpoint.dart` | Has its own `_requireAdminUser` — update to use `AuthResult` |
 | `project_endpoint.dart` | Uses `session.authenticated` directly — update for consistency |
 
@@ -60,9 +60,27 @@ These endpoints don't require `x-api-key` because they run before the user has p
 - `emailIdp` — Serverpod auth module
 - `googleIdp` — Serverpod auth module
 - `refreshJwtTokens` — Serverpod auth module
-- `studioConfig` — returns client-side config (no tenant data)
+- `studioConfig` — returns client-side config (no project-specific data)
 
 These are Serverpod module endpoints and don't go through `DartDeskAuth.authenticateRequest`, so they're naturally exempt.
+
+### 5. Rename `tenantId` → `clientId` across all models and code
+
+Rename the field in all Serverpod models and all code references:
+
+| Model | Field rename |
+|---|---|
+| `api_token.spy.yaml` | `tenantId` → `clientId` (field + all index references) |
+| `user.spy.yaml` | `tenantId` → `clientId` (field + all index references) |
+| `document.spy.yaml` | `tenantId` → `clientId` (field + all index references) |
+| `media_asset.spy.yaml` | `tenantId` → `clientId` (field + all index references) |
+
+Also rename:
+- `ApiKeyContext.tenantId` → `ApiKeyContext.clientId`
+- `DartDeskTenancy` class name (being deleted anyway)
+- All code references to `.tenantId` in endpoints, auth, services, tests
+
+This requires `serverpod generate` and a database migration to rename the DB columns.
 
 ## Frontend Changes
 
@@ -130,7 +148,7 @@ Same for `main_e2e.dart`.
 | `dart_desk_be_server/lib/src/auth/dart_desk_auth.dart` | Modify — return `AuthResult`, require x-api-key | backend |
 | `dart_desk_be_server/lib/src/tenancy.dart` | Delete | backend |
 | `dart_desk_be_server/lib/server.dart` | Modify — remove `DartDeskTenancy.configure` | backend |
-| `dart_desk_be_server/lib/src/plugin/dart_desk_registry.dart` | Modify — remove tenant resolver | backend |
+| `dart_desk_be_server/lib/src/plugin/dart_desk_registry.dart` | Modify — remove client resolver | backend |
 | `dart_desk_be_server/lib/src/plugin/dart_desk_session.dart` | Modify — remove `resolveTenantId` | backend |
 | `dart_desk_be_server/lib/src/endpoints/cms_api_token_endpoint.dart` | Modify — use `AuthResult` | backend |
 | `dart_desk_be_server/lib/src/endpoints/document_endpoint.dart` | Modify — use `AuthResult` | backend |
@@ -138,6 +156,12 @@ Same for `main_e2e.dart`.
 | `dart_desk_be_server/lib/src/endpoints/media_endpoint.dart` | Modify — use `AuthResult` | backend |
 | `dart_desk_be_server/lib/src/endpoints/user_endpoint.dart` | Modify — use `AuthResult` | backend |
 | `dart_desk_be_server/lib/src/endpoints/deployment_endpoint.dart` | Modify — use `AuthResult` | backend |
+| `dart_desk_be_server/lib/src/auth/api_key_context.dart` | Modify — rename `tenantId` → `clientId` | backend |
+| `dart_desk_be_server/lib/src/auth/api_key_validator.dart` | Modify — update `tenantId` references | backend |
+| `dart_desk_be_server/lib/src/models/api_token.spy.yaml` | Modify — rename `tenantId` → `clientId` | backend |
+| `dart_desk_be_server/lib/src/models/user.spy.yaml` | Modify — rename `tenantId` → `clientId` | backend |
+| `dart_desk_be_server/lib/src/models/document.spy.yaml` | Modify — rename `tenantId` → `clientId` | backend |
+| `dart_desk_be_server/lib/src/models/media_asset.spy.yaml` | Modify — rename `tenantId` → `clientId` | backend |
 | `dart_desk/packages/dart_desk/lib/src/studio/dart_desk_app.dart` | Modify — add `apiKey` param | frontend |
 | `dart_desk/packages/dart_desk/lib/src/cloud/dart_desk_auth.dart` | Modify — inject x-api-key header | frontend |
 | `dart_desk/packages/dart_desk/lib/src/cloud/api_key_http_client.dart` | Create — HTTP client wrapper | frontend |
