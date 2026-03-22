@@ -7,7 +7,7 @@ import 'package:serverpod/serverpod.dart';
 
 import '../auth/dart_desk_auth.dart';
 import '../generated/protocol.dart';
-import '../services/local_image_storage_provider.dart';
+import '../plugin/dart_desk_session.dart';
 import '../services/metadata_extractor.dart';
 
 /// Allowed image MIME types for upload validation.
@@ -73,7 +73,7 @@ class MediaEndpoint extends Endpoint {
     }
 
     // Store file
-    final provider = LocalImageStorageProvider(session);
+    final provider = session.imageStorage;
     final bytes = fileData.buffer.asUint8List();
     final publicUrl = await provider.store(assetId, fileName, bytes);
     final storagePath = 'media/$assetId/$fileName';
@@ -149,7 +149,7 @@ class MediaEndpoint extends Endpoint {
     }
 
     // Store file
-    final provider = LocalImageStorageProvider(session);
+    final provider = session.imageStorage;
     final publicUrl = await provider.store(assetId, fileName, bytes);
     final storagePath = 'media/$assetId/$fileName';
 
@@ -212,7 +212,7 @@ class MediaEndpoint extends Endpoint {
     }
 
     // Delete from storage
-    final provider = LocalImageStorageProvider(session);
+    final provider = session.imageStorage;
     await provider.delete(asset.storagePath);
 
     // Delete DB record
@@ -264,7 +264,7 @@ class MediaEndpoint extends Endpoint {
   Future<int> getMediaUsageCount(Session session, String assetId) async {
     final result = await session.db.unsafeQuery(
       'SELECT COUNT(DISTINCT "documentId") FROM "document_crdt_snapshots" '
-      "WHERE data::text LIKE \$1",
+      'WHERE "snapshotData"::text LIKE \$1',
       parameters: QueryParameters.positional(['%$assetId%']),
     );
     if (result.isEmpty || result.first.isEmpty) {

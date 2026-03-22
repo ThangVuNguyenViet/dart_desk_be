@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
-import '../../../server.dart' as server;
 import '../auth/dart_desk_auth.dart';
+import '../plugin/dart_desk_session.dart';
 import '../generated/protocol.dart';
 
 /// Endpoint for real-time document collaboration features
@@ -42,7 +42,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
     }
 
     // Apply CRDT operations
-    return await server.documentCrdtService.applyOperations(
+    return await session.crdtService.applyOperations(
       session,
       documentId,
       fieldUpdates,
@@ -104,7 +104,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
-    return await server.documentCrdtService.getCurrentHlc(session, documentId);
+    return await session.crdtService.getCurrentHlc(session, documentId);
   }
 
   /// Get operation count for a document
@@ -113,7 +113,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
-    return await server.documentCrdtService.getOperationCount(
+    return await session.crdtService.getOperationCount(
       session,
       documentId,
     );
@@ -130,6 +130,6 @@ class DocumentCollaborationEndpoint extends Endpoint {
       throw Exception('User must be authenticated to compact operations');
     }
 
-    await server.documentCrdtService.compactOperations(session, documentId);
+    await session.crdtService.compactOperations(session, documentId);
   }
 }

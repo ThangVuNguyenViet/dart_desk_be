@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:dart_desk_be_server/src/web/routes/root.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_admin_server/serverpod_admin_server.dart' as admin;
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
@@ -11,12 +10,28 @@ import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'src/auth/dart_desk_auth.dart';
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
+import 'src/plugin/dart_desk_plugin.dart';
+import 'src/plugin/dart_desk_registry.dart';
+import 'src/plugin/dart_desk_session.dart';
 import 'src/services/document_crdt_service.dart';
+import 'src/tenancy.dart';
 
-// Global CRDT service instance
-late DocumentCrdtService documentCrdtService;
+void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
+  // Create registry and let plugins register their contributions.
+  final registry = DartDeskRegistry();
+  for (final plugin in plugins) {
+    plugin.register(registry);
+  }
 
-void run(List<String> args) async {
+  // Bridge registry into auth and tenancy.
+  DartDeskAuth.configure(
+    externalStrategies: registry.authStrategies,
+  );
+  DartDeskTenancy.configure(resolver: registry.resolveTenantId);
+
+  // Make registry available to session extensions.
+  DartDeskSession.setRegistry(registry);
+
   // Initialize Serverpod and connect it with your generated code.
   final pod = Serverpod(
     args,
@@ -26,7 +41,7 @@ void run(List<String> args) async {
 
   // Initialize CRDT service with node ID from passwords.yaml
   final nodeId = pod.getPassword('crdtNodeId') ?? 'postgres-main';
-  documentCrdtService = DocumentCrdtService(nodeId);
+  registry.documentCrdtService = DocumentCrdtService(nodeId);
 
   // Setup a default page at the web root.
   pod.webServer.addRoute(RouteRoot(), '/');
@@ -66,11 +81,14 @@ void run(List<String> args) async {
   // Start the server.
   await pod.start();
 
+  // Run plugin startup hooks.
+  for (final plugin in plugins) {
+    await plugin.onStartup(pod);
+  }
+  await registry.runStartupHooks(pod);
+
   // Initialize external auth strategies (if any configured).
   await DartDeskAuth.initialize();
-
-  // Register admin module with all CMS models.
-  _registerAdminModule();
 
   // Seed admin user (idempotent — safe to call on every startup).
   await _seedAdminUser();
@@ -94,22 +112,6 @@ void _sendPasswordResetCode(
   required Transaction? transaction,
 }) {
   session.log('[EmailIdp] Password reset code ($email): $verificationCode');
-}
-
-void _registerAdminModule() {
-  admin.configureAdminModule((registry) {
-    registry.register<Document>();
-    registry.register<DocumentData>();
-    registry.register<User>();
-    registry.register<DocumentVersion>();
-    registry.register<MediaAsset>();
-    registry.register<DocumentCrdtOperation>();
-    registry.register<DocumentCrdtSnapshot>();
-    registry.register<ApiToken>();
-
-    developer.log(
-        '[Admin] Module registered with ${registry.registeredResourceMetadata.length} resources');
-  });
 }
 
 /// Creates a default admin user if one doesn't already exist.

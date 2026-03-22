@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
 
-import '../../../server.dart' as server;
 import '../auth/dart_desk_auth.dart';
+import '../plugin/dart_desk_session.dart';
 import '../generated/protocol.dart';
 
 /// Endpoint for managing CMS documents
@@ -137,7 +137,7 @@ class DocumentEndpoint extends Endpoint {
 
     // Initialize CRDT for this document
     if (created.id != null) {
-      await server.documentCrdtService.initializeCrdt(
+      await session.crdtService.initializeCrdt(
         session,
         created.id!,
         data,
@@ -149,7 +149,7 @@ class DocumentEndpoint extends Endpoint {
       final currentHlc = updatedDoc?.crdtHlc;
 
       // Create initial version pointing to initial HLC
-      final opCount = await server.documentCrdtService.getOperationCount(
+      final opCount = await session.crdtService.getOperationCount(
         session,
         created.id!,
       );
@@ -186,7 +186,7 @@ class DocumentEndpoint extends Endpoint {
     final editSessionId = sessionId ?? 'user-${cmsUser.id}';
 
     // Apply CRDT operations
-    return await server.documentCrdtService.applyOperations(
+    return await session.crdtService.applyOperations(
       session,
       documentId,
       updates,
@@ -306,11 +306,22 @@ class DocumentEndpoint extends Endpoint {
   }
 
   /// Get all document types (unique document type names)
-  /// TODO(cloud): Add tenant filtering when cloud plugin provides tenant context.
   Future<List<String>> getDocumentTypes(Session session) async {
-    final result = await session.db.unsafeQuery(
-      'SELECT DISTINCT document_type FROM documents ORDER BY document_type',
-    );
+    final cmsUser = await _requireAuth(session);
+    final tenantId = cmsUser.tenantId;
+
+    final result = tenantId != null
+        ? await session.db.unsafeQuery(
+            'SELECT DISTINCT "documentType" FROM documents '
+            'WHERE "tenantId" = \$1 '
+            'ORDER BY "documentType"',
+            parameters: QueryParameters.positional([tenantId]),
+          )
+        : await session.db.unsafeQuery(
+            'SELECT DISTINCT "documentType" FROM documents '
+            'WHERE "tenantId" IS NULL '
+            'ORDER BY "documentType"',
+          );
 
     return result.map((row) => row.first as String).toList();
   }
@@ -367,7 +378,7 @@ class DocumentEndpoint extends Endpoint {
 
       if (baseHlc != null) {
         // Reconstruct state at that point using getStateAtHlc
-        final baseState = await server.documentCrdtService.getStateAtHlc(
+        final baseState = await session.crdtService.getStateAtHlc(
           session,
           documentId,
           baseHlc,
@@ -394,7 +405,7 @@ class DocumentEndpoint extends Endpoint {
           prevHlc = versions[i - 1].snapshotHlc;
         }
 
-        ops = await server.documentCrdtService.getOperationsBetweenHlc(
+        ops = await session.crdtService.getOperationsBetweenHlc(
           session,
           documentId,
           prevHlc,
@@ -440,7 +451,7 @@ class DocumentEndpoint extends Endpoint {
     }
 
     // Reconstruct document state at this version's HLC
-    return await server.documentCrdtService.getStateAtHlc(
+    return await session.crdtService.getStateAtHlc(
       session,
       version.documentId,
       version.snapshotHlc!,
@@ -471,11 +482,11 @@ class DocumentEndpoint extends Endpoint {
         existingVersions.isEmpty ? 1 : existingVersions.first.versionNumber + 1;
 
     // Get current CRDT HLC and operation count for version snapshot
-    final currentHlc = await server.documentCrdtService.getCurrentHlc(
+    final currentHlc = await session.crdtService.getCurrentHlc(
       session,
       documentId,
     );
-    final opCount = await server.documentCrdtService.getOperationCount(
+    final opCount = await session.crdtService.getOperationCount(
       session,
       documentId,
     );

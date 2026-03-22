@@ -1,14 +1,16 @@
+@Tags(['stress'])
+library;
+
 import 'dart:convert';
 import 'dart:math';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 import 'package:dart_desk_be_server/src/generated/protocol.dart';
+import 'package:dart_desk_be_server/src/plugin/dart_desk_session.dart';
 import 'package:dart_desk_be_server/src/services/document_crdt_service.dart';
-import 'package:dart_desk_be_server/server.dart' as server;
 import 'test_tools/serverpod_test_tools.dart';
 import 'helpers/test_data_factory.dart';
 
-@Tags(['stress'])
 void main() {
   withServerpod('CRDT stress test', (sessionBuilder, endpoints) {
     late TestDataFactory factory;
@@ -16,7 +18,7 @@ void main() {
 
     setUp(() async {
       TestDataFactory.initializeCrdtService();
-      crdtService = server.documentCrdtService!;
+      crdtService = DartDeskSession.registry.documentCrdtService;
       factory = TestDataFactory(
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
@@ -121,7 +123,7 @@ void main() {
         final historicalState = await crdtService.getStateAtHlc(
           session,
           doc.id!,
-          midpointHlc!,
+          midpointHlc,
         );
         expect(historicalState, isNotEmpty);
         // Historical state should have the same top-level structure

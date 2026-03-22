@@ -9,6 +9,7 @@ void main() {
     late TestDataFactory factory;
 
     setUp(() async {
+      TestDataFactory.initializeCrdtService();
       factory = TestDataFactory(
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
@@ -87,6 +88,78 @@ void main() {
 
         final fetched = await endpoints.media.getMedia(authed, uploaded.assetId);
         expect(fetched, isNull);
+      });
+    });
+
+    group('listMediaCount', () {
+      test('counts uploaded media', () async {
+        await factory.uploadTestImage(fileName: 'count1.png');
+        await factory.uploadTestImage(fileName: 'count2.png');
+
+        final authed = factory.authenticatedSession();
+        final count = await endpoints.media.listMediaCount(authed);
+
+        expect(count, greaterThanOrEqualTo(2));
+      });
+
+      test('filters count by mimeTypePrefix', () async {
+        await factory.uploadTestImage(fileName: 'filter1.png');
+        await factory.uploadTestFile(fileName: 'filter1.txt');
+
+        final authed = factory.authenticatedSession();
+        final imageCount = await endpoints.media.listMediaCount(
+          authed,
+          mimeTypePrefix: 'image/',
+        );
+        final textCount = await endpoints.media.listMediaCount(
+          authed,
+          mimeTypePrefix: 'text/',
+        );
+
+        expect(imageCount, greaterThanOrEqualTo(1));
+        expect(textCount, greaterThanOrEqualTo(1));
+      });
+    });
+
+    group('getMediaUsageCount', () {
+      test('returns zero for unused asset', () async {
+        final uploaded = await factory.uploadTestImage(fileName: 'unused.png');
+        final authed = factory.authenticatedSession();
+
+        final count = await endpoints.media.getMediaUsageCount(
+          authed,
+          uploaded.assetId,
+        );
+
+        expect(count, equals(0));
+      });
+    });
+
+    group('updateMediaAsset', () {
+      test('renames media file', () async {
+        final uploaded = await factory.uploadTestImage(fileName: 'original.png');
+        final authed = factory.authenticatedSession();
+
+        final updated = await endpoints.media.updateMediaAsset(
+          authed,
+          uploaded.assetId,
+          fileName: 'renamed.png',
+        );
+
+        expect(updated.fileName, equals('renamed.png'));
+      });
+
+      test('throws for nonexistent asset', () async {
+        final authed = factory.authenticatedSession();
+
+        expect(
+          () => endpoints.media.updateMediaAsset(
+            authed,
+            'nonexistent-asset-id',
+            fileName: 'nope.png',
+          ),
+          throwsA(isA<Exception>()),
+        );
       });
     });
 

@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:dart_desk_be_server/server.dart' as server;
 import 'package:dart_desk_be_server/src/generated/protocol.dart';
+import 'package:dart_desk_be_server/src/plugin/dart_desk_registry.dart';
+import 'package:dart_desk_be_server/src/plugin/dart_desk_session.dart';
 import 'package:dart_desk_be_server/src/services/document_crdt_service.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
@@ -17,7 +18,9 @@ class TestDataFactory {
   });
 
   static void initializeCrdtService() {
-    server.documentCrdtService = DocumentCrdtService('test-node');
+    final registry = DartDeskRegistry();
+    registry.documentCrdtService = DocumentCrdtService('test-node');
+    DartDeskSession.setRegistry(registry);
   }
 
   TestSessionBuilder authenticatedSession({
