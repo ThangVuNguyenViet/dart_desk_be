@@ -23,11 +23,10 @@ import '../endpoints/user_endpoint.dart' as _i10;
 import 'package:dart_desk_be_server/src/generated/document_version_status.dart'
     as _i11;
 import 'dart:typed_data' as _i12;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i13;
-import 'package:serverpod_admin_server/serverpod_admin_server.dart' as _i14;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i15;
+    as _i13;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i14;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -1325,10 +1324,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i13.Endpoints()
+    modules['serverpod_auth_core'] = _i13.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_admin'] = _i14.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i15.Endpoints()
+    modules['serverpod_auth_idp'] = _i14.Endpoints()
       ..initializeEndpoints(server);
   }
 }

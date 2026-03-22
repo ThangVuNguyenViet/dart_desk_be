@@ -31,8 +31,7 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
 import 'package:dart_desk_be_client/src/protocol/media_asset.dart' as _i13;
 import 'dart:typed_data' as _i14;
 import 'package:dart_desk_be_client/src/protocol/cms_user.dart' as _i15;
-import 'package:serverpod_admin_client/serverpod_admin_client.dart' as _i16;
-import 'protocol.dart' as _i17;
+import 'protocol.dart' as _i16;
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
@@ -306,7 +305,6 @@ class EndpointDocument extends _i1.EndpointRef {
   );
 
   /// Get all document types (unique document type names)
-  /// TODO(cloud): Add tenant filtering when cloud plugin provides tenant context.
   _i2.Future<List<String>> getDocumentTypes() =>
       caller.callServerEndpoint<List<String>>(
         'document',
@@ -814,16 +812,13 @@ class EndpointUser extends _i1.EndpointRef {
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_idp = _i11.Caller(client);
-    serverpod_admin = _i16.Caller(client);
     serverpod_auth_core = _i12.Caller(client);
+    serverpod_auth_idp = _i11.Caller(client);
   }
 
-  late final _i11.Caller serverpod_auth_idp;
-
-  late final _i16.Caller serverpod_admin;
-
   late final _i12.Caller serverpod_auth_core;
+
+  late final _i11.Caller serverpod_auth_idp;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -846,7 +841,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i17.Protocol(),
+         _i16.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -902,8 +897,7 @@ class Client extends _i1.ServerpodClientShared {
 
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
-    'serverpod_auth_idp': modules.serverpod_auth_idp,
-    'serverpod_admin': modules.serverpod_admin,
     'serverpod_auth_core': modules.serverpod_auth_core,
+    'serverpod_auth_idp': modules.serverpod_auth_idp,
   };
 }
