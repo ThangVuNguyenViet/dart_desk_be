@@ -2,7 +2,14 @@ import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
 import '../tenancy.dart';
+import 'api_key_context.dart';
+import 'api_key_validator.dart';
 import 'external_auth_strategy.dart';
+
+/// Result of authenticating a request.
+/// [apiKey] is always present for valid requests (x-api-key is required).
+/// [user] is present when the request also has a valid Bearer JWT.
+typedef AuthResult = ({ApiKeyContext apiKey, User? user});
 
 /// Central authentication registry for Dart Desk.
 ///
@@ -41,6 +48,17 @@ class DartDeskAuth {
     _adminEmails = [];
   }
 
+  /// Validate the x-api-key header. Returns null if missing or invalid.
+  static Future<ApiKeyContext?> authenticateApiKey(Session session) async {
+    final request = session.request;
+    if (request == null) return null;
+
+    final apiKeyHeader = request.headers['x-api-key']?.first;
+    if (apiKeyHeader == null) return null;
+
+    return ApiKeyValidator.validate(session, apiKeyHeader);
+  }
+
   /// Authenticate the current request.
   ///
   /// 1. Checks Serverpod built-in IDP auth (session.authenticated)
@@ -48,10 +66,14 @@ class DartDeskAuth {
   /// 3. First non-null ExternalAuthUser wins → find or create User
   /// 4. Returns null if all strategies return null (unauthenticated)
   static Future<User?> authenticateRequest(Session session) async {
+    // Resolve API key context (if x-api-key header present)
+    final apiKeyCtx = await authenticateApiKey(session);
+    final tenantId =
+        apiKeyCtx?.tenantId ?? await DartDeskTenancy.resolveTenantId(session);
+
     // 1. Check Serverpod built-in auth
     final authInfo = session.authenticated;
     if (authInfo != null) {
-      final tenantId = await DartDeskTenancy.resolveTenantId(session);
       return User.db.findFirstRow(
         session,
         where: (t) {
@@ -81,7 +103,7 @@ class DartDeskAuth {
     for (final strategy in _strategies) {
       final extUser = await strategy.authenticate(headers, session);
       if (extUser != null) {
-        return _findOrCreateUser(session, extUser, strategy.name);
+        return _findOrCreateUser(session, extUser, strategy.name, tenantId);
       }
     }
 
@@ -93,9 +115,8 @@ class DartDeskAuth {
     Session session,
     ExternalAuthUser extUser,
     String providerName,
+    int? tenantId,
   ) async {
-    final tenantId = await DartDeskTenancy.resolveTenantId(session);
-
     // Try to find existing user by external identity
     var user = await User.db.findFirstRow(
       session,
