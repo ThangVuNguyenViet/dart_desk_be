@@ -18,3 +18,5 @@ indexes:
   api_token_lookup_idx:
     fields: tenantId, tokenPrefix, tokenSuffix
     unique: true
+  api_token_prefix_suffix_idx:
+    fields: tokenPrefix, tokenSuffix
