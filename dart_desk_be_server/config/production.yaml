@@ -24,7 +24,7 @@ webServer:
 
 # Database configuration.
 database:
-  host: database.dartdesk.dev
+  host: dart-desk.cf8s0omsogno.us-west-2.rds.amazonaws.com
   port: 5432
   name: serverpod
   user: postgres
