@@ -1,4 +1,3 @@
-import 'package:dart_desk_be_server/src/auth/api_key_context.dart';
 import 'package:dart_desk_be_server/src/auth/api_key_validator.dart';
 import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';

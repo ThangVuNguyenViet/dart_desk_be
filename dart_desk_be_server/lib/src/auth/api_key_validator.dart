@@ -29,11 +29,6 @@ class ApiKeyValidator {
   static const _minTokenLength = 10; // prefix + at least 4 chars
   static const _lastUsedDebounce = Duration(hours: 1);
 
-  static const _prefixToRole = {
-    'cms_r_': 'read',
-    'cms_w_': 'write',
-  };
-
   /// Parse an API key string into its components.
   /// Returns null if the format is invalid.
   static ParsedApiKey? parseApiKey(String apiKey) {
@@ -102,11 +97,9 @@ class ApiKeyValidator {
         }
       }
 
-      final role = _prefixToRole[parsed.prefix] ?? 'read';
-
       return ApiKeyContext(
         tenantId: candidate.tenantId,
-        role: role,
+        role: candidate.role,
         tokenId: candidate.id!,
       );
     }
