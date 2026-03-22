@@ -33,10 +33,8 @@ import 'package:dart_desk_be_client/src/protocol/media_asset.dart' as _i14;
 import 'dart:typed_data' as _i15;
 import 'package:dart_desk_be_client/src/protocol/project_list.dart' as _i16;
 import 'package:dart_desk_be_client/src/protocol/project.dart' as _i17;
-import 'package:dart_desk_be_client/src/protocol/project_with_token.dart'
-    as _i18;
-import 'package:dart_desk_be_client/src/protocol/user.dart' as _i19;
-import 'protocol.dart' as _i20;
+import 'package:dart_desk_be_client/src/protocol/user.dart' as _i18;
+import 'protocol.dart' as _i19;
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
@@ -826,14 +824,12 @@ class EndpointProject extends _i1.EndpointRef {
       );
 
   /// Create a new project (requires authentication).
-  /// Generates a prefixed API token, stores its bcrypt hash.
-  /// Returns the project and the raw token (shown once only).
-  _i2.Future<_i18.ProjectWithToken> createProject(
+  _i2.Future<_i17.Project> createProject(
     String name,
     String slug, {
     String? description,
     String? settings,
-  }) => caller.callServerEndpoint<_i18.ProjectWithToken>(
+  }) => caller.callServerEndpoint<_i17.Project>(
     'project',
     'createProject',
     {
@@ -862,15 +858,6 @@ class EndpointProject extends _i1.EndpointRef {
       'settings': settings,
     },
   );
-
-  /// Regenerate the API token for a project (requires authentication).
-  /// Returns the project and the new raw token (shown once only).
-  _i2.Future<_i18.ProjectWithToken> regenerateApiToken(int projectId) =>
-      caller.callServerEndpoint<_i18.ProjectWithToken>(
-        'project',
-        'regenerateApiToken',
-        {'projectId': projectId},
-      );
 
   /// Delete a project (requires authentication).
   _i2.Future<bool> deleteProject(int projectId) =>
@@ -961,8 +948,8 @@ class EndpointUser extends _i1.EndpointRef {
   /// Get the current authenticated user.
   /// For Serverpod IDP: returns existing User (must exist via seed or prior creation).
   /// For external auth: auto-creates User on first call.
-  _i2.Future<_i19.User?> getCurrentUser() =>
-      caller.callServerEndpoint<_i19.User?>(
+  _i2.Future<_i18.User?> getCurrentUser() =>
+      caller.callServerEndpoint<_i18.User?>(
         'user',
         'getCurrentUser',
         {},
@@ -1007,7 +994,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i20.Protocol(),
+         _i19.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,

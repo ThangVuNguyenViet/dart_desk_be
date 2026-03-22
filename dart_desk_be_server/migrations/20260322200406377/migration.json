@@ -1,0 +1,90 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "alterTable",
+      "alterTable": {
+        "__className__": "serverpod.TableMigration",
+        "name": "projects",
+        "schema": "public",
+        "addColumns": [],
+        "deleteColumns": [
+          "apiTokenHash",
+          "apiTokenPrefix",
+          "lastUsedAt"
+        ],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "columnDropped",
+            "message": "Column \"apiTokenHash\" of table \"projects\" will be dropped.",
+            "table": "projects",
+            "columns": [
+              "apiTokenHash"
+            ],
+            "destrucive": true
+          },
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "columnDropped",
+            "message": "Column \"apiTokenPrefix\" of table \"projects\" will be dropped.",
+            "table": "projects",
+            "columns": [
+              "apiTokenPrefix"
+            ],
+            "destrucive": true
+          },
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "columnDropped",
+            "message": "Column \"lastUsedAt\" of table \"projects\" will be dropped.",
+            "table": "projects",
+            "columns": [
+              "lastUsedAt"
+            ],
+            "destrucive": true
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "columnDropped",
+      "message": "Column \"apiTokenHash\" of table \"projects\" will be dropped.",
+      "table": "projects",
+      "columns": [
+        "apiTokenHash"
+      ],
+      "destrucive": true
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "columnDropped",
+      "message": "Column \"apiTokenPrefix\" of table \"projects\" will be dropped.",
+      "table": "projects",
+      "columns": [
+        "apiTokenPrefix"
+      ],
+      "destrucive": true
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "columnDropped",
+      "message": "Column \"lastUsedAt\" of table \"projects\" will be dropped.",
+      "table": "projects",
+      "columns": [
+        "lastUsedAt"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}

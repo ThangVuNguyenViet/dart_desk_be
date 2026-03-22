@@ -1,7 +1,3 @@
-import 'dart:convert';
-import 'dart:math';
-
-import 'package:dbcrypt/dbcrypt.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
@@ -67,9 +63,7 @@ class ProjectEndpoint extends Endpoint {
   }
 
   /// Create a new project (requires authentication).
-  /// Generates a prefixed API token, stores its bcrypt hash.
-  /// Returns the project and the raw token (shown once only).
-  Future<ProjectWithToken> createProject(
+  Future<Project> createProject(
     Session session,
     String name,
     String slug, {
@@ -81,15 +75,9 @@ class ProjectEndpoint extends Endpoint {
       throw Exception('User must be authenticated to create projects');
     }
 
-    final rawToken = _generateToken();
-    final prefix = rawToken.substring(0, 16);
-    final hash = DBCrypt().hashpw(rawToken, DBCrypt().gensalt());
-
     final project = Project(
       name: name,
       slug: slug,
-      apiTokenHash: hash,
-      apiTokenPrefix: prefix,
       description: description,
       isActive: true,
       settings: settings,
@@ -98,7 +86,7 @@ class ProjectEndpoint extends Endpoint {
     );
 
     final inserted = await Project.db.insertRow(session, project);
-    return ProjectWithToken(project: inserted, apiToken: rawToken);
+    return inserted;
   }
 
   /// Update an existing project (requires authentication).
@@ -130,44 +118,6 @@ class ProjectEndpoint extends Endpoint {
 
     await Project.db.updateRow(session, updated);
     return updated;
-  }
-
-  /// Regenerate the API token for a project (requires authentication).
-  /// Returns the project and the new raw token (shown once only).
-  Future<ProjectWithToken> regenerateApiToken(
-    Session session,
-    int projectId,
-  ) async {
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to regenerate tokens');
-    }
-
-    final existing = await Project.db.findById(session, projectId);
-    if (existing == null) {
-      throw Exception('Project not found: $projectId');
-    }
-
-    final rawToken = _generateToken();
-    final prefix = rawToken.substring(0, 16);
-    final hash = DBCrypt().hashpw(rawToken, DBCrypt().gensalt());
-
-    final updated = existing.copyWith(
-      apiTokenHash: hash,
-      apiTokenPrefix: prefix,
-      updatedAt: DateTime.now(),
-    );
-
-    await Project.db.updateRow(session, updated);
-    return ProjectWithToken(project: updated, apiToken: rawToken);
-  }
-
-  /// Generate a crypto-random API token with `dd_live_` prefix.
-  static String _generateToken() {
-    final random = Random.secure();
-    final bytes = List<int>.generate(32, (_) => random.nextInt(256));
-    final randomPart = base64Url.encode(bytes).replaceAll('=', '');
-    return 'dd_live_$randomPart';
   }
 
   /// Delete a project (requires authentication).
@@ -228,11 +178,6 @@ class ProjectEndpoint extends Endpoint {
       throw Exception('Slug "$slug" is already taken');
     }
 
-    // Generate internal API token
-    final rawToken = _generateToken();
-    final prefix = rawToken.substring(0, 16);
-    final hash = DBCrypt().hashpw(rawToken, DBCrypt().gensalt());
-
     // Get user profile for email
     String? email;
     String? userName;
@@ -255,8 +200,6 @@ class ProjectEndpoint extends Endpoint {
         Project(
           name: name,
           slug: slug,
-          apiTokenHash: hash,
-          apiTokenPrefix: prefix,
           isActive: true,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),

@@ -1515,25 +1515,6 @@ class Endpoints extends _i1.EndpointDispatch {
                     settings: params['settings'],
                   ),
         ),
-        'regenerateApiToken': _i1.MethodConnector(
-          name: 'regenerateApiToken',
-          params: {
-            'projectId': _i1.ParameterDescription(
-              name: 'projectId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['project'] as _i9.ProjectEndpoint)
-                  .regenerateApiToken(
-                    session,
-                    params['projectId'],
-                  ),
-        ),
         'deleteProject': _i1.MethodConnector(
           name: 'deleteProject',
           params: {

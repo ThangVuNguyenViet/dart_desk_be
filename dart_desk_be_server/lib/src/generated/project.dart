@@ -18,11 +18,8 @@ abstract class Project
     this.id,
     required this.name,
     required this.slug,
-    required this.apiTokenHash,
     this.description,
     bool? isActive,
-    this.apiTokenPrefix,
-    this.lastUsedAt,
     this.settings,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -34,11 +31,8 @@ abstract class Project
     int? id,
     required String name,
     required String slug,
-    required String apiTokenHash,
     String? description,
     bool? isActive,
-    String? apiTokenPrefix,
-    DateTime? lastUsedAt,
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -49,15 +43,10 @@ abstract class Project
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       slug: jsonSerialization['slug'] as String,
-      apiTokenHash: jsonSerialization['apiTokenHash'] as String,
       description: jsonSerialization['description'] as String?,
       isActive: jsonSerialization['isActive'] == null
           ? null
           : _i1.BoolJsonExtension.fromJson(jsonSerialization['isActive']),
-      apiTokenPrefix: jsonSerialization['apiTokenPrefix'] as String?,
-      lastUsedAt: jsonSerialization['lastUsedAt'] == null
-          ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUsedAt']),
       settings: jsonSerialization['settings'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
@@ -79,15 +68,9 @@ abstract class Project
 
   String slug;
 
-  String apiTokenHash;
-
   String? description;
 
   bool isActive;
-
-  String? apiTokenPrefix;
-
-  DateTime? lastUsedAt;
 
   String? settings;
 
@@ -105,11 +88,8 @@ abstract class Project
     int? id,
     String? name,
     String? slug,
-    String? apiTokenHash,
     String? description,
     bool? isActive,
-    String? apiTokenPrefix,
-    DateTime? lastUsedAt,
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -121,11 +101,8 @@ abstract class Project
       if (id != null) 'id': id,
       'name': name,
       'slug': slug,
-      'apiTokenHash': apiTokenHash,
       if (description != null) 'description': description,
       'isActive': isActive,
-      if (apiTokenPrefix != null) 'apiTokenPrefix': apiTokenPrefix,
-      if (lastUsedAt != null) 'lastUsedAt': lastUsedAt?.toJson(),
       if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
@@ -139,11 +116,8 @@ abstract class Project
       if (id != null) 'id': id,
       'name': name,
       'slug': slug,
-      'apiTokenHash': apiTokenHash,
       if (description != null) 'description': description,
       'isActive': isActive,
-      if (apiTokenPrefix != null) 'apiTokenPrefix': apiTokenPrefix,
-      if (lastUsedAt != null) 'lastUsedAt': lastUsedAt?.toJson(),
       if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
@@ -187,11 +161,8 @@ class _ProjectImpl extends Project {
     int? id,
     required String name,
     required String slug,
-    required String apiTokenHash,
     String? description,
     bool? isActive,
-    String? apiTokenPrefix,
-    DateTime? lastUsedAt,
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -199,11 +170,8 @@ class _ProjectImpl extends Project {
          id: id,
          name: name,
          slug: slug,
-         apiTokenHash: apiTokenHash,
          description: description,
          isActive: isActive,
-         apiTokenPrefix: apiTokenPrefix,
-         lastUsedAt: lastUsedAt,
          settings: settings,
          createdAt: createdAt,
          updatedAt: updatedAt,
@@ -217,11 +185,8 @@ class _ProjectImpl extends Project {
     Object? id = _Undefined,
     String? name,
     String? slug,
-    String? apiTokenHash,
     Object? description = _Undefined,
     bool? isActive,
-    Object? apiTokenPrefix = _Undefined,
-    Object? lastUsedAt = _Undefined,
     Object? settings = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
@@ -230,13 +195,8 @@ class _ProjectImpl extends Project {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       slug: slug ?? this.slug,
-      apiTokenHash: apiTokenHash ?? this.apiTokenHash,
       description: description is String? ? description : this.description,
       isActive: isActive ?? this.isActive,
-      apiTokenPrefix: apiTokenPrefix is String?
-          ? apiTokenPrefix
-          : this.apiTokenPrefix,
-      lastUsedAt: lastUsedAt is DateTime? ? lastUsedAt : this.lastUsedAt,
       settings: settings is String? ? settings : this.settings,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
@@ -257,11 +217,6 @@ class ProjectUpdateTable extends _i1.UpdateTable<ProjectTable> {
     value,
   );
 
-  _i1.ColumnValue<String, String> apiTokenHash(String value) => _i1.ColumnValue(
-    table.apiTokenHash,
-    value,
-  );
-
   _i1.ColumnValue<String, String> description(String? value) => _i1.ColumnValue(
     table.description,
     value,
@@ -271,18 +226,6 @@ class ProjectUpdateTable extends _i1.UpdateTable<ProjectTable> {
     table.isActive,
     value,
   );
-
-  _i1.ColumnValue<String, String> apiTokenPrefix(String? value) =>
-      _i1.ColumnValue(
-        table.apiTokenPrefix,
-        value,
-      );
-
-  _i1.ColumnValue<DateTime, DateTime> lastUsedAt(DateTime? value) =>
-      _i1.ColumnValue(
-        table.lastUsedAt,
-        value,
-      );
 
   _i1.ColumnValue<String, String> settings(String? value) => _i1.ColumnValue(
     table.settings,
@@ -313,10 +256,6 @@ class ProjectTable extends _i1.Table<int?> {
       'slug',
       this,
     );
-    apiTokenHash = _i1.ColumnString(
-      'apiTokenHash',
-      this,
-    );
     description = _i1.ColumnString(
       'description',
       this,
@@ -325,14 +264,6 @@ class ProjectTable extends _i1.Table<int?> {
       'isActive',
       this,
       hasDefault: true,
-    );
-    apiTokenPrefix = _i1.ColumnString(
-      'apiTokenPrefix',
-      this,
-    );
-    lastUsedAt = _i1.ColumnDateTime(
-      'lastUsedAt',
-      this,
     );
     settings = _i1.ColumnString(
       'settings',
@@ -356,15 +287,9 @@ class ProjectTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString slug;
 
-  late final _i1.ColumnString apiTokenHash;
-
   late final _i1.ColumnString description;
 
   late final _i1.ColumnBool isActive;
-
-  late final _i1.ColumnString apiTokenPrefix;
-
-  late final _i1.ColumnDateTime lastUsedAt;
 
   late final _i1.ColumnString settings;
 
@@ -377,11 +302,8 @@ class ProjectTable extends _i1.Table<int?> {
     id,
     name,
     slug,
-    apiTokenHash,
     description,
     isActive,
-    apiTokenPrefix,
-    lastUsedAt,
     settings,
     createdAt,
     updatedAt,

@@ -35,13 +35,12 @@ import 'media_asset.dart' as _i20;
 import 'media_asset_metadata_status.dart' as _i21;
 import 'project.dart' as _i22;
 import 'project_list.dart' as _i23;
-import 'project_with_token.dart' as _i24;
-import 'user.dart' as _i25;
-import 'package:dart_desk_be_server/src/generated/api_token.dart' as _i26;
-import 'package:dart_desk_be_server/src/generated/deployment.dart' as _i27;
+import 'user.dart' as _i24;
+import 'package:dart_desk_be_server/src/generated/api_token.dart' as _i25;
+import 'package:dart_desk_be_server/src/generated/deployment.dart' as _i26;
 import 'package:dart_desk_be_server/src/generated/document_crdt_operation.dart'
-    as _i28;
-import 'package:dart_desk_be_server/src/generated/media_asset.dart' as _i29;
+    as _i27;
+import 'package:dart_desk_be_server/src/generated/media_asset.dart' as _i28;
 export 'api_token.dart';
 export 'api_token_with_value.dart';
 export 'crdt_operation_type.dart';
@@ -61,7 +60,6 @@ export 'media_asset.dart';
 export 'media_asset_metadata_status.dart';
 export 'project.dart';
 export 'project_list.dart';
-export 'project_with_token.dart';
 export 'user.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
@@ -1397,12 +1395,6 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String',
         ),
         _i2.ColumnDefinition(
-          name: 'apiTokenHash',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
           name: 'description',
           columnType: _i2.ColumnType.text,
           isNullable: true,
@@ -1414,18 +1406,6 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
           dartType: 'bool',
           columnDefault: 'true',
-        ),
-        _i2.ColumnDefinition(
-          name: 'apiTokenPrefix',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'lastUsedAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
         ),
         _i2.ColumnDefinition(
           name: 'settings',
@@ -1754,11 +1734,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i23.ProjectList) {
       return _i23.ProjectList.fromJson(data) as T;
     }
-    if (t == _i24.ProjectWithToken) {
-      return _i24.ProjectWithToken.fromJson(data) as T;
-    }
-    if (t == _i25.User) {
-      return _i25.User.fromJson(data) as T;
+    if (t == _i24.User) {
+      return _i24.User.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.ApiToken?>()) {
       return (data != null ? _i5.ApiToken.fromJson(data) : null) as T;
@@ -1830,11 +1807,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i23.ProjectList?>()) {
       return (data != null ? _i23.ProjectList.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i24.ProjectWithToken?>()) {
-      return (data != null ? _i24.ProjectWithToken.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i25.User?>()) {
-      return (data != null ? _i25.User.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i24.User?>()) {
+      return (data != null ? _i24.User.fromJson(data) : null) as T;
     }
     if (t == List<_i10.Document>) {
       return (data as List).map((e) => deserialize<_i10.Document>(e)).toList()
@@ -1862,17 +1836,17 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List).map((e) => deserialize<_i22.Project>(e)).toList()
           as T;
     }
-    if (t == List<_i26.ApiToken>) {
-      return (data as List).map((e) => deserialize<_i26.ApiToken>(e)).toList()
+    if (t == List<_i25.ApiToken>) {
+      return (data as List).map((e) => deserialize<_i25.ApiToken>(e)).toList()
           as T;
     }
-    if (t == List<_i27.Deployment>) {
-      return (data as List).map((e) => deserialize<_i27.Deployment>(e)).toList()
+    if (t == List<_i26.Deployment>) {
+      return (data as List).map((e) => deserialize<_i26.Deployment>(e)).toList()
           as T;
     }
-    if (t == List<_i28.DocumentCrdtOperation>) {
+    if (t == List<_i27.DocumentCrdtOperation>) {
       return (data as List)
-              .map((e) => deserialize<_i28.DocumentCrdtOperation>(e))
+              .map((e) => deserialize<_i27.DocumentCrdtOperation>(e))
               .toList()
           as T;
     }
@@ -1900,8 +1874,8 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == List<_i29.MediaAsset>) {
-      return (data as List).map((e) => deserialize<_i29.MediaAsset>(e)).toList()
+    if (t == List<_i28.MediaAsset>) {
+      return (data as List).map((e) => deserialize<_i28.MediaAsset>(e)).toList()
           as T;
     }
     try {
@@ -1938,8 +1912,7 @@ class Protocol extends _i1.SerializationManagerServer {
       _i21.MediaAssetMetadataStatus => 'MediaAssetMetadataStatus',
       _i22.Project => 'Project',
       _i23.ProjectList => 'ProjectList',
-      _i24.ProjectWithToken => 'ProjectWithToken',
-      _i25.User => 'User',
+      _i24.User => 'User',
       _ => null,
     };
   }
@@ -1995,9 +1968,7 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'Project';
       case _i23.ProjectList():
         return 'ProjectList';
-      case _i24.ProjectWithToken():
-        return 'ProjectWithToken';
-      case _i25.User():
+      case _i24.User():
         return 'User';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -2078,11 +2049,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'ProjectList') {
       return deserialize<_i23.ProjectList>(data['data']);
     }
-    if (dataClassName == 'ProjectWithToken') {
-      return deserialize<_i24.ProjectWithToken>(data['data']);
-    }
     if (dataClassName == 'User') {
-      return deserialize<_i25.User>(data['data']);
+      return deserialize<_i24.User>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -2138,8 +2106,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i20.MediaAsset.t;
       case _i22.Project:
         return _i22.Project.t;
-      case _i25.User:
-        return _i25.User.t;
+      case _i24.User:
+        return _i24.User.t;
     }
     return null;
   }

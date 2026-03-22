@@ -62,7 +62,6 @@ project:
   - getProject:
   - createProject:
   - updateProject:
-  - regenerateApiToken:
   - deleteProject:
   - createProjectWithOwner:
 refreshJwtTokens:
