@@ -4,27 +4,27 @@
 # Configuration for the main API server.
 apiServer:
   port: 8080
-  publicHost: api.example.com
+  publicHost: api.dartdesk.dev
   publicPort: 443
   publicScheme: https
 
 # Configuration for the Insights server.
 insightsServer:
   port: 8081
-  publicHost: insights.example.com
+  publicHost: insights.dartdesk.dev
   publicPort: 443
   publicScheme: https
 
 # Configuration for the web server.
 webServer:
   port: 8082
-  publicHost: app.example.com
+  publicHost: app.dartdesk.dev
   publicPort: 443
   publicScheme: https
 
 # Database configuration.
 database:
-  host: database.example.com
+  host: database.dartdesk.dev
   port: 5432
   name: serverpod
   user: postgres
@@ -34,7 +34,7 @@ database:
 # Redis configuration.
 redis:
   enabled: false
-  host: redis.example.com
+  host: redis.dartdesk.dev
   port: 6379
   #user: # defaults to empty
   #requireSsl: true # defaults to false
@@ -47,7 +47,7 @@ storage:
   public:
     type: local
     path: storage/public
-    publicUrl: https://app.example.com/files
+    publicUrl: https://storage.dartdesk.dev
 
 sessionLogs:
   consoleEnabled: false
