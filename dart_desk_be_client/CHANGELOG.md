@@ -1,3 +1,5 @@
-## 1.0.0
+## 0.1.0
 
-- Initial version, created by Stagehand
+- Initial release
+- Typed client SDK for documents, media, collaboration, and versioning endpoints
+- Pure Dart package (no Flutter dependency)

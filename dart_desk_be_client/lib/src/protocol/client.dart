@@ -12,26 +12,31 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'package:dart_desk_be_client/src/protocol/cms_api_token.dart' as _i3;
-import 'package:dart_desk_be_client/src/protocol/cms_api_token_with_value.dart'
+import 'package:dart_desk_be_client/src/protocol/api_token.dart' as _i3;
+import 'package:dart_desk_be_client/src/protocol/api_token_with_value.dart'
     as _i4;
+import 'package:dart_desk_be_client/src/protocol/deployment.dart' as _i5;
 import 'package:dart_desk_be_client/src/protocol/document_crdt_operation.dart'
-    as _i5;
-import 'package:dart_desk_be_client/src/protocol/cms_document.dart' as _i6;
-import 'package:dart_desk_be_client/src/protocol/document_list.dart' as _i7;
+    as _i6;
+import 'package:dart_desk_be_client/src/protocol/document.dart' as _i7;
+import 'package:dart_desk_be_client/src/protocol/document_list.dart' as _i8;
 import 'package:dart_desk_be_client/src/protocol/document_version_list_with_operations.dart'
-    as _i8;
-import 'package:dart_desk_be_client/src/protocol/document_version.dart' as _i9;
+    as _i9;
+import 'package:dart_desk_be_client/src/protocol/document_version.dart' as _i10;
 import 'package:dart_desk_be_client/src/protocol/document_version_status.dart'
-    as _i10;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i11;
-import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i12;
-import 'package:dart_desk_be_client/src/protocol/media_asset.dart' as _i13;
-import 'dart:typed_data' as _i14;
-import 'package:dart_desk_be_client/src/protocol/cms_user.dart' as _i15;
-import 'protocol.dart' as _i16;
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+    as _i13;
+import 'package:dart_desk_be_client/src/protocol/media_asset.dart' as _i14;
+import 'dart:typed_data' as _i15;
+import 'package:dart_desk_be_client/src/protocol/project_list.dart' as _i16;
+import 'package:dart_desk_be_client/src/protocol/project.dart' as _i17;
+import 'package:dart_desk_be_client/src/protocol/project_with_token.dart'
+    as _i18;
+import 'package:dart_desk_be_client/src/protocol/user.dart' as _i19;
+import 'protocol.dart' as _i20;
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
@@ -99,6 +104,58 @@ class EndpointApiToken extends _i1.EndpointRef {
   );
 }
 
+/// Endpoint for managing deployments.
+/// All methods require authenticated admin user.
+/// {@category Endpoint}
+class EndpointDeployment extends _i1.EndpointRef {
+  EndpointDeployment(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'deployment';
+
+  /// List all deployments for a project by slug.
+  _i2.Future<List<_i5.Deployment>> list(String projectSlug) =>
+      caller.callServerEndpoint<List<_i5.Deployment>>(
+        'deployment',
+        'list',
+        {'projectSlug': projectSlug},
+      );
+
+  /// Get the currently active deployment for a project.
+  _i2.Future<_i5.Deployment?> getActive(String projectSlug) =>
+      caller.callServerEndpoint<_i5.Deployment?>(
+        'deployment',
+        'getActive',
+        {'projectSlug': projectSlug},
+      );
+
+  /// Activate (rollback to) a specific version.
+  _i2.Future<_i5.Deployment> activate(
+    String projectSlug,
+    int version,
+  ) => caller.callServerEndpoint<_i5.Deployment>(
+    'deployment',
+    'activate',
+    {
+      'projectSlug': projectSlug,
+      'version': version,
+    },
+  );
+
+  /// Delete a deployment version.
+  _i2.Future<bool> delete(
+    String projectSlug,
+    int version,
+  ) => caller.callServerEndpoint<bool>(
+    'deployment',
+    'delete',
+    {
+      'projectSlug': projectSlug,
+      'version': version,
+    },
+  );
+}
+
 /// Endpoint for real-time document collaboration features
 /// Provides operation polling, edit submission, and presence tracking
 /// {@category Endpoint}
@@ -110,11 +167,11 @@ class EndpointDocumentCollaboration extends _i1.EndpointRef {
 
   /// Get CRDT operations since a specific HLC timestamp
   /// Used for polling updates from other users
-  _i2.Future<List<_i5.DocumentCrdtOperation>> getOperationsSince(
+  _i2.Future<List<_i6.DocumentCrdtOperation>> getOperationsSince(
     int documentId,
     String sinceHlc, {
     required int limit,
-  }) => caller.callServerEndpoint<List<_i5.DocumentCrdtOperation>>(
+  }) => caller.callServerEndpoint<List<_i6.DocumentCrdtOperation>>(
     'documentCollaboration',
     'getOperationsSince',
     {
@@ -125,11 +182,11 @@ class EndpointDocumentCollaboration extends _i1.EndpointRef {
   );
 
   /// Submit an edit (partial field updates) for collaborative editing
-  _i2.Future<_i6.Document> submitEdit(
+  _i2.Future<_i7.Document> submitEdit(
     int documentId,
     String sessionId,
     Map<String, dynamic> fieldUpdates,
-  ) => caller.callServerEndpoint<_i6.Document>(
+  ) => caller.callServerEndpoint<_i7.Document>(
     'documentCollaboration',
     'submitEdit',
     {
@@ -186,12 +243,12 @@ class EndpointDocument extends _i1.EndpointRef {
   String get name => 'document';
 
   /// Get all documents for a specific document type with pagination
-  _i2.Future<_i7.DocumentList> getDocuments(
+  _i2.Future<_i8.DocumentList> getDocuments(
     String documentType, {
     String? search,
     required int limit,
     required int offset,
-  }) => caller.callServerEndpoint<_i7.DocumentList>(
+  }) => caller.callServerEndpoint<_i8.DocumentList>(
     'document',
     'getDocuments',
     {
@@ -203,24 +260,24 @@ class EndpointDocument extends _i1.EndpointRef {
   );
 
   /// Get a single document by ID
-  _i2.Future<_i6.Document?> getDocument(int documentId) =>
-      caller.callServerEndpoint<_i6.Document?>(
+  _i2.Future<_i7.Document?> getDocument(int documentId) =>
+      caller.callServerEndpoint<_i7.Document?>(
         'document',
         'getDocument',
         {'documentId': documentId},
       );
 
   /// Get a document by slug
-  _i2.Future<_i6.Document?> getDocumentBySlug(String slug) =>
-      caller.callServerEndpoint<_i6.Document?>(
+  _i2.Future<_i7.Document?> getDocumentBySlug(String slug) =>
+      caller.callServerEndpoint<_i7.Document?>(
         'document',
         'getDocumentBySlug',
         {'slug': slug},
       );
 
   /// Get the default document for a document type
-  _i2.Future<_i6.Document?> getDefaultDocument(String documentType) =>
-      caller.callServerEndpoint<_i6.Document?>(
+  _i2.Future<_i7.Document?> getDefaultDocument(String documentType) =>
+      caller.callServerEndpoint<_i7.Document?>(
         'document',
         'getDefaultDocument',
         {'documentType': documentType},
@@ -228,13 +285,13 @@ class EndpointDocument extends _i1.EndpointRef {
 
   /// Create a new document with an initial version
   /// This creates both the Document and its first DocumentVersion
-  _i2.Future<_i6.Document> createDocument(
+  _i2.Future<_i7.Document> createDocument(
     String documentType,
     String title,
     Map<String, dynamic> data, {
     String? slug,
     required bool isDefault,
-  }) => caller.callServerEndpoint<_i6.Document>(
+  }) => caller.callServerEndpoint<_i7.Document>(
     'document',
     'createDocument',
     {
@@ -248,11 +305,11 @@ class EndpointDocument extends _i1.EndpointRef {
 
   /// Update document data using CRDT operations (partial updates)
   /// Only changed fields need to be provided - they will be merged automatically
-  _i2.Future<_i6.Document> updateDocumentData(
+  _i2.Future<_i7.Document> updateDocumentData(
     int documentId,
     Map<String, dynamic> updates, {
     String? sessionId,
-  }) => caller.callServerEndpoint<_i6.Document>(
+  }) => caller.callServerEndpoint<_i7.Document>(
     'document',
     'updateDocumentData',
     {
@@ -264,12 +321,12 @@ class EndpointDocument extends _i1.EndpointRef {
 
   /// Update document metadata (title, slug, isDefault)
   /// To update document data, use updateDocumentData instead
-  _i2.Future<_i6.Document?> updateDocument(
+  _i2.Future<_i7.Document?> updateDocument(
     int documentId, {
     String? title,
     String? slug,
     bool? isDefault,
-  }) => caller.callServerEndpoint<_i6.Document?>(
+  }) => caller.callServerEndpoint<_i7.Document?>(
     'document',
     'updateDocument',
     {
@@ -314,12 +371,12 @@ class EndpointDocument extends _i1.EndpointRef {
 
   /// Get all versions for a document with pagination
   /// Optionally includes CRDT operations between adjacent versions
-  _i2.Future<_i8.DocumentVersionListWithOperations> getDocumentVersions(
+  _i2.Future<_i9.DocumentVersionListWithOperations> getDocumentVersions(
     int documentId, {
     required int limit,
     required int offset,
     required bool includeOperations,
-  }) => caller.callServerEndpoint<_i8.DocumentVersionListWithOperations>(
+  }) => caller.callServerEndpoint<_i9.DocumentVersionListWithOperations>(
     'document',
     'getDocumentVersions',
     {
@@ -331,8 +388,8 @@ class EndpointDocument extends _i1.EndpointRef {
   );
 
   /// Get a single version by ID
-  _i2.Future<_i9.DocumentVersion?> getDocumentVersion(int versionId) =>
-      caller.callServerEndpoint<_i9.DocumentVersion?>(
+  _i2.Future<_i10.DocumentVersion?> getDocumentVersion(int versionId) =>
+      caller.callServerEndpoint<_i10.DocumentVersion?>(
         'document',
         'getDocumentVersion',
         {'versionId': versionId},
@@ -349,11 +406,11 @@ class EndpointDocument extends _i1.EndpointRef {
 
   /// Create a new version for a document
   /// Captures the current CRDT state as a version snapshot
-  _i2.Future<_i9.DocumentVersion> createDocumentVersion(
+  _i2.Future<_i10.DocumentVersion> createDocumentVersion(
     int documentId, {
-    required _i10.DocumentVersionStatus status,
+    required _i11.DocumentVersionStatus status,
     String? changeLog,
-  }) => caller.callServerEndpoint<_i9.DocumentVersion>(
+  }) => caller.callServerEndpoint<_i10.DocumentVersion>(
     'document',
     'createDocumentVersion',
     {
@@ -364,16 +421,16 @@ class EndpointDocument extends _i1.EndpointRef {
   );
 
   /// Publish a version (set status to 'published' and set publishedAt timestamp)
-  _i2.Future<_i9.DocumentVersion?> publishDocumentVersion(int versionId) =>
-      caller.callServerEndpoint<_i9.DocumentVersion?>(
+  _i2.Future<_i10.DocumentVersion?> publishDocumentVersion(int versionId) =>
+      caller.callServerEndpoint<_i10.DocumentVersion?>(
         'document',
         'publishDocumentVersion',
         {'versionId': versionId},
       );
 
   /// Archive a version (set status to 'archived' and set archivedAt timestamp)
-  _i2.Future<_i9.DocumentVersion?> archiveDocumentVersion(int versionId) =>
-      caller.callServerEndpoint<_i9.DocumentVersion?>(
+  _i2.Future<_i10.DocumentVersion?> archiveDocumentVersion(int versionId) =>
+      caller.callServerEndpoint<_i10.DocumentVersion?>(
         'document',
         'archiveDocumentVersion',
         {'versionId': versionId},
@@ -396,7 +453,7 @@ class EndpointDocument extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointEmailIdp extends _i11.EndpointEmailIdpBase {
+class EndpointEmailIdp extends _i12.EndpointEmailIdpBase {
   EndpointEmailIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -412,10 +469,10 @@ class EndpointEmailIdp extends _i11.EndpointEmailIdpBase {
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
-  _i2.Future<_i12.AuthSuccess> login({
+  _i2.Future<_i13.AuthSuccess> login({
     required String email,
     required String password,
-  }) => caller.callServerEndpoint<_i12.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i13.AuthSuccess>(
     'emailIdp',
     'login',
     {
@@ -480,10 +537,10 @@ class EndpointEmailIdp extends _i11.EndpointEmailIdpBase {
   ///
   /// Returns a session for the newly created user.
   @override
-  _i2.Future<_i12.AuthSuccess> finishRegistration({
+  _i2.Future<_i13.AuthSuccess> finishRegistration({
     required String registrationToken,
     required String password,
-  }) => caller.callServerEndpoint<_i12.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i13.AuthSuccess>(
     'emailIdp',
     'finishRegistration',
     {
@@ -576,7 +633,7 @@ class EndpointEmailIdp extends _i11.EndpointEmailIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointGoogleIdp extends _i11.EndpointGoogleIdpBase {
+class EndpointGoogleIdp extends _i12.EndpointGoogleIdpBase {
   EndpointGoogleIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -587,10 +644,10 @@ class EndpointGoogleIdp extends _i11.EndpointGoogleIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i2.Future<_i12.AuthSuccess> login({
+  _i2.Future<_i13.AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) => caller.callServerEndpoint<_i12.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i13.AuthSuccess>(
     'googleIdp',
     'login',
     {
@@ -620,15 +677,15 @@ class EndpointMedia extends _i1.EndpointRef {
   ///
   /// Performs deduplication based on content hash + dimensions + extension.
   /// If an identical asset already exists, returns the existing record.
-  _i2.Future<_i13.MediaAsset> uploadImage(
+  _i2.Future<_i14.MediaAsset> uploadImage(
     String fileName,
-    _i14.ByteData fileData,
+    _i15.ByteData fileData,
     int width,
     int height,
     bool hasAlpha,
     String blurHash,
     String contentHash,
-  ) => caller.callServerEndpoint<_i13.MediaAsset>(
+  ) => caller.callServerEndpoint<_i14.MediaAsset>(
     'media',
     'uploadImage',
     {
@@ -645,10 +702,10 @@ class EndpointMedia extends _i1.EndpointRef {
   /// Upload a non-image file.
   ///
   /// Content hash is computed server-side via SHA-256.
-  _i2.Future<_i13.MediaAsset> uploadFile(
+  _i2.Future<_i14.MediaAsset> uploadFile(
     String fileName,
-    _i14.ByteData fileData,
-  ) => caller.callServerEndpoint<_i13.MediaAsset>(
+    _i15.ByteData fileData,
+  ) => caller.callServerEndpoint<_i14.MediaAsset>(
     'media',
     'uploadFile',
     {
@@ -668,21 +725,21 @@ class EndpointMedia extends _i1.EndpointRef {
       );
 
   /// Get a single media asset by assetId.
-  _i2.Future<_i13.MediaAsset?> getMedia(String assetId) =>
-      caller.callServerEndpoint<_i13.MediaAsset?>(
+  _i2.Future<_i14.MediaAsset?> getMedia(String assetId) =>
+      caller.callServerEndpoint<_i14.MediaAsset?>(
         'media',
         'getMedia',
         {'assetId': assetId},
       );
 
   /// List media assets with search, filter, sort, and pagination.
-  _i2.Future<List<_i13.MediaAsset>> listMedia({
+  _i2.Future<List<_i14.MediaAsset>> listMedia({
     String? search,
     String? mimeTypePrefix,
     required String sortBy,
     required int limit,
     required int offset,
-  }) => caller.callServerEndpoint<List<_i13.MediaAsset>>(
+  }) => caller.callServerEndpoint<List<_i14.MediaAsset>>(
     'media',
     'listMedia',
     {
@@ -716,10 +773,10 @@ class EndpointMedia extends _i1.EndpointRef {
       );
 
   /// Update a media asset's metadata (currently supports renaming).
-  _i2.Future<_i13.MediaAsset> updateMediaAsset(
+  _i2.Future<_i14.MediaAsset> updateMediaAsset(
     String assetId, {
     String? fileName,
-  }) => caller.callServerEndpoint<_i13.MediaAsset>(
+  }) => caller.callServerEndpoint<_i14.MediaAsset>(
     'media',
     'updateMediaAsset',
     {
@@ -729,8 +786,117 @@ class EndpointMedia extends _i1.EndpointRef {
   );
 }
 
+/// Endpoint for managing projects.
 /// {@category Endpoint}
-class EndpointRefreshJwtTokens extends _i12.EndpointRefreshJwtTokens {
+class EndpointProject extends _i1.EndpointRef {
+  EndpointProject(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'project';
+
+  /// Get all projects with pagination and optional search.
+  _i2.Future<_i16.ProjectList> getProjects({
+    String? search,
+    required int limit,
+    required int offset,
+  }) => caller.callServerEndpoint<_i16.ProjectList>(
+    'project',
+    'getProjects',
+    {
+      'search': search,
+      'limit': limit,
+      'offset': offset,
+    },
+  );
+
+  /// Get a project by slug.
+  _i2.Future<_i17.Project?> getProjectBySlug(String slug) =>
+      caller.callServerEndpoint<_i17.Project?>(
+        'project',
+        'getProjectBySlug',
+        {'slug': slug},
+      );
+
+  /// Get a project by ID.
+  _i2.Future<_i17.Project?> getProject(int projectId) =>
+      caller.callServerEndpoint<_i17.Project?>(
+        'project',
+        'getProject',
+        {'projectId': projectId},
+      );
+
+  /// Create a new project (requires authentication).
+  /// Generates a prefixed API token, stores its bcrypt hash.
+  /// Returns the project and the raw token (shown once only).
+  _i2.Future<_i18.ProjectWithToken> createProject(
+    String name,
+    String slug, {
+    String? description,
+    String? settings,
+  }) => caller.callServerEndpoint<_i18.ProjectWithToken>(
+    'project',
+    'createProject',
+    {
+      'name': name,
+      'slug': slug,
+      'description': description,
+      'settings': settings,
+    },
+  );
+
+  /// Update an existing project (requires authentication).
+  _i2.Future<_i17.Project?> updateProject(
+    int projectId, {
+    String? name,
+    String? description,
+    bool? isActive,
+    String? settings,
+  }) => caller.callServerEndpoint<_i17.Project?>(
+    'project',
+    'updateProject',
+    {
+      'projectId': projectId,
+      'name': name,
+      'description': description,
+      'isActive': isActive,
+      'settings': settings,
+    },
+  );
+
+  /// Regenerate the API token for a project (requires authentication).
+  /// Returns the project and the new raw token (shown once only).
+  _i2.Future<_i18.ProjectWithToken> regenerateApiToken(int projectId) =>
+      caller.callServerEndpoint<_i18.ProjectWithToken>(
+        'project',
+        'regenerateApiToken',
+        {'projectId': projectId},
+      );
+
+  /// Delete a project (requires authentication).
+  _i2.Future<bool> deleteProject(int projectId) =>
+      caller.callServerEndpoint<bool>(
+        'project',
+        'deleteProject',
+        {'projectId': projectId},
+      );
+
+  /// Create a new project and an admin User for the caller in one transaction.
+  /// Used by the manage app's setup wizard for first-time users.
+  _i2.Future<_i17.Project> createProjectWithOwner({
+    required String name,
+    required String slug,
+  }) => caller.callServerEndpoint<_i17.Project>(
+    'project',
+    'createProjectWithOwner',
+    {
+      'name': name,
+      'slug': slug,
+    },
+  );
+}
+
+/// {@category Endpoint}
+class EndpointRefreshJwtTokens extends _i13.EndpointRefreshJwtTokens {
   EndpointRefreshJwtTokens(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -755,9 +921,9 @@ class EndpointRefreshJwtTokens extends _i12.EndpointRefreshJwtTokens {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   @override
-  _i2.Future<_i12.AuthSuccess> refreshAccessToken({
+  _i2.Future<_i13.AuthSuccess> refreshAccessToken({
     required String refreshToken,
-  }) => caller.callServerEndpoint<_i12.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i13.AuthSuccess>(
     'refreshJwtTokens',
     'refreshAccessToken',
     {'refreshToken': refreshToken},
@@ -795,8 +961,8 @@ class EndpointUser extends _i1.EndpointRef {
   /// Get the current authenticated user.
   /// For Serverpod IDP: returns existing User (must exist via seed or prior creation).
   /// For external auth: auto-creates User on first call.
-  _i2.Future<_i15.User?> getCurrentUser() =>
-      caller.callServerEndpoint<_i15.User?>(
+  _i2.Future<_i19.User?> getCurrentUser() =>
+      caller.callServerEndpoint<_i19.User?>(
         'user',
         'getCurrentUser',
         {},
@@ -812,13 +978,13 @@ class EndpointUser extends _i1.EndpointRef {
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_core = _i12.Caller(client);
-    serverpod_auth_idp = _i11.Caller(client);
+    serverpod_auth_core = _i13.Caller(client);
+    serverpod_auth_idp = _i12.Caller(client);
   }
 
-  late final _i12.Caller serverpod_auth_core;
+  late final _i13.Caller serverpod_auth_core;
 
-  late final _i11.Caller serverpod_auth_idp;
+  late final _i12.Caller serverpod_auth_idp;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -841,7 +1007,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i16.Protocol(),
+         _i20.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -851,11 +1017,13 @@ class Client extends _i1.ServerpodClientShared {
              disconnectStreamsOnLostInternetConnection,
        ) {
     apiToken = EndpointApiToken(this);
+    deployment = EndpointDeployment(this);
     documentCollaboration = EndpointDocumentCollaboration(this);
     document = EndpointDocument(this);
     emailIdp = EndpointEmailIdp(this);
     googleIdp = EndpointGoogleIdp(this);
     media = EndpointMedia(this);
+    project = EndpointProject(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
     studioConfig = EndpointStudioConfig(this);
     user = EndpointUser(this);
@@ -863,6 +1031,8 @@ class Client extends _i1.ServerpodClientShared {
   }
 
   late final EndpointApiToken apiToken;
+
+  late final EndpointDeployment deployment;
 
   late final EndpointDocumentCollaboration documentCollaboration;
 
@@ -873,6 +1043,8 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointGoogleIdp googleIdp;
 
   late final EndpointMedia media;
+
+  late final EndpointProject project;
 
   late final EndpointRefreshJwtTokens refreshJwtTokens;
 
@@ -885,11 +1057,13 @@ class Client extends _i1.ServerpodClientShared {
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
     'apiToken': apiToken,
+    'deployment': deployment,
     'documentCollaboration': documentCollaboration,
     'document': document,
     'emailIdp': emailIdp,
     'googleIdp': googleIdp,
     'media': media,
+    'project': project,
     'refreshJwtTokens': refreshJwtTokens,
     'studioConfig': studioConfig,
     'user': user,

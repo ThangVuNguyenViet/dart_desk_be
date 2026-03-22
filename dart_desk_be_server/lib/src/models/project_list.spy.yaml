@@ -1,0 +1,6 @@
+class: ProjectList
+fields:
+  projects: List<protocol:Project>
+  total: int
+  page: int
+  pageSize: int

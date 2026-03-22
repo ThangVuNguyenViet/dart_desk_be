@@ -1,0 +1,7 @@
+enum: DeploymentStatus
+serialized: byName
+values:
+  - uploading
+  - active
+  - inactive
+  - failed

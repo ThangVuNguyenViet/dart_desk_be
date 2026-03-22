@@ -1,0 +1,19 @@
+class: Project
+table: projects
+fields:
+  name: String
+  slug: String
+  apiTokenHash: String
+  description: String?
+  isActive: bool, default=true
+  apiTokenPrefix: String?
+  lastUsedAt: DateTime?
+  settings: String?
+  createdAt: DateTime?, default=now
+  updatedAt: DateTime?, default=now
+indexes:
+  projects_slug_idx:
+    fields: slug
+    unique: true
+  projects_is_active_idx:
+    fields: isActive

@@ -1,0 +1,4 @@
+class: ProjectWithToken
+fields:
+  project: Project
+  apiToken: String

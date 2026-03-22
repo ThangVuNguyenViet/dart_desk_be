@@ -11,29 +11,29 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'document.dart' as _i2;
+import 'project.dart' as _i2;
 import 'package:dart_desk_be_server/src/generated/protocol.dart' as _i3;
 
-abstract class DocumentList
+abstract class ProjectList
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  DocumentList._({
-    required this.documents,
+  ProjectList._({
+    required this.projects,
     required this.total,
     required this.page,
     required this.pageSize,
   });
 
-  factory DocumentList({
-    required List<_i2.Document> documents,
+  factory ProjectList({
+    required List<_i2.Project> projects,
     required int total,
     required int page,
     required int pageSize,
-  }) = _DocumentListImpl;
+  }) = _ProjectListImpl;
 
-  factory DocumentList.fromJson(Map<String, dynamic> jsonSerialization) {
-    return DocumentList(
-      documents: _i3.Protocol().deserialize<List<_i2.Document>>(
-        jsonSerialization['documents'],
+  factory ProjectList.fromJson(Map<String, dynamic> jsonSerialization) {
+    return ProjectList(
+      projects: _i3.Protocol().deserialize<List<_i2.Project>>(
+        jsonSerialization['projects'],
       ),
       total: jsonSerialization['total'] as int,
       page: jsonSerialization['page'] as int,
@@ -41,7 +41,7 @@ abstract class DocumentList
     );
   }
 
-  List<_i2.Document> documents;
+  List<_i2.Project> projects;
 
   int total;
 
@@ -49,11 +49,11 @@ abstract class DocumentList
 
   int pageSize;
 
-  /// Returns a shallow copy of this [DocumentList]
+  /// Returns a shallow copy of this [ProjectList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  DocumentList copyWith({
-    List<_i2.Document>? documents,
+  ProjectList copyWith({
+    List<_i2.Project>? projects,
     int? total,
     int? page,
     int? pageSize,
@@ -61,8 +61,8 @@ abstract class DocumentList
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'DocumentList',
-      'documents': documents.toJson(valueToJson: (v) => v.toJson()),
+      '__className__': 'ProjectList',
+      'projects': projects.toJson(valueToJson: (v) => v.toJson()),
       'total': total,
       'page': page,
       'pageSize': pageSize,
@@ -72,8 +72,8 @@ abstract class DocumentList
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'DocumentList',
-      'documents': documents.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      '__className__': 'ProjectList',
+      'projects': projects.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'total': total,
       'page': page,
       'pageSize': pageSize,
@@ -86,32 +86,31 @@ abstract class DocumentList
   }
 }
 
-class _DocumentListImpl extends DocumentList {
-  _DocumentListImpl({
-    required List<_i2.Document> documents,
+class _ProjectListImpl extends ProjectList {
+  _ProjectListImpl({
+    required List<_i2.Project> projects,
     required int total,
     required int page,
     required int pageSize,
   }) : super._(
-         documents: documents,
+         projects: projects,
          total: total,
          page: page,
          pageSize: pageSize,
        );
 
-  /// Returns a shallow copy of this [DocumentList]
+  /// Returns a shallow copy of this [ProjectList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  DocumentList copyWith({
-    List<_i2.Document>? documents,
+  ProjectList copyWith({
+    List<_i2.Project>? projects,
     int? total,
     int? page,
     int? pageSize,
   }) {
-    return DocumentList(
-      documents:
-          documents ?? this.documents.map((e0) => e0.copyWith()).toList(),
+    return ProjectList(
+      projects: projects ?? this.projects.map((e0) => e0.copyWith()).toList(),
       total: total ?? this.total,
       page: page ?? this.page,
       pageSize: pageSize ?? this.pageSize,

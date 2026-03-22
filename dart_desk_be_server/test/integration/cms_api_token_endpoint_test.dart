@@ -65,6 +65,61 @@ void main() {
       });
     });
 
+    group('updateToken', () {
+      test('updates token name', () async {
+        final authed = factory.authenticatedSession();
+        final created = await endpoints.apiToken.createToken(
+          authed, 'Original Name', 'viewer', null,
+        );
+
+        final updated = await endpoints.apiToken.updateToken(
+          authed,
+          created.token.id!,
+          'Updated Name',
+          null,
+          null,
+        );
+
+        expect(updated.name, equals('Updated Name'));
+      });
+
+      test('deactivates token', () async {
+        final authed = factory.authenticatedSession();
+        final created = await endpoints.apiToken.createToken(
+          authed, 'Active Token', 'editor', null,
+        );
+
+        final updated = await endpoints.apiToken.updateToken(
+          authed,
+          created.token.id!,
+          null,
+          false,
+          null,
+        );
+
+        expect(updated.isActive, isFalse);
+      });
+    });
+
+    group('regenerateToken', () {
+      test('returns new token value with same role prefix', () async {
+        final authed = factory.authenticatedSession();
+        final created = await endpoints.apiToken.createToken(
+          authed, 'Regen Token', 'admin', null,
+        );
+        final originalToken = created.plaintextToken;
+
+        final regenerated = await endpoints.apiToken.regenerateToken(
+          authed,
+          created.token.id!,
+        );
+
+        expect(regenerated.plaintextToken, startsWith('cms_ad_'));
+        expect(regenerated.plaintextToken, isNot(equals(originalToken)));
+        expect(regenerated.token.id, equals(created.token.id));
+      });
+    });
+
     group('deleteToken', () {
       test('deletes a token', () async {
         final authed = factory.authenticatedSession();

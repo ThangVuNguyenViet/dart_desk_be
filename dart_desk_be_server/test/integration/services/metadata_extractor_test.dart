@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:image/image.dart' as img;
-import 'package:serverpod_test/serverpod_test.dart';
 import 'package:test/test.dart';
 import 'package:dart_desk_be_server/src/generated/protocol.dart';
 import 'package:dart_desk_be_server/src/services/metadata_extractor.dart';

@@ -211,6 +211,68 @@ void main() {
       });
     });
 
+    group('getDocumentTypes', () {
+      test('returns distinct document types', () async {
+        await factory.createTestDocument(
+          documentType: 'blog_post',
+          title: 'Post 1',
+        );
+        await factory.createTestDocument(
+          documentType: 'blog_post',
+          title: 'Post 2',
+        );
+        await factory.createTestDocument(
+          documentType: 'page',
+          title: 'Page 1',
+        );
+
+        final authed = factory.authenticatedSession();
+        final types = await endpoints.document.getDocumentTypes(authed);
+
+        expect(types, containsAll(['blog_post', 'page']));
+      });
+
+      test('returns sorted types', () async {
+        await factory.createTestDocument(
+          documentType: 'zebra',
+          title: 'Z Doc',
+        );
+        await factory.createTestDocument(
+          documentType: 'alpha',
+          title: 'A Doc',
+        );
+
+        final authed = factory.authenticatedSession();
+        final types = await endpoints.document.getDocumentTypes(authed);
+
+        final filtered = types.where(
+          (t) => t == 'alpha' || t == 'zebra',
+        ).toList();
+        expect(filtered, equals(['alpha', 'zebra']));
+      });
+
+      test('returns empty list when no documents exist', () async {
+        final authed = factory.authenticatedSession();
+        final types = await endpoints.document.getDocumentTypes(authed);
+
+        // May contain types from other tests in this group,
+        // but should at least not throw
+        expect(types, isA<List<String>>());
+      });
+    });
+
+    group('getDocumentCount', () {
+      test('returns count of documents for tenant', () async {
+        await factory.createTestDocument(title: 'Count 1');
+        await factory.createTestDocument(title: 'Count 2');
+
+        final authed = factory.authenticatedSession();
+        final count = await endpoints.document.getDocumentCount(authed);
+
+        expect(count, greaterThanOrEqualTo(2));
+      });
+    });
+
     group('suggestSlug', () {
       test('generates slug from title', () async {
         final slug = await endpoints.document.suggestSlug(

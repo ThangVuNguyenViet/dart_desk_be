@@ -4,6 +4,11 @@ apiToken:
   - updateToken:
   - regenerateToken:
   - deleteToken:
+deployment:
+  - list:
+  - getActive:
+  - activate:
+  - delete:
 documentCollaboration:
   - getOperationsSince:
   - submitEdit:
@@ -51,6 +56,15 @@ media:
   - listMediaCount:
   - getMediaUsageCount:
   - updateMediaAsset:
+project:
+  - getProjects:
+  - getProjectBySlug:
+  - getProject:
+  - createProject:
+  - updateProject:
+  - regenerateApiToken:
+  - deleteProject:
+  - createProjectWithOwner:
 refreshJwtTokens:
   - refreshAccessToken:
 studioConfig:

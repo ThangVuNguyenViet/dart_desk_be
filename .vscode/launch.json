@@ -5,28 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "dart_desk_admin",
-            "cwd": "dart_desk_admin",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
             "name": "dart_desk_be_server",
             "cwd": "dart_desk_be_server",
             "request": "launch",
             "type": "dart"
-        },
-        {
-            "name": "dart_desk_admin",
-            "cwd": "dart_desk_admin",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "dart_desk_manage",
-            "cwd": "dart_desk_manage",
-            "request": "launch",
-            "type": "dart",
         }
     ]
 }

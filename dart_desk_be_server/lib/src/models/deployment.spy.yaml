@@ -1,0 +1,21 @@
+class: Deployment
+table: deployments
+fields:
+  projectId: int, relation(parent=projects, onDelete=Restrict)
+  version: int
+  status: DeploymentStatus
+  filePath: String
+  fileSize: int?
+  uploadedByUserId: int?, relation(parent=users, onDelete=SetNull)
+  commitHash: String?
+  metadata: String?
+  createdAt: DateTime?, default=now
+  updatedAt: DateTime?, default=now
+indexes:
+  deployment_project_idx:
+    fields: projectId
+  deployment_project_version_idx:
+    fields: projectId, version
+    unique: true
+  deployment_project_status_idx:
+    fields: projectId, status

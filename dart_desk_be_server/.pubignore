@@ -1,0 +1,6 @@
+storage/
+config/passwords.yaml
+config/google_client_secret.json
+*.iml
+devtools_options.yaml
+doc/
