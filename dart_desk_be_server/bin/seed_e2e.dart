@@ -3,10 +3,11 @@
 /// Requires: dev postgres running (docker compose up -d postgres)
 library;
 
+import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
 
-import 'package:dbcrypt/dbcrypt.dart';
+import 'package:crypto/crypto.dart';
 
 Future<String> psql(String sql) async {
   final result = await Process.run('docker', [
@@ -30,32 +31,40 @@ Future<String> psql(String sql) async {
 }
 
 void main() async {
-  const clientSlug = 'e2e-test';
-  const clientName = 'E2E Test Client';
-  const knownToken = 'cms_ad_e2e_test_token_for_integration_testing_2026';
-  final hash = DBCrypt().hashpw(knownToken, DBCrypt().gensalt());
-  final prefix = knownToken.substring(0, 16);
+  const projectSlug = 'e2e-test';
+  const projectName = 'E2E Test Project';
+  const knownToken = 'cms_w_e2e_test_token_for_integration_testing_2026';
+  final hash = sha256.convert(utf8.encode(knownToken)).toString();
 
   try {
-    // Check if client exists
+    // Check if project exists
     final existingId = await psql(
-      "SELECT id FROM cms_clients WHERE slug = '\$clientSlug';",
+      "SELECT id FROM projects WHERE slug = '$projectSlug';",
     );
 
     if (existingId.isNotEmpty) {
-      developer.log('Client "$clientSlug" already exists (id: $existingId)');
+      developer.log('Project "$projectSlug" already exists (id: $existingId)');
     } else {
       final insertOutput = await psql("""
-INSERT INTO cms_clients (name, slug, "apiTokenHash", "apiTokenPrefix", "isActive", "createdAt", "updatedAt")
-VALUES ('$clientName', '$clientSlug', '$hash', '$prefix', true, now(), now())
+INSERT INTO projects (name, slug, "isActive", "createdAt", "updatedAt")
+VALUES ('$projectName', '$projectSlug', true, now(), now())
 RETURNING id;
 """);
-      developer.log('Created client: $clientName (id: ${insertOutput.trim()})');
+      final projectId = insertOutput.trim();
+      developer.log('Created project: $projectName (id: $projectId)');
+
+      // Insert API token
+      final suffix = knownToken.substring(knownToken.length - 4);
+      await psql("""
+INSERT INTO api_tokens ("tenantId", name, "tokenHash", "tokenPrefix", "tokenSuffix", role, "isActive", "createdAt")
+VALUES ($projectId, 'E2E Test Token', '$hash', 'cms_w_', '$suffix', 'write', true, now())
+ON CONFLICT DO NOTHING;
+""");
     }
 
     developer.log('');
-    developer.log('Client slug: $clientSlug');
-    developer.log('API Token:   $knownToken');
+    developer.log('Project slug: $projectSlug');
+    developer.log('API Token:    $knownToken');
     developer.log('');
     developer.log('To run the Flutter app against E2E:');
     developer.log('  cd examples/cms_app');
