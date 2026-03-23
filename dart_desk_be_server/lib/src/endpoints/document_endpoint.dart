@@ -98,7 +98,7 @@ class DocumentEndpoint extends Endpoint {
     String? slug,
     bool isDefault = false,
   }) async {
-    final auth = await _requireAuth(session);
+    final auth = await _requireUser(session);
     final userId = auth.user!.id!;
 
     // Create the document — encode data as JSON for storage
@@ -204,7 +204,7 @@ class DocumentEndpoint extends Endpoint {
     String? slug,
     bool? isDefault,
   }) async {
-    final auth = await _requireAuth(session);
+    final auth = await _requireUser(session);
     final userId = auth.user!.id!;
 
     final existing = await Document.db.findById(session, documentId);
@@ -466,7 +466,7 @@ class DocumentEndpoint extends Endpoint {
     DocumentVersionStatus status = DocumentVersionStatus.draft,
     String? changeLog,
   }) async {
-    final auth = await _requireAuth(session);
+    final auth = await _requireUser(session);
     final userId = auth.user!.id!;
 
     // Get the next version number for this document
@@ -583,5 +583,14 @@ class DocumentEndpoint extends Endpoint {
   /// Authenticate the current request via DartDeskAuth.
   Future<AuthResult> _requireAuth(Session session) async {
     return await DartDeskAuth.authenticateRequest(session);
+  }
+
+  /// Authenticate and require a user identity (for write operations).
+  Future<AuthResult> _requireUser(Session session) async {
+    final auth = await DartDeskAuth.authenticateRequest(session);
+    if (auth.user == null) {
+      throw Exception('User must be authenticated');
+    }
+    return auth;
   }
 }
