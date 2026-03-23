@@ -9,21 +9,22 @@ class UserEndpoint extends Endpoint {
   /// For Serverpod IDP: returns existing User (must exist via seed or prior creation).
   /// For external auth: auto-creates User on first call.
   Future<User?> getCurrentUser(Session session) async {
-    return await DartDeskAuth.authenticateRequest(session);
+    final auth = await DartDeskAuth.authenticateRequest(session);
+    return auth.user;
   }
 
   /// Get count of active users in the current tenant.
   Future<int> getUserCount(Session session) async {
-    final user = await DartDeskAuth.authenticateRequest(session);
-    if (user == null) {
+    final auth = await DartDeskAuth.authenticateRequest(session);
+    if (auth.user == null) {
       throw Exception('User must be authenticated');
     }
     return await User.db.count(
       session,
       where: (t) {
         var expr = t.isActive.equals(true);
-        if (user.clientId != null) {
-          expr = expr & t.clientId.equals(user.clientId);
+        if (auth.apiKey.clientId != null) {
+          expr = expr & t.clientId.equals(auth.apiKey.clientId);
         }
         return expr;
       },

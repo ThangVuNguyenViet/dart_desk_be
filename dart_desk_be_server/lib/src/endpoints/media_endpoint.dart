@@ -44,7 +44,7 @@ class MediaEndpoint extends Endpoint {
     String blurHash,
     String contentHash,
   ) async {
-    final (cmsUser, _) = await _authenticateAndResolve(session);
+    final (auth, _) = await _authenticateAndResolve(session);
 
     // Validate MIME type
     final mimeType = lookupMimeType(fileName);
@@ -80,7 +80,7 @@ class MediaEndpoint extends Endpoint {
 
     // Create DB record
     final asset = MediaAsset(
-      clientId: cmsUser.clientId,
+      clientId: auth.apiKey.clientId,
       assetId: assetId,
       fileName: fileName,
       mimeType: mimeType,
@@ -91,7 +91,7 @@ class MediaEndpoint extends Endpoint {
       height: height,
       hasAlpha: hasAlpha,
       blurHash: blurHash,
-      uploadedByUserId: cmsUser.id!,
+      uploadedByUserId: auth.user!.id!,
       metadataStatus: MediaAssetMetadataStatus.pending,
     );
 
@@ -121,7 +121,7 @@ class MediaEndpoint extends Endpoint {
     String fileName,
     ByteData fileData,
   ) async {
-    final (cmsUser, _) = await _authenticateAndResolve(session);
+    final (auth, _) = await _authenticateAndResolve(session);
 
     // Validate file size
     if (fileData.lengthInBytes > _maxFileSize) {
@@ -155,7 +155,7 @@ class MediaEndpoint extends Endpoint {
 
     // Create DB record
     final asset = MediaAsset(
-      clientId: cmsUser.clientId,
+      clientId: auth.apiKey.clientId,
       assetId: assetId,
       fileName: fileName,
       mimeType: mimeType,
@@ -166,7 +166,7 @@ class MediaEndpoint extends Endpoint {
       height: 0,
       hasAlpha: false,
       blurHash: '',
-      uploadedByUserId: cmsUser.id!,
+      uploadedByUserId: auth.user!.id!,
       metadataStatus: MediaAssetMetadataStatus.pending,
     );
 
@@ -189,10 +189,7 @@ class MediaEndpoint extends Endpoint {
   ///
   /// Refuses to delete if the asset is still referenced in any document.
   Future<bool> deleteMedia(Session session, String assetId) async {
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to delete media');
-    }
+    await _authenticateAndResolve(session);
 
     // Safety check: refuse delete if asset is in use
     final usageCount = await getMediaUsageCount(session, assetId);
@@ -279,10 +276,7 @@ class MediaEndpoint extends Endpoint {
     String assetId, {
     String? fileName,
   }) async {
-    final authInfo = session.authenticated;
-    if (authInfo == null) {
-      throw Exception('User must be authenticated to update media');
-    }
+    await _authenticateAndResolve(session);
 
     final asset = await MediaAsset.db.findFirstRow(
       session,
@@ -303,12 +297,12 @@ class MediaEndpoint extends Endpoint {
   // Private helpers
   // ------------------------------------------------------------------
 
-  Future<(User, int?)> _authenticateAndResolve(Session session) async {
-    final user = await DartDeskAuth.authenticateRequest(session);
-    if (user == null) {
+  Future<(AuthResult, int?)> _authenticateAndResolve(Session session) async {
+    final authResult = await DartDeskAuth.authenticateRequest(session);
+    if (authResult.user == null) {
       throw Exception('User must be authenticated');
     }
-    return (user, user.clientId);
+    return (authResult, authResult.apiKey.clientId);
   }
 
   /// Build a WHERE expression from search and mimeTypePrefix filters.

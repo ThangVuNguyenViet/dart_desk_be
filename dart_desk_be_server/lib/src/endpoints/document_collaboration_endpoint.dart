@@ -36,8 +36,8 @@ class DocumentCollaborationEndpoint extends Endpoint {
     String sessionId,
     Map<String, dynamic> fieldUpdates,
   ) async {
-    final cmsUser = await DartDeskAuth.authenticateRequest(session);
-    if (cmsUser == null) {
+    final auth = await DartDeskAuth.authenticateRequest(session);
+    if (auth.user == null) {
       throw Exception('User must be authenticated to submit edits');
     }
 
@@ -47,7 +47,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
       documentId,
       fieldUpdates,
       sessionId,
-      cmsUserId: cmsUser.id,
+      cmsUserId: auth.user!.id,
     );
   }
 
@@ -125,8 +125,8 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
-    final user = await DartDeskAuth.authenticateRequest(session);
-    if (user == null) {
+    final auth = await DartDeskAuth.authenticateRequest(session);
+    if (auth.user == null) {
       throw Exception('User must be authenticated to compact operations');
     }
 

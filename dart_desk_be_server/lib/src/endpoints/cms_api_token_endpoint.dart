@@ -19,7 +19,7 @@ class ApiTokenEndpoint extends Endpoint {
 
   /// List all tokens for the current tenant (metadata only, never the hash).
   Future<List<ApiToken>> getTokens(Session session) async {
-    final (_, clientId) = await _requireUser(session);
+    final (_, clientId) = await _requireAuth(session);
 
     return await ApiToken.db.find(
       session,
@@ -36,7 +36,7 @@ class ApiTokenEndpoint extends Endpoint {
     String role,
     DateTime? expiresAt,
   ) async {
-    final (user, clientId) = await _requireUser(session);
+    final (auth, clientId) = await _requireAuth(session);
 
     if (!_rolePrefixes.containsKey(role)) {
       throw Exception('Invalid role: $role. Must be read or write.');
@@ -66,7 +66,7 @@ class ApiTokenEndpoint extends Endpoint {
         tokenPrefix: prefix,
         tokenSuffix: suffix,
         role: role,
-        createdByUserId: user.id,
+        createdByUserId: auth.user!.id,
         isActive: true,
         createdAt: DateTime.now(),
       );
@@ -94,7 +94,7 @@ class ApiTokenEndpoint extends Endpoint {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) throw Exception('Token not found: $tokenId');
 
-    await _requireUser(session);
+    await _requireAuth(session);
 
     final updated = token.copyWith(
       name: name ?? token.name,
@@ -113,7 +113,7 @@ class ApiTokenEndpoint extends Endpoint {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) throw Exception('Token not found: $tokenId');
 
-    await _requireUser(session);
+    await _requireAuth(session);
 
     final prefix = _rolePrefixes[token.role]!;
 
@@ -154,19 +154,19 @@ class ApiTokenEndpoint extends Endpoint {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) return false;
 
-    await _requireUser(session);
+    await _requireAuth(session);
 
     await ApiToken.db.deleteRow(session, token);
     return true;
   }
 
   /// Verify the caller is an authenticated User and resolve tenant.
-  Future<(User, int?)> _requireUser(Session session) async {
-    final user = await DartDeskAuth.authenticateRequest(session);
-    if (user == null) {
+  Future<(AuthResult, int?)> _requireAuth(Session session) async {
+    final authResult = await DartDeskAuth.authenticateRequest(session);
+    if (authResult.user == null) {
       throw Exception('User must be authenticated');
     }
-    return (user, user.clientId);
+    return (authResult, authResult.apiKey.clientId);
   }
 
   /// Generate a crypto-random API token with the given prefix.

@@ -17,14 +17,14 @@ class DocumentEndpoint extends Endpoint {
     int limit = 20,
     int offset = 0,
   }) async {
-    final cmsUser = await _requireAuth(session);
+    final auth = await _requireAuth(session);
 
     // Get total count filtered by clientId
     final total = await Document.db.count(
       session,
       where: (t) =>
           t.documentType.equals(documentType) &
-          t.clientId.equals(cmsUser.clientId),
+          t.clientId.equals(auth.apiKey.clientId),
     );
 
     // Get paginated documents filtered by clientId
@@ -32,7 +32,7 @@ class DocumentEndpoint extends Endpoint {
       session,
       where: (t) {
         var expr = t.documentType.equals(documentType) &
-            t.clientId.equals(cmsUser.clientId);
+            t.clientId.equals(auth.apiKey.clientId);
         if (search != null && search.isNotEmpty) {
           // Search in title and data (cached latest version)
           expr = expr & (t.title.like('%$search%') | t.data.like('%$search%'));
@@ -98,14 +98,14 @@ class DocumentEndpoint extends Endpoint {
     String? slug,
     bool isDefault = false,
   }) async {
-    final cmsUser = await _requireAuth(session);
-    final userId = cmsUser.id!;
+    final auth = await _requireAuth(session);
+    final userId = auth.user!.id!;
 
     // Create the document — encode data as JSON for storage
     final encodedData = jsonEncode(data);
     final effectiveSlug = slug ?? title.toLowerCase().replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(RegExp(r'\s+'), '-').replaceAll(RegExp(r'-+'), '-').trim();
     final document = Document(
-      clientId: cmsUser.clientId,
+      clientId: auth.apiKey.clientId,
       documentType: documentType,
       title: title,
       slug: effectiveSlug,
@@ -180,10 +180,10 @@ class DocumentEndpoint extends Endpoint {
     Map<String, dynamic> updates, {
     String? sessionId,
   }) async {
-    final cmsUser = await _requireAuth(session);
+    final auth = await _requireAuth(session);
 
     // Use user ID as session ID if not provided
-    final editSessionId = sessionId ?? 'user-${cmsUser.id}';
+    final editSessionId = sessionId ?? 'user-${auth.user?.id}';
 
     // Apply CRDT operations
     return await session.crdtService.applyOperations(
@@ -191,7 +191,7 @@ class DocumentEndpoint extends Endpoint {
       documentId,
       updates,
       editSessionId,
-      cmsUserId: cmsUser.id,
+      cmsUserId: auth.user?.id,
     );
   }
 
@@ -204,8 +204,8 @@ class DocumentEndpoint extends Endpoint {
     String? slug,
     bool? isDefault,
   }) async {
-    final cmsUser = await _requireAuth(session);
-    final userId = cmsUser.id!;
+    final auth = await _requireAuth(session);
+    final userId = auth.user!.id!;
 
     final existing = await Document.db.findById(session, documentId);
 
@@ -214,7 +214,7 @@ class DocumentEndpoint extends Endpoint {
     }
 
     // Verify the document belongs to the user's client
-    if (existing.clientId != cmsUser.clientId) {
+    if (existing.clientId != auth.apiKey.clientId) {
       throw Exception('Access denied: document belongs to a different client');
     }
 
@@ -235,7 +235,7 @@ class DocumentEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
-    final cmsUser = await _requireAuth(session);
+    final auth = await _requireAuth(session);
 
     final existing = await Document.db.findById(session, documentId);
 
@@ -244,7 +244,7 @@ class DocumentEndpoint extends Endpoint {
     }
 
     // Verify the document belongs to the user's client
-    if (existing.clientId != cmsUser.clientId) {
+    if (existing.clientId != auth.apiKey.clientId) {
       throw Exception('Access denied: document belongs to a different client');
     }
 
@@ -307,8 +307,8 @@ class DocumentEndpoint extends Endpoint {
 
   /// Get all document types (unique document type names)
   Future<List<String>> getDocumentTypes(Session session) async {
-    final cmsUser = await _requireAuth(session);
-    final clientId = cmsUser.clientId;
+    final auth = await _requireAuth(session);
+    final clientId = auth.apiKey.clientId;
 
     final result = clientId != null
         ? await session.db.unsafeQuery(
@@ -466,8 +466,8 @@ class DocumentEndpoint extends Endpoint {
     DocumentVersionStatus status = DocumentVersionStatus.draft,
     String? changeLog,
   }) async {
-    final cmsUser = await _requireAuth(session);
-    final userId = cmsUser.id!;
+    final auth = await _requireAuth(session);
+    final userId = auth.user!.id!;
 
     // Get the next version number for this document
     final existingVersions = await DocumentVersion.db.find(
@@ -573,19 +573,15 @@ class DocumentEndpoint extends Endpoint {
 
   /// Get total document count for the authenticated user's client.
   Future<int> getDocumentCount(Session session) async {
-    final cmsUser = await _requireAuth(session);
+    final auth = await _requireAuth(session);
     return await Document.db.count(
       session,
-      where: (t) => t.clientId.equals(cmsUser.clientId),
+      where: (t) => t.clientId.equals(auth.apiKey.clientId),
     );
   }
 
   /// Authenticate the current request via DartDeskAuth.
-  Future<User> _requireAuth(Session session) async {
-    final user = await DartDeskAuth.authenticateRequest(session);
-    if (user == null) {
-      throw Exception('User must be authenticated');
-    }
-    return user;
+  Future<AuthResult> _requireAuth(Session session) async {
+    return await DartDeskAuth.authenticateRequest(session);
   }
 }
