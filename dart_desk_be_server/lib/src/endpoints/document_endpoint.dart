@@ -19,20 +19,20 @@ class DocumentEndpoint extends Endpoint {
   }) async {
     final cmsUser = await _requireAuth(session);
 
-    // Get total count filtered by tenantId
+    // Get total count filtered by clientId
     final total = await Document.db.count(
       session,
       where: (t) =>
           t.documentType.equals(documentType) &
-          t.tenantId.equals(cmsUser.tenantId),
+          t.clientId.equals(cmsUser.clientId),
     );
 
-    // Get paginated documents filtered by tenantId
+    // Get paginated documents filtered by clientId
     final documents = await Document.db.find(
       session,
       where: (t) {
         var expr = t.documentType.equals(documentType) &
-            t.tenantId.equals(cmsUser.tenantId);
+            t.clientId.equals(cmsUser.clientId);
         if (search != null && search.isNotEmpty) {
           // Search in title and data (cached latest version)
           expr = expr & (t.title.like('%$search%') | t.data.like('%$search%'));
@@ -105,7 +105,7 @@ class DocumentEndpoint extends Endpoint {
     final encodedData = jsonEncode(data);
     final effectiveSlug = slug ?? title.toLowerCase().replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(RegExp(r'\s+'), '-').replaceAll(RegExp(r'-+'), '-').trim();
     final document = Document(
-      tenantId: cmsUser.tenantId,
+      clientId: cmsUser.clientId,
       documentType: documentType,
       title: title,
       slug: effectiveSlug,
@@ -123,7 +123,7 @@ class DocumentEndpoint extends Endpoint {
     final existing = await Document.db.findFirstRow(
       session,
       where: (t) =>
-          t.tenantId.equals(document.tenantId) &
+          t.clientId.equals(document.clientId) &
           t.documentType.equals(documentType) &
           t.slug.equals(effectiveSlug),
     );
@@ -214,7 +214,7 @@ class DocumentEndpoint extends Endpoint {
     }
 
     // Verify the document belongs to the user's client
-    if (existing.tenantId != cmsUser.tenantId) {
+    if (existing.clientId != cmsUser.clientId) {
       throw Exception('Access denied: document belongs to a different client');
     }
 
@@ -244,7 +244,7 @@ class DocumentEndpoint extends Endpoint {
     }
 
     // Verify the document belongs to the user's client
-    if (existing.tenantId != cmsUser.tenantId) {
+    if (existing.clientId != cmsUser.clientId) {
       throw Exception('Access denied: document belongs to a different client');
     }
 
@@ -308,18 +308,18 @@ class DocumentEndpoint extends Endpoint {
   /// Get all document types (unique document type names)
   Future<List<String>> getDocumentTypes(Session session) async {
     final cmsUser = await _requireAuth(session);
-    final tenantId = cmsUser.tenantId;
+    final clientId = cmsUser.clientId;
 
-    final result = tenantId != null
+    final result = clientId != null
         ? await session.db.unsafeQuery(
             'SELECT DISTINCT "documentType" FROM documents '
-            'WHERE "tenantId" = \$1 '
+            'WHERE "clientId" = \$1 '
             'ORDER BY "documentType"',
-            parameters: QueryParameters.positional([tenantId]),
+            parameters: QueryParameters.positional([clientId]),
           )
         : await session.db.unsafeQuery(
             'SELECT DISTINCT "documentType" FROM documents '
-            'WHERE "tenantId" IS NULL '
+            'WHERE "clientId" IS NULL '
             'ORDER BY "documentType"',
           );
 
@@ -576,7 +576,7 @@ class DocumentEndpoint extends Endpoint {
     final cmsUser = await _requireAuth(session);
     return await Document.db.count(
       session,
-      where: (t) => t.tenantId.equals(cmsUser.tenantId),
+      where: (t) => t.clientId.equals(cmsUser.clientId),
     );
   }
 

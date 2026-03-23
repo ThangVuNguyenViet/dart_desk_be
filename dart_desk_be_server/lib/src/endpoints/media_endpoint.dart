@@ -80,7 +80,7 @@ class MediaEndpoint extends Endpoint {
 
     // Create DB record
     final asset = MediaAsset(
-      tenantId: cmsUser.tenantId,
+      clientId: cmsUser.clientId,
       assetId: assetId,
       fileName: fileName,
       mimeType: mimeType,
@@ -155,7 +155,7 @@ class MediaEndpoint extends Endpoint {
 
     // Create DB record
     final asset = MediaAsset(
-      tenantId: cmsUser.tenantId,
+      clientId: cmsUser.clientId,
       assetId: assetId,
       fileName: fileName,
       mimeType: mimeType,
@@ -308,7 +308,7 @@ class MediaEndpoint extends Endpoint {
     if (user == null) {
       throw Exception('User must be authenticated');
     }
-    return (user, user.tenantId);
+    return (user, user.clientId);
   }
 
   /// Build a WHERE expression from search and mimeTypePrefix filters.

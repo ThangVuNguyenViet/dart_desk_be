@@ -68,8 +68,8 @@ class DartDeskAuth {
   static Future<User?> authenticateRequest(Session session) async {
     // Resolve API key context (if x-api-key header present)
     final apiKeyCtx = await authenticateApiKey(session);
-    final tenantId =
-        apiKeyCtx?.tenantId ?? await DartDeskTenancy.resolveTenantId(session);
+    final clientId =
+        apiKeyCtx?.clientId ?? await DartDeskTenancy.resolveTenantId(session);
 
     // 1. Check Serverpod built-in auth
     final authInfo = session.authenticated;
@@ -78,8 +78,8 @@ class DartDeskAuth {
         session,
         where: (t) {
           var expr = t.serverpodUserId.equals(authInfo.userIdentifier);
-          if (tenantId != null) {
-            expr = expr & t.tenantId.equals(tenantId);
+          if (clientId != null) {
+            expr = expr & t.clientId.equals(clientId);
           }
           return expr;
         },
@@ -103,7 +103,7 @@ class DartDeskAuth {
     for (final strategy in _strategies) {
       final extUser = await strategy.authenticate(headers, session);
       if (extUser != null) {
-        return _findOrCreateUser(session, extUser, strategy.name, tenantId);
+        return _findOrCreateUser(session, extUser, strategy.name, clientId);
       }
     }
 
@@ -115,7 +115,7 @@ class DartDeskAuth {
     Session session,
     ExternalAuthUser extUser,
     String providerName,
-    int? tenantId,
+    int? clientId,
   ) async {
     // Try to find existing user by external identity
     var user = await User.db.findFirstRow(
@@ -123,9 +123,9 @@ class DartDeskAuth {
       where: (t) =>
           t.externalId.equals(extUser.externalId) &
           t.externalProvider.equals(providerName) &
-          (tenantId != null
-              ? t.tenantId.equals(tenantId)
-              : t.tenantId.equals(null)),
+          (clientId != null
+              ? t.clientId.equals(clientId)
+              : t.clientId.equals(null)),
     );
 
     if (user != null) return user;
@@ -135,7 +135,7 @@ class DartDeskAuth {
 
     // Auto-create user
     user = User(
-      tenantId: tenantId,
+      clientId: clientId,
       email: extUser.email,
       name: extUser.name,
       role: role,
@@ -153,9 +153,9 @@ class DartDeskAuth {
         where: (t) =>
             t.externalId.equals(extUser.externalId) &
             t.externalProvider.equals(providerName) &
-            (tenantId != null
-                ? t.tenantId.equals(tenantId)
-                : t.tenantId.equals(null)),
+            (clientId != null
+                ? t.clientId.equals(clientId)
+                : t.clientId.equals(null)),
       );
       if (retried != null) return retried;
       rethrow;

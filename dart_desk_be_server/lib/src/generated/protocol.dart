@@ -84,7 +84,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'api_tokens_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'tenantId',
+          name: 'clientId',
           columnType: _i2.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
@@ -179,12 +179,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'api_token_tenant_idx',
+          indexName: 'api_token_client_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'tenantId',
+              definition: 'clientId',
             ),
           ],
           type: 'btree',
@@ -197,7 +197,7 @@ class Protocol extends _i1.SerializationManagerServer {
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'tenantId',
+              definition: 'clientId',
             ),
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
@@ -879,7 +879,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'documents_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'tenantId',
+          name: 'clientId',
           columnType: _i2.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
@@ -991,12 +991,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'documents_tenant_type_idx',
+          indexName: 'documents_client_type_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'tenantId',
+              definition: 'clientId',
             ),
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
@@ -1008,12 +1008,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'documents_tenant_type_slug_idx',
+          indexName: 'documents_client_type_slug_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'tenantId',
+              definition: 'clientId',
             ),
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
@@ -1184,7 +1184,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'media_assets_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'tenantId',
+          name: 'clientId',
           columnType: _i2.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
@@ -1315,12 +1315,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'media_asset_tenant_id_idx',
+          indexName: 'media_asset_client_id_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'tenantId',
+              definition: 'clientId',
             ),
           ],
           type: 'btree',
@@ -1486,7 +1486,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'users_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'tenantId',
+          name: 'clientId',
           columnType: _i2.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
@@ -1566,12 +1566,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'users_tenant_email_idx',
+          indexName: 'users_client_email_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'tenantId',
+              definition: 'clientId',
             ),
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
@@ -1596,7 +1596,7 @@ class Protocol extends _i1.SerializationManagerServer {
             ),
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'tenantId',
+              definition: 'clientId',
             ),
           ],
           type: 'btree',
@@ -1604,12 +1604,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'users_tenant_id_idx',
+          indexName: 'users_client_id_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'tenantId',
+              definition: 'clientId',
             ),
           ],
           type: 'btree',

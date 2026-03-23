@@ -15,7 +15,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 abstract class User implements _i1.SerializableModel {
   User._({
     this.id,
-    this.tenantId,
+    this.clientId,
     required this.email,
     this.name,
     String? role,
@@ -32,7 +32,7 @@ abstract class User implements _i1.SerializableModel {
 
   factory User({
     int? id,
-    int? tenantId,
+    int? clientId,
     required String email,
     String? name,
     String? role,
@@ -47,7 +47,7 @@ abstract class User implements _i1.SerializableModel {
   factory User.fromJson(Map<String, dynamic> jsonSerialization) {
     return User(
       id: jsonSerialization['id'] as int?,
-      tenantId: jsonSerialization['tenantId'] as int?,
+      clientId: jsonSerialization['clientId'] as int?,
       email: jsonSerialization['email'] as String,
       name: jsonSerialization['name'] as String?,
       role: jsonSerialization['role'] as String?,
@@ -71,7 +71,7 @@ abstract class User implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int? tenantId;
+  int? clientId;
 
   String email;
 
@@ -96,7 +96,7 @@ abstract class User implements _i1.SerializableModel {
   @_i1.useResult
   User copyWith({
     int? id,
-    int? tenantId,
+    int? clientId,
     String? email,
     String? name,
     String? role,
@@ -112,7 +112,7 @@ abstract class User implements _i1.SerializableModel {
     return {
       '__className__': 'User',
       if (id != null) 'id': id,
-      if (tenantId != null) 'tenantId': tenantId,
+      if (clientId != null) 'clientId': clientId,
       'email': email,
       if (name != null) 'name': name,
       'role': role,
@@ -136,7 +136,7 @@ class _Undefined {}
 class _UserImpl extends User {
   _UserImpl({
     int? id,
-    int? tenantId,
+    int? clientId,
     required String email,
     String? name,
     String? role,
@@ -148,7 +148,7 @@ class _UserImpl extends User {
     DateTime? updatedAt,
   }) : super._(
          id: id,
-         tenantId: tenantId,
+         clientId: clientId,
          email: email,
          name: name,
          role: role,
@@ -166,7 +166,7 @@ class _UserImpl extends User {
   @override
   User copyWith({
     Object? id = _Undefined,
-    Object? tenantId = _Undefined,
+    Object? clientId = _Undefined,
     String? email,
     Object? name = _Undefined,
     String? role,
@@ -179,7 +179,7 @@ class _UserImpl extends User {
   }) {
     return User(
       id: id is int? ? id : this.id,
-      tenantId: tenantId is int? ? tenantId : this.tenantId,
+      clientId: clientId is int? ? clientId : this.clientId,
       email: email ?? this.email,
       name: name is String? ? name : this.name,
       role: role ?? this.role,

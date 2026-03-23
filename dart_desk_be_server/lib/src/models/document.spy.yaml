@@ -1,7 +1,7 @@
 class: Document
 table: documents
 fields:
-  tenantId: int?
+  clientId: int?
   documentType: String
   title: String
   slug: String
@@ -14,10 +14,10 @@ fields:
   createdByUserId: int?, relation(parent=users, onDelete=SetNull)
   updatedByUserId: int?, relation(parent=users, onDelete=SetNull)
 indexes:
-  documents_tenant_type_idx:
-    fields: tenantId, documentType
-  documents_tenant_type_slug_idx:
-    fields: tenantId, documentType, slug
+  documents_client_type_idx:
+    fields: clientId, documentType
+  documents_client_type_slug_idx:
+    fields: clientId, documentType, slug
     unique: true
   documents_type_default_idx:
     fields: documentType, isDefault

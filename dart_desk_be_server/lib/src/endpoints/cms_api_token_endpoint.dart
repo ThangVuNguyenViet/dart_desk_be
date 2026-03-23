@@ -19,11 +19,11 @@ class ApiTokenEndpoint extends Endpoint {
 
   /// List all tokens for the current tenant (metadata only, never the hash).
   Future<List<ApiToken>> getTokens(Session session) async {
-    final (_, tenantId) = await _requireUser(session);
+    final (_, clientId) = await _requireUser(session);
 
     return await ApiToken.db.find(
       session,
-      where: (t) => tenantId != null ? t.tenantId.equals(tenantId) : t.tenantId.equals(null),
+      where: (t) => clientId != null ? t.clientId.equals(clientId) : t.clientId.equals(null),
       orderBy: (t) => t.createdAt,
       orderDescending: true,
     );
@@ -36,7 +36,7 @@ class ApiTokenEndpoint extends Endpoint {
     String role,
     DateTime? expiresAt,
   ) async {
-    final (user, tenantId) = await _requireUser(session);
+    final (user, clientId) = await _requireUser(session);
 
     if (!_rolePrefixes.containsKey(role)) {
       throw Exception('Invalid role: $role. Must be read or write.');
@@ -49,18 +49,18 @@ class ApiTokenEndpoint extends Endpoint {
       final suffix = rawToken.substring(rawToken.length - 4);
       final hash = ApiKeyValidator.hashToken(rawToken);
 
-      // Check for collision on (tenantId, tokenPrefix, tokenSuffix)
+      // Check for collision on (clientId, tokenPrefix, tokenSuffix)
       final existing = await ApiToken.db.findFirstRow(
         session,
         where: (t) =>
-            (tenantId != null ? t.tenantId.equals(tenantId) : t.tenantId.equals(null)) &
+            (clientId != null ? t.clientId.equals(clientId) : t.clientId.equals(null)) &
             t.tokenPrefix.equals(prefix) &
             t.tokenSuffix.equals(suffix),
       );
       if (existing != null) continue;
 
       final token = ApiToken(
-        tenantId: tenantId,
+        clientId: clientId,
         name: name,
         tokenHash: hash,
         tokenPrefix: prefix,
@@ -126,7 +126,7 @@ class ApiTokenEndpoint extends Endpoint {
       final existing = await ApiToken.db.findFirstRow(
         session,
         where: (t) =>
-            (token.tenantId != null ? t.tenantId.equals(token.tenantId) : t.tenantId.equals(null)) &
+            (token.clientId != null ? t.clientId.equals(token.clientId) : t.clientId.equals(null)) &
             t.tokenPrefix.equals(prefix) &
             t.tokenSuffix.equals(suffix) &
             t.id.notEquals(tokenId),
@@ -166,7 +166,7 @@ class ApiTokenEndpoint extends Endpoint {
     if (user == null) {
       throw Exception('User must be authenticated');
     }
-    return (user, user.tenantId);
+    return (user, user.clientId);
   }
 
   /// Generate a crypto-random API token with the given prefix.

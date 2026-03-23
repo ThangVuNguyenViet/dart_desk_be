@@ -1,11 +1,11 @@
 /// Holds validated API key information for the current request.
 class ApiKeyContext {
-  final int? tenantId;
+  final int? clientId;
   final String role; // 'read' or 'write'
   final int tokenId;
 
   const ApiKeyContext({
-    required this.tenantId,
+    required this.clientId,
     required this.role,
     required this.tokenId,
   });

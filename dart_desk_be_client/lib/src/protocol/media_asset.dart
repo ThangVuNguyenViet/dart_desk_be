@@ -16,7 +16,7 @@ import 'media_asset_metadata_status.dart' as _i2;
 abstract class MediaAsset implements _i1.SerializableModel {
   MediaAsset._({
     this.id,
-    this.tenantId,
+    this.clientId,
     required this.assetId,
     required this.fileName,
     required this.mimeType,
@@ -39,7 +39,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
 
   factory MediaAsset({
     int? id,
-    int? tenantId,
+    int? clientId,
     required String assetId,
     required String fileName,
     required String mimeType,
@@ -63,7 +63,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
   factory MediaAsset.fromJson(Map<String, dynamic> jsonSerialization) {
     return MediaAsset(
       id: jsonSerialization['id'] as int?,
-      tenantId: jsonSerialization['tenantId'] as int?,
+      clientId: jsonSerialization['clientId'] as int?,
       assetId: jsonSerialization['assetId'] as String,
       fileName: jsonSerialization['fileName'] as String,
       mimeType: jsonSerialization['mimeType'] as String,
@@ -94,7 +94,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int? tenantId;
+  int? clientId;
 
   String assetId;
 
@@ -137,7 +137,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
   @_i1.useResult
   MediaAsset copyWith({
     int? id,
-    int? tenantId,
+    int? clientId,
     String? assetId,
     String? fileName,
     String? mimeType,
@@ -162,7 +162,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
     return {
       '__className__': 'MediaAsset',
       if (id != null) 'id': id,
-      if (tenantId != null) 'tenantId': tenantId,
+      if (clientId != null) 'clientId': clientId,
       'assetId': assetId,
       'fileName': fileName,
       'mimeType': mimeType,
@@ -195,7 +195,7 @@ class _Undefined {}
 class _MediaAssetImpl extends MediaAsset {
   _MediaAssetImpl({
     int? id,
-    int? tenantId,
+    int? clientId,
     required String assetId,
     required String fileName,
     required String mimeType,
@@ -216,7 +216,7 @@ class _MediaAssetImpl extends MediaAsset {
     required _i2.MediaAssetMetadataStatus metadataStatus,
   }) : super._(
          id: id,
-         tenantId: tenantId,
+         clientId: clientId,
          assetId: assetId,
          fileName: fileName,
          mimeType: mimeType,
@@ -243,7 +243,7 @@ class _MediaAssetImpl extends MediaAsset {
   @override
   MediaAsset copyWith({
     Object? id = _Undefined,
-    Object? tenantId = _Undefined,
+    Object? clientId = _Undefined,
     String? assetId,
     String? fileName,
     String? mimeType,
@@ -265,7 +265,7 @@ class _MediaAssetImpl extends MediaAsset {
   }) {
     return MediaAsset(
       id: id is int? ? id : this.id,
-      tenantId: tenantId is int? ? tenantId : this.tenantId,
+      clientId: clientId is int? ? clientId : this.clientId,
       assetId: assetId ?? this.assetId,
       fileName: fileName ?? this.fileName,
       mimeType: mimeType ?? this.mimeType,

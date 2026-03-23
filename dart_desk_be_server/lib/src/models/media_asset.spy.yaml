@@ -1,7 +1,7 @@
 class: MediaAsset
 table: media_assets
 fields:
-  tenantId: int?
+  clientId: int?
   assetId: String
   fileName: String
   mimeType: String
@@ -21,8 +21,8 @@ fields:
   createdAt: DateTime?, default=now
   metadataStatus: MediaAssetMetadataStatus
 indexes:
-  media_asset_tenant_id_idx:
-    fields: tenantId
+  media_asset_client_id_idx:
+    fields: clientId
   media_asset_asset_id_idx:
     fields: assetId
     unique: true

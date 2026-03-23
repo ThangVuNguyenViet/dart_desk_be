@@ -64,7 +64,7 @@ class ApiKeyValidator {
 
     final hash = hashToken(parsed.rawToken);
 
-    // Query by prefix + suffix without tenantId filter.
+    // Query by prefix + suffix without clientId filter.
     // The token lookup IS the tenant resolution.
     final candidates = await ApiToken.db.find(
       session,
@@ -98,7 +98,7 @@ class ApiKeyValidator {
       }
 
       return ApiKeyContext(
-        tenantId: candidate.tenantId,
+        clientId: candidate.clientId,
         role: candidate.role,
         tokenId: candidate.id!,
       );

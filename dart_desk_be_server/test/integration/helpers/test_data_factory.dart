@@ -54,7 +54,7 @@ class TestDataFactory {
     final user = await User.db.insertRow(
       session,
       User(
-        tenantId: null,
+        clientId: null,
         email: email,
         name: name,
         role: role,

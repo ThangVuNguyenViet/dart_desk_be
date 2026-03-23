@@ -1,7 +1,7 @@
 class: User
 table: users
 fields:
-  tenantId: int?
+  clientId: int?
   email: String
   name: String?
   role: String, default='viewer'
@@ -12,14 +12,14 @@ fields:
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
 indexes:
-  users_tenant_email_idx:
-    fields: tenantId, email
+  users_client_email_idx:
+    fields: clientId, email
     unique: true
   users_external_id_idx:
-    fields: externalId, externalProvider, tenantId
+    fields: externalId, externalProvider, clientId
     unique: true
-  users_tenant_id_idx:
-    fields: tenantId
+  users_client_id_idx:
+    fields: clientId
   users_serverpod_user_id_idx:
     fields: serverpodUserId
   users_is_active_idx:

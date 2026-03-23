@@ -22,8 +22,8 @@ class UserEndpoint extends Endpoint {
       session,
       where: (t) {
         var expr = t.isActive.equals(true);
-        if (user.tenantId != null) {
-          expr = expr & t.tenantId.equals(user.tenantId);
+        if (user.clientId != null) {
+          expr = expr & t.clientId.equals(user.clientId);
         }
         return expr;
       },

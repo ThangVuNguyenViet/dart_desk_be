@@ -15,7 +15,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 abstract class ApiToken implements _i1.SerializableModel {
   ApiToken._({
     this.id,
-    this.tenantId,
+    this.clientId,
     required this.name,
     required this.tokenHash,
     required this.tokenPrefix,
@@ -31,7 +31,7 @@ abstract class ApiToken implements _i1.SerializableModel {
 
   factory ApiToken({
     int? id,
-    int? tenantId,
+    int? clientId,
     required String name,
     required String tokenHash,
     required String tokenPrefix,
@@ -47,7 +47,7 @@ abstract class ApiToken implements _i1.SerializableModel {
   factory ApiToken.fromJson(Map<String, dynamic> jsonSerialization) {
     return ApiToken(
       id: jsonSerialization['id'] as int?,
-      tenantId: jsonSerialization['tenantId'] as int?,
+      clientId: jsonSerialization['clientId'] as int?,
       name: jsonSerialization['name'] as String,
       tokenHash: jsonSerialization['tokenHash'] as String,
       tokenPrefix: jsonSerialization['tokenPrefix'] as String,
@@ -74,7 +74,7 @@ abstract class ApiToken implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int? tenantId;
+  int? clientId;
 
   String name;
 
@@ -101,7 +101,7 @@ abstract class ApiToken implements _i1.SerializableModel {
   @_i1.useResult
   ApiToken copyWith({
     int? id,
-    int? tenantId,
+    int? clientId,
     String? name,
     String? tokenHash,
     String? tokenPrefix,
@@ -118,7 +118,7 @@ abstract class ApiToken implements _i1.SerializableModel {
     return {
       '__className__': 'ApiToken',
       if (id != null) 'id': id,
-      if (tenantId != null) 'tenantId': tenantId,
+      if (clientId != null) 'clientId': clientId,
       'name': name,
       'tokenHash': tokenHash,
       'tokenPrefix': tokenPrefix,
@@ -143,7 +143,7 @@ class _Undefined {}
 class _ApiTokenImpl extends ApiToken {
   _ApiTokenImpl({
     int? id,
-    int? tenantId,
+    int? clientId,
     required String name,
     required String tokenHash,
     required String tokenPrefix,
@@ -156,7 +156,7 @@ class _ApiTokenImpl extends ApiToken {
     DateTime? createdAt,
   }) : super._(
          id: id,
-         tenantId: tenantId,
+         clientId: clientId,
          name: name,
          tokenHash: tokenHash,
          tokenPrefix: tokenPrefix,
@@ -175,7 +175,7 @@ class _ApiTokenImpl extends ApiToken {
   @override
   ApiToken copyWith({
     Object? id = _Undefined,
-    Object? tenantId = _Undefined,
+    Object? clientId = _Undefined,
     String? name,
     String? tokenHash,
     String? tokenPrefix,
@@ -189,7 +189,7 @@ class _ApiTokenImpl extends ApiToken {
   }) {
     return ApiToken(
       id: id is int? ? id : this.id,
-      tenantId: tenantId is int? ? tenantId : this.tenantId,
+      clientId: clientId is int? ? clientId : this.clientId,
       name: name ?? this.name,
       tokenHash: tokenHash ?? this.tokenHash,
       tokenPrefix: tokenPrefix ?? this.tokenPrefix,

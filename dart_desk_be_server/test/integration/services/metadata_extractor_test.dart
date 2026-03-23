@@ -29,7 +29,7 @@ MediaAsset _buildPendingAsset({
   int fileSize = 0,
 }) {
   return MediaAsset(
-    tenantId: null,
+    clientId: null,
     fileName: fileName,
     assetId: assetId,
     storagePath: 'media/$assetId/$fileName',

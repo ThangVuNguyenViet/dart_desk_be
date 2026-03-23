@@ -209,7 +209,7 @@ class ProjectEndpoint extends Endpoint {
       await User.db.insertRow(
         session,
         User(
-          tenantId: project.id!,
+          clientId: project.id!,
           email: email ?? authInfo.userIdentifier,
           name: userName,
           role: 'admin',

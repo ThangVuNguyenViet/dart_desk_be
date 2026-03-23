@@ -56,7 +56,7 @@ RETURNING id;
       // Insert API token
       final suffix = knownToken.substring(knownToken.length - 4);
       await psql("""
-INSERT INTO api_tokens ("tenantId", name, "tokenHash", "tokenPrefix", "tokenSuffix", role, "isActive", "createdAt")
+INSERT INTO api_tokens ("clientId", name, "tokenHash", "tokenPrefix", "tokenSuffix", role, "isActive", "createdAt")
 VALUES ($projectId, 'E2E Test Token', '$hash', 'cms_w_', '$suffix', 'write', true, now())
 ON CONFLICT DO NOTHING;
 """);

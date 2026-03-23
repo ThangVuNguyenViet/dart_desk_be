@@ -15,7 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   User._({
     this.id,
-    this.tenantId,
+    this.clientId,
     required this.email,
     this.name,
     String? role,
@@ -32,7 +32,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   factory User({
     int? id,
-    int? tenantId,
+    int? clientId,
     required String email,
     String? name,
     String? role,
@@ -47,7 +47,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   factory User.fromJson(Map<String, dynamic> jsonSerialization) {
     return User(
       id: jsonSerialization['id'] as int?,
-      tenantId: jsonSerialization['tenantId'] as int?,
+      clientId: jsonSerialization['clientId'] as int?,
       email: jsonSerialization['email'] as String,
       name: jsonSerialization['name'] as String?,
       role: jsonSerialization['role'] as String?,
@@ -73,7 +73,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   int? id;
 
-  int? tenantId;
+  int? clientId;
 
   String email;
 
@@ -101,7 +101,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @_i1.useResult
   User copyWith({
     int? id,
-    int? tenantId,
+    int? clientId,
     String? email,
     String? name,
     String? role,
@@ -117,7 +117,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return {
       '__className__': 'User',
       if (id != null) 'id': id,
-      if (tenantId != null) 'tenantId': tenantId,
+      if (clientId != null) 'clientId': clientId,
       'email': email,
       if (name != null) 'name': name,
       'role': role,
@@ -135,7 +135,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return {
       '__className__': 'User',
       if (id != null) 'id': id,
-      if (tenantId != null) 'tenantId': tenantId,
+      if (clientId != null) 'clientId': clientId,
       'email': email,
       if (name != null) 'name': name,
       'role': role,
@@ -183,7 +183,7 @@ class _Undefined {}
 class _UserImpl extends User {
   _UserImpl({
     int? id,
-    int? tenantId,
+    int? clientId,
     required String email,
     String? name,
     String? role,
@@ -195,7 +195,7 @@ class _UserImpl extends User {
     DateTime? updatedAt,
   }) : super._(
          id: id,
-         tenantId: tenantId,
+         clientId: clientId,
          email: email,
          name: name,
          role: role,
@@ -213,7 +213,7 @@ class _UserImpl extends User {
   @override
   User copyWith({
     Object? id = _Undefined,
-    Object? tenantId = _Undefined,
+    Object? clientId = _Undefined,
     String? email,
     Object? name = _Undefined,
     String? role,
@@ -226,7 +226,7 @@ class _UserImpl extends User {
   }) {
     return User(
       id: id is int? ? id : this.id,
-      tenantId: tenantId is int? ? tenantId : this.tenantId,
+      clientId: clientId is int? ? clientId : this.clientId,
       email: email ?? this.email,
       name: name is String? ? name : this.name,
       role: role ?? this.role,
@@ -247,8 +247,8 @@ class _UserImpl extends User {
 class UserUpdateTable extends _i1.UpdateTable<UserTable> {
   UserUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> tenantId(int? value) => _i1.ColumnValue(
-    table.tenantId,
+  _i1.ColumnValue<int, int> clientId(int? value) => _i1.ColumnValue(
+    table.clientId,
     value,
   );
 
@@ -305,8 +305,8 @@ class UserUpdateTable extends _i1.UpdateTable<UserTable> {
 class UserTable extends _i1.Table<int?> {
   UserTable({super.tableRelation}) : super(tableName: 'users') {
     updateTable = UserUpdateTable(this);
-    tenantId = _i1.ColumnInt(
-      'tenantId',
+    clientId = _i1.ColumnInt(
+      'clientId',
       this,
     );
     email = _i1.ColumnString(
@@ -353,7 +353,7 @@ class UserTable extends _i1.Table<int?> {
 
   late final UserUpdateTable updateTable;
 
-  late final _i1.ColumnInt tenantId;
+  late final _i1.ColumnInt clientId;
 
   late final _i1.ColumnString email;
 
@@ -376,7 +376,7 @@ class UserTable extends _i1.Table<int?> {
   @override
   List<_i1.Column> get columns => [
     id,
-    tenantId,
+    clientId,
     email,
     name,
     role,
