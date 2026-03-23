@@ -1,7 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
-import '../tenancy.dart';
 import 'api_key_context.dart';
 import 'api_key_validator.dart';
 import 'external_auth_strategy.dart';
@@ -13,8 +12,9 @@ typedef AuthResult = ({ApiKeyContext apiKey, User? user});
 
 /// Central authentication registry for Dart Desk.
 ///
-/// Checks Serverpod's built-in IDP auth first, then tries external strategies
-/// in registration order. Auto-creates User records on first external auth.
+/// Two-pass auth:
+/// 1. x-api-key (required) → resolves client + role
+/// 2. Authorization: Bearer (optional) → resolves user identity
 class DartDeskAuth {
   static List<ExternalAuthStrategy> _strategies = [];
   static List<String> _adminEmails = [];
@@ -61,20 +61,24 @@ class DartDeskAuth {
 
   /// Authenticate the current request.
   ///
-  /// 1. Checks Serverpod built-in IDP auth (session.authenticated)
-  /// 2. If null, tries external strategies in order
-  /// 3. First non-null ExternalAuthUser wins → find or create User
-  /// 4. Returns null if all strategies return null (unauthenticated)
-  static Future<User?> authenticateRequest(Session session) async {
-    // Resolve API key context (if x-api-key header present)
+  /// 1. Validates x-api-key header (required) → resolves client + role
+  /// 2. Checks Serverpod built-in IDP auth or external strategies → resolves user
+  /// 3. Returns AuthResult with apiKey context and optional user
+  ///
+  /// Throws 401 if x-api-key is missing or invalid.
+  static Future<AuthResult> authenticateRequest(Session session) async {
+    // 1. Require API key
     final apiKeyCtx = await authenticateApiKey(session);
-    final clientId =
-        apiKeyCtx?.clientId ?? await DartDeskTenancy.resolveTenantId(session);
+    if (apiKeyCtx == null) {
+      throw Exception('Missing or invalid x-api-key header');
+    }
 
-    // 1. Check Serverpod built-in auth
+    final clientId = apiKeyCtx.clientId;
+
+    // 2. Check Serverpod built-in auth
     final authInfo = session.authenticated;
     if (authInfo != null) {
-      return User.db.findFirstRow(
+      final user = await User.db.findFirstRow(
         session,
         where: (t) {
           var expr = t.serverpodUserId.equals(authInfo.userIdentifier);
@@ -84,13 +88,14 @@ class DartDeskAuth {
           return expr;
         },
       );
+      return (apiKey: apiKeyCtx, user: user);
     }
 
-    // 2. Try external strategies
-    if (_strategies.isEmpty) return null;
+    // 3. Try external strategies
+    if (_strategies.isEmpty) return (apiKey: apiKeyCtx, user: null);
 
     final request = session.request;
-    if (request == null) return null;
+    if (request == null) return (apiKey: apiKeyCtx, user: null);
 
     final headers = <String, String>{};
     for (final entry in request.headers.entries) {
@@ -103,11 +108,13 @@ class DartDeskAuth {
     for (final strategy in _strategies) {
       final extUser = await strategy.authenticate(headers, session);
       if (extUser != null) {
-        return _findOrCreateUser(session, extUser, strategy.name, clientId);
+        final user = await _findOrCreateUser(
+            session, extUser, strategy.name, clientId);
+        return (apiKey: apiKeyCtx, user: user);
       }
     }
 
-    return null; // unauthenticated
+    return (apiKey: apiKeyCtx, user: null);
   }
 
   /// Find existing User by external ID or auto-create one.
