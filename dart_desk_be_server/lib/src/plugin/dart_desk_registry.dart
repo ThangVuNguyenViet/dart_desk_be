@@ -41,19 +41,6 @@ class DartDeskRegistry {
   List<ExternalAuthStrategy> get authStrategies =>
       List.unmodifiable(_authStrategies);
 
-  // -- Tenant Resolver --
-
-  Future<int?> Function(Session session) _tenantResolver =
-      (_) async => null;
-
-  /// Override the tenant resolver.
-  void setTenantResolver(Future<int?> Function(Session session) resolver) {
-    _tenantResolver = resolver;
-  }
-
-  /// Resolve tenant ID for the given session.
-  Future<int?> resolveTenantId(Session session) => _tenantResolver(session);
-
   // -- CRDT Service --
 
   late DocumentCrdtService documentCrdtService;

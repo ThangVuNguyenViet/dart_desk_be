@@ -14,8 +14,6 @@ import 'src/plugin/dart_desk_plugin.dart';
 import 'src/plugin/dart_desk_registry.dart';
 import 'src/plugin/dart_desk_session.dart';
 import 'src/services/document_crdt_service.dart';
-import 'src/tenancy.dart';
-
 void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   // Create registry and let plugins register their contributions.
   final registry = DartDeskRegistry();
@@ -23,11 +21,10 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
     plugin.register(registry);
   }
 
-  // Bridge registry into auth and tenancy.
+  // Configure auth.
   DartDeskAuth.configure(
     externalStrategies: registry.authStrategies,
   );
-  DartDeskTenancy.configure(resolver: registry.resolveTenantId);
 
   // Make registry available to session extensions.
   DartDeskSession.setRegistry(registry);

@@ -35,7 +35,4 @@ extension DartDeskSession on Session {
   DocumentCrdtService get crdtService =>
       DartDeskSession.registry.documentCrdtService;
 
-  /// Resolve the tenant ID for this session.
-  Future<int?> resolveTenantId() =>
-      DartDeskSession.registry.resolveTenantId(this);
 }
