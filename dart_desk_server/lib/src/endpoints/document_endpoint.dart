@@ -2,9 +2,13 @@ import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
 
-import '../auth/dart_desk_auth.dart';
+import '../auth/api_key_context.dart';
+import '../auth/dart_desk_session.dart';
+import '../auth/resolve_user.dart';
 import '../plugin/dart_desk_session.dart';
 import '../generated/protocol.dart';
+
+typedef AuthResult = ({ApiKeyContext apiKey, User? user});
 
 /// Endpoint for managing CMS documents
 /// All write operations require authentication
@@ -580,17 +584,14 @@ class DocumentEndpoint extends Endpoint {
     );
   }
 
-  /// Authenticate the current request via DartDeskAuth.
+  /// Authenticate the current request via session.apiKey.
   Future<AuthResult> _requireAuth(Session session) async {
-    return await DartDeskAuth.authenticateRequest(session);
+    return (apiKey: session.apiKey, user: null);
   }
 
   /// Authenticate and require a user identity (for write operations).
   Future<AuthResult> _requireUser(Session session) async {
-    final auth = await DartDeskAuth.authenticateRequest(session);
-    if (auth.user == null) {
-      throw Exception('User must be authenticated');
-    }
-    return auth;
+    final user = await resolveUser(session, clientId: session.apiKey.clientId);
+    return (apiKey: session.apiKey, user: user);
   }
 }

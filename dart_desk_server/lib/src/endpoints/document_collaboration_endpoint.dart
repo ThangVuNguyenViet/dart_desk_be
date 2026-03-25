@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
-import '../auth/dart_desk_auth.dart';
+import '../auth/dart_desk_session.dart';
+import '../auth/resolve_user.dart';
 import '../plugin/dart_desk_session.dart';
 import '../generated/protocol.dart';
 
@@ -36,10 +37,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
     String sessionId,
     Map<String, dynamic> fieldUpdates,
   ) async {
-    final auth = await DartDeskAuth.authenticateRequest(session);
-    if (auth.user == null) {
-      throw Exception('User must be authenticated to submit edits');
-    }
+    final user = await resolveUser(session, clientId: session.apiKey.clientId);
 
     // Apply CRDT operations
     return await session.crdtService.applyOperations(
@@ -47,7 +45,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
       documentId,
       fieldUpdates,
       sessionId,
-      cmsUserId: auth.user!.id,
+      cmsUserId: user.id,
     );
   }
 
@@ -125,10 +123,8 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
-    final auth = await DartDeskAuth.authenticateRequest(session);
-    if (auth.user == null) {
-      throw Exception('User must be authenticated to compact operations');
-    }
+    // resolveUser throws if not authenticated
+    await resolveUser(session, clientId: session.apiKey.clientId);
 
     await session.crdtService.compactOperations(session, documentId);
   }

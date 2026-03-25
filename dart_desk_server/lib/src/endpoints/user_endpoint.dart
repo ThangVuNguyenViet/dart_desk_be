@@ -1,7 +1,8 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../auth/dart_desk_session.dart';
+import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
-import '../auth/dart_desk_auth.dart';
 
 /// Endpoint for managing users.
 class UserEndpoint extends Endpoint {
@@ -9,22 +10,21 @@ class UserEndpoint extends Endpoint {
   /// For Serverpod IDP: returns existing User (must exist via seed or prior creation).
   /// For external auth: auto-creates User on first call.
   Future<User?> getCurrentUser(Session session) async {
-    final auth = await DartDeskAuth.authenticateRequest(session);
-    return auth.user;
+    final apiKey = session.apiKey;
+    return await resolveUser(session, clientId: apiKey.clientId);
   }
 
   /// Get count of active users in the current tenant.
   Future<int> getUserCount(Session session) async {
-    final auth = await DartDeskAuth.authenticateRequest(session);
-    if (auth.user == null) {
-      throw Exception('User must be authenticated');
-    }
+    final apiKey = session.apiKey;
+    // resolveUser throws if not authenticated
+    await resolveUser(session, clientId: apiKey.clientId);
     return await User.db.count(
       session,
       where: (t) {
         var expr = t.isActive.equals(true);
-        if (auth.apiKey.clientId != null) {
-          expr = expr & t.clientId.equals(auth.apiKey.clientId);
+        if (apiKey.clientId != null) {
+          expr = expr & t.clientId.equals(apiKey.clientId);
         }
         return expr;
       },

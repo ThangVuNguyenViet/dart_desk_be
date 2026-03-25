@@ -5,7 +5,9 @@ import 'package:crypto/crypto.dart';
 import 'package:mime/mime.dart';
 import 'package:serverpod/serverpod.dart';
 
-import '../auth/dart_desk_auth.dart';
+import '../auth/api_key_context.dart';
+import '../auth/dart_desk_session.dart';
+import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
 import '../plugin/dart_desk_session.dart';
 import '../services/metadata_extractor.dart';
@@ -297,12 +299,11 @@ class MediaEndpoint extends Endpoint {
   // Private helpers
   // ------------------------------------------------------------------
 
-  Future<(AuthResult, int?)> _authenticateAndResolve(Session session) async {
-    final authResult = await DartDeskAuth.authenticateRequest(session);
-    if (authResult.user == null) {
-      throw Exception('User must be authenticated');
-    }
-    return (authResult, authResult.apiKey.clientId);
+  Future<(({ApiKeyContext apiKey, User? user}), int?)> _authenticateAndResolve(Session session) async {
+    final apiKey = session.apiKey;
+    final user = await resolveUser(session, clientId: apiKey.clientId);
+    final authResult = (apiKey: apiKey, user: user as User?);
+    return (authResult, apiKey.clientId);
   }
 
   /// Build a WHERE expression from search and mimeTypePrefix filters.

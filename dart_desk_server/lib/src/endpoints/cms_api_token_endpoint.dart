@@ -3,8 +3,10 @@ import 'dart:math';
 
 import 'package:serverpod/serverpod.dart';
 
+import '../auth/api_key_context.dart';
 import '../auth/api_key_validator.dart';
-import '../auth/dart_desk_auth.dart';
+import '../auth/dart_desk_session.dart';
+import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
 
 /// Endpoint for managing CMS API tokens.
@@ -161,12 +163,11 @@ class ApiTokenEndpoint extends Endpoint {
   }
 
   /// Verify the caller is an authenticated User and resolve tenant.
-  Future<(AuthResult, int?)> _requireAuth(Session session) async {
-    final authResult = await DartDeskAuth.authenticateRequest(session);
-    if (authResult.user == null) {
-      throw Exception('User must be authenticated');
-    }
-    return (authResult, authResult.apiKey.clientId);
+  Future<(({ApiKeyContext apiKey, User? user}), int?)> _requireAuth(Session session) async {
+    final apiKey = session.apiKey;
+    final user = await resolveUser(session, clientId: apiKey.clientId);
+    final authResult = (apiKey: apiKey, user: user as User?);
+    return (authResult, apiKey.clientId);
   }
 
   /// Generate a crypto-random API token with the given prefix.
