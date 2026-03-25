@@ -119,82 +119,20 @@ Future<User> resolveUser(Session session, {int? clientId}) async {
 }
 ```
 
-### 4. API Key Middleware (Replace DartDeskAuth)
+### 4. API Key Validation (Already Implemented)
 
-Replace `DartDeskAuth` with a two-layer approach:
+API key validation is already handled via `preEndpointHandlers` in a custom Serverpod fork. The handler runs before every endpoint method with full `Session` access:
 
-1. **Relic middleware** — extracts and format-validates the raw API key from headers, rejects if missing. Stores the raw key on the `Request` via `ContextProperty`.
-2. **`requireApiKey()` function** — called in endpoints with a `Session`. Does the DB lookup via `ApiKeyValidator.validate()`, returns `ApiKeyContext`.
+- Extracts `x-api-key` header
+- Validates via `ApiKeyValidator.validate()` (DB lookup)
+- Stores `ApiKeyContext` on `session.requestContext`
+- Accessible in endpoints via `session.apiKey` (from `DartDeskSessionExt`)
 
-This split is necessary because RPC server middleware runs before `Session` creation, so DB operations aren't available in middleware.
-
-**Middleware (header extraction + format validation):**
-
-```dart
-final _rawApiKeyProperty = ContextProperty<String>('rawApiKey');
-
-extension RawApiKeyRequest on Request {
-  String get rawApiKey => _rawApiKeyProperty.get(this);
-  String? get rawApiKeyOrNull => _rawApiKeyProperty[this];
-}
-
-Middleware apiKeyMiddleware() {
-  return (Handler next) {
-    return (Request request) async {
-      // Extract API key from x-api-key header or DartDesk scheme
-      final rawApiKey = request.headers['x-api-key']?.firstOrNull
-          ?? _extractApiKeyFromDartDeskScheme(
-               request.headers['authorization']?.firstOrNull);
-      if (rawApiKey == null) {
-        return Response(statusCode: 401,
-          body: Body.fromString('Missing API key'));
-      }
-      // Format validation only (prefix check)
-      if (!rawApiKey.startsWith('cms_r_') && !rawApiKey.startsWith('cms_w_')) {
-        return Response(statusCode: 401,
-          body: Body.fromString('Invalid API key format'));
-      }
-      _rawApiKeyProperty[request] = rawApiKey;
-      return await next(request);
-    };
-  };
-}
-```
-
-**DB validation function (called in endpoints with Session):**
-
-```dart
-Future<ApiKeyContext> requireApiKey(Session session) async {
-  final rawKey = session.request!.rawApiKey;
-  final ctx = await ApiKeyValidator.validate(session, rawKey);
-  if (ctx == null) throw Exception('Invalid API key');
-  return ctx;
-}
-```
-
-**Registration in server.dart:**
-
-```dart
-pod.server.addMiddleware(apiKeyMiddleware());
-```
-
-**DartDesk Authorization scheme parsing** stays in `server.dart`'s `authenticationHandler` override for JWT extraction. The middleware independently extracts the API key portion from the same `Authorization` header — both parse the compound `DartDesk apiKey=xxx;Basic <jwt>` scheme, each taking their respective part.
-
-**Endpoint usage:**
-
-```dart
-class DocumentEndpoint extends Endpoint {
-  Future<Document> getDocument(Session session, int id) async {
-    final apiKey = await requireApiKey(session);
-    final user = await resolveUser(session, clientId: apiKey.clientId);
-    // ...
-  }
-}
-```
+**No new work needed for API key validation.** Endpoints use `session.apiKey` instead of `DartDeskAuth.authenticateRequest()`.
 
 ### 5. IDP Endpoint API Key Gating
 
-The middleware applies to all RPC server requests, including `/emailIdp` and `/googleIdp`. This means IDP endpoints are automatically gated by API key — only client apps with valid API keys can call auth endpoints. This prevents brute-force attacks and spam registrations from unknown sources.
+The `preEndpointHandlers` applies to all RPC endpoint requests, including `/emailIdp` and `/googleIdp`. This means IDP endpoints are automatically gated by API key — only client apps with valid API keys can call auth endpoints. This prevents brute-force attacks and spam registrations from unknown sources.
 
 ## Removals
 
@@ -244,19 +182,19 @@ Removed index: `users_external_id_idx`
 ```
 Request arrives at RPC server
 │
-├─ apiKeyMiddleware (Relic middleware, no Session)
-│  ├─ Extract raw API key from x-api-key or DartDesk scheme
-│  ├─ Format-validate prefix (cms_r_ / cms_w_)
-│  ├─ Store raw key string on Request via ContextProperty
-│  └─ Reject if missing or malformed (401)
+├─ preEndpointHandler (Serverpod fork, has Session)
+│  ├─ Extract x-api-key header
+│  ├─ Validate via ApiKeyValidator (DB lookup)
+│  ├─ Store ApiKeyContext on session.requestContext
+│  └─ Reject if missing/invalid (401)
 │
 ├─ authenticationHandler (Serverpod)
-│  ├─ Extract JWT from Authorization header or DartDesk scheme
+│  ├─ Extract JWT from Authorization header
 │  ├─ Validate JWT → populate session.authenticated
 │  └─ (null if no JWT — e.g., API-key-only requests)
 │
 └─ Endpoint method
-   ├─ requireApiKey(session) → DB-validates raw key, returns ApiKeyContext (tenant context)
+   ├─ session.apiKey → pre-validated ApiKeyContext (tenant context)
    ├─ session.authenticated → user identity (if present)
    └─ resolveUser(session) → find or create User record
 ```
@@ -279,7 +217,7 @@ When Google auto-links to an existing email/password account:
 ## Migration
 
 - Database migration to drop `externalId`, `externalProvider` columns and `users_external_id_idx` index
-- Update all endpoints to use `session.request!.apiKeyContext` instead of `DartDeskAuth.authenticateRequest()`
+- Update all endpoints to use `session.apiKey` instead of `DartDeskAuth.authenticateRequest()`
 - Update all `_requireAuth` helpers to use new pattern
 - Remove `DartDeskAuth` and `ExternalAuthStrategy` files
 - Remove `_seedAdminUser()` and related passwords.yaml entries
