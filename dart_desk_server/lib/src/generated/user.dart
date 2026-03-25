@@ -21,8 +21,6 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     String? role,
     bool? isActive,
     this.serverpodUserId,
-    this.externalId,
-    this.externalProvider,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : role = role ?? 'viewer',
@@ -38,8 +36,6 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     String? role,
     bool? isActive,
     String? serverpodUserId,
-    String? externalId,
-    String? externalProvider,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _UserImpl;
@@ -55,8 +51,6 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
           ? null
           : _i1.BoolJsonExtension.fromJson(jsonSerialization['isActive']),
       serverpodUserId: jsonSerialization['serverpodUserId'] as String?,
-      externalId: jsonSerialization['externalId'] as String?,
-      externalProvider: jsonSerialization['externalProvider'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -85,10 +79,6 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   String? serverpodUserId;
 
-  String? externalId;
-
-  String? externalProvider;
-
   DateTime? createdAt;
 
   DateTime? updatedAt;
@@ -107,8 +97,6 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     String? role,
     bool? isActive,
     String? serverpodUserId,
-    String? externalId,
-    String? externalProvider,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -123,8 +111,6 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       'role': role,
       'isActive': isActive,
       if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
-      if (externalId != null) 'externalId': externalId,
-      if (externalProvider != null) 'externalProvider': externalProvider,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
     };
@@ -141,8 +127,6 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       'role': role,
       'isActive': isActive,
       if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
-      if (externalId != null) 'externalId': externalId,
-      if (externalProvider != null) 'externalProvider': externalProvider,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
     };
@@ -189,8 +173,6 @@ class _UserImpl extends User {
     String? role,
     bool? isActive,
     String? serverpodUserId,
-    String? externalId,
-    String? externalProvider,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super._(
@@ -201,8 +183,6 @@ class _UserImpl extends User {
          role: role,
          isActive: isActive,
          serverpodUserId: serverpodUserId,
-         externalId: externalId,
-         externalProvider: externalProvider,
          createdAt: createdAt,
          updatedAt: updatedAt,
        );
@@ -219,8 +199,6 @@ class _UserImpl extends User {
     String? role,
     bool? isActive,
     Object? serverpodUserId = _Undefined,
-    Object? externalId = _Undefined,
-    Object? externalProvider = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
   }) {
@@ -234,10 +212,6 @@ class _UserImpl extends User {
       serverpodUserId: serverpodUserId is String?
           ? serverpodUserId
           : this.serverpodUserId,
-      externalId: externalId is String? ? externalId : this.externalId,
-      externalProvider: externalProvider is String?
-          ? externalProvider
-          : this.externalProvider,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
     );
@@ -275,17 +249,6 @@ class UserUpdateTable extends _i1.UpdateTable<UserTable> {
   _i1.ColumnValue<String, String> serverpodUserId(String? value) =>
       _i1.ColumnValue(
         table.serverpodUserId,
-        value,
-      );
-
-  _i1.ColumnValue<String, String> externalId(String? value) => _i1.ColumnValue(
-    table.externalId,
-    value,
-  );
-
-  _i1.ColumnValue<String, String> externalProvider(String? value) =>
-      _i1.ColumnValue(
-        table.externalProvider,
         value,
       );
 
@@ -331,14 +294,6 @@ class UserTable extends _i1.Table<int?> {
       'serverpodUserId',
       this,
     );
-    externalId = _i1.ColumnString(
-      'externalId',
-      this,
-    );
-    externalProvider = _i1.ColumnString(
-      'externalProvider',
-      this,
-    );
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
@@ -365,10 +320,6 @@ class UserTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString serverpodUserId;
 
-  late final _i1.ColumnString externalId;
-
-  late final _i1.ColumnString externalProvider;
-
   late final _i1.ColumnDateTime createdAt;
 
   late final _i1.ColumnDateTime updatedAt;
@@ -382,8 +333,6 @@ class UserTable extends _i1.Table<int?> {
     role,
     isActive,
     serverpodUserId,
-    externalId,
-    externalProvider,
     createdAt,
     updatedAt,
   ];

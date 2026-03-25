@@ -1,0 +1,71 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "alterTable",
+      "alterTable": {
+        "__className__": "serverpod.TableMigration",
+        "name": "users",
+        "schema": "public",
+        "addColumns": [],
+        "deleteColumns": [
+          "externalId",
+          "externalProvider"
+        ],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [
+          "users_external_id_idx"
+        ],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "columnDropped",
+            "message": "Column \"externalId\" of table \"users\" will be dropped.",
+            "table": "users",
+            "columns": [
+              "externalId"
+            ],
+            "destrucive": true
+          },
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "columnDropped",
+            "message": "Column \"externalProvider\" of table \"users\" will be dropped.",
+            "table": "users",
+            "columns": [
+              "externalProvider"
+            ],
+            "destrucive": true
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "columnDropped",
+      "message": "Column \"externalId\" of table \"users\" will be dropped.",
+      "table": "users",
+      "columns": [
+        "externalId"
+      ],
+      "destrucive": true
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "columnDropped",
+      "message": "Column \"externalProvider\" of table \"users\" will be dropped.",
+      "table": "users",
+      "columns": [
+        "externalProvider"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}

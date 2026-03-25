@@ -7,16 +7,11 @@ fields:
   role: String, default='viewer'
   isActive: bool, default=true
   serverpodUserId: String?
-  externalId: String?
-  externalProvider: String?
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
 indexes:
   users_client_email_idx:
     fields: clientId, email
-    unique: true
-  users_external_id_idx:
-    fields: externalId, externalProvider, clientId
     unique: true
   users_client_id_idx:
     fields: clientId

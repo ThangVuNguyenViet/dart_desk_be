@@ -74,7 +74,7 @@ class Protocol extends _i1.SerializationManagerServer {
       name: 'api_tokens',
       dartName: 'ApiToken',
       schema: 'public',
-      module: 'dart_desk_be',
+      module: 'dart_desk',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -236,7 +236,7 @@ class Protocol extends _i1.SerializationManagerServer {
       name: 'deployments',
       dartName: 'Deployment',
       schema: 'public',
-      module: 'dart_desk_be',
+      module: 'dart_desk',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -398,7 +398,7 @@ class Protocol extends _i1.SerializationManagerServer {
       name: 'document_crdt_operations',
       dartName: 'DocumentCrdtOperation',
       schema: 'public',
-      module: 'dart_desk_be',
+      module: 'dart_desk',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -544,7 +544,7 @@ class Protocol extends _i1.SerializationManagerServer {
       name: 'document_crdt_snapshots',
       dartName: 'DocumentCrdtSnapshot',
       schema: 'public',
-      module: 'dart_desk_be',
+      module: 'dart_desk',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -649,7 +649,7 @@ class Protocol extends _i1.SerializationManagerServer {
       name: 'document_versions',
       dartName: 'DocumentVersion',
       schema: 'public',
-      module: 'dart_desk_be',
+      module: 'dart_desk',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -869,7 +869,7 @@ class Protocol extends _i1.SerializationManagerServer {
       name: 'documents',
       dartName: 'Document',
       schema: 'public',
-      module: 'dart_desk_be',
+      module: 'dart_desk',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -1065,7 +1065,7 @@ class Protocol extends _i1.SerializationManagerServer {
       name: 'documents_data',
       dartName: 'DocumentData',
       schema: 'public',
-      module: 'dart_desk_be',
+      module: 'dart_desk',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -1174,7 +1174,7 @@ class Protocol extends _i1.SerializationManagerServer {
       name: 'media_assets',
       dartName: 'MediaAsset',
       schema: 'public',
-      module: 'dart_desk_be',
+      module: 'dart_desk',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -1373,7 +1373,7 @@ class Protocol extends _i1.SerializationManagerServer {
       name: 'projects',
       dartName: 'Project',
       schema: 'public',
-      module: 'dart_desk_be',
+      module: 'dart_desk',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -1476,7 +1476,7 @@ class Protocol extends _i1.SerializationManagerServer {
       name: 'users',
       dartName: 'User',
       schema: 'public',
-      module: 'dart_desk_be',
+      module: 'dart_desk',
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
@@ -1524,18 +1524,6 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String?',
         ),
         _i2.ColumnDefinition(
-          name: 'externalId',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'externalProvider',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
           name: 'createdAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
@@ -1576,27 +1564,6 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'email',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'users_external_id_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'externalId',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'externalProvider',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
             ),
           ],
           type: 'btree',
@@ -1923,10 +1890,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (className != null) return className;
 
     if (data is Map<String, dynamic> && data['__className__'] is String) {
-      return (data['__className__'] as String).replaceFirst(
-        'dart_desk_be.',
-        '',
-      );
+      return (data['__className__'] as String).replaceFirst('dart_desk.', '');
     }
 
     switch (data) {
@@ -2117,7 +2081,7 @@ class Protocol extends _i1.SerializationManagerServer {
       targetTableDefinitions;
 
   @override
-  String getModuleName() => 'dart_desk_be';
+  String getModuleName() => 'dart_desk';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

@@ -339,10 +339,7 @@ class Protocol extends _i1.SerializationManager {
     if (className != null) return className;
 
     if (data is Map<String, dynamic> && data['__className__'] is String) {
-      return (data['__className__'] as String).replaceFirst(
-        'dart_desk_be.',
-        '',
-      );
+      return (data['__className__'] as String).replaceFirst('dart_desk.', '');
     }
 
     switch (data) {
