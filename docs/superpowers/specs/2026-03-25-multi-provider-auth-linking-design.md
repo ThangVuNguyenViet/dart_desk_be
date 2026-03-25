@@ -38,12 +38,29 @@ Override `GoogleIdpEndpoint.login()` to intercept before Serverpod creates a new
 
 **Rationale:** Google is a trusted provider (verifies email ownership). Auto-linking is industry standard for trusted providers (Auth0, Firebase, Supabase all do this).
 
+**Token issuance for the link case:** When auto-linking, we cannot delegate to `googleIdp.login()` (it would create a new `AuthUser`). Instead, after calling `linkGoogleAuthentication()`, we manually issue tokens via the `TokenIssuer` accessible through `AuthServices.instance`:
+
+```dart
+final tokenIssuer = AuthServices.instance.tokenManager;
+return tokenIssuer.issueToken(
+  session,
+  authUserId: existingAuthUserId,
+  method: 'google',
+  scopes: existingAuthUser.scopes,
+  transaction: transaction,
+);
+```
+
+**Race condition:** Between checking for existing `GoogleAccount` and calling `linkGoogleAuthentication()`, a concurrent request could create a duplicate. This is mitigated by running the entire check-and-link sequence inside a database transaction. If `linkGoogleAuthentication()` fails due to a unique constraint violation, we retry by looking up the now-existing `GoogleAccount` and proceeding with the normal login flow.
+
+**Email case normalization:** Serverpod's `EmailAccount` stores emails lowercase (verified in the registration flow). `GoogleAccount` also stores emails lowercase (see `linkGoogleAuthentication()` which calls `email.toLowerCase()`). All email comparisons use the stored lowercase values with standard `equals()`.
+
 **Key Serverpod APIs used:**
 - `GoogleIdpUtils.fetchAccountDetails(session, idToken:, accessToken:)` — verify token, get email
 - `GoogleAccount.db.findFirstRow(session, where: (t) => t.userIdentifier.equals(...))` — check existing Google account
 - `EmailAccount.db.findFirstRow(session, where: (t) => t.email.equals(...))` — check existing email account
 - `GoogleIdpUtils.linkGoogleAuthentication(session, authUserId:, accountDetails:)` — attach Google to existing AuthUser
-- `TokenIssuer.issueToken(session, authUserId:)` — issue JWT for the linked user
+- `AuthServices.instance.tokenManager.issueToken(session, authUserId:)` — issue JWT for the linked user
 
 ### 2. Email Registration Guard
 
@@ -60,6 +77,10 @@ Override `EmailIdpEndpoint.startRegistration()` to block registration when the e
 ### 3. Auto-Create User on First Login
 
 Replace `_seedAdminUser()` with automatic `User` record creation on first successful login via any Serverpod IDP.
+
+**`serverpodUserId` storage:** The `User.serverpodUserId` field stores `authUserId.toString()` (the UUID string form of Serverpod's `AuthUser.id`). This matches `session.authenticated.userIdentifier` which is the same UUID as a string. The current `_seedAdminUser` code already uses this convention.
+
+**Precondition:** `resolveUser()` requires `session.authenticated` to be non-null. It should only be called when the endpoint expects a logged-in user. API-key-only requests (no JWT) should not call `resolveUser()`.
 
 **Implementation:** A standalone `resolveUser()` function:
 
@@ -100,38 +121,54 @@ Future<User> resolveUser(Session session, {int? clientId}) async {
 
 ### 4. API Key Middleware (Replace DartDeskAuth)
 
-Replace `DartDeskAuth` with a Relic middleware registered on the RPC server.
+Replace `DartDeskAuth` with a two-layer approach:
 
-**Middleware:**
+1. **Relic middleware** — extracts and format-validates the raw API key from headers, rejects if missing. Stores the raw key on the `Request` via `ContextProperty`.
+2. **`requireApiKey()` function** — called in endpoints with a `Session`. Does the DB lookup via `ApiKeyValidator.validate()`, returns `ApiKeyContext`.
+
+This split is necessary because RPC server middleware runs before `Session` creation, so DB operations aren't available in middleware.
+
+**Middleware (header extraction + format validation):**
 
 ```dart
-final _apiKeyContextProperty = ContextProperty<ApiKeyContext>('apiKeyContext');
+final _rawApiKeyProperty = ContextProperty<String>('rawApiKey');
 
-extension ApiKeyRequest on Request {
-  ApiKeyContext get apiKeyContext => _apiKeyContextProperty.get(this);
-  ApiKeyContext? get apiKeyContextOrNull => _apiKeyContextProperty[this];
+extension RawApiKeyRequest on Request {
+  String get rawApiKey => _rawApiKeyProperty.get(this);
+  String? get rawApiKeyOrNull => _rawApiKeyProperty[this];
 }
 
 Middleware apiKeyMiddleware() {
   return (Handler next) {
     return (Request request) async {
       // Extract API key from x-api-key header or DartDesk scheme
-      final rawApiKey = request.headers['X-API-Key']?.firstOrNull
+      final rawApiKey = request.headers['x-api-key']?.firstOrNull
           ?? _extractApiKeyFromDartDeskScheme(
-               request.headers['Authorization']?.firstOrNull);
+               request.headers['authorization']?.firstOrNull);
       if (rawApiKey == null) {
-        return Response.unauthorized(
+        return Response(statusCode: 401,
           body: Body.fromString('Missing API key'));
       }
-      final ctx = await ApiKeyValidator.validate(request.session, rawApiKey);
-      if (ctx == null) {
-        return Response.forbidden(
-          body: Body.fromString('Invalid API key'));
+      // Format validation only (prefix check)
+      if (!rawApiKey.startsWith('cms_r_') && !rawApiKey.startsWith('cms_w_')) {
+        return Response(statusCode: 401,
+          body: Body.fromString('Invalid API key format'));
       }
-      _apiKeyContextProperty[request] = ctx;
+      _rawApiKeyProperty[request] = rawApiKey;
       return await next(request);
     };
   };
+}
+```
+
+**DB validation function (called in endpoints with Session):**
+
+```dart
+Future<ApiKeyContext> requireApiKey(Session session) async {
+  final rawKey = session.request!.rawApiKey;
+  final ctx = await ApiKeyValidator.validate(session, rawKey);
+  if (ctx == null) throw Exception('Invalid API key');
+  return ctx;
 }
 ```
 
@@ -141,14 +178,14 @@ Middleware apiKeyMiddleware() {
 pod.server.addMiddleware(apiKeyMiddleware());
 ```
 
-**DartDesk Authorization scheme parsing** stays in `server.dart`'s `authenticationHandler` override for JWT extraction. API key extraction moves into the middleware.
+**DartDesk Authorization scheme parsing** stays in `server.dart`'s `authenticationHandler` override for JWT extraction. The middleware independently extracts the API key portion from the same `Authorization` header — both parse the compound `DartDesk apiKey=xxx;Basic <jwt>` scheme, each taking their respective part.
 
 **Endpoint usage:**
 
 ```dart
 class DocumentEndpoint extends Endpoint {
   Future<Document> getDocument(Session session, int id) async {
-    final apiKey = session.request!.apiKeyContext;
+    final apiKey = await requireApiKey(session);
     final user = await resolveUser(session, clientId: apiKey.clientId);
     // ...
   }
