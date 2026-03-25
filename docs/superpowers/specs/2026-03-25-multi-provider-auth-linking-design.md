@@ -244,11 +244,11 @@ Removed index: `users_external_id_idx`
 ```
 Request arrives at RPC server
 │
-├─ apiKeyMiddleware (Relic middleware)
-│  ├─ Extract API key from x-api-key or DartDesk scheme
-│  ├─ Validate via ApiKeyValidator
-│  ├─ Store ApiKeyContext on request via ContextProperty
-│  └─ Reject if missing/invalid (401/403)
+├─ apiKeyMiddleware (Relic middleware, no Session)
+│  ├─ Extract raw API key from x-api-key or DartDesk scheme
+│  ├─ Format-validate prefix (cms_r_ / cms_w_)
+│  ├─ Store raw key string on Request via ContextProperty
+│  └─ Reject if missing or malformed (401)
 │
 ├─ authenticationHandler (Serverpod)
 │  ├─ Extract JWT from Authorization header or DartDesk scheme
@@ -256,9 +256,9 @@ Request arrives at RPC server
 │  └─ (null if no JWT — e.g., API-key-only requests)
 │
 └─ Endpoint method
-   ├─ session.request!.apiKeyContext → tenant context
+   ├─ requireApiKey(session) → DB-validates raw key, returns ApiKeyContext (tenant context)
    ├─ session.authenticated → user identity (if present)
-   └─ resolveUser() → find or create User record
+   └─ resolveUser(session) → find or create User record
 ```
 
 ## Notification on Auto-Link
