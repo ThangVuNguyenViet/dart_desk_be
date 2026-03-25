@@ -28,7 +28,7 @@ database:
   port: 5432
   name: serverpod
   user: postgres
-  requireSsl: false
+  requireSsl: true
   #isUnixSocket: true # defaults to false
 
 # Redis configuration.
