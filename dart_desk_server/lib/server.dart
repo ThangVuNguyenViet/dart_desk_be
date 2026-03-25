@@ -15,6 +15,23 @@ import 'src/plugin/dart_desk_registry.dart';
 import 'src/plugin/dart_desk_session.dart';
 import 'src/services/document_crdt_service.dart';
 
+/// Endpoints (or specific methods) that do not require an `x-api-key` header.
+/// IDP endpoints need to work pre-authentication, and `project` / `studioConfig`
+/// are needed during the bootstrap flow before any API key exists.
+///
+/// Use `'endpointName'` to exempt all methods, or
+/// `'endpointName.methodName'` to exempt a single method.
+const _apiKeyExemptEndpoints = {
+  'emailIdp',
+  'googleIdp',
+  'refreshJwtTokens',
+  'project',
+  'studioConfig',
+  'apiToken',
+  'user',
+  'document.getDocumentCount',
+};
+
 void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   // Create registry and let plugins register their contributions.
   final registry = DartDeskRegistry();
@@ -71,8 +88,26 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
 
   // Validate x-api-key on every RPC request before the endpoint runs.
   // Attaches ApiKeyContext to session.apiKey for endpoint access.
+  // Endpoints in _apiKeyExemptEndpoints are allowed without an API key
+  // (e.g. IDP login/register, project bootstrap).
   pod.server.preEndpointHandlers.add((session, request) async {
     final apiKeyHeader = request.headers['x-api-key']?.first;
+
+    final isExempt = _apiKeyExemptEndpoints.contains(session.endpoint) ||
+        _apiKeyExemptEndpoints.contains('${session.endpoint}.${session.method}');
+    if (isExempt) {
+      // Optional enrichment: if a key is provided, validate and attach it.
+      if (apiKeyHeader != null) {
+        final apiKeyCtx =
+            await ApiKeyValidator.validate(session, apiKeyHeader);
+        if (apiKeyCtx != null) {
+          session.apiKey = apiKeyCtx;
+        }
+      }
+      return null; // continue without requiring API key
+    }
+
+    // All other endpoints require a valid API key.
     if (apiKeyHeader == null) {
       return Response.unauthorized(
         body: Body.fromString(

@@ -8,18 +8,16 @@ const _apiKeyContextKey = 'apiKey';
 ///
 /// The [ApiKeyContext] is attached by the pre-endpoint handler registered
 /// in `server.dart` via `pod.server.preEndpointHandlers`. By the time an
-/// endpoint method runs, the API key has already been validated.
+/// endpoint method runs, the API key has already been validated (or the
+/// endpoint is exempt and gets a permissive default).
 extension DartDeskSessionExt on Session {
   /// The validated API key context for this request.
   ///
-  /// Always available in endpoint methods — the pre-endpoint handler
-  /// rejects requests with missing/invalid API keys before the endpoint
-  /// is reached.
+  /// Non-exempt endpoints always have a real key (pre-handler rejects
+  /// otherwise). Exempt endpoints and test contexts get a permissive default.
   ApiKeyContext get apiKey {
     final ctx = requestContext?[_apiKeyContextKey];
     if (ctx is ApiKeyContext) return ctx;
-    // In test context, requestContext is not set by pre-endpoint handler.
-    // Return a permissive default. In production the handler always sets it.
     return const ApiKeyContext(clientId: null, role: 'write', tokenId: 0);
   }
 
