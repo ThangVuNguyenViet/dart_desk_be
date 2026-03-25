@@ -17,7 +17,6 @@ typedef AuthResult = ({ApiKeyContext apiKey, User? user});
 /// 2. Authorization: Bearer (optional) → resolves user identity
 class DartDeskAuth {
   static List<ExternalAuthStrategy> _strategies = [];
-  static List<String> _adminEmails = [];
 
   /// Configure external auth strategies and admin bootstrap emails.
   static void configure({
@@ -25,7 +24,6 @@ class DartDeskAuth {
     List<String> adminEmails = const [],
   }) {
     _strategies = externalStrategies;
-    _adminEmails = adminEmails;
   }
 
   /// Initialize all registered strategies. Call during server startup.
@@ -45,18 +43,56 @@ class DartDeskAuth {
   /// Reset to default state (useful for testing).
   static void reset() {
     _strategies = [];
-    _adminEmails = [];
   }
 
-  /// Validate the x-api-key header. Returns null if missing or invalid.
+  /// Validate the API key from request headers. Returns null if missing or invalid.
+  ///
+  /// Checks in order:
+  /// 1. `x-api-key` header (backwards compat for direct REST/test calls)
+  /// 2. `Authorization: DartDesk apiKey=<key>` scheme (Serverpod RPC calls)
   static Future<ApiKeyContext?> authenticateApiKey(Session session) async {
     final request = session.request;
     if (request == null) return null;
 
+    // Try x-api-key header first (backwards compat for direct REST/test calls)
     final apiKeyHeader = request.headers['x-api-key']?.first;
-    if (apiKeyHeader == null) return null;
+    if (apiKeyHeader != null) {
+      return ApiKeyValidator.validate(session, apiKeyHeader);
+    }
 
-    return ApiKeyValidator.validate(session, apiKeyHeader);
+    // Try DartDesk scheme in Authorization header (Serverpod RPC calls)
+    final authHeader = request.headers['authorization']?.first;
+    if (authHeader != null) {
+      final apiKey = extractApiKeyFromDartDeskScheme(authHeader);
+      if (apiKey != null) {
+        return ApiKeyValidator.validate(session, apiKey);
+      }
+    }
+
+    return null;
+  }
+
+  /// Parses `DartDesk apiKey=<key>` or `DartDesk apiKey=<key>;Basic <jwt>`
+  /// Returns the API key value or null if malformed.
+  static String? extractApiKeyFromDartDeskScheme(String header) {
+    if (!header.startsWith('DartDesk ')) return null;
+    final payload = header.substring('DartDesk '.length);
+    final semicolonIndex = payload.indexOf(';');
+    final apiKeyPart = semicolonIndex >= 0
+        ? payload.substring(0, semicolonIndex).trim()
+        : payload.trim();
+    if (!apiKeyPart.startsWith('apiKey=')) return null;
+    return apiKeyPart.substring('apiKey='.length);
+  }
+
+  /// Extracts the JWT portion from a DartDesk compound Authorization value.
+  /// Returns the raw auth header string (e.g. `Basic <b64>`) or null.
+  static String? extractAuthKeyFromDartDeskScheme(String header) {
+    if (!header.startsWith('DartDesk ')) return null;
+    final payload = header.substring('DartDesk '.length);
+    final semicolonIndex = payload.indexOf(';');
+    if (semicolonIndex < 0) return null;
+    return payload.substring(semicolonIndex + 1).trim();
   }
 
   /// Authenticate the current request.
@@ -108,8 +144,8 @@ class DartDeskAuth {
     for (final strategy in _strategies) {
       final extUser = await strategy.authenticate(headers, session);
       if (extUser != null) {
-        final user = await _findOrCreateUser(
-            session, extUser, strategy.name, clientId);
+        final user =
+            await _findOrCreateUser(session, extUser, strategy.name, clientId);
         return (apiKey: apiKeyCtx, user: user);
       }
     }
@@ -137,15 +173,12 @@ class DartDeskAuth {
 
     if (user != null) return user;
 
-    // Determine role: admin if email is in adminEmails list, otherwise viewer
-    final role = _adminEmails.contains(extUser.email) ? 'admin' : 'viewer';
-
     // Auto-create user
     user = User(
       clientId: clientId,
       email: extUser.email,
       name: extUser.name,
-      role: role,
+      role: 'viewer',
       isActive: true,
       externalId: extUser.externalId,
       externalProvider: providerName,

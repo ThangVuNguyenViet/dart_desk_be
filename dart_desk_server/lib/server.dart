@@ -73,6 +73,17 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
     ],
   );
 
+  // Wrap auth handler to support DartDesk compound Authorization scheme.
+  // Extracts JWT from "DartDesk apiKey=xxx;Basic <jwt>" so session.authenticated works.
+  final originalAuthHandler = pod.authenticationHandler!;
+  pod.authenticationHandler = (session, key) async {
+    final jwtPart = DartDeskAuth.extractAuthKeyFromDartDeskScheme(key);
+    if (jwtPart != null) {
+      return originalAuthHandler(session, jwtPart);
+    }
+    return originalAuthHandler(session, key);
+  };
+
   // For production cloud storage (S3, GCS, etc.), configure in your deployment overlay.
 
   // Start the server.
