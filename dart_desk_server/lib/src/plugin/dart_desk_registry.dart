@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
 
-import '../auth/external_auth_strategy.dart';
 import '../services/document_crdt_service.dart';
 import '../services/image_storage_provider.dart';
 import '../services/local_image_storage_provider.dart';
@@ -27,19 +26,6 @@ class DartDeskRegistry {
   /// Create an [ImageStorageProvider] for the given session.
   ImageStorageProvider createImageStorage(Session session) =>
       _imageStorageFactory(session);
-
-  // -- Auth Strategies --
-
-  final List<ExternalAuthStrategy> _authStrategies = [];
-
-  /// Add an external auth strategy.
-  void addAuthStrategy(ExternalAuthStrategy strategy) {
-    _authStrategies.add(strategy);
-  }
-
-  /// All registered external auth strategies.
-  List<ExternalAuthStrategy> get authStrategies =>
-      List.unmodifiable(_authStrategies);
 
   // -- CRDT Service --
 

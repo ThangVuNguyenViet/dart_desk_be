@@ -24,8 +24,7 @@ import 'package:dart_desk_server/src/generated/document.dart' as _i8;
 import 'package:dart_desk_server/src/generated/document_list.dart' as _i9;
 import 'package:dart_desk_server/src/generated/document_version_list_with_operations.dart'
     as _i10;
-import 'package:dart_desk_server/src/generated/document_version.dart'
-    as _i11;
+import 'package:dart_desk_server/src/generated/document_version.dart' as _i11;
 import 'package:dart_desk_server/src/generated/document_version_status.dart'
     as _i12;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'

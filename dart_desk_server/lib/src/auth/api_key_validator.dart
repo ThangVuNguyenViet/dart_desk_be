@@ -22,7 +22,7 @@ class ParsedApiKey {
 /// Validates x-api-key header values against the ApiToken table.
 ///
 /// This is a stateless utility. Call [validate] from endpoint methods
-/// or from [DartDeskAuth.authenticateRequest].
+/// or from the pre-endpoint handler in server.dart.
 class ApiKeyValidator {
   static const _validPrefixes = {'cms_r_', 'cms_w_'};
   static const _prefixLength = 6;

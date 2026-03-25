@@ -508,10 +508,11 @@ packages:
   serverpod:
     dependency: "direct main"
     description:
-      name: serverpod
-      sha256: cbdec8428085a31892e13189b708467bee90028211b6eb22529d360bbcd9a9bc
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/serverpod"
+      ref: main
+      resolved-ref: "7fdee2c484e60a5ac8431e6d055846c8a4687e72"
+      url: "https://github.com/ThangVuNguyenViet/serverpod.git"
+    source: git
     version: "3.4.4"
   serverpod_auth_core_server:
     dependency: "direct main"
@@ -529,6 +530,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.4"
+  serverpod_database:
+    dependency: "direct overridden"
+    description:
+      path: "packages/serverpod_database"
+      ref: main
+      resolved-ref: "7fdee2c484e60a5ac8431e6d055846c8a4687e72"
+      url: "https://github.com/ThangVuNguyenViet/serverpod.git"
+    source: git
+    version: "3.4.4"
   serverpod_lints:
     dependency: transitive
     description:
@@ -541,18 +551,19 @@ packages:
     dependency: "direct overridden"
     description:
       path: "packages/serverpod_serialization"
-      ref: "fix/dynamic-map-deserialization"
-      resolved-ref: "915934f34fee70a3c5f129c206229f62846a635a"
+      ref: main
+      resolved-ref: "7fdee2c484e60a5ac8431e6d055846c8a4687e72"
       url: "https://github.com/ThangVuNguyenViet/serverpod.git"
     source: git
     version: "3.4.4"
   serverpod_shared:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: serverpod_shared
-      sha256: "8ebb1107e7a8f5bae35228a93f6a7701067d4dab4f340b4e34b010786668c46f"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/serverpod_shared"
+      ref: main
+      resolved-ref: "7fdee2c484e60a5ac8431e6d055846c8a4687e72"
+      url: "https://github.com/ThangVuNguyenViet/serverpod.git"
+    source: git
     version: "3.4.4"
   serverpod_test:
     dependency: "direct dev"

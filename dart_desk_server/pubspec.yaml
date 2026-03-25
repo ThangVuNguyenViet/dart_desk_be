@@ -25,11 +25,26 @@ dependencies:
   serverpod_auth_idp_server: 3.4.4
 
 dependency_overrides:
+  serverpod:
+    git:
+      url: https://github.com/ThangVuNguyenViet/serverpod.git
+      ref: main
+      path: packages/serverpod
   serverpod_serialization:
     git:
       url: https://github.com/ThangVuNguyenViet/serverpod.git
-      ref: fix/dynamic-map-deserialization
+      ref: main
       path: packages/serverpod_serialization
+  serverpod_shared:
+    git:
+      url: https://github.com/ThangVuNguyenViet/serverpod.git
+      ref: main
+      path: packages/serverpod_shared
+  serverpod_database:
+    git:
+      url: https://github.com/ThangVuNguyenViet/serverpod.git
+      ref: main
+      path: packages/serverpod_database
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
