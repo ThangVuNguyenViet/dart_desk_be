@@ -33,8 +33,9 @@ Future<User> resolveUser(Session session, {int? clientId}) async {
   String? name;
   try {
     final profileRows = await session.db.unsafeQuery(
-      'SELECT "email", "fullName" FROM "serverpod_auth_core_profile" '
-      'WHERE "authUserId" = \'$serverpodUserId\' LIMIT 1',
+      r'SELECT "email", "fullName" FROM "serverpod_auth_core_profile" '
+      r'WHERE "authUserId" = $1 LIMIT 1',
+      parameters: QueryParameters.positional([serverpodUserId]),
     );
     if (profileRows.isNotEmpty) {
       email = profileRows.first[0] as String?;
