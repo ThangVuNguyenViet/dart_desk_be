@@ -1,0 +1,21 @@
+name: flutter_cms_be_client
+description: Starting point for a Serverpod client.
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  serverpod_client: 3.4.3
+  serverpod_flutter: 3.4.3
+  serverpod_auth_idp_client: 3.4.3
+  serverpod_auth_idp_flutter: 3.4.3
+  serverpod_admin_client:
+    git:
+      url: https://github.com/AdamMusa/serverpod_admin.git
+      path: serverpod_admin_client
+
+  flutter:
+    sdk: flutter
+  flutter_cms:
+    path: ../../flutter_cms/packages/flutter_cms
+  shadcn_ui: ^0.39.14

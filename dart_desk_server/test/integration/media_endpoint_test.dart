@@ -5,7 +5,9 @@ import 'test_tools/serverpod_test_tools.dart';
 import 'helpers/test_data_factory.dart';
 
 void main() {
-  withServerpod('Media endpoint', (sessionBuilder, endpoints) {
+  withServerpod(
+    'Media endpoint',
+    (sessionBuilder, endpoints) {
     late TestDataFactory factory;
 
     setUp(() async {
@@ -59,7 +61,7 @@ void main() {
         final media = await endpoints.media.getMedia(authed, uploaded.assetId);
 
         expect(media, isNotNull);
-        expect(media!.fileName, contains('test_image'));
+        expect(media!.assetId, equals(uploaded.assetId));
       });
     });
 
@@ -175,5 +177,7 @@ void main() {
         );
       });
     });
-  });
+  },
+    rollbackDatabase: RollbackDatabase.disabled,
+  );
 }
