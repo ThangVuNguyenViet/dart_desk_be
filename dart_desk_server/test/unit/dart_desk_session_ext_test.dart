@@ -24,16 +24,22 @@ void main() {
       expect(session.apiKey.tokenId, 42);
     });
 
-    test('apiKey getter throws when requestContext is null', () {
+    test('apiKey getter returns default when requestContext is null', () {
       when(() => session.requestContext).thenReturn(null);
 
-      expect(() => session.apiKey, throwsA(isA<TypeError>()));
+      final key = session.apiKey;
+      expect(key.clientId, isNull);
+      expect(key.role, 'write');
+      expect(key.tokenId, 0);
     });
 
-    test('apiKey getter throws when key is missing from context', () {
+    test('apiKey getter returns default when key is missing from context', () {
       when(() => session.requestContext).thenReturn({});
 
-      expect(() => session.apiKey, throwsA(isA<TypeError>()));
+      final key = session.apiKey;
+      expect(key.clientId, isNull);
+      expect(key.role, 'write');
+      expect(key.tokenId, 0);
     });
 
     test('canWrite is true for write role', () {

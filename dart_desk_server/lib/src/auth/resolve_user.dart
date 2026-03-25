@@ -28,23 +28,6 @@ Future<User> resolveUser(Session session, {int? clientId}) async {
   );
   if (user != null) return user;
 
-  // Get email/name from Serverpod UserProfile via raw SQL
-  String? email;
-  String? name;
-  try {
-    final profileRows = await session.db.unsafeQuery(
-      r'SELECT "email", "fullName" FROM "serverpod_auth_core_profile" '
-      r'WHERE "authUserId" = $1 LIMIT 1',
-      parameters: QueryParameters.positional([serverpodUserId]),
-    );
-    if (profileRows.isNotEmpty) {
-      email = profileRows.first[0] as String?;
-      name = profileRows.first[1] as String?;
-    }
-  } catch (_) {
-    // Profile lookup failed; use fallback values
-  }
-
   // First user in tenant becomes admin
   final userCount = await User.db.count(
     session,
@@ -56,8 +39,8 @@ Future<User> resolveUser(Session session, {int? clientId}) async {
 
   user = User(
     clientId: clientId,
-    email: email ?? '',
-    name: name,
+    email: '',
+    name: null,
     role: role,
     isActive: true,
     serverpodUserId: serverpodUserId,

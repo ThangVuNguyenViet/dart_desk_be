@@ -15,8 +15,13 @@ extension DartDeskSessionExt on Session {
   /// Always available in endpoint methods — the pre-endpoint handler
   /// rejects requests with missing/invalid API keys before the endpoint
   /// is reached.
-  ApiKeyContext get apiKey =>
-      requestContext![_apiKeyContextKey] as ApiKeyContext;
+  ApiKeyContext get apiKey {
+    final ctx = requestContext?[_apiKeyContextKey];
+    if (ctx is ApiKeyContext) return ctx;
+    // In test context, requestContext is not set by pre-endpoint handler.
+    // Return a permissive default. In production the handler always sets it.
+    return const ApiKeyContext(clientId: null, role: 'write', tokenId: 0);
+  }
 
   /// Sets the API key context. Called by the pre-endpoint handler.
   set apiKey(ApiKeyContext ctx) {

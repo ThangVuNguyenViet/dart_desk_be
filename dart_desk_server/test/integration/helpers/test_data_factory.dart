@@ -35,22 +35,24 @@ class TestDataFactory {
   }
 
   /// Ensures a User record exists for the authenticated test user.
-  /// Inserts directly since ensureUser endpoint was removed.
+  /// Inserts directly to avoid endpoint calls that trigger concurrent
+  /// DB operations unsupported in the Serverpod test transaction wrapper.
   Future<User> ensureTestUser({
     String userIdentifier = 'test-user-1',
     String email = 'test@example.com',
     String name = 'Test User',
     String role = 'viewer',
   }) async {
-    final authed = authenticatedSession(userIdentifier: userIdentifier);
+    final session = sessionBuilder.build();
 
-    // Check if user already exists via getCurrentUser
-    final existing = await endpoints.user.getCurrentUser(authed);
+    // Check if user already exists
+    final existing = await User.db.findFirstRow(
+      session,
+      where: (t) => t.serverpodUserId.equals(userIdentifier),
+    );
     if (existing != null) return existing;
 
-    // Insert directly for testing (since DartDeskAuth.authenticateRequest
-    // via Serverpod IDP path only finds existing users, doesn't create)
-    final session = sessionBuilder.build();
+    // Insert directly for testing
     final user = await User.db.insertRow(
       session,
       User(

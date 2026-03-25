@@ -1,5 +1,4 @@
 import 'package:dart_desk_server/src/auth/resolve_user.dart';
-import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 import '../integration/test_tools/serverpod_test_tools.dart';
