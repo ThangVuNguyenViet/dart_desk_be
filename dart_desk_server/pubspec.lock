@@ -542,7 +542,7 @@ packages:
     description:
       path: "packages/serverpod_serialization"
       ref: "fix/dynamic-map-deserialization"
-      resolved-ref: e3f7e4bd9769e8c8da4443b806b2808b0509e25f
+      resolved-ref: "915934f34fee70a3c5f129c206229f62846a635a"
       url: "https://github.com/ThangVuNguyenViet/serverpod.git"
     source: git
     version: "3.4.4"
