@@ -36,8 +36,8 @@ document:
   - deleteDocumentVersion:
   - getDocumentCount:
 emailIdp:
-  - login:
   - startRegistration:
+  - login:
   - verifyRegistrationCode:
   - finishRegistration:
   - startPasswordReset:
