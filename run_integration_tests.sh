@@ -2,7 +2,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$SCRIPT_DIR/dart_desk_be_server"
+cd "$SCRIPT_DIR/dart_desk_server"
 
 echo "=== Dart Desk Backend Integration Tests ==="
 echo ""

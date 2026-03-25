@@ -13,8 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:dart_desk_client/src/protocol/api_token.dart' as _i3;
-import 'package:dart_desk_client/src/protocol/api_token_with_value.dart'
-    as _i4;
+import 'package:dart_desk_client/src/protocol/api_token_with_value.dart' as _i4;
 import 'package:dart_desk_client/src/protocol/deployment.dart' as _i5;
 import 'package:dart_desk_client/src/protocol/document_crdt_operation.dart'
     as _i6;

@@ -14,7 +14,7 @@
 server.log
 
 # Runtime storage
-dart_desk_be_server/storage/
+dart_desk_server/storage/
 
 # Terraform
 .terraform/

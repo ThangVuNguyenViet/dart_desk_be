@@ -1,0 +1,38 @@
+name: dart_desk_server
+description: Serverpod backend server for Dart Desk, a headless CMS with CRDT collaboration, media management, and versioned content.
+version: 0.1.0
+repository: https://github.com/ThangVuNguyenViet/dart_desk_be
+topics:
+  - cms
+  - serverpod
+  - headless-cms
+  - backend
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  serverpod: 3.4.4
+  crdt: ^5.1.3
+  uuid: ^4.5.1
+  dbcrypt: ^2.0.0
+  archive: ^4.0.2
+  crypto: ^3.0.0
+  mime: ^2.0.0
+  image: ^4.5.0
+  exif: ^3.3.0
+  serverpod_auth_core_server: 3.4.4
+  serverpod_auth_idp_server: 3.4.4
+
+dependency_overrides:
+  serverpod_serialization:
+    git:
+      url: https://github.com/ThangVuNguyenViet/serverpod.git
+      ref: fix/dynamic-map-deserialization
+      path: packages/serverpod_serialization
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  test: '^1.24.2'
+  serverpod_test: 3.4.4
+  mocktail: ^1.0.4

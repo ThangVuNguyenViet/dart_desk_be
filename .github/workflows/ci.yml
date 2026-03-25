@@ -18,11 +18,11 @@ jobs:
           sdk: '3.5.0'
 
       - name: Get dependencies
-        working-directory: dart_desk_be_server
+        working-directory: dart_desk_server
         run: dart pub get
 
       - name: Run unit tests
-        working-directory: dart_desk_be_server
+        working-directory: dart_desk_server
         run: dart test test/unit/ --reporter expanded
 
   integration-tests:
@@ -62,9 +62,9 @@ jobs:
           sdk: '3.5.0'
 
       - name: Get dependencies
-        working-directory: dart_desk_be_server
+        working-directory: dart_desk_server
         run: dart pub get
 
       - name: Run integration tests (excludes stress)
-        working-directory: dart_desk_be_server
+        working-directory: dart_desk_server
         run: dart test test/integration/ --exclude-tags=stress --reporter expanded
