@@ -31,11 +31,11 @@ import 'media_asset_metadata_status.dart' as _i18;
 import 'project.dart' as _i19;
 import 'project_list.dart' as _i20;
 import 'user.dart' as _i21;
-import 'package:dart_desk_be_client/src/protocol/api_token.dart' as _i22;
-import 'package:dart_desk_be_client/src/protocol/deployment.dart' as _i23;
-import 'package:dart_desk_be_client/src/protocol/document_crdt_operation.dart'
+import 'package:dart_desk_client/src/protocol/api_token.dart' as _i22;
+import 'package:dart_desk_client/src/protocol/deployment.dart' as _i23;
+import 'package:dart_desk_client/src/protocol/document_crdt_operation.dart'
     as _i24;
-import 'package:dart_desk_be_client/src/protocol/media_asset.dart' as _i25;
+import 'package:dart_desk_client/src/protocol/media_asset.dart' as _i25;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i26;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'

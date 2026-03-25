@@ -1,6 +1,6 @@
 {
-    "name": "dart_desk_be_client",
-    "short_name": "dart_desk_be_client",
+    "name": "dart_desk_client",
+    "short_name": "dart_desk_client",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

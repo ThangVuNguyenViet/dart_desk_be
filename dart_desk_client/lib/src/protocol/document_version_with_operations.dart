@@ -13,7 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'document_version.dart' as _i2;
 import 'document_crdt_operation.dart' as _i3;
-import 'package:dart_desk_be_client/src/protocol/protocol.dart' as _i4;
+import 'package:dart_desk_client/src/protocol/protocol.dart' as _i4;
 
 abstract class DocumentVersionWithOperations implements _i1.SerializableModel {
   DocumentVersionWithOperations._({

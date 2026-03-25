@@ -1,4 +1,4 @@
-name: dart_desk_be_client
+name: dart_desk_client
 description: Dart client SDK for the Dart Desk headless CMS backend, providing typed API access to documents, media, and collaboration endpoints.
 version: 0.1.0
 repository: https://github.com/ThangVuNguyenViet/dart_desk_be

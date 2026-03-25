@@ -12,28 +12,28 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'package:dart_desk_be_client/src/protocol/api_token.dart' as _i3;
-import 'package:dart_desk_be_client/src/protocol/api_token_with_value.dart'
+import 'package:dart_desk_client/src/protocol/api_token.dart' as _i3;
+import 'package:dart_desk_client/src/protocol/api_token_with_value.dart'
     as _i4;
-import 'package:dart_desk_be_client/src/protocol/deployment.dart' as _i5;
-import 'package:dart_desk_be_client/src/protocol/document_crdt_operation.dart'
+import 'package:dart_desk_client/src/protocol/deployment.dart' as _i5;
+import 'package:dart_desk_client/src/protocol/document_crdt_operation.dart'
     as _i6;
-import 'package:dart_desk_be_client/src/protocol/document.dart' as _i7;
-import 'package:dart_desk_be_client/src/protocol/document_list.dart' as _i8;
-import 'package:dart_desk_be_client/src/protocol/document_version_list_with_operations.dart'
+import 'package:dart_desk_client/src/protocol/document.dart' as _i7;
+import 'package:dart_desk_client/src/protocol/document_list.dart' as _i8;
+import 'package:dart_desk_client/src/protocol/document_version_list_with_operations.dart'
     as _i9;
-import 'package:dart_desk_be_client/src/protocol/document_version.dart' as _i10;
-import 'package:dart_desk_be_client/src/protocol/document_version_status.dart'
+import 'package:dart_desk_client/src/protocol/document_version.dart' as _i10;
+import 'package:dart_desk_client/src/protocol/document_version_status.dart'
     as _i11;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i12;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i13;
-import 'package:dart_desk_be_client/src/protocol/media_asset.dart' as _i14;
+import 'package:dart_desk_client/src/protocol/media_asset.dart' as _i14;
 import 'dart:typed_data' as _i15;
-import 'package:dart_desk_be_client/src/protocol/project_list.dart' as _i16;
-import 'package:dart_desk_be_client/src/protocol/project.dart' as _i17;
-import 'package:dart_desk_be_client/src/protocol/user.dart' as _i18;
+import 'package:dart_desk_client/src/protocol/project_list.dart' as _i16;
+import 'package:dart_desk_client/src/protocol/project.dart' as _i17;
+import 'package:dart_desk_client/src/protocol/user.dart' as _i18;
 import 'protocol.dart' as _i19;
 
 /// Endpoint for managing CMS API tokens.

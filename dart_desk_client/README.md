@@ -1,4 +1,4 @@
-# dart_desk_be_client
+# dart_desk_client
 
 Dart client SDK for the [Dart Desk](https://github.com/ThangVuNguyenViet/dart_desk_be) headless CMS backend.
 
@@ -8,13 +8,13 @@ This package provides typed API access to documents, media, collaboration, and v
 
 ```yaml
 dependencies:
-  dart_desk_be_client: ^0.1.0
+  dart_desk_client: ^0.1.0
 ```
 
 ## Usage
 
 ```dart
-import 'package:dart_desk_be_client/dart_desk_be_client.dart';
+import 'package:dart_desk_client/dart_desk_client.dart';
 
 final client = Client('http://localhost:8080/')
   ..authenticationKeyManager = myKeyManager;

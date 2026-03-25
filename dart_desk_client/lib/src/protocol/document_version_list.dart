@@ -11,28 +11,28 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'project.dart' as _i2;
-import 'package:dart_desk_be_client/src/protocol/protocol.dart' as _i3;
+import 'document_version.dart' as _i2;
+import 'package:dart_desk_client/src/protocol/protocol.dart' as _i3;
 
-abstract class ProjectList implements _i1.SerializableModel {
-  ProjectList._({
-    required this.projects,
+abstract class DocumentVersionList implements _i1.SerializableModel {
+  DocumentVersionList._({
+    required this.versions,
     required this.total,
     required this.page,
     required this.pageSize,
   });
 
-  factory ProjectList({
-    required List<_i2.Project> projects,
+  factory DocumentVersionList({
+    required List<_i2.DocumentVersion> versions,
     required int total,
     required int page,
     required int pageSize,
-  }) = _ProjectListImpl;
+  }) = _DocumentVersionListImpl;
 
-  factory ProjectList.fromJson(Map<String, dynamic> jsonSerialization) {
-    return ProjectList(
-      projects: _i3.Protocol().deserialize<List<_i2.Project>>(
-        jsonSerialization['projects'],
+  factory DocumentVersionList.fromJson(Map<String, dynamic> jsonSerialization) {
+    return DocumentVersionList(
+      versions: _i3.Protocol().deserialize<List<_i2.DocumentVersion>>(
+        jsonSerialization['versions'],
       ),
       total: jsonSerialization['total'] as int,
       page: jsonSerialization['page'] as int,
@@ -40,7 +40,7 @@ abstract class ProjectList implements _i1.SerializableModel {
     );
   }
 
-  List<_i2.Project> projects;
+  List<_i2.DocumentVersion> versions;
 
   int total;
 
@@ -48,11 +48,11 @@ abstract class ProjectList implements _i1.SerializableModel {
 
   int pageSize;
 
-  /// Returns a shallow copy of this [ProjectList]
+  /// Returns a shallow copy of this [DocumentVersionList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ProjectList copyWith({
-    List<_i2.Project>? projects,
+  DocumentVersionList copyWith({
+    List<_i2.DocumentVersion>? versions,
     int? total,
     int? page,
     int? pageSize,
@@ -60,8 +60,8 @@ abstract class ProjectList implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'ProjectList',
-      'projects': projects.toJson(valueToJson: (v) => v.toJson()),
+      '__className__': 'DocumentVersionList',
+      'versions': versions.toJson(valueToJson: (v) => v.toJson()),
       'total': total,
       'page': page,
       'pageSize': pageSize,
@@ -74,31 +74,31 @@ abstract class ProjectList implements _i1.SerializableModel {
   }
 }
 
-class _ProjectListImpl extends ProjectList {
-  _ProjectListImpl({
-    required List<_i2.Project> projects,
+class _DocumentVersionListImpl extends DocumentVersionList {
+  _DocumentVersionListImpl({
+    required List<_i2.DocumentVersion> versions,
     required int total,
     required int page,
     required int pageSize,
   }) : super._(
-         projects: projects,
+         versions: versions,
          total: total,
          page: page,
          pageSize: pageSize,
        );
 
-  /// Returns a shallow copy of this [ProjectList]
+  /// Returns a shallow copy of this [DocumentVersionList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ProjectList copyWith({
-    List<_i2.Project>? projects,
+  DocumentVersionList copyWith({
+    List<_i2.DocumentVersion>? versions,
     int? total,
     int? page,
     int? pageSize,
   }) {
-    return ProjectList(
-      projects: projects ?? this.projects.map((e0) => e0.copyWith()).toList(),
+    return DocumentVersionList(
+      versions: versions ?? this.versions.map((e0) => e0.copyWith()).toList(),
       total: total ?? this.total,
       page: page ?? this.page,
       pageSize: pageSize ?? this.pageSize,
