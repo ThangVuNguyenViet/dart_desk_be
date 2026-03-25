@@ -1,12 +1,12 @@
 {
   "__className__": "serverpod.DatabaseDefinition",
-  "moduleName": "dart_desk_be",
+  "moduleName": "dart_desk",
   "tables": [
     {
       "__className__": "serverpod.TableDefinition",
       "name": "api_tokens",
       "dartName": "ApiToken",
-      "module": "dart_desk_be",
+      "module": "dart_desk",
       "schema": "public",
       "columns": [
         {
@@ -192,7 +192,7 @@
       "__className__": "serverpod.TableDefinition",
       "name": "deployments",
       "dartName": "Deployment",
-      "module": "dart_desk_be",
+      "module": "dart_desk",
       "schema": "public",
       "columns": [
         {
@@ -380,7 +380,7 @@
       "__className__": "serverpod.TableDefinition",
       "name": "document_crdt_operations",
       "dartName": "DocumentCrdtOperation",
-      "module": "dart_desk_be",
+      "module": "dart_desk",
       "schema": "public",
       "columns": [
         {
@@ -548,7 +548,7 @@
       "__className__": "serverpod.TableDefinition",
       "name": "document_crdt_snapshots",
       "dartName": "DocumentCrdtSnapshot",
-      "module": "dart_desk_be",
+      "module": "dart_desk",
       "schema": "public",
       "columns": [
         {
@@ -667,7 +667,7 @@
       "__className__": "serverpod.TableDefinition",
       "name": "document_versions",
       "dartName": "DocumentVersion",
-      "module": "dart_desk_be",
+      "module": "dart_desk",
       "schema": "public",
       "columns": [
         {
@@ -918,7 +918,7 @@
       "__className__": "serverpod.TableDefinition",
       "name": "documents",
       "dartName": "Document",
-      "module": "dart_desk_be",
+      "module": "dart_desk",
       "schema": "public",
       "columns": [
         {
@@ -1145,7 +1145,7 @@
       "__className__": "serverpod.TableDefinition",
       "name": "documents_data",
       "dartName": "DocumentData",
-      "module": "dart_desk_be",
+      "module": "dart_desk",
       "schema": "public",
       "columns": [
         {
@@ -1266,7 +1266,7 @@
       "__className__": "serverpod.TableDefinition",
       "name": "media_assets",
       "dartName": "MediaAsset",
-      "module": "dart_desk_be",
+      "module": "dart_desk",
       "schema": "public",
       "columns": [
         {
@@ -1491,7 +1491,7 @@
       "__className__": "serverpod.TableDefinition",
       "name": "projects",
       "dartName": "Project",
-      "module": "dart_desk_be",
+      "module": "dart_desk",
       "schema": "public",
       "columns": [
         {
@@ -1606,7 +1606,7 @@
       "__className__": "serverpod.TableDefinition",
       "name": "users",
       "dartName": "User",
-      "module": "dart_desk_be",
+      "module": "dart_desk",
       "schema": "public",
       "columns": [
         {
@@ -1663,20 +1663,6 @@
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "externalId",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "externalProvider",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
           "name": "createdAt",
           "columnType": 4,
           "isNullable": true,
@@ -1721,30 +1707,6 @@
               "__className__": "serverpod.IndexElementDefinition",
               "type": 0,
               "definition": "email"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "users_external_id_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "externalId"
-            },
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "externalProvider"
-            },
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "clientId"
             }
           ],
           "type": "btree",
@@ -4941,8 +4903,8 @@
   "installedModules": [
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
-      "module": "dart_desk_be",
-      "version": "20260323055909888"
+      "module": "dart_desk",
+      "version": "20260325183608210"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
