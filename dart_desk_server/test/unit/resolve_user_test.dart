@@ -5,81 +5,57 @@ import 'package:test/test.dart';
 import '../integration/test_tools/serverpod_test_tools.dart';
 
 void main() {
-  withServerpod(
-    'resolveUser',
-    (sessionBuilder, endpoints) {
-      setUp(() async {
-        // Clean up users from previous tests (rollback disabled)
-        final session = sessionBuilder.build();
-        final users = await User.db.find(session);
-        for (final user in users) {
-          await User.db.deleteRow(session, user);
-        }
-      });
+  withServerpod('resolveUser', (sessionBuilder, endpoints) {
+    test('returns existing user by serverpodUserId', () async {
+      final session = sessionBuilder.build();
+      await User.db.insertRow(
+        session,
+        User(
+          clientId: null,
+          email: 'test@example.com',
+          name: 'Test',
+          role: 'admin',
+          isActive: true,
+          serverpodUserId: 'user-1',
+        ),
+      );
 
-      test('first user becomes admin', () async {
-        final session = sessionBuilder
-            .copyWith(
-              authentication: AuthenticationOverride.authenticationInfo(
-                'user-1',
-                {},
-              ),
-            )
-            .build();
+      final authed = sessionBuilder
+          .copyWith(
+            authentication: AuthenticationOverride.authenticationInfo(
+              'user-1',
+              {},
+            ),
+          )
+          .build();
 
-        final user = await resolveUser(session);
-        expect(user.role, equals('admin'));
-        expect(user.serverpodUserId, equals('user-1'));
-      });
+      final user = await resolveUser(authed);
+      expect(user.email, equals('test@example.com'));
+      expect(user.role, equals('admin'));
+    });
 
-      test('second user becomes viewer', () async {
-        // Create first user (admin)
-        final session1 = sessionBuilder
-            .copyWith(
-              authentication: AuthenticationOverride.authenticationInfo(
-                'user-1',
-                {},
-              ),
-            )
-            .build();
-        await resolveUser(session1);
+    test('throws when user record does not exist', () async {
+      final session = sessionBuilder
+          .copyWith(
+            authentication: AuthenticationOverride.authenticationInfo(
+              'nonexistent-user',
+              {},
+            ),
+          )
+          .build();
 
-        // Create second user (viewer)
-        final session2 = sessionBuilder
-            .copyWith(
-              authentication: AuthenticationOverride.authenticationInfo(
-                'user-2',
-                {},
-              ),
-            )
-            .build();
-        final user2 = await resolveUser(session2);
-        expect(user2.role, equals('viewer'));
-      });
+      expect(
+        () => resolveUser(session),
+        throwsA(isA<Exception>()),
+      );
+    });
 
-      test('returns existing user on repeated calls', () async {
-        final session = sessionBuilder
-            .copyWith(
-              authentication: AuthenticationOverride.authenticationInfo(
-                'user-1',
-                {},
-              ),
-            )
-            .build();
-
-        final user1 = await resolveUser(session);
-        final user2 = await resolveUser(session);
-        expect(user1.id, equals(user2.id));
-      });
-
-      test('throws when not authenticated', () async {
-        final session = sessionBuilder.build();
-        expect(
-          () => resolveUser(session),
-          throwsA(isA<Exception>()),
-        );
-      });
-    },
-    rollbackDatabase: RollbackDatabase.disabled,
-  );
+    test('throws when not authenticated', () async {
+      final session = sessionBuilder.build();
+      expect(
+        () => resolveUser(session),
+        throwsA(isA<Exception>()),
+      );
+    });
+  });
 }

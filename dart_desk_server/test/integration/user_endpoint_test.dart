@@ -26,17 +26,15 @@ void main() {
         expect(user!.email, equals('test@example.com'));
       });
 
-      test('auto-creates user when no User record exists', () async {
+      test('throws when no User record exists', () async {
         final authed = factory.authenticatedSession(
           userIdentifier: 'new-user',
         );
 
-        final user = await endpoints.user.getCurrentUser(authed);
-
-        // resolveUser auto-creates with admin role (first user in tenant)
-        expect(user, isNotNull);
-        expect(user!.serverpodUserId, equals('new-user'));
-        expect(user.isActive, isTrue);
+        expect(
+          () => endpoints.user.getCurrentUser(authed),
+          throwsA(isA<Exception>()),
+        );
       });
     });
 
