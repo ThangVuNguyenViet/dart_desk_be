@@ -37,7 +37,9 @@ class DocumentCollaborationEndpoint extends Endpoint {
     String sessionId,
     Map<String, dynamic> fieldUpdates,
   ) async {
-    final user = await resolveUser(session, clientId: session.apiKey.clientId);
+    final apiKey = session.apiKey;
+    if (apiKey == null) throw Exception('Missing API key');
+    final user = await resolveUser(session, clientId: apiKey.clientId);
 
     // Apply CRDT operations
     return await session.crdtService.applyOperations(
@@ -123,8 +125,9 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
-    // resolveUser throws if not authenticated
-    await resolveUser(session, clientId: session.apiKey.clientId);
+    final apiKey = session.apiKey;
+    if (apiKey == null) throw Exception('Missing API key');
+    await resolveUser(session, clientId: apiKey.clientId);
 
     await session.crdtService.compactOperations(session, documentId);
   }

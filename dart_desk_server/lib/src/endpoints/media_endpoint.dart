@@ -301,6 +301,7 @@ class MediaEndpoint extends Endpoint {
 
   Future<(({ApiKeyContext apiKey, User? user}), int?)> _authenticateAndResolve(Session session) async {
     final apiKey = session.apiKey;
+    if (apiKey == null) throw Exception('Missing API key');
     final user = await resolveUser(session, clientId: apiKey.clientId);
     final authResult = (apiKey: apiKey, user: user as User?);
     return (authResult, apiKey.clientId);

@@ -119,6 +119,9 @@ class PublicContentEndpoint extends Endpoint {
   /// Validates the API key has read access and returns the clientId.
   int? _requireReadAccess(Session session) {
     final apiKey = session.apiKey;
+    if (apiKey == null) {
+      throw Exception('Missing API key');
+    }
     if (!apiKey.canRead) {
       throw Exception('API key does not have read permission.');
     }

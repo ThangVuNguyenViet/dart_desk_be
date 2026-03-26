@@ -165,6 +165,7 @@ class ApiTokenEndpoint extends Endpoint {
   /// Verify the caller is an authenticated User and resolve tenant.
   Future<(({ApiKeyContext apiKey, User? user}), int?)> _requireAuth(Session session) async {
     final apiKey = session.apiKey;
+    if (apiKey == null) throw Exception('Missing API key');
     final user = await resolveUser(session, clientId: apiKey.clientId);
     final authResult = (apiKey: apiKey, user: user as User?);
     return (authResult, apiKey.clientId);

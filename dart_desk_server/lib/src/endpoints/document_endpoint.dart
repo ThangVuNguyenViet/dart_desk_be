@@ -615,12 +615,20 @@ class DocumentEndpoint extends Endpoint {
 
   /// Authenticate the current request via session.apiKey.
   Future<AuthResult> _requireAuth(Session session) async {
-    return (apiKey: session.apiKey, user: null);
+    final apiKey = session.apiKey;
+    if (apiKey == null) {
+      throw Exception('Missing API key');
+    }
+    return (apiKey: apiKey, user: null);
   }
 
   /// Authenticate and require a user identity (for write operations).
   Future<AuthResult> _requireUser(Session session) async {
-    final user = await resolveUser(session, clientId: session.apiKey.clientId);
-    return (apiKey: session.apiKey, user: user);
+    final apiKey = session.apiKey;
+    if (apiKey == null) {
+      throw Exception('Missing API key');
+    }
+    final user = await resolveUser(session, clientId: apiKey.clientId);
+    return (apiKey: apiKey, user: user);
   }
 }

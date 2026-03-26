@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:dart_desk_server/src/auth/api_key_context.dart';
+import 'package:dart_desk_server/src/auth/dart_desk_session.dart';
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:dart_desk_server/src/plugin/dart_desk_registry.dart';
 import 'package:dart_desk_server/src/plugin/dart_desk_session.dart';
@@ -9,6 +11,8 @@ import 'package:dart_desk_server/src/services/document_crdt_service.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 class TestDataFactory {
+  static const testClientId = 1;
+
   final TestSessionBuilder sessionBuilder;
   final TestEndpoints endpoints;
 
@@ -21,6 +25,14 @@ class TestDataFactory {
     final registry = DartDeskRegistry();
     registry.documentCrdtService = DocumentCrdtService('test-node');
     DartDeskSession.setRegistry(registry);
+
+    // Provide a default API key for integration tests. See
+    // DartDeskSessionExt.testDefault for why this is necessary.
+    DartDeskSessionExt.testDefault = ApiKeyContext(
+      clientId: testClientId,
+      role: 'write',
+      tokenId: 0,
+    );
   }
 
   TestSessionBuilder authenticatedSession({
@@ -42,6 +54,7 @@ class TestDataFactory {
     String email = 'test@example.com',
     String name = 'Test User',
     String role = 'viewer',
+    int? clientId = testClientId,
   }) async {
     final session = sessionBuilder.build();
 
@@ -56,7 +69,7 @@ class TestDataFactory {
     final user = await User.db.insertRow(
       session,
       User(
-        clientId: null,
+        clientId: clientId,
         email: email,
         name: name,
         role: role,
