@@ -25,6 +25,7 @@ const _apiKeyExemptEndpoints = {
   'emailIdp',
   'googleIdp',
   'refreshJwtTokens',
+  'serverpod_auth_core',
   'project',
   'studioConfig',
   'apiToken',
@@ -94,7 +95,8 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
     final apiKeyHeader = request.headers['x-api-key']?.first;
 
     final isExempt = _apiKeyExemptEndpoints.contains(session.endpoint) ||
-        _apiKeyExemptEndpoints.contains('${session.endpoint}.${session.method}');
+        _apiKeyExemptEndpoints.contains('${session.endpoint}.${session.method}') ||
+        _apiKeyExemptEndpoints.any((e) => session.endpoint.startsWith('$e.'));
     if (isExempt) {
       // Optional enrichment: if a key is provided, validate and attach it.
       if (apiKeyHeader != null) {
