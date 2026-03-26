@@ -33,7 +33,8 @@ import 'package:dart_desk_server/src/generated/media_asset.dart' as _i14;
 import 'dart:typed_data' as _i15;
 import 'package:dart_desk_server/src/generated/project_list.dart' as _i16;
 import 'package:dart_desk_server/src/generated/project.dart' as _i17;
-import 'package:dart_desk_server/src/generated/user.dart' as _i18;
+import 'package:dart_desk_server/src/generated/public_document.dart' as _i18;
+import 'package:dart_desk_server/src/generated/user.dart' as _i19;
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:dart_desk_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -157,6 +158,8 @@ class TestEndpoints {
 
   late final _ProjectEndpoint project;
 
+  late final _PublicContentEndpoint publicContent;
+
   late final _RefreshJwtTokensEndpoint refreshJwtTokens;
 
   late final _StudioConfigEndpoint studioConfig;
@@ -200,6 +203,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     project = _ProjectEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    publicContent = _PublicContentEndpoint(
       endpoints,
       serializationManager,
     );
@@ -1336,8 +1343,9 @@ class _DocumentEndpoint {
   }
 
   _i3.Future<int> getDocumentCount(
-    _i1.TestSessionBuilder sessionBuilder,
-  ) async {
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int clientId,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -1349,7 +1357,7 @@ class _DocumentEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'document',
           methodName: 'getDocumentCount',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _i1.testObjectToJson({'clientId': clientId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2267,6 +2275,174 @@ class _ProjectEndpoint {
   }
 }
 
+class _PublicContentEndpoint {
+  _PublicContentEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<Map<String, List<_i18.PublicDocument>>> getAllContents(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'publicContent',
+            method: 'getAllContents',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'publicContent',
+          methodName: 'getAllContents',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<Map<String, List<_i18.PublicDocument>>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<Map<String, _i18.PublicDocument>> getDefaultContents(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'publicContent',
+            method: 'getDefaultContents',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'publicContent',
+          methodName: 'getDefaultContents',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<Map<String, _i18.PublicDocument>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i18.PublicDocument>> getContentsByType(
+    _i1.TestSessionBuilder sessionBuilder,
+    String documentType,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'publicContent',
+            method: 'getContentsByType',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'publicContent',
+          methodName: 'getContentsByType',
+          parameters: _i1.testObjectToJson({'documentType': documentType}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i18.PublicDocument>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i18.PublicDocument> getDefaultContent(
+    _i1.TestSessionBuilder sessionBuilder,
+    String documentType,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'publicContent',
+            method: 'getDefaultContent',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'publicContent',
+          methodName: 'getDefaultContent',
+          parameters: _i1.testObjectToJson({'documentType': documentType}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i18.PublicDocument>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i18.PublicDocument> getContentBySlug(
+    _i1.TestSessionBuilder sessionBuilder,
+    String documentType,
+    String slug,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'publicContent',
+            method: 'getContentBySlug',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'publicContent',
+          methodName: 'getContentBySlug',
+          parameters: _i1.testObjectToJson({
+            'documentType': documentType,
+            'slug': slug,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i18.PublicDocument>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _RefreshJwtTokensEndpoint {
   _RefreshJwtTokensEndpoint(
     this._endpointDispatch,
@@ -2360,9 +2536,10 @@ class _UserEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i18.User?> getCurrentUser(
-    _i1.TestSessionBuilder sessionBuilder,
-  ) async {
+  _i3.Future<_i19.User?> getCurrentUser(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int clientId,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -2374,7 +2551,7 @@ class _UserEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'user',
           methodName: 'getCurrentUser',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _i1.testObjectToJson({'clientId': clientId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2382,7 +2559,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i18.User?>);
+                as _i3.Future<_i19.User?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2390,7 +2567,10 @@ class _UserEndpoint {
     });
   }
 
-  _i3.Future<int> getUserCount(_i1.TestSessionBuilder sessionBuilder) async {
+  _i3.Future<int> getUserCount(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int clientId,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -2402,7 +2582,7 @@ class _UserEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'user',
           methodName: 'getUserCount',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _i1.testObjectToJson({'clientId': clientId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =

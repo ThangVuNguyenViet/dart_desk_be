@@ -32,8 +32,9 @@ import 'package:dart_desk_client/src/protocol/media_asset.dart' as _i14;
 import 'dart:typed_data' as _i15;
 import 'package:dart_desk_client/src/protocol/project_list.dart' as _i16;
 import 'package:dart_desk_client/src/protocol/project.dart' as _i17;
-import 'package:dart_desk_client/src/protocol/user.dart' as _i18;
-import 'protocol.dart' as _i19;
+import 'package:dart_desk_client/src/protocol/public_document.dart' as _i18;
+import 'package:dart_desk_client/src/protocol/user.dart' as _i19;
+import 'protocol.dart' as _i20;
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
@@ -441,12 +442,13 @@ class EndpointDocument extends _i1.EndpointRef {
         {'versionId': versionId},
       );
 
-  /// Get total document count for the authenticated user's client.
-  _i2.Future<int> getDocumentCount() => caller.callServerEndpoint<int>(
-    'document',
-    'getDocumentCount',
-    {},
-  );
+  /// Get total document count for the specified client.
+  _i2.Future<int> getDocumentCount({required int clientId}) =>
+      caller.callServerEndpoint<int>(
+        'document',
+        'getDocumentCount',
+        {'clientId': clientId},
+      );
 }
 
 /// {@category Endpoint}
@@ -867,6 +869,63 @@ class EndpointProject extends _i1.EndpointRef {
   );
 }
 
+/// Read-only public content API for external consumers.
+/// Requires x-api-key with read permission.
+/// ClientId is derived from the API key.
+/// {@category Endpoint}
+class EndpointPublicContent extends _i1.EndpointRef {
+  EndpointPublicContent(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'publicContent';
+
+  /// Returns all published documents grouped by document type.
+  _i2.Future<Map<String, List<_i18.PublicDocument>>> getAllContents() =>
+      caller.callServerEndpoint<Map<String, List<_i18.PublicDocument>>>(
+        'publicContent',
+        'getAllContents',
+        {},
+      );
+
+  /// Returns the default published document for each document type.
+  _i2.Future<Map<String, _i18.PublicDocument>> getDefaultContents() =>
+      caller.callServerEndpoint<Map<String, _i18.PublicDocument>>(
+        'publicContent',
+        'getDefaultContents',
+        {},
+      );
+
+  /// Returns all published documents of a specific type.
+  _i2.Future<List<_i18.PublicDocument>> getContentsByType(
+    String documentType,
+  ) => caller.callServerEndpoint<List<_i18.PublicDocument>>(
+    'publicContent',
+    'getContentsByType',
+    {'documentType': documentType},
+  );
+
+  /// Returns the default published document for a specific type.
+  _i2.Future<_i18.PublicDocument> getDefaultContent(String documentType) =>
+      caller.callServerEndpoint<_i18.PublicDocument>(
+        'publicContent',
+        'getDefaultContent',
+        {'documentType': documentType},
+      );
+
+  /// Returns a single published document by type and slug.
+  _i2.Future<_i18.PublicDocument> getContentBySlug(
+    String documentType,
+    String slug,
+  ) => caller.callServerEndpoint<_i18.PublicDocument>(
+    'publicContent',
+    'getContentBySlug',
+    {
+      'documentType': documentType,
+      'slug': slug,
+    },
+  );
+}
+
 /// {@category Endpoint}
 class EndpointRefreshJwtTokens extends _i13.EndpointRefreshJwtTokens {
   EndpointRefreshJwtTokens(_i1.EndpointCaller caller) : super(caller);
@@ -933,19 +992,20 @@ class EndpointUser extends _i1.EndpointRef {
   /// Get the current authenticated user.
   /// For Serverpod IDP: returns existing User (must exist via seed or prior creation).
   /// For external auth: auto-creates User on first call.
-  _i2.Future<_i18.User?> getCurrentUser() =>
-      caller.callServerEndpoint<_i18.User?>(
+  _i2.Future<_i19.User?> getCurrentUser({required int clientId}) =>
+      caller.callServerEndpoint<_i19.User?>(
         'user',
         'getCurrentUser',
-        {},
+        {'clientId': clientId},
       );
 
   /// Get count of active users in the current tenant.
-  _i2.Future<int> getUserCount() => caller.callServerEndpoint<int>(
-    'user',
-    'getUserCount',
-    {},
-  );
+  _i2.Future<int> getUserCount({required int clientId}) =>
+      caller.callServerEndpoint<int>(
+        'user',
+        'getUserCount',
+        {'clientId': clientId},
+      );
 }
 
 class Modules {
@@ -979,7 +1039,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i19.Protocol(),
+         _i20.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -996,6 +1056,7 @@ class Client extends _i1.ServerpodClientShared {
     googleIdp = EndpointGoogleIdp(this);
     media = EndpointMedia(this);
     project = EndpointProject(this);
+    publicContent = EndpointPublicContent(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
     studioConfig = EndpointStudioConfig(this);
     user = EndpointUser(this);
@@ -1018,6 +1079,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointProject project;
 
+  late final EndpointPublicContent publicContent;
+
   late final EndpointRefreshJwtTokens refreshJwtTokens;
 
   late final EndpointStudioConfig studioConfig;
@@ -1036,6 +1099,7 @@ class Client extends _i1.ServerpodClientShared {
     'googleIdp': googleIdp,
     'media': media,
     'project': project,
+    'publicContent': publicContent,
     'refreshJwtTokens': refreshJwtTokens,
     'studioConfig': studioConfig,
     'user': user,

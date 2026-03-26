@@ -23,6 +23,7 @@ abstract class Document implements _i1.SerializableModel {
     this.data,
     this.crdtNodeId,
     this.crdtHlc,
+    this.publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
     this.createdByUserId,
@@ -41,6 +42,7 @@ abstract class Document implements _i1.SerializableModel {
     String? data,
     String? crdtNodeId,
     String? crdtHlc,
+    DateTime? publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
     int? createdByUserId,
@@ -60,6 +62,11 @@ abstract class Document implements _i1.SerializableModel {
       data: jsonSerialization['data'] as String?,
       crdtNodeId: jsonSerialization['crdtNodeId'] as String?,
       crdtHlc: jsonSerialization['crdtHlc'] as String?,
+      publishedAt: jsonSerialization['publishedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['publishedAt'],
+            ),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -92,6 +99,8 @@ abstract class Document implements _i1.SerializableModel {
 
   String? crdtHlc;
 
+  DateTime? publishedAt;
+
   DateTime? createdAt;
 
   DateTime? updatedAt;
@@ -113,6 +122,7 @@ abstract class Document implements _i1.SerializableModel {
     String? data,
     String? crdtNodeId,
     String? crdtHlc,
+    DateTime? publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
     int? createdByUserId,
@@ -131,6 +141,7 @@ abstract class Document implements _i1.SerializableModel {
       if (data != null) 'data': data,
       if (crdtNodeId != null) 'crdtNodeId': crdtNodeId,
       if (crdtHlc != null) 'crdtHlc': crdtHlc,
+      if (publishedAt != null) 'publishedAt': publishedAt?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
       if (createdByUserId != null) 'createdByUserId': createdByUserId,
@@ -157,6 +168,7 @@ class _DocumentImpl extends Document {
     String? data,
     String? crdtNodeId,
     String? crdtHlc,
+    DateTime? publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
     int? createdByUserId,
@@ -171,6 +183,7 @@ class _DocumentImpl extends Document {
          data: data,
          crdtNodeId: crdtNodeId,
          crdtHlc: crdtHlc,
+         publishedAt: publishedAt,
          createdAt: createdAt,
          updatedAt: updatedAt,
          createdByUserId: createdByUserId,
@@ -191,6 +204,7 @@ class _DocumentImpl extends Document {
     Object? data = _Undefined,
     Object? crdtNodeId = _Undefined,
     Object? crdtHlc = _Undefined,
+    Object? publishedAt = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
     Object? createdByUserId = _Undefined,
@@ -206,6 +220,7 @@ class _DocumentImpl extends Document {
       data: data is String? ? data : this.data,
       crdtNodeId: crdtNodeId is String? ? crdtNodeId : this.crdtNodeId,
       crdtHlc: crdtHlc is String? ? crdtHlc : this.crdtHlc,
+      publishedAt: publishedAt is DateTime? ? publishedAt : this.publishedAt,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
       createdByUserId: createdByUserId is int?
