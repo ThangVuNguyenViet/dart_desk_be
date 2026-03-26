@@ -524,12 +524,22 @@ class DocumentEndpoint extends Endpoint {
       return null;
     }
 
+    final now = DateTime.now();
     final updated = existing.copyWith(
       status: DocumentVersionStatus.published,
-      publishedAt: DateTime.now(),
+      publishedAt: now,
     );
 
     await DocumentVersion.db.updateRow(session, updated);
+
+    // Sync publishedAt to the parent document for fast public reads
+    final document = await Document.db.findById(session, existing.documentId);
+    if (document != null) {
+      await Document.db.updateRow(
+        session,
+        document.copyWith(publishedAt: now),
+      );
+    }
 
     return updated;
   }
@@ -554,6 +564,25 @@ class DocumentEndpoint extends Endpoint {
 
     await DocumentVersion.db.updateRow(session, updated);
 
+    // Check if any published versions remain for this document
+    final publishedCount = await DocumentVersion.db.count(
+      session,
+      where: (t) =>
+          t.documentId.equals(existing.documentId) &
+          t.status.equals(DocumentVersionStatus.published),
+    );
+
+    if (publishedCount == 0) {
+      final document =
+          await Document.db.findById(session, existing.documentId);
+      if (document != null) {
+        await Document.db.updateRow(
+          session,
+          document.copyWith(publishedAt: null),
+        );
+      }
+    }
+
     return updated;
   }
 
@@ -575,12 +604,12 @@ class DocumentEndpoint extends Endpoint {
     return true;
   }
 
-  /// Get total document count for the authenticated user's client.
-  Future<int> getDocumentCount(Session session) async {
-    final auth = await _requireAuth(session);
+  /// Get total document count for the specified client.
+  Future<int> getDocumentCount(Session session, {required int clientId}) async {
+    await resolveUser(session, clientId: clientId);
     return await Document.db.count(
       session,
-      where: (t) => t.clientId.equals(auth.apiKey.clientId),
+      where: (t) => t.clientId.equals(clientId),
     );
   }
 

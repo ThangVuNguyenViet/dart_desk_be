@@ -173,6 +173,73 @@ void main() {
       });
     });
 
+    group('publishedAt sync', () {
+      test('publishDocumentVersion sets document.publishedAt', () async {
+        final doc = await factory.createTestDocument(title: 'Publish Test');
+        final version = await factory.createTestVersion(doc.id!);
+
+        await endpoints.document.publishDocumentVersion(
+          factory.authenticatedSession(),
+          version.id!,
+        );
+
+        final updated = await endpoints.document.getDocument(
+          sessionBuilder,
+          doc.id!,
+        );
+        expect(updated!.publishedAt, isNotNull);
+      });
+
+      test('archiveDocumentVersion nulls publishedAt when no published versions remain', () async {
+        final doc = await factory.createTestDocument(title: 'Archive Test');
+        final version = await factory.createTestVersion(doc.id!);
+
+        // Publish then archive
+        await endpoints.document.publishDocumentVersion(
+          factory.authenticatedSession(),
+          version.id!,
+        );
+        await endpoints.document.archiveDocumentVersion(
+          factory.authenticatedSession(),
+          version.id!,
+        );
+
+        final updated = await endpoints.document.getDocument(
+          sessionBuilder,
+          doc.id!,
+        );
+        expect(updated!.publishedAt, isNull);
+      });
+
+      test('archiveDocumentVersion keeps publishedAt when other published versions exist', () async {
+        final doc = await factory.createTestDocument(title: 'Multi Version');
+        final v1 = await factory.createTestVersion(doc.id!);
+        final v2 = await factory.createTestVersion(doc.id!);
+
+        // Publish both
+        await endpoints.document.publishDocumentVersion(
+          factory.authenticatedSession(),
+          v1.id!,
+        );
+        await endpoints.document.publishDocumentVersion(
+          factory.authenticatedSession(),
+          v2.id!,
+        );
+
+        // Archive only v1
+        await endpoints.document.archiveDocumentVersion(
+          factory.authenticatedSession(),
+          v1.id!,
+        );
+
+        final updated = await endpoints.document.getDocument(
+          sessionBuilder,
+          doc.id!,
+        );
+        expect(updated!.publishedAt, isNotNull);
+      });
+    });
+
     group('deleteDocumentVersion', () {
       test('deletes a draft version', () async {
         final doc = await factory.createTestDocument(title: 'Delete Ver');
