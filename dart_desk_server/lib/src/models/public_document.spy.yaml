@@ -1,0 +1,10 @@
+class: PublicDocument
+fields:
+  id: int
+  documentType: String
+  title: String
+  slug: String
+  isDefault: bool
+  data: String
+  publishedAt: DateTime
+  updatedAt: DateTime
