@@ -171,7 +171,7 @@ void main() {
           slug: 'not-default',
         );
 
-        expect(
+        await expectLater(
           () => endpoints.publicContent.getDefaultContent(
             sessionBuilder,
             'blog',
@@ -200,7 +200,7 @@ void main() {
       });
 
       test('throws when no match', () async {
-        expect(
+        await expectLater(
           () => endpoints.publicContent.getContentBySlug(
             sessionBuilder,
             'blog',
