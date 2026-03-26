@@ -901,13 +901,22 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
         'getDocumentCount': _i1.MethodConnector(
           name: 'getDocumentCount',
-          params: {},
+          params: {
+            'clientId': _i1.ParameterDescription(
+              name: 'clientId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async => (endpoints['document'] as _i5.DocumentEndpoint)
-                  .getDocumentCount(session),
+                  .getDocumentCount(
+                    session,
+                    clientId: params['clientId'],
+                  ),
         ),
       },
     );
@@ -1611,23 +1620,39 @@ class Endpoints extends _i1.EndpointDispatch {
       methodConnectors: {
         'getCurrentUser': _i1.MethodConnector(
           name: 'getCurrentUser',
-          params: {},
+          params: {
+            'clientId': _i1.ParameterDescription(
+              name: 'clientId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i12.UserEndpoint)
-                  .getCurrentUser(session),
+              ) async =>
+                  (endpoints['user'] as _i12.UserEndpoint).getCurrentUser(
+                    session,
+                    clientId: params['clientId'],
+                  ),
         ),
         'getUserCount': _i1.MethodConnector(
           name: 'getUserCount',
-          params: {},
+          params: {
+            'clientId': _i1.ParameterDescription(
+              name: 'clientId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async => (endpoints['user'] as _i12.UserEndpoint).getUserCount(
                 session,
+                clientId: params['clientId'],
               ),
         ),
       },
