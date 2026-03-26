@@ -1,15 +1,17 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../auth/dart_desk_session.dart';
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
 
 /// Endpoint for managing users.
 class UserEndpoint extends Endpoint {
   /// Get the current authenticated user.
-  /// For Serverpod IDP: returns existing User (must exist via seed or prior creation).
-  /// For external auth: auto-creates User on first call.
-  Future<User?> getCurrentUser(Session session, {required int clientId}) async {
-    return await resolveUser(session, clientId: clientId);
+  /// [clientId] is optional — if omitted, falls back to session.apiKey.clientId.
+  /// The _manage app passes clientId explicitly; consumer apps rely on x-api-key.
+  Future<User?> getCurrentUser(Session session, {int? clientId}) async {
+    final effectiveClientId = clientId ?? session.apiKey?.clientId;
+    return await resolveUser(session, clientId: effectiveClientId);
   }
 
   /// Get count of active users in the current tenant.

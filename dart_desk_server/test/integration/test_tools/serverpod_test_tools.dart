@@ -2538,7 +2538,7 @@ class _UserEndpoint {
 
   _i3.Future<_i19.User?> getCurrentUser(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int clientId,
+    int? clientId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =

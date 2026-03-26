@@ -1724,8 +1724,8 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'clientId': _i1.ParameterDescription(
               name: 'clientId',
-              type: _i1.getType<int>(),
-              nullable: false,
+              type: _i1.getType<int?>(),
+              nullable: true,
             ),
           },
           call:
