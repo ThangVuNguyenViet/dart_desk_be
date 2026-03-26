@@ -64,6 +64,12 @@ project:
   - updateProject:
   - deleteProject:
   - createProjectWithOwner:
+publicContent:
+  - getAllContents:
+  - getDefaultContents:
+  - getContentsByType:
+  - getDefaultContent:
+  - getContentBySlug:
 refreshJwtTokens:
   - refreshAccessToken:
 studioConfig:

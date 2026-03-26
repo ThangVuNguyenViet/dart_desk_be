@@ -42,6 +42,7 @@ import 'package:dart_desk_server/src/generated/deployment.dart' as _i27;
 import 'package:dart_desk_server/src/generated/document_crdt_operation.dart'
     as _i28;
 import 'package:dart_desk_server/src/generated/media_asset.dart' as _i29;
+import 'package:dart_desk_server/src/generated/public_document.dart' as _i30;
 export 'api_token.dart';
 export 'api_token_with_value.dart';
 export 'crdt_operation_type.dart';
@@ -1874,6 +1875,30 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == List<_i29.MediaAsset>) {
       return (data as List).map((e) => deserialize<_i29.MediaAsset>(e)).toList()
+          as T;
+    }
+    if (t == Map<String, List<_i30.PublicDocument>>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(
+              deserialize<String>(k),
+              deserialize<List<_i30.PublicDocument>>(v),
+            ),
+          )
+          as T;
+    }
+    if (t == List<_i30.PublicDocument>) {
+      return (data as List)
+              .map((e) => deserialize<_i30.PublicDocument>(e))
+              .toList()
+          as T;
+    }
+    if (t == Map<String, _i30.PublicDocument>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(
+              deserialize<String>(k),
+              deserialize<_i30.PublicDocument>(v),
+            ),
+          )
           as T;
     }
     try {

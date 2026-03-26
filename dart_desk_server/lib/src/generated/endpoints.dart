@@ -19,16 +19,17 @@ import '../endpoints/email_idp_endpoint.dart' as _i6;
 import '../endpoints/google_idp_endpoint.dart' as _i7;
 import '../endpoints/media_endpoint.dart' as _i8;
 import '../endpoints/project_endpoint.dart' as _i9;
-import '../endpoints/refresh_jwt_tokens_endpoint.dart' as _i10;
-import '../endpoints/studio_config_endpoint.dart' as _i11;
-import '../endpoints/user_endpoint.dart' as _i12;
+import '../endpoints/public_content_endpoint.dart' as _i10;
+import '../endpoints/refresh_jwt_tokens_endpoint.dart' as _i11;
+import '../endpoints/studio_config_endpoint.dart' as _i12;
+import '../endpoints/user_endpoint.dart' as _i13;
 import 'package:dart_desk_server/src/generated/document_version_status.dart'
-    as _i13;
-import 'dart:typed_data' as _i14;
+    as _i14;
+import 'dart:typed_data' as _i15;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i15;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i16;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i17;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -82,19 +83,25 @@ class Endpoints extends _i1.EndpointDispatch {
           'project',
           null,
         ),
-      'refreshJwtTokens': _i10.RefreshJwtTokensEndpoint()
+      'publicContent': _i10.PublicContentEndpoint()
+        ..initialize(
+          server,
+          'publicContent',
+          null,
+        ),
+      'refreshJwtTokens': _i11.RefreshJwtTokensEndpoint()
         ..initialize(
           server,
           'refreshJwtTokens',
           null,
         ),
-      'studioConfig': _i11.StudioConfigEndpoint()
+      'studioConfig': _i12.StudioConfigEndpoint()
         ..initialize(
           server,
           'studioConfig',
           null,
         ),
-      'user': _i12.UserEndpoint()
+      'user': _i13.UserEndpoint()
         ..initialize(
           server,
           'user',
@@ -821,7 +828,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'status': _i1.ParameterDescription(
               name: 'status',
-              type: _i1.getType<_i13.DocumentVersionStatus>(),
+              type: _i1.getType<_i14.DocumentVersionStatus>(),
               nullable: false,
             ),
             'changeLog': _i1.ParameterDescription(
@@ -1154,7 +1161,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'fileData': _i1.ParameterDescription(
               name: 'fileData',
-              type: _i1.getType<_i14.ByteData>(),
+              type: _i1.getType<_i15.ByteData>(),
               nullable: false,
             ),
             'width': _i1.ParameterDescription(
@@ -1208,7 +1215,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'fileData': _i1.ParameterDescription(
               name: 'fileData',
-              type: _i1.getType<_i14.ByteData>(),
+              type: _i1.getType<_i15.ByteData>(),
               nullable: false,
             ),
           },
@@ -1570,6 +1577,100 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['publicContent'] = _i1.EndpointConnector(
+      name: 'publicContent',
+      endpoint: endpoints['publicContent']!,
+      methodConnectors: {
+        'getAllContents': _i1.MethodConnector(
+          name: 'getAllContents',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['publicContent'] as _i10.PublicContentEndpoint)
+                      .getAllContents(session),
+        ),
+        'getDefaultContents': _i1.MethodConnector(
+          name: 'getDefaultContents',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['publicContent'] as _i10.PublicContentEndpoint)
+                      .getDefaultContents(session),
+        ),
+        'getContentsByType': _i1.MethodConnector(
+          name: 'getContentsByType',
+          params: {
+            'documentType': _i1.ParameterDescription(
+              name: 'documentType',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['publicContent'] as _i10.PublicContentEndpoint)
+                      .getContentsByType(
+                        session,
+                        params['documentType'],
+                      ),
+        ),
+        'getDefaultContent': _i1.MethodConnector(
+          name: 'getDefaultContent',
+          params: {
+            'documentType': _i1.ParameterDescription(
+              name: 'documentType',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['publicContent'] as _i10.PublicContentEndpoint)
+                      .getDefaultContent(
+                        session,
+                        params['documentType'],
+                      ),
+        ),
+        'getContentBySlug': _i1.MethodConnector(
+          name: 'getContentBySlug',
+          params: {
+            'documentType': _i1.ParameterDescription(
+              name: 'documentType',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'slug': _i1.ParameterDescription(
+              name: 'slug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['publicContent'] as _i10.PublicContentEndpoint)
+                      .getContentBySlug(
+                        session,
+                        params['documentType'],
+                        params['slug'],
+                      ),
+        ),
+      },
+    );
     connectors['refreshJwtTokens'] = _i1.EndpointConnector(
       name: 'refreshJwtTokens',
       endpoint: endpoints['refreshJwtTokens']!,
@@ -1589,7 +1690,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['refreshJwtTokens']
-                          as _i10.RefreshJwtTokensEndpoint)
+                          as _i11.RefreshJwtTokensEndpoint)
                       .refreshAccessToken(
                         session,
                         refreshToken: params['refreshToken'],
@@ -1609,7 +1710,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['studioConfig'] as _i11.StudioConfigEndpoint)
+                  (endpoints['studioConfig'] as _i12.StudioConfigEndpoint)
                       .getStudioUrlTemplate(session),
         ),
       },
@@ -1632,7 +1733,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _i12.UserEndpoint).getCurrentUser(
+                  (endpoints['user'] as _i13.UserEndpoint).getCurrentUser(
                     session,
                     clientId: params['clientId'],
                   ),
@@ -1650,16 +1751,16 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i12.UserEndpoint).getUserCount(
+              ) async => (endpoints['user'] as _i13.UserEndpoint).getUserCount(
                 session,
                 clientId: params['clientId'],
               ),
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i15.Endpoints()
+    modules['serverpod_auth_core'] = _i16.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i16.Endpoints()
+    modules['serverpod_auth_idp'] = _i17.Endpoints()
       ..initializeEndpoints(server);
   }
 }
