@@ -147,7 +147,7 @@ void main() {
       });
 
       test('throws when not authenticated', () async {
-        expect(
+        await expectLater(
           () => endpoints.project.createProject(sessionBuilder, 'X', 'x-slug'),
           throwsA(isA<Exception>()),
         );
@@ -183,7 +183,7 @@ void main() {
 
       test('throws when not authenticated', () async {
         final seeded = await seedProject();
-        expect(
+        await expectLater(
           () => endpoints.project.updateProject(sessionBuilder, seeded.id!),
           throwsA(isA<Exception>()),
         );
@@ -212,7 +212,7 @@ void main() {
 
       test('throws when not authenticated', () async {
         final seeded = await seedProject();
-        expect(
+        await expectLater(
           () => endpoints.project.deleteProject(sessionBuilder, seeded.id!),
           throwsA(isA<Exception>()),
         );
@@ -221,7 +221,7 @@ void main() {
 
     group('createProjectWithOwner slug validation', () {
       test('throws on slug too short', () async {
-        expect(
+        await expectLater(
           () => endpoints.project.createProjectWithOwner(
             authed(),
             name: 'X',
@@ -232,7 +232,7 @@ void main() {
       });
 
       test('throws on slug with leading hyphen', () async {
-        expect(
+        await expectLater(
           () => endpoints.project.createProjectWithOwner(
             authed(),
             name: 'X',
@@ -243,7 +243,7 @@ void main() {
       });
 
       test('throws on uppercase slug', () async {
-        expect(
+        await expectLater(
           () => endpoints.project.createProjectWithOwner(
             authed(),
             name: 'X',
@@ -255,7 +255,7 @@ void main() {
 
       for (final reserved in ['login', 'setup', 'admin', 'api', 'app']) {
         test('throws on reserved slug: "$reserved"', () async {
-          expect(
+          await expectLater(
             () => endpoints.project.createProjectWithOwner(
               authed(),
               name: 'X',
@@ -268,7 +268,7 @@ void main() {
 
       test('throws when slug already taken', () async {
         await seedProject(slug: 'already-taken');
-        expect(
+        await expectLater(
           () => endpoints.project.createProjectWithOwner(
             authed(),
             name: 'Dup',
@@ -279,7 +279,7 @@ void main() {
       });
 
       test('throws when not authenticated', () async {
-        expect(
+        await expectLater(
           () => endpoints.project.createProjectWithOwner(
             sessionBuilder,
             name: 'X',

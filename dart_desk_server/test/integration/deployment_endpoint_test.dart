@@ -56,7 +56,7 @@ void main() {
     group('_requireAdminUser guard', () {
       test('throws when not authenticated', () async {
         await seedProjectAndAdmin();
-        expect(
+        await expectLater(
           () => endpoints.deployment.list(sessionBuilder, projectSlug),
           throwsA(isA<Exception>()),
         );
@@ -65,7 +65,7 @@ void main() {
       test('throws when user is not a project member', () async {
         await seedProjectAndAdmin();
         final stranger = authed(userIdentifier: 'stranger');
-        expect(
+        await expectLater(
           () => endpoints.deployment.list(stranger, projectSlug),
           throwsA(isA<Exception>()),
         );
@@ -84,7 +84,7 @@ void main() {
             serverpodUserId: 'viewer-user',
           ),
         );
-        expect(
+        await expectLater(
           () => endpoints.deployment.list(
             authed(userIdentifier: 'viewer-user'),
             projectSlug,
@@ -94,7 +94,7 @@ void main() {
       });
 
       test('throws when project slug does not exist', () async {
-        expect(
+        await expectLater(
           () => endpoints.deployment.list(authed(), 'no-such-project'),
           throwsA(isA<Exception>()),
         );
@@ -155,7 +155,7 @@ void main() {
 
       test('throws when version does not exist', () async {
         await seedProjectAndAdmin();
-        expect(
+        await expectLater(
           () => endpoints.deployment.activate(authed(), projectSlug, 999),
           throwsA(isA<Exception>()),
         );
@@ -168,6 +168,12 @@ void main() {
         await seedDeployment(project.id!, version: 1);
         final result = await endpoints.deployment.delete(authed(), projectSlug, 1);
         expect(result, isTrue);
+        final session = sessionBuilder.build();
+        final gone = await Deployment.db.findFirstRow(
+          session,
+          where: (t) => t.projectId.equals(project.id!) & t.version.equals(1),
+        );
+        expect(gone, isNull);
       });
 
       test('returns false when version does not exist', () async {
@@ -179,7 +185,7 @@ void main() {
       test('throws when attempting to delete active deployment', () async {
         final project = await seedProjectAndAdmin();
         await seedDeployment(project.id!, version: 1, status: DeploymentStatus.active);
-        expect(
+        await expectLater(
           () => endpoints.deployment.delete(authed(), projectSlug, 1),
           throwsA(isA<Exception>()),
         );
