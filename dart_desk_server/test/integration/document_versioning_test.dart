@@ -1,7 +1,8 @@
-import 'package:test/test.dart';
 import 'package:dart_desk_server/src/generated/protocol.dart';
-import 'test_tools/serverpod_test_tools.dart';
+import 'package:test/test.dart';
+
 import 'helpers/test_data_factory.dart';
+import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod('Document versioning', (sessionBuilder, endpoints) {
@@ -132,12 +133,14 @@ void main() {
         final authed = factory.authenticatedSession();
 
         // Publish first time — should succeed
-        final first = await endpoints.document.publishDocumentVersion(authed, draft.id!);
+        final first =
+            await endpoints.document.publishDocumentVersion(authed, draft.id!);
         expect(first, isNotNull);
         expect(first!.status, equals(DocumentVersionStatus.published));
 
         // Publish again — endpoint updates the same version (idempotent)
-        final second = await endpoints.document.publishDocumentVersion(authed, draft.id!);
+        final second =
+            await endpoints.document.publishDocumentVersion(authed, draft.id!);
         expect(second, isNotNull);
         expect(second!.status, equals(DocumentVersionStatus.published));
         expect(second.id, equals(first.id));
@@ -190,7 +193,9 @@ void main() {
         expect(updated!.publishedAt, isNotNull);
       });
 
-      test('archiveDocumentVersion nulls publishedAt when no published versions remain', () async {
+      test(
+          'archiveDocumentVersion nulls publishedAt when no published versions remain',
+          () async {
         final doc = await factory.createTestDocument(title: 'Archive Test');
         final version = await factory.createTestVersion(doc.id!);
 
@@ -211,7 +216,9 @@ void main() {
         expect(updated!.publishedAt, isNull);
       });
 
-      test('archiveDocumentVersion keeps publishedAt when other published versions exist', () async {
+      test(
+          'archiveDocumentVersion keeps publishedAt when other published versions exist',
+          () async {
         final doc = await factory.createTestDocument(title: 'Multi Version');
         final v1 = await factory.createTestVersion(doc.id!);
         final v2 = await factory.createTestVersion(doc.id!);

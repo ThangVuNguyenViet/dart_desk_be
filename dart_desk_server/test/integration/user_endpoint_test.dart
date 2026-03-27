@@ -19,7 +19,7 @@ void main() {
         await factory.ensureTestUser();
         final authed = factory.authenticatedSession();
 
-        final user = await endpoints.user.getCurrentUser(authed);
+        final user = await endpoints.user.getCurrentUser(authed, clientId: TestDataFactory.testClientId);
 
         expect(user, isNotNull);
         // Email comes from the pre-inserted test record
@@ -32,7 +32,7 @@ void main() {
         );
 
         expect(
-          () => endpoints.user.getCurrentUser(authed),
+          () => endpoints.user.getCurrentUser(authed, clientId: TestDataFactory.testClientId),
           throwsA(isA<Exception>()),
         );
       });
@@ -43,7 +43,7 @@ void main() {
         await factory.ensureTestUser();
         final authed = factory.authenticatedSession();
 
-        final count = await endpoints.user.getUserCount(authed);
+        final count = await endpoints.user.getUserCount(authed, clientId: TestDataFactory.testClientId);
 
         expect(count, greaterThanOrEqualTo(1));
       });

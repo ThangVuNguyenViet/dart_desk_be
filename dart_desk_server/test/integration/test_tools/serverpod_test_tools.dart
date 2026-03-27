@@ -236,8 +236,9 @@ class _ApiTokenEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<List<_i4.ApiToken>> getTokens(
-    _i1.TestSessionBuilder sessionBuilder,
-  ) async {
+    _i1.TestSessionBuilder sessionBuilder, {
+    int? clientId,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -249,7 +250,7 @@ class _ApiTokenEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'apiToken',
           methodName: 'getTokens',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _i1.testObjectToJson({'clientId': clientId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -269,8 +270,9 @@ class _ApiTokenEndpoint {
     _i1.TestSessionBuilder sessionBuilder,
     String name,
     String role,
-    DateTime? expiresAt,
-  ) async {
+    DateTime? expiresAt, {
+    int? clientId,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -286,6 +288,7 @@ class _ApiTokenEndpoint {
             'name': name,
             'role': role,
             'expiresAt': expiresAt,
+            'clientId': clientId,
           }),
           serializationManager: _serializationManager,
         );
@@ -307,8 +310,9 @@ class _ApiTokenEndpoint {
     int tokenId,
     String? name,
     bool? isActive,
-    DateTime? expiresAt,
-  ) async {
+    DateTime? expiresAt, {
+    int? clientId,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -325,6 +329,7 @@ class _ApiTokenEndpoint {
             'name': name,
             'isActive': isActive,
             'expiresAt': expiresAt,
+            'clientId': clientId,
           }),
           serializationManager: _serializationManager,
         );
@@ -343,8 +348,9 @@ class _ApiTokenEndpoint {
 
   _i3.Future<_i5.ApiTokenWithValue> regenerateToken(
     _i1.TestSessionBuilder sessionBuilder,
-    int tokenId,
-  ) async {
+    int tokenId, {
+    int? clientId,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -356,7 +362,10 @@ class _ApiTokenEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'apiToken',
           methodName: 'regenerateToken',
-          parameters: _i1.testObjectToJson({'tokenId': tokenId}),
+          parameters: _i1.testObjectToJson({
+            'tokenId': tokenId,
+            'clientId': clientId,
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -374,8 +383,9 @@ class _ApiTokenEndpoint {
 
   _i3.Future<bool> deleteToken(
     _i1.TestSessionBuilder sessionBuilder,
-    int tokenId,
-  ) async {
+    int tokenId, {
+    int? clientId,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -387,7 +397,10 @@ class _ApiTokenEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'apiToken',
           methodName: 'deleteToken',
-          parameters: _i1.testObjectToJson({'tokenId': tokenId}),
+          parameters: _i1.testObjectToJson({
+            'tokenId': tokenId,
+            'clientId': clientId,
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =

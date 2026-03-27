@@ -267,7 +267,7 @@ void main() {
         await factory.createTestDocument(title: 'Count 2');
 
         final authed = factory.authenticatedSession();
-        final count = await endpoints.document.getDocumentCount(authed);
+        final count = await endpoints.document.getDocumentCount(authed, clientId: TestDataFactory.testClientId);
 
         expect(count, greaterThanOrEqualTo(2));
       });
