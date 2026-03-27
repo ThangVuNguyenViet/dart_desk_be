@@ -20,3 +20,6 @@ config/google_client_secret.json
 
 # Firebase service account key for Firebase auth
 config/firebase_service_account_key.json
+
+# Coverage reports
+coverage/
