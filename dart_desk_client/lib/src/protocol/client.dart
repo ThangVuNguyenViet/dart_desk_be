@@ -47,25 +47,27 @@ class EndpointApiToken extends _i1.EndpointRef {
   String get name => 'apiToken';
 
   /// List all tokens for the current tenant (metadata only, never the hash).
-  _i2.Future<List<_i3.ApiToken>> getTokens() =>
+  _i2.Future<List<_i3.ApiToken>> getTokens({int? clientId}) =>
       caller.callServerEndpoint<List<_i3.ApiToken>>(
         'apiToken',
         'getTokens',
-        {},
+        {'clientId': clientId},
       );
 
   /// Create a new named token. Returns plaintext token (shown once).
   _i2.Future<_i4.ApiTokenWithValue> createToken(
     String name,
     String role,
-    DateTime? expiresAt,
-  ) => caller.callServerEndpoint<_i4.ApiTokenWithValue>(
+    DateTime? expiresAt, {
+    int? clientId,
+  }) => caller.callServerEndpoint<_i4.ApiTokenWithValue>(
     'apiToken',
     'createToken',
     {
       'name': name,
       'role': role,
       'expiresAt': expiresAt,
+      'clientId': clientId,
     },
   );
 
@@ -74,8 +76,9 @@ class EndpointApiToken extends _i1.EndpointRef {
     int tokenId,
     String? name,
     bool? isActive,
-    DateTime? expiresAt,
-  ) => caller.callServerEndpoint<_i3.ApiToken>(
+    DateTime? expiresAt, {
+    int? clientId,
+  }) => caller.callServerEndpoint<_i3.ApiToken>(
     'apiToken',
     'updateToken',
     {
@@ -83,22 +86,34 @@ class EndpointApiToken extends _i1.EndpointRef {
       'name': name,
       'isActive': isActive,
       'expiresAt': expiresAt,
+      'clientId': clientId,
     },
   );
 
   /// Regenerate token value. Returns new plaintext token (shown once).
-  _i2.Future<_i4.ApiTokenWithValue> regenerateToken(int tokenId) =>
-      caller.callServerEndpoint<_i4.ApiTokenWithValue>(
-        'apiToken',
-        'regenerateToken',
-        {'tokenId': tokenId},
-      );
+  _i2.Future<_i4.ApiTokenWithValue> regenerateToken(
+    int tokenId, {
+    int? clientId,
+  }) => caller.callServerEndpoint<_i4.ApiTokenWithValue>(
+    'apiToken',
+    'regenerateToken',
+    {
+      'tokenId': tokenId,
+      'clientId': clientId,
+    },
+  );
 
   /// Delete a token permanently.
-  _i2.Future<bool> deleteToken(int tokenId) => caller.callServerEndpoint<bool>(
+  _i2.Future<bool> deleteToken(
+    int tokenId, {
+    int? clientId,
+  }) => caller.callServerEndpoint<bool>(
     'apiToken',
     'deleteToken',
-    {'tokenId': tokenId},
+    {
+      'tokenId': tokenId,
+      'clientId': clientId,
+    },
   );
 }
 
@@ -990,9 +1005,9 @@ class EndpointUser extends _i1.EndpointRef {
   String get name => 'user';
 
   /// Get the current authenticated user.
-  /// For Serverpod IDP: returns existing User (must exist via seed or prior creation).
-  /// For external auth: auto-creates User on first call.
-  _i2.Future<_i19.User?> getCurrentUser({required int clientId}) =>
+  /// [clientId] is optional — if omitted, falls back to session.apiKey.clientId.
+  /// The _manage app passes clientId explicitly; consumer apps rely on x-api-key.
+  _i2.Future<_i19.User?> getCurrentUser({int? clientId}) =>
       caller.callServerEndpoint<_i19.User?>(
         'user',
         'getCurrentUser',

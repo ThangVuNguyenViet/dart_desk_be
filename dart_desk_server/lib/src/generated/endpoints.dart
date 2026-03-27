@@ -114,13 +114,22 @@ class Endpoints extends _i1.EndpointDispatch {
       methodConnectors: {
         'getTokens': _i1.MethodConnector(
           name: 'getTokens',
-          params: {},
+          params: {
+            'clientId': _i1.ParameterDescription(
+              name: 'clientId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+          },
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['apiToken'] as _i2.ApiTokenEndpoint)
-                  .getTokens(session),
+              ) async =>
+                  (endpoints['apiToken'] as _i2.ApiTokenEndpoint).getTokens(
+                    session,
+                    clientId: params['clientId'],
+                  ),
         ),
         'createToken': _i1.MethodConnector(
           name: 'createToken',
@@ -140,6 +149,11 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<DateTime?>(),
               nullable: true,
             ),
+            'clientId': _i1.ParameterDescription(
+              name: 'clientId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
           },
           call:
               (
@@ -151,6 +165,7 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['name'],
                     params['role'],
                     params['expiresAt'],
+                    clientId: params['clientId'],
                   ),
         ),
         'updateToken': _i1.MethodConnector(
@@ -176,6 +191,11 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<DateTime?>(),
               nullable: true,
             ),
+            'clientId': _i1.ParameterDescription(
+              name: 'clientId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
           },
           call:
               (
@@ -188,6 +208,7 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['name'],
                     params['isActive'],
                     params['expiresAt'],
+                    clientId: params['clientId'],
                   ),
         ),
         'regenerateToken': _i1.MethodConnector(
@@ -198,6 +219,11 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<int>(),
               nullable: false,
             ),
+            'clientId': _i1.ParameterDescription(
+              name: 'clientId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
           },
           call:
               (
@@ -207,6 +233,7 @@ class Endpoints extends _i1.EndpointDispatch {
                   .regenerateToken(
                     session,
                     params['tokenId'],
+                    clientId: params['clientId'],
                   ),
         ),
         'deleteToken': _i1.MethodConnector(
@@ -217,6 +244,11 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<int>(),
               nullable: false,
             ),
+            'clientId': _i1.ParameterDescription(
+              name: 'clientId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
           },
           call:
               (
@@ -226,6 +258,7 @@ class Endpoints extends _i1.EndpointDispatch {
                   (endpoints['apiToken'] as _i2.ApiTokenEndpoint).deleteToken(
                     session,
                     params['tokenId'],
+                    clientId: params['clientId'],
                   ),
         ),
       },

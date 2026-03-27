@@ -152,6 +152,7 @@ void _sendRegistrationCode(
   required Transaction? transaction,
 }) {
   session.log('[EmailIdp] Registration code ($email): $verificationCode');
+  stdout.writeln('[EmailIdp] Registration code ($email): $verificationCode');
 }
 
 void _sendPasswordResetCode(

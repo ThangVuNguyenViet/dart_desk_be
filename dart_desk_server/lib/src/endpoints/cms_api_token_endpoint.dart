@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:serverpod/serverpod.dart';
 
-import '../auth/api_key_context.dart';
 import '../auth/api_key_validator.dart';
 import '../auth/dart_desk_session.dart';
 import '../auth/resolve_user.dart';
@@ -20,12 +19,12 @@ class ApiTokenEndpoint extends Endpoint {
   };
 
   /// List all tokens for the current tenant (metadata only, never the hash).
-  Future<List<ApiToken>> getTokens(Session session) async {
-    final (_, clientId) = await _requireAuth(session);
+  Future<List<ApiToken>> getTokens(Session session, {int? clientId}) async {
+    final auth = await _requireAuth(session, clientId: clientId);
 
     return await ApiToken.db.find(
       session,
-      where: (t) => clientId != null ? t.clientId.equals(clientId) : t.clientId.equals(null),
+      where: (t) => auth.clientId != null ? t.clientId.equals(auth.clientId) : t.clientId.equals(null),
       orderBy: (t) => t.createdAt,
       orderDescending: true,
     );
@@ -36,9 +35,10 @@ class ApiTokenEndpoint extends Endpoint {
     Session session,
     String name,
     String role,
-    DateTime? expiresAt,
-  ) async {
-    final (auth, clientId) = await _requireAuth(session);
+    DateTime? expiresAt, {
+    int? clientId,
+  }) async {
+    final auth = await _requireAuth(session, clientId: clientId);
 
     if (!_rolePrefixes.containsKey(role)) {
       throw Exception('Invalid role: $role. Must be read or write.');
@@ -55,20 +55,20 @@ class ApiTokenEndpoint extends Endpoint {
       final existing = await ApiToken.db.findFirstRow(
         session,
         where: (t) =>
-            (clientId != null ? t.clientId.equals(clientId) : t.clientId.equals(null)) &
+            (auth.clientId != null ? t.clientId.equals(auth.clientId) : t.clientId.equals(null)) &
             t.tokenPrefix.equals(prefix) &
             t.tokenSuffix.equals(suffix),
       );
       if (existing != null) continue;
 
       final token = ApiToken(
-        clientId: clientId,
+        clientId: auth.clientId,
         name: name,
         tokenHash: hash,
         tokenPrefix: prefix,
         tokenSuffix: suffix,
         role: role,
-        createdByUserId: auth.user!.id,
+        createdByUserId: auth.user!.id!,
         isActive: true,
         createdAt: DateTime.now(),
       );
@@ -91,12 +91,13 @@ class ApiTokenEndpoint extends Endpoint {
     int tokenId,
     String? name,
     bool? isActive,
-    DateTime? expiresAt,
-  ) async {
+    DateTime? expiresAt, {
+    int? clientId,
+  }) async {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) throw Exception('Token not found: $tokenId');
 
-    await _requireAuth(session);
+    await _requireAuth(session, clientId: clientId);
 
     final updated = token.copyWith(
       name: name ?? token.name,
@@ -110,12 +111,13 @@ class ApiTokenEndpoint extends Endpoint {
   /// Regenerate token value. Returns new plaintext token (shown once).
   Future<ApiTokenWithValue> regenerateToken(
     Session session,
-    int tokenId,
-  ) async {
+    int tokenId, {
+    int? clientId,
+  }) async {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) throw Exception('Token not found: $tokenId');
 
-    await _requireAuth(session);
+    await _requireAuth(session, clientId: clientId);
 
     final prefix = _rolePrefixes[token.role]!;
 
@@ -151,24 +153,34 @@ class ApiTokenEndpoint extends Endpoint {
   /// Delete a token permanently.
   Future<bool> deleteToken(
     Session session,
-    int tokenId,
-  ) async {
+    int tokenId, {
+    int? clientId,
+  }) async {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) return false;
 
-    await _requireAuth(session);
+    await _requireAuth(session, clientId: clientId);
 
     await ApiToken.db.deleteRow(session, token);
     return true;
   }
 
   /// Verify the caller is an authenticated User and resolve tenant.
-  Future<(({ApiKeyContext apiKey, User? user}), int?)> _requireAuth(Session session) async {
+  Future<({User? user, int? clientId})> _requireAuth(
+    Session session, {
+    int? clientId,
+  }) async {
     final apiKey = session.apiKey;
-    if (apiKey == null) throw Exception('Missing API key');
-    final user = await resolveUser(session, clientId: apiKey.clientId);
-    final authResult = (apiKey: apiKey, user: user as User?);
-    return (authResult, apiKey.clientId);
+    if (apiKey != null) {
+      final user = await resolveUser(session, clientId: apiKey.clientId);
+      return (user: user as User?, clientId: apiKey.clientId);
+    }
+    // Session auth (manage app)
+    if (session.authenticated == null) {
+      throw Exception('Authentication required');
+    }
+    final user = await resolveUser(session, clientId: clientId);
+    return (user: user as User?, clientId: clientId);
   }
 
   /// Generate a crypto-random API token with the given prefix.
