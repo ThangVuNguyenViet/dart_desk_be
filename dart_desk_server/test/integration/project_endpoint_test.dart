@@ -3,6 +3,18 @@ import 'package:test/test.dart';
 
 import 'test_tools/serverpod_test_tools.dart';
 
+TestSessionBuilder authedSession(
+  TestSessionBuilder sessionBuilder, {
+  String userIdentifier = 'owner-1',
+}) {
+  return sessionBuilder.copyWith(
+    authentication: AuthenticationOverride.authenticationInfo(
+      userIdentifier,
+      {},
+    ),
+  );
+}
+
 void main() {
   withServerpod('ProjectEndpoint', (sessionBuilder, endpoints) {
     Future<Project> seedProject({
@@ -14,15 +26,6 @@ void main() {
       return Project.db.insertRow(
         session,
         Project(name: name, slug: slug, isActive: isActive),
-      );
-    }
-
-    TestSessionBuilder authed({String userIdentifier = 'owner-1'}) {
-      return sessionBuilder.copyWith(
-        authentication: AuthenticationOverride.authenticationInfo(
-          userIdentifier,
-          {},
-        ),
       );
     }
 
@@ -134,7 +137,7 @@ void main() {
     group('createProject', () {
       test('inserts and returns project with correct fields', () async {
         final p = await endpoints.project.createProject(
-          authed(),
+          authedSession(sessionBuilder),
           'New Project',
           'new-project',
           description: 'A description',
@@ -158,26 +161,39 @@ void main() {
       test('updates name', () async {
         final seeded = await seedProject();
         final updated = await endpoints.project.updateProject(
-          authed(),
+          authedSession(sessionBuilder),
           seeded.id!,
           name: 'Updated Name',
         );
         expect(updated, isNotNull);
         expect(updated!.name, equals('Updated Name'));
+        final fromDb = await Project.db.findById(
+          sessionBuilder.build(),
+          seeded.id!,
+        );
+        expect(fromDb!.name, equals('Updated Name'));
       });
 
       test('sets isActive to false', () async {
         final seeded = await seedProject();
         final updated = await endpoints.project.updateProject(
-          authed(),
+          authedSession(sessionBuilder),
           seeded.id!,
           isActive: false,
         );
         expect(updated!.isActive, isFalse);
+        final fromDb = await Project.db.findById(
+          sessionBuilder.build(),
+          seeded.id!,
+        );
+        expect(fromDb!.isActive, isFalse);
       });
 
       test('returns null for nonexistent id', () async {
-        final result = await endpoints.project.updateProject(authed(), 999999);
+        final result = await endpoints.project.updateProject(
+          authedSession(sessionBuilder),
+          999999,
+        );
         expect(result, isNull);
       });
 
@@ -194,7 +210,7 @@ void main() {
       test('returns true and removes row', () async {
         final seeded = await seedProject();
         final result = await endpoints.project.deleteProject(
-          authed(),
+          authedSession(sessionBuilder),
           seeded.id!,
         );
         expect(result, isTrue);
@@ -206,7 +222,10 @@ void main() {
       });
 
       test('returns false for nonexistent id', () async {
-        final result = await endpoints.project.deleteProject(authed(), 999999);
+        final result = await endpoints.project.deleteProject(
+          authedSession(sessionBuilder),
+          999999,
+        );
         expect(result, isFalse);
       });
 
@@ -223,7 +242,7 @@ void main() {
       test('throws on slug too short', () async {
         await expectLater(
           () => endpoints.project.createProjectWithOwner(
-            authed(),
+            authedSession(sessionBuilder),
             name: 'X',
             slug: 'ab',
           ),
@@ -234,7 +253,7 @@ void main() {
       test('throws on slug with leading hyphen', () async {
         await expectLater(
           () => endpoints.project.createProjectWithOwner(
-            authed(),
+            authedSession(sessionBuilder),
             name: 'X',
             slug: '-bad-start',
           ),
@@ -245,7 +264,7 @@ void main() {
       test('throws on uppercase slug', () async {
         await expectLater(
           () => endpoints.project.createProjectWithOwner(
-            authed(),
+            authedSession(sessionBuilder),
             name: 'X',
             slug: 'UPPERCASE',
           ),
@@ -257,7 +276,7 @@ void main() {
         test('throws on reserved slug: "$reserved"', () async {
           await expectLater(
             () => endpoints.project.createProjectWithOwner(
-              authed(),
+              authedSession(sessionBuilder),
               name: 'X',
               slug: reserved,
             ),
@@ -270,7 +289,7 @@ void main() {
         await seedProject(slug: 'already-taken');
         await expectLater(
           () => endpoints.project.createProjectWithOwner(
-            authed(),
+            authedSession(sessionBuilder),
             name: 'Dup',
             slug: 'already-taken',
           ),
@@ -297,39 +316,31 @@ void main() {
   withServerpod(
     'ProjectEndpoint createProjectWithOwner success',
     (sessionBuilder, endpoints) {
-      TestSessionBuilder authed({String userIdentifier = 'owner-1'}) {
-        return sessionBuilder.copyWith(
-          authentication: AuthenticationOverride.authenticationInfo(
-            userIdentifier,
-            {},
-          ),
-        );
-      }
+      final insertedProjectIds = <int>[];
 
       tearDown(() async {
         // Clean up rows inserted during this test since rollback is disabled.
         final session = sessionBuilder.build();
-        final projects = await Project.db.find(
-          session,
-          where: (t) =>
-              t.slug.equals('owner-project') |
-              t.slug.equals('fallback-email'),
-        );
-        for (final p in projects) {
+        for (final id in insertedProjectIds) {
           await User.db.deleteWhere(
             session,
-            where: (t) => t.clientId.equals(p.id!),
+            where: (t) => t.clientId.equals(id),
           );
-          await Project.db.deleteRow(session, p);
+          await Project.db.deleteWhere(
+            session,
+            where: (t) => t.id.equals(id),
+          );
         }
+        insertedProjectIds.clear();
       });
 
       test('creates Project and admin User in transaction', () async {
         final project = await endpoints.project.createProjectWithOwner(
-          authed(),
+          authedSession(sessionBuilder),
           name: 'Owner Project',
           slug: 'owner-project',
         );
+        insertedProjectIds.add(project.id!);
         expect(project.id, isNotNull);
         expect(project.slug, equals('owner-project'));
         final user = await User.db.findFirstRow(
@@ -342,12 +353,14 @@ void main() {
         expect(user.isActive, isTrue);
       });
 
-      test('falls back to userIdentifier as email when profile absent', () async {
+      test('falls back to userIdentifier as email when profile absent',
+          () async {
         final project = await endpoints.project.createProjectWithOwner(
-          authed(),
+          authedSession(sessionBuilder),
           name: 'Fallback Email',
           slug: 'fallback-email',
         );
+        insertedProjectIds.add(project.id!);
         final user = await User.db.findFirstRow(
           sessionBuilder.build(),
           where: (t) => t.clientId.equals(project.id!),
