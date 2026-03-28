@@ -162,9 +162,11 @@ class DocumentCrdtService {
     // Apply operations to state (last-write-wins based on HLC)
     for (var op in operationsList) {
       if (op.operationType == CrdtOperationType.put && op.fieldValue != null) {
-        flatState[op.fieldPath] = jsonDecode(op.fieldValue!);
+        _applyPutToFlatState(
+            flatState, op.fieldPath, jsonDecode(op.fieldValue!));
       } else if (op.operationType == CrdtOperationType.delete) {
         flatState.remove(op.fieldPath);
+        flatState.removeWhere((k, _) => k.startsWith('${op.fieldPath}.'));
       }
     }
 
@@ -211,9 +213,11 @@ class DocumentCrdtService {
     for (var row in operations) {
       final op = DocumentCrdtOperation.fromJson(row.toColumnMap());
       if (op.operationType == CrdtOperationType.put && op.fieldValue != null) {
-        flatState[op.fieldPath] = jsonDecode(op.fieldValue!);
+        _applyPutToFlatState(
+            flatState, op.fieldPath, jsonDecode(op.fieldValue!));
       } else if (op.operationType == CrdtOperationType.delete) {
         flatState.remove(op.fieldPath);
+        flatState.removeWhere((k, _) => k.startsWith('${op.fieldPath}.'));
       }
     }
 
@@ -278,9 +282,11 @@ class DocumentCrdtService {
     // Apply each operation in order (assumes operations are sorted by HLC)
     for (var op in operations) {
       if (op.operationType == CrdtOperationType.put && op.fieldValue != null) {
-        flatState[op.fieldPath] = jsonDecode(op.fieldValue!);
+        _applyPutToFlatState(
+            flatState, op.fieldPath, jsonDecode(op.fieldValue!));
       } else if (op.operationType == CrdtOperationType.delete) {
         flatState.remove(op.fieldPath);
+        flatState.removeWhere((k, _) => k.startsWith('${op.fieldPath}.'));
       }
     }
 
@@ -327,6 +333,32 @@ class DocumentCrdtService {
     return results
         .map((row) => DocumentCrdtOperation.fromJson(row.toColumnMap()))
         .toList();
+  }
+
+  /// Apply a put operation to flat state with parent/child conflict resolution.
+  ///
+  /// Invariants:
+  /// - Setting K = null removes all K.* sub-keys (null overrides a prior sub-map).
+  /// - Setting K.X = val removes any K = null ancestor (sub-key overrides a prior null).
+  void _applyPutToFlatState(
+    Map<String, dynamic> flatState,
+    String fieldPath,
+    dynamic value,
+  ) {
+    if (value == null) {
+      // Nulling a field: remove all dot-notation sub-keys for this path.
+      flatState.removeWhere((k, _) => k.startsWith('$fieldPath.'));
+    } else {
+      // Setting a sub-key: remove any ancestor plain-null that would conflict.
+      var path = fieldPath;
+      while (path.contains('.')) {
+        path = path.substring(0, path.lastIndexOf('.'));
+        if (flatState.containsKey(path) && flatState[path] == null) {
+          flatState.remove(path);
+        }
+      }
+    }
+    flatState[fieldPath] = value;
   }
 
   /// Flatten nested map to dot-notation
