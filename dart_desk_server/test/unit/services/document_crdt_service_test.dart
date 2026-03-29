@@ -154,4 +154,166 @@ void main() {
       expect(result['nested']['extra'], equals('appended'));
     });
   });
+
+  // Tests for _applyPutToFlatState parent/child conflict resolution.
+  // This logic was added to fix a bug where image fields with sub-keys
+  // (e.g. image.url, image.alt) would survive after image was set to null,
+  // or where a stale null ancestor would block sub-key restoration.
+  group('_applyPutToFlatState (via reconstructFromOperations)', () {
+    group('parent null clears prior sub-keys', () {
+      test('image set to null removes image.url and image.alt', () {
+        final ops = [
+          putOp('image.url', 'https://example.com/photo.jpg',
+              hlc: '2026-01-01T00:00:01.000Z-0000-test'),
+          putOp('image.alt', 'A nice photo',
+              hlc: '2026-01-01T00:00:02.000Z-0000-test'),
+          putOp('image', null,
+              hlc: '2026-01-01T00:00:03.000Z-0000-test'),
+        ];
+
+        final result = service.reconstructFromOperations(ops, initialState: {});
+
+        expect(result['image'], isNull);
+        // Sub-keys must not survive as nested map
+        expect(result['image'], isNot(isA<Map>()));
+      });
+
+      test('nested image null does not affect sibling fields', () {
+        final ops = [
+          putOp('hero.title', 'Welcome',
+              hlc: '2026-01-01T00:00:01.000Z-0000-test'),
+          putOp('hero.image.url', 'https://example.com/hero.jpg',
+              hlc: '2026-01-01T00:00:02.000Z-0000-test'),
+          putOp('hero.image', null,
+              hlc: '2026-01-01T00:00:03.000Z-0000-test'),
+          putOp('hero.subtitle', 'Subtitle',
+              hlc: '2026-01-01T00:00:04.000Z-0000-test'),
+        ];
+
+        final result = service.reconstructFromOperations(ops, initialState: {});
+
+        expect(result['hero']['title'], equals('Welcome'));
+        expect(result['hero']['subtitle'], equals('Subtitle'));
+        expect(result['hero']['image'], isNull);
+        expect(result['hero']['image'], isNot(isA<Map>()));
+      });
+
+      test('multiple sub-keys all removed when parent set to null', () {
+        final ops = [
+          putOp('image.url', 'url',
+              hlc: '2026-01-01T00:00:01.000Z-0000-test'),
+          putOp('image.alt', 'alt',
+              hlc: '2026-01-01T00:00:02.000Z-0000-test'),
+          putOp('image.width', 800,
+              hlc: '2026-01-01T00:00:03.000Z-0000-test'),
+          putOp('image.height', 600,
+              hlc: '2026-01-01T00:00:04.000Z-0000-test'),
+          putOp('image', null,
+              hlc: '2026-01-01T00:00:05.000Z-0000-test'),
+        ];
+
+        final result = service.reconstructFromOperations(ops, initialState: {});
+
+        expect(result['image'], isNull);
+      });
+    });
+
+    group('sub-key set removes prior ancestor null', () {
+      test('image.url set after image=null removes the null', () {
+        final ops = [
+          putOp('image', null,
+              hlc: '2026-01-01T00:00:01.000Z-0000-test'),
+          putOp('image.url', 'https://example.com/new.jpg',
+              hlc: '2026-01-01T00:00:02.000Z-0000-test'),
+          putOp('image.alt', 'New photo',
+              hlc: '2026-01-01T00:00:03.000Z-0000-test'),
+        ];
+
+        final result = service.reconstructFromOperations(ops, initialState: {});
+
+        expect(result['image'], isA<Map>());
+        expect(result['image']['url'], equals('https://example.com/new.jpg'));
+        expect(result['image']['alt'], equals('New photo'));
+      });
+
+      test('deep sub-key set removes all conflicting null ancestors', () {
+        final ops = [
+          putOp('a.b', null,
+              hlc: '2026-01-01T00:00:01.000Z-0000-test'),
+          putOp('a.b.c.d', 'value',
+              hlc: '2026-01-01T00:00:02.000Z-0000-test'),
+        ];
+
+        final result = service.reconstructFromOperations(ops, initialState: {});
+
+        expect(result['a']['b']['c']['d'], equals('value'));
+        // a.b should no longer be null
+        expect(result['a']['b'], isA<Map>());
+      });
+    });
+
+    group('full image lifecycle', () {
+      test('create → clear → restore produces correct final state', () {
+        final ops = [
+          // Initial image set
+          putOp('image.url', 'https://example.com/v1.jpg',
+              hlc: '2026-01-01T00:00:01.000Z-0000-test'),
+          putOp('image.alt', 'Version 1',
+              hlc: '2026-01-01T00:00:02.000Z-0000-test'),
+          // Clear image
+          putOp('image', null,
+              hlc: '2026-01-01T00:00:03.000Z-0000-test'),
+          // Restore with new image
+          putOp('image.url', 'https://example.com/v2.jpg',
+              hlc: '2026-01-01T00:00:04.000Z-0000-test'),
+          putOp('image.alt', 'Version 2',
+              hlc: '2026-01-01T00:00:05.000Z-0000-test'),
+        ];
+
+        final result = service.reconstructFromOperations(ops, initialState: {});
+
+        expect(result['image'], isA<Map>());
+        expect(result['image']['url'], equals('https://example.com/v2.jpg'));
+        expect(result['image']['alt'], equals('Version 2'));
+      });
+
+      test('clear → restore → clear again produces null final state', () {
+        final ops = [
+          putOp('image.url', 'https://example.com/photo.jpg',
+              hlc: '2026-01-01T00:00:01.000Z-0000-test'),
+          putOp('image', null,
+              hlc: '2026-01-01T00:00:02.000Z-0000-test'),
+          putOp('image.url', 'https://example.com/new.jpg',
+              hlc: '2026-01-01T00:00:03.000Z-0000-test'),
+          putOp('image', null,
+              hlc: '2026-01-01T00:00:04.000Z-0000-test'),
+        ];
+
+        final result = service.reconstructFromOperations(ops, initialState: {});
+
+        expect(result['image'], isNull);
+      });
+
+      test('other top-level fields unaffected throughout image lifecycle', () {
+        final ops = [
+          putOp('title', 'My Article',
+              hlc: '2026-01-01T00:00:01.000Z-0000-test'),
+          putOp('image.url', 'https://example.com/img.jpg',
+              hlc: '2026-01-01T00:00:02.000Z-0000-test'),
+          putOp('image', null,
+              hlc: '2026-01-01T00:00:03.000Z-0000-test'),
+          putOp('image.url', 'https://example.com/img2.jpg',
+              hlc: '2026-01-01T00:00:04.000Z-0000-test'),
+          putOp('body', 'Some content',
+              hlc: '2026-01-01T00:00:05.000Z-0000-test'),
+        ];
+
+        final result = service.reconstructFromOperations(ops, initialState: {});
+
+        expect(result['title'], equals('My Article'));
+        expect(result['body'], equals('Some content'));
+        expect(result['image']['url'], equals('https://example.com/img2.jpg'));
+      });
+    });
+  });
 }

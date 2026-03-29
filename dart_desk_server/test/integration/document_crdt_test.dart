@@ -220,6 +220,93 @@ void main() {
       });
     });
 
+    group('image field lifecycle', () {
+      test('clearing image field removes sub-keys from state', () async {
+        final doc = await factory.createTestDocument(
+          title: 'Image Clear Doc',
+          data: {
+            'image': {'url': 'https://example.com/photo.jpg', 'alt': 'A photo'},
+          },
+        );
+        final authed = factory.authenticatedSession();
+
+        // Clear the image field
+        final result = await endpoints.document.updateDocumentData(
+          authed,
+          doc.id!,
+          {'image': null},
+        );
+
+        final data = jsonDecode(result.data!) as Map<String, dynamic>;
+        expect(data['image'], isNull,
+            reason: 'image should be null after clearing');
+        // Must not have survived as a nested map with the old sub-keys
+        expect(data['image'], isNot(isA<Map>()));
+      });
+
+      test('restoring image after null produces correct nested map', () async {
+        final doc = await factory.createTestDocument(
+          title: 'Image Restore Doc',
+          data: {'image': null},
+        );
+        final authed = factory.authenticatedSession();
+
+        final result = await endpoints.document.updateDocumentData(
+          authed,
+          doc.id!,
+          {
+            'image': {'url': 'https://example.com/new.jpg', 'alt': 'New photo'},
+          },
+        );
+
+        final data = jsonDecode(result.data!) as Map<String, dynamic>;
+        expect(data['image'], isA<Map>());
+        expect(data['image']['url'], equals('https://example.com/new.jpg'));
+        expect(data['image']['alt'], equals('New photo'));
+      });
+
+      test('full image lifecycle: set → clear → restore', () async {
+        final doc = await factory.createTestDocument(
+          title: 'Image Lifecycle Doc',
+          data: {
+            'title': 'My Article',
+            'image': {'url': 'https://example.com/v1.jpg', 'alt': 'V1'},
+          },
+        );
+        final authed = factory.authenticatedSession();
+
+        // Clear image
+        await endpoints.document.updateDocumentData(
+          authed,
+          doc.id!,
+          {'image': null},
+        );
+
+        // Verify cleared
+        final afterClear =
+            await endpoints.document.getDocument(authed, doc.id!);
+        final clearedData =
+            jsonDecode(afterClear!.data!) as Map<String, dynamic>;
+        expect(clearedData['image'], isNull);
+        expect(clearedData['title'], equals('My Article'));
+
+        // Restore with new image
+        final result = await endpoints.document.updateDocumentData(
+          authed,
+          doc.id!,
+          {
+            'image': {'url': 'https://example.com/v2.jpg', 'alt': 'V2'},
+          },
+        );
+
+        final finalData = jsonDecode(result.data!) as Map<String, dynamic>;
+        expect(finalData['image'], isA<Map>());
+        expect(finalData['image']['url'], equals('https://example.com/v2.jpg'));
+        expect(finalData['image']['alt'], equals('V2'));
+        expect(finalData['title'], equals('My Article'));
+      });
+    });
+
     group('CRDT operations tracking', () {
       test('operations are recorded and countable', () async {
         final doc = await factory.createTestDocument(
