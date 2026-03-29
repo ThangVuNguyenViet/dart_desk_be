@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';
@@ -14,6 +16,15 @@ void main() {
         endpoints: endpoints,
       );
       await factory.ensureTestUser();
+
+      // Clean up leftover data from rollback-disabled groups.
+      final session = sessionBuilder.build();
+      await DocumentCrdtOperation.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+      await DocumentCrdtSnapshot.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+      await DocumentVersion.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+      await DocumentData.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+      await Document.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+      await MediaAsset.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
     });
 
     /// Helper: create a document, create a version, publish it.
@@ -210,5 +221,140 @@ void main() {
         );
       });
     });
+
   });
+
+  withServerpod(
+    'PublicContent image reference resolution',
+    (sessionBuilder, endpoints) {
+      late TestDataFactory factory;
+
+      setUp(() async {
+        TestDataFactory.initializeCrdtService();
+        factory = TestDataFactory(
+          sessionBuilder: sessionBuilder,
+          endpoints: endpoints,
+        );
+        await factory.ensureTestUser();
+
+        // Clean up leftover data from previous runs (rollback disabled).
+        final session = sessionBuilder.build();
+        await DocumentCrdtOperation.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentCrdtSnapshot.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentVersion.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentData.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await Document.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await MediaAsset.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+      });
+
+      /// Helper: create a document, create a version, publish it.
+      Future<Document> createPublishedDocument({
+        required String documentType,
+        required String title,
+        String? slug,
+        bool isDefault = false,
+        Map<String, dynamic> data = const {'body': 'content'},
+      }) async {
+        final doc = await factory.createTestDocument(
+          documentType: documentType,
+          title: title,
+          slug: slug,
+          isDefault: isDefault,
+          data: data,
+        );
+        final version = await factory.createTestVersion(doc.id!);
+        await endpoints.document.publishDocumentVersion(
+          factory.authenticatedSession(),
+          version.id!,
+        );
+        // Re-fetch to get updated publishedAt
+        return (await endpoints.document.getDocument(
+          sessionBuilder,
+          doc.id!,
+        ))!;
+      }
+
+      test('inlines asset fields into imageReference nodes', () async {
+        final asset = await factory.uploadTestImage();
+
+        await createPublishedDocument(
+          documentType: 'blog',
+          title: 'Image Post',
+          slug: 'image-post',
+          data: {
+            'title': 'Hello',
+            'heroImage': {
+              '_type': 'imageReference',
+              'assetId': asset.assetId,
+            },
+          },
+        );
+
+        final result = await endpoints.publicContent.getContentBySlug(
+          sessionBuilder,
+          'blog',
+          'image-post',
+        );
+
+        final data = jsonDecode(result.data) as Map<String, dynamic>;
+        final heroImage = data['heroImage'] as Map<String, dynamic>;
+
+        expect(heroImage['_type'], equals('imageReference'));
+        expect(heroImage['assetId'], equals(asset.assetId));
+        expect(heroImage['publicUrl'], equals(asset.publicUrl));
+        expect(heroImage['width'], equals(1));
+        expect(heroImage['height'], equals(1));
+        expect(heroImage['blurHash'], isNotEmpty);
+      });
+
+      test('resolves nested imageReference inside a list', () async {
+        final asset = await factory.uploadTestImage();
+
+        await createPublishedDocument(
+          documentType: 'blog',
+          title: 'Gallery Post',
+          slug: 'gallery-post',
+          data: {
+            'gallery': [
+              {
+                '_type': 'imageReference',
+                'assetId': asset.assetId,
+              },
+            ],
+          },
+        );
+
+        final result = await endpoints.publicContent.getContentBySlug(
+          sessionBuilder,
+          'blog',
+          'gallery-post',
+        );
+
+        final data = jsonDecode(result.data) as Map<String, dynamic>;
+        final gallery = data['gallery'] as List<dynamic>;
+        final firstImage = gallery.first as Map<String, dynamic>;
+
+        expect(firstImage['publicUrl'], equals(asset.publicUrl));
+      });
+
+      test('document with no imageReference nodes is unchanged', () async {
+        await createPublishedDocument(
+          documentType: 'blog',
+          title: 'Text Post',
+          slug: 'text-post',
+          data: {'body': 'hello world'},
+        );
+
+        final result = await endpoints.publicContent.getContentBySlug(
+          sessionBuilder,
+          'blog',
+          'text-post',
+        );
+
+        final data = jsonDecode(result.data) as Map<String, dynamic>;
+        expect(data['body'], equals('hello world'));
+      });
+    },
+    rollbackDatabase: RollbackDatabase.disabled,
+  );
 }
