@@ -173,7 +173,87 @@ class ProjectEndpoint extends Endpoint {
     required String clientName,
     required String clientSlug,
   }) async {
-    throw UnimplementedError();
+    final authInfo = session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated');
+    }
+
+    // Guard: caller already has a workspace
+    final existingUser = await User.db.findFirstRow(
+      session,
+      where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
+    );
+    if (existingUser != null) {
+      throw Exception('Account already has a workspace');
+    }
+
+    // Validate slug format
+    if (!_slugRegex.hasMatch(clientSlug)) {
+      throw Exception(
+        'Invalid slug: must be 3-63 characters, lowercase alphanumeric and hyphens, '
+        'cannot start or end with a hyphen',
+      );
+    }
+    if (_reservedSlugs.contains(clientSlug)) {
+      throw Exception('Slug "$clientSlug" is reserved and cannot be used');
+    }
+
+    // Check slug uniqueness in CmsClient table
+    final existing = await CmsClient.db.findFirstRow(
+      session,
+      where: (t) => t.slug.equals(clientSlug),
+    );
+    if (existing != null) {
+      throw Exception('Slug "$clientSlug" is already taken');
+    }
+
+    // Get user profile for email
+    String? email;
+    String? userName;
+    try {
+      final profileRows = await session.db.unsafeQuery(
+        r'SELECT "email", "fullName" FROM "serverpod_auth_core_profile" '
+        r'WHERE "authUserId" = $1 LIMIT 1',
+        parameters: QueryParameters.positional([authInfo.userIdentifier]),
+      );
+      if (profileRows.isNotEmpty) {
+        email = profileRows.first[0] as String?;
+        userName = profileRows.first[1] as String?;
+      }
+    } catch (e) {
+      // Profile lookup failed; use identifier as fallback
+    }
+
+    return session.db.transaction((transaction) async {
+      final client = await CmsClient.db.insertRow(
+        session,
+        CmsClient(
+          name: clientName,
+          slug: clientSlug,
+          isActive: true,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+        transaction: transaction,
+      );
+
+      await User.db.insertRow(
+        session,
+        User(
+          clientId: client.id!,
+          email: email ?? authInfo.userIdentifier,
+          name: userName,
+          role: 'admin',
+          isActive: true,
+          serverpodUserId: authInfo.userIdentifier,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+        transaction: transaction,
+      );
+
+      return client;
+    });
   }
 
   /// Reserved slugs that cannot be used as project slugs.
