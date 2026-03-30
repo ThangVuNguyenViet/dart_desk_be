@@ -94,6 +94,11 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
           userIdentifier = authInfo.userIdentifier;
           authId = authInfo.authId;
           scopes.addAll(authInfo.scopes);
+          // JWT tokens may carry no scopes; ensure authenticated users are
+          // never rejected solely because the scope set is empty.
+          if (authInfo.scopes.isEmpty) {
+            scopes.add(Scope('user'));
+          }
         }
       } catch (_) {
         // Ignore JWT errors and continue. The request may still authenticate
@@ -104,8 +109,7 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
     if (apiKey != null && apiKey.isNotEmpty && apiKey != 'null') {
       final tokenRow = await ApiKeyValidator.validate(session, apiKey);
       if (tokenRow != null) {
-        final project =
-            await Project.db.findById(session, tokenRow.projectId);
+        final project = await Project.db.findById(session, tokenRow.projectId);
         if (project != null) {
           scopes.add(Scope('project:${project.id!}'));
           scopes.add(Scope('project.read'));
@@ -121,7 +125,7 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
       }
     }
 
-    if (scopes.isEmpty || userIdentifier == null || authId == null) {
+    if (userIdentifier == null || authId == null) {
       return null;
     }
 
