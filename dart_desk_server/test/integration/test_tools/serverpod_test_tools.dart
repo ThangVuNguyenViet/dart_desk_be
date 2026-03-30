@@ -2287,41 +2287,6 @@ class _ProjectEndpoint {
       }
     });
   }
-
-  _i3.Future<_i17.Project> createProjectWithOwner(
-    _i1.TestSessionBuilder sessionBuilder, {
-    required String name,
-    required String slug,
-  }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'project',
-            method: 'createProjectWithOwner',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'project',
-          methodName: 'createProjectWithOwner',
-          parameters: _i1.testObjectToJson({
-            'name': name,
-            'slug': slug,
-          }),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i3.Future<_i17.Project>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
 }
 
 class _PublicContentEndpoint {

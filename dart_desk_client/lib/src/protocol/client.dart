@@ -883,20 +883,6 @@ class EndpointProject extends _i1.EndpointRef {
       'clientSlug': clientSlug,
     },
   );
-
-  /// Create a new project and an admin User for the caller in one transaction.
-  /// Used by the manage app's setup wizard for first-time users.
-  _i2.Future<_i17.Project> createProjectWithOwner({
-    required String name,
-    required String slug,
-  }) => caller.callServerEndpoint<_i17.Project>(
-    'project',
-    'createProjectWithOwner',
-    {
-      'name': name,
-      'slug': slug,
-    },
-  );
 }
 
 /// Read-only public content API for external consumers.

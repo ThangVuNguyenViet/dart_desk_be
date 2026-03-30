@@ -1608,31 +1608,6 @@ class Endpoints extends _i1.EndpointDispatch {
                     clientSlug: params['clientSlug'],
                   ),
         ),
-        'createProjectWithOwner': _i1.MethodConnector(
-          name: 'createProjectWithOwner',
-          params: {
-            'name': _i1.ParameterDescription(
-              name: 'name',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'slug': _i1.ParameterDescription(
-              name: 'slug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['project'] as _i9.ProjectEndpoint)
-                  .createProjectWithOwner(
-                    session,
-                    name: params['name'],
-                    slug: params['slug'],
-                  ),
-        ),
       },
     );
     connectors['publicContent'] = _i1.EndpointConnector(

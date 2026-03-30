@@ -64,7 +64,6 @@ project:
   - updateProject:
   - deleteProject:
   - createClientWithOwner:
-  - createProjectWithOwner:
 publicContent:
   - getAllContents:
   - getDefaultContents:
