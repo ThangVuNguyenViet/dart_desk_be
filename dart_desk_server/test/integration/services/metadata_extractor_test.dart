@@ -1,8 +1,11 @@
 import 'dart:typed_data';
-import 'package:image/image.dart' as img;
-import 'package:test/test.dart';
+
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:dart_desk_server/src/services/metadata_extractor.dart';
+import 'package:image/image.dart' as img;
+import 'package:test/test.dart';
+
+import '../helpers/test_data_factory.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 /// Generate a valid PNG using the image library (guaranteed decodable).
@@ -25,11 +28,12 @@ String _uniqueId(String prefix) =>
 MediaAsset _buildPendingAsset({
   required String assetId,
   required String fileName,
+  required int projectId,
   String mimeType = 'image/png',
   int fileSize = 0,
 }) {
   return MediaAsset(
-    clientId: null,
+    projectId: projectId,
     fileName: fileName,
     assetId: assetId,
     storagePath: 'media/$assetId/$fileName',
@@ -49,6 +53,27 @@ void main() {
     'MetadataExtractor',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, endpoints) {
+      late TestDataFactory factory;
+      late int projectId;
+
+      setUpAll(() async {
+        factory = TestDataFactory(
+          sessionBuilder: sessionBuilder,
+          endpoints: endpoints,
+        );
+        final project = await factory.ensureTestProject();
+        projectId = project.id!;
+      });
+
+      tearDownAll(() async {
+        final session = sessionBuilder.build();
+        // Clean up media assets created by these tests
+        await MediaAsset.db.deleteWhere(
+          session,
+          where: (t) => t.projectId.equals(projectId),
+        );
+      });
+
       group('extractAndUpdate', () {
         test('valid image: populates LQIP, palette, and sets status complete',
             () async {
@@ -68,6 +93,7 @@ void main() {
             _buildPendingAsset(
               assetId: id,
               fileName: 'test.png',
+              projectId: projectId,
               fileSize: _validPngBytes.length,
             ),
           );
@@ -100,6 +126,7 @@ void main() {
             _buildPendingAsset(
               assetId: id,
               fileName: 'test.png',
+              projectId: projectId,
               fileSize: _validPngBytes.length,
             ),
           );
@@ -125,14 +152,15 @@ void main() {
             _buildPendingAsset(
               assetId: id,
               fileName: 'ghost.png',
+              projectId: projectId,
             ),
           );
 
           await MetadataExtractor.extractAndUpdate(session, asset);
 
           final updated = await MediaAsset.db.findById(session, asset.id!);
-          expect(updated!.metadataStatus,
-              equals(MediaAssetMetadataStatus.failed));
+          expect(
+              updated!.metadataStatus, equals(MediaAssetMetadataStatus.failed));
         });
 
         test('corrupt image: sets status to failed', () async {
@@ -153,6 +181,7 @@ void main() {
             _buildPendingAsset(
               assetId: id,
               fileName: 'corrupt.png',
+              projectId: projectId,
               fileSize: 6,
             ),
           );
@@ -160,8 +189,8 @@ void main() {
           await MetadataExtractor.extractAndUpdate(session, asset);
 
           final updated = await MediaAsset.db.findById(session, asset.id!);
-          expect(updated!.metadataStatus,
-              equals(MediaAssetMetadataStatus.failed));
+          expect(
+              updated!.metadataStatus, equals(MediaAssetMetadataStatus.failed));
         });
       });
     },
