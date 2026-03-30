@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:serverpod/serverpod.dart';
 
 import '../auth/dart_desk_session.dart';
@@ -35,11 +37,11 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     int documentId,
     String sessionId,
-    Map<String, dynamic> fieldUpdates,
+    String fieldUpdatesJson,
   ) async {
-    final apiKey = session.apiKey;
-    if (apiKey == null) throw Exception('Missing API key');
-    final user = await resolveUser(session, clientId: apiKey.clientId);
+    if (!session.canWrite) throw Exception('Missing write permission');
+    final user = await resolveUser(session, clientId: session.clientId);
+    final fieldUpdates = jsonDecode(fieldUpdatesJson) as Map<String, dynamic>;
 
     // Apply CRDT operations
     return await session.crdtService.applyOperations(
@@ -53,7 +55,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
 
   /// Get list of users currently editing this document
   /// Based on recent operation activity (last 5 minutes)
-  Future<List<Map<String, dynamic>>> getActiveEditors(
+  Future<List<String>> getActiveEditors(
     Session session,
     int documentId,
   ) async {
@@ -83,17 +85,20 @@ class DocumentCollaborationEndpoint extends Endpoint {
     }
 
     // Build result with user IDs (frontend can fetch user details)
-    final editors = <Map<String, dynamic>>[];
+    final editors = <String>[];
     userEdits.forEach((userId, lastEdit) {
-      editors.add({
+      editors.add(jsonEncode({
         'userId': userId,
         'lastEdit': lastEdit.toIso8601String(),
-      });
+      }));
     });
 
     // Sort by most recent activity
-    editors.sort(
-        (a, b) => (b['lastEdit'] as String).compareTo(a['lastEdit'] as String));
+    editors.sort((a, b) {
+      final aMap = jsonDecode(a) as Map<String, dynamic>;
+      final bMap = jsonDecode(b) as Map<String, dynamic>;
+      return (bMap['lastEdit'] as String).compareTo(aMap['lastEdit'] as String);
+    });
 
     return editors;
   }
@@ -125,9 +130,8 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
-    final apiKey = session.apiKey;
-    if (apiKey == null) throw Exception('Missing API key');
-    await resolveUser(session, clientId: apiKey.clientId);
+    if (!session.canWrite) throw Exception('Missing write permission');
+    await resolveUser(session, clientId: session.clientId);
 
     await session.crdtService.compactOperations(session, documentId);
   }

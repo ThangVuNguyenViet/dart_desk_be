@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -162,7 +164,7 @@ void main() {
         await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {'content': 'v2'},
+          jsonEncode({'content': 'v2'}),
         );
 
         // Retrieve v1 snapshot data — should still be v1
@@ -170,9 +172,10 @@ void main() {
           sessionBuilder,
           v1.id!,
         );
+        final v1Json = jsonDecode(v1Data!) as Map<String, dynamic>;
 
         expect(v1Data, isNotNull);
-        expect(v1Data!['content'], equals('v1'));
+        expect(v1Json['content'], equals('v1'));
       });
     });
 

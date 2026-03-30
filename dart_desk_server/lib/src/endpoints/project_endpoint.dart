@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
 
 /// Endpoint for managing projects.
@@ -11,23 +12,33 @@ class ProjectEndpoint extends Endpoint {
     int limit = 20,
     int offset = 0,
   }) async {
+    final authInfo = session.authenticated;
+    if (authInfo == null) {
+      throw Exception('User must be authenticated to list projects');
+    }
+
+    final member = await resolveUser(session);
+    final clientId = member.clientId;
+
     final total = await Project.db.count(
       session,
       where: (t) {
+        var expr = t.clientId.equals(clientId);
         if (search != null && search.isNotEmpty) {
-          return t.name.like('%$search%') | t.slug.like('%$search%');
+          expr = expr & (t.name.like('%$search%') | t.slug.like('%$search%'));
         }
-        return Constant.bool(true);
+        return expr;
       },
     );
 
     final projects = await Project.db.find(
       session,
       where: (t) {
+        var expr = t.clientId.equals(clientId);
         if (search != null && search.isNotEmpty) {
-          return t.name.like('%$search%') | t.slug.like('%$search%');
+          expr = expr & (t.name.like('%$search%') | t.slug.like('%$search%'));
         }
-        return Constant.bool(true);
+        return expr;
       },
       orderBy: (t) => t.createdAt,
       orderDescending: true,
@@ -74,8 +85,10 @@ class ProjectEndpoint extends Endpoint {
     if (authInfo == null) {
       throw Exception('User must be authenticated to create projects');
     }
+    final member = await resolveUser(session);
 
     final project = Project(
+      clientId: member.clientId!,
       name: name,
       slug: slug,
       description: description,
@@ -102,10 +115,14 @@ class ProjectEndpoint extends Endpoint {
     if (authInfo == null) {
       throw Exception('User must be authenticated to update projects');
     }
+    final member = await resolveUser(session);
 
     final existing = await Project.db.findById(session, projectId);
     if (existing == null) {
       return null;
+    }
+    if (existing.clientId != member.clientId) {
+      throw Exception('Project belongs to a different client');
     }
 
     final updated = existing.copyWith(
@@ -129,10 +146,14 @@ class ProjectEndpoint extends Endpoint {
     if (authInfo == null) {
       throw Exception('User must be authenticated to delete projects');
     }
+    final member = await resolveUser(session);
 
     final existing = await Project.db.findById(session, projectId);
     if (existing == null) {
       return false;
+    }
+    if (existing.clientId != member.clientId) {
+      throw Exception('Project belongs to a different client');
     }
 
     await Project.db.deleteRow(session, existing);
@@ -196,9 +217,28 @@ class ProjectEndpoint extends Endpoint {
     }
 
     return session.db.transaction((transaction) async {
+      final existingMember = await User.db.findFirstRow(
+        session,
+        where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
+      );
+
+      final clientId = existingMember?.clientId ??
+          (await CmsClient.db.insertRow(
+            session,
+            CmsClient(
+              name: name,
+              slug: slug,
+              isActive: true,
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+            ),
+          ))
+              .id!;
+
       final project = await Project.db.insertRow(
         session,
         Project(
+          clientId: clientId,
           name: name,
           slug: slug,
           isActive: true,
@@ -207,19 +247,21 @@ class ProjectEndpoint extends Endpoint {
         ),
       );
 
-      await User.db.insertRow(
-        session,
-        User(
-          clientId: project.id!,
-          email: email ?? authInfo.userIdentifier,
-          name: userName,
-          role: 'admin',
-          isActive: true,
-          serverpodUserId: authInfo.userIdentifier,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ),
-      );
+      if (existingMember == null) {
+        await User.db.insertRow(
+          session,
+          User(
+            clientId: clientId,
+            email: email ?? authInfo.userIdentifier,
+            name: userName,
+            role: 'admin',
+            isActive: true,
+            serverpodUserId: authInfo.userIdentifier,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+        );
+      }
 
       return project;
     });

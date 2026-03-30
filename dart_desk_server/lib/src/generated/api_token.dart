@@ -16,7 +16,7 @@ abstract class ApiToken
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ApiToken._({
     this.id,
-    this.clientId,
+    required this.projectId,
     required this.name,
     required this.tokenHash,
     required this.tokenPrefix,
@@ -32,7 +32,7 @@ abstract class ApiToken
 
   factory ApiToken({
     int? id,
-    int? clientId,
+    required int projectId,
     required String name,
     required String tokenHash,
     required String tokenPrefix,
@@ -48,7 +48,7 @@ abstract class ApiToken
   factory ApiToken.fromJson(Map<String, dynamic> jsonSerialization) {
     return ApiToken(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int?,
+      projectId: jsonSerialization['projectId'] as int,
       name: jsonSerialization['name'] as String,
       tokenHash: jsonSerialization['tokenHash'] as String,
       tokenPrefix: jsonSerialization['tokenPrefix'] as String,
@@ -77,7 +77,7 @@ abstract class ApiToken
   @override
   int? id;
 
-  int? clientId;
+  int projectId;
 
   String name;
 
@@ -107,7 +107,7 @@ abstract class ApiToken
   @_i1.useResult
   ApiToken copyWith({
     int? id,
-    int? clientId,
+    int? projectId,
     String? name,
     String? tokenHash,
     String? tokenPrefix,
@@ -124,7 +124,7 @@ abstract class ApiToken
     return {
       '__className__': 'ApiToken',
       if (id != null) 'id': id,
-      if (clientId != null) 'clientId': clientId,
+      'projectId': projectId,
       'name': name,
       'tokenHash': tokenHash,
       'tokenPrefix': tokenPrefix,
@@ -143,7 +143,7 @@ abstract class ApiToken
     return {
       '__className__': 'ApiToken',
       if (id != null) 'id': id,
-      if (clientId != null) 'clientId': clientId,
+      'projectId': projectId,
       'name': name,
       'tokenHash': tokenHash,
       'tokenPrefix': tokenPrefix,
@@ -192,7 +192,7 @@ class _Undefined {}
 class _ApiTokenImpl extends ApiToken {
   _ApiTokenImpl({
     int? id,
-    int? clientId,
+    required int projectId,
     required String name,
     required String tokenHash,
     required String tokenPrefix,
@@ -205,7 +205,7 @@ class _ApiTokenImpl extends ApiToken {
     DateTime? createdAt,
   }) : super._(
          id: id,
-         clientId: clientId,
+         projectId: projectId,
          name: name,
          tokenHash: tokenHash,
          tokenPrefix: tokenPrefix,
@@ -224,7 +224,7 @@ class _ApiTokenImpl extends ApiToken {
   @override
   ApiToken copyWith({
     Object? id = _Undefined,
-    Object? clientId = _Undefined,
+    int? projectId,
     String? name,
     String? tokenHash,
     String? tokenPrefix,
@@ -238,7 +238,7 @@ class _ApiTokenImpl extends ApiToken {
   }) {
     return ApiToken(
       id: id is int? ? id : this.id,
-      clientId: clientId is int? ? clientId : this.clientId,
+      projectId: projectId ?? this.projectId,
       name: name ?? this.name,
       tokenHash: tokenHash ?? this.tokenHash,
       tokenPrefix: tokenPrefix ?? this.tokenPrefix,
@@ -258,8 +258,8 @@ class _ApiTokenImpl extends ApiToken {
 class ApiTokenUpdateTable extends _i1.UpdateTable<ApiTokenTable> {
   ApiTokenUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> clientId(int? value) => _i1.ColumnValue(
-    table.clientId,
+  _i1.ColumnValue<int, int> projectId(int value) => _i1.ColumnValue(
+    table.projectId,
     value,
   );
 
@@ -320,8 +320,8 @@ class ApiTokenUpdateTable extends _i1.UpdateTable<ApiTokenTable> {
 class ApiTokenTable extends _i1.Table<int?> {
   ApiTokenTable({super.tableRelation}) : super(tableName: 'api_tokens') {
     updateTable = ApiTokenUpdateTable(this);
-    clientId = _i1.ColumnInt(
-      'clientId',
+    projectId = _i1.ColumnInt(
+      'projectId',
       this,
     );
     name = _i1.ColumnString(
@@ -370,7 +370,7 @@ class ApiTokenTable extends _i1.Table<int?> {
 
   late final ApiTokenUpdateTable updateTable;
 
-  late final _i1.ColumnInt clientId;
+  late final _i1.ColumnInt projectId;
 
   late final _i1.ColumnString name;
 
@@ -395,7 +395,7 @@ class ApiTokenTable extends _i1.Table<int?> {
   @override
   List<_i1.Column> get columns => [
     id,
-    clientId,
+    projectId,
     name,
     tokenHash,
     tokenPrefix,

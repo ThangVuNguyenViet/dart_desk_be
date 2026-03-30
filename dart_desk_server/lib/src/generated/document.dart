@@ -16,7 +16,7 @@ abstract class Document
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Document._({
     this.id,
-    this.clientId,
+    required this.projectId,
     required this.documentType,
     required this.title,
     required this.slug,
@@ -35,7 +35,7 @@ abstract class Document
 
   factory Document({
     int? id,
-    int? clientId,
+    required int projectId,
     required String documentType,
     required String title,
     required String slug,
@@ -53,7 +53,7 @@ abstract class Document
   factory Document.fromJson(Map<String, dynamic> jsonSerialization) {
     return Document(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int?,
+      projectId: jsonSerialization['projectId'] as int,
       documentType: jsonSerialization['documentType'] as String,
       title: jsonSerialization['title'] as String,
       slug: jsonSerialization['slug'] as String,
@@ -86,7 +86,7 @@ abstract class Document
   @override
   int? id;
 
-  int? clientId;
+  int projectId;
 
   String documentType;
 
@@ -120,7 +120,7 @@ abstract class Document
   @_i1.useResult
   Document copyWith({
     int? id,
-    int? clientId,
+    int? projectId,
     String? documentType,
     String? title,
     String? slug,
@@ -139,7 +139,7 @@ abstract class Document
     return {
       '__className__': 'Document',
       if (id != null) 'id': id,
-      if (clientId != null) 'clientId': clientId,
+      'projectId': projectId,
       'documentType': documentType,
       'title': title,
       'slug': slug,
@@ -160,7 +160,7 @@ abstract class Document
     return {
       '__className__': 'Document',
       if (id != null) 'id': id,
-      if (clientId != null) 'clientId': clientId,
+      'projectId': projectId,
       'documentType': documentType,
       'title': title,
       'slug': slug,
@@ -211,7 +211,7 @@ class _Undefined {}
 class _DocumentImpl extends Document {
   _DocumentImpl({
     int? id,
-    int? clientId,
+    required int projectId,
     required String documentType,
     required String title,
     required String slug,
@@ -226,7 +226,7 @@ class _DocumentImpl extends Document {
     int? updatedByUserId,
   }) : super._(
          id: id,
-         clientId: clientId,
+         projectId: projectId,
          documentType: documentType,
          title: title,
          slug: slug,
@@ -247,7 +247,7 @@ class _DocumentImpl extends Document {
   @override
   Document copyWith({
     Object? id = _Undefined,
-    Object? clientId = _Undefined,
+    int? projectId,
     String? documentType,
     String? title,
     String? slug,
@@ -263,7 +263,7 @@ class _DocumentImpl extends Document {
   }) {
     return Document(
       id: id is int? ? id : this.id,
-      clientId: clientId is int? ? clientId : this.clientId,
+      projectId: projectId ?? this.projectId,
       documentType: documentType ?? this.documentType,
       title: title ?? this.title,
       slug: slug ?? this.slug,
@@ -287,8 +287,8 @@ class _DocumentImpl extends Document {
 class DocumentUpdateTable extends _i1.UpdateTable<DocumentTable> {
   DocumentUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> clientId(int? value) => _i1.ColumnValue(
-    table.clientId,
+  _i1.ColumnValue<int, int> projectId(int value) => _i1.ColumnValue(
+    table.projectId,
     value,
   );
 
@@ -359,8 +359,8 @@ class DocumentUpdateTable extends _i1.UpdateTable<DocumentTable> {
 class DocumentTable extends _i1.Table<int?> {
   DocumentTable({super.tableRelation}) : super(tableName: 'documents') {
     updateTable = DocumentUpdateTable(this);
-    clientId = _i1.ColumnInt(
-      'clientId',
+    projectId = _i1.ColumnInt(
+      'projectId',
       this,
     );
     documentType = _i1.ColumnString(
@@ -418,7 +418,7 @@ class DocumentTable extends _i1.Table<int?> {
 
   late final DocumentUpdateTable updateTable;
 
-  late final _i1.ColumnInt clientId;
+  late final _i1.ColumnInt projectId;
 
   late final _i1.ColumnString documentType;
 
@@ -447,7 +447,7 @@ class DocumentTable extends _i1.Table<int?> {
   @override
   List<_i1.Column> get columns => [
     id,
-    clientId,
+    projectId,
     documentType,
     title,
     slug,

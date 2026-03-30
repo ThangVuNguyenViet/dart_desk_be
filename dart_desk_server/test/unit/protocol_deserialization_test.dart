@@ -51,33 +51,32 @@ void main() {
       });
     });
 
-    group('Map<String, dynamic> passthrough', () {
-      test('deserializes Map<String, dynamic> from raw map', () {
+    group('unsupported passthrough types', () {
+      test('throws for raw Map<String, dynamic>', () {
         final json = {'key': 'value', 'nested': {'a': 1}};
 
-        final result = protocol.deserialize<Map<String, dynamic>>(json);
-
-        expect(result, isA<Map<String, dynamic>>());
-        expect(result['key'], equals('value'));
-        expect(result['nested'], isA<Map>());
+        expect(
+          () => protocol.deserialize<Map<String, dynamic>>(json),
+          throwsA(isA<DeserializationTypeNotFoundException>()),
+        );
       });
 
-      test('deserializes dynamic from map returns map', () {
+      test('throws for dynamic from map', () {
         final json = {'key': 'value'};
 
-        final result = protocol.deserialize<dynamic>(json);
-
-        expect(result, isA<Map>());
-        expect(result['key'], equals('value'));
+        expect(
+          () => protocol.deserialize<dynamic>(json),
+          throwsA(isA<DeserializationTypeNotFoundException>()),
+        );
       });
 
-      test('deserializes dynamic from list returns list', () {
+      test('throws for dynamic from list', () {
         final list = [1, 2, 3];
 
-        final result = protocol.deserialize<dynamic>(list);
-
-        expect(result, isA<List>());
-        expect(result, equals([1, 2, 3]));
+        expect(
+          () => protocol.deserialize<dynamic>(list),
+          throwsA(isA<DeserializationTypeNotFoundException>()),
+        );
       });
     });
   });

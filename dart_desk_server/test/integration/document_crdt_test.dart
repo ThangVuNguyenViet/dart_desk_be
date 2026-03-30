@@ -28,7 +28,7 @@ void main() {
         final updated1 = await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {'field1': 'updated', 'field2': 'new_value'},
+          jsonEncode({'field1': 'updated', 'field2': 'new_value'}),
         );
 
         // Parse the data field (stored as JSON string)
@@ -40,7 +40,7 @@ void main() {
         final updated2 = await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {'field3': 'another_value'},
+          jsonEncode({'field3': 'another_value'}),
         );
 
         final data2 = jsonDecode(updated2.data!) as Map<String, dynamic>;
@@ -59,12 +59,12 @@ void main() {
         await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {'a': 'updated_a'},
+          jsonEncode({'a': 'updated_a'}),
         );
         final result = await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {'b': 'updated_b'},
+          jsonEncode({'b': 'updated_b'}),
         );
 
         final data = jsonDecode(result.data!) as Map<String, dynamic>;
@@ -126,12 +126,12 @@ void main() {
         await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {
+          jsonEncode({
             'nested': {
               'deep': {'value': true}
             },
             'scores': [100, 200],
-          },
+          }),
         );
 
         final fetched = await endpoints.document.getDocument(authed, doc.id!);
@@ -204,19 +204,20 @@ void main() {
           sessionBuilder,
           version.id!,
         );
+        final versionJson = jsonDecode(versionData!) as Map<String, dynamic>;
 
         expect(versionData, isNotNull);
-        expect(versionData!['isActive'], isA<bool>());
-        expect(versionData['isActive'], isTrue);
-        expect(versionData['count'], isA<int>());
-        expect(versionData['count'], equals(42));
-        expect(versionData['rating'], isA<double>());
-        expect(versionData['tags'], isA<List>());
-        expect(versionData['tags'], equals(['alpha', 'beta', 'gamma']));
-        expect(versionData['metadata'], isA<Map>());
-        expect(versionData['metadata']['version'], isA<int>());
-        expect(versionData['items'], isA<List>());
-        expect(versionData['items'][0]['price'], isA<double>());
+        expect(versionJson['isActive'], isA<bool>());
+        expect(versionJson['isActive'], isTrue);
+        expect(versionJson['count'], isA<int>());
+        expect(versionJson['count'], equals(42));
+        expect(versionJson['rating'], isA<double>());
+        expect(versionJson['tags'], isA<List>());
+        expect(versionJson['tags'], equals(['alpha', 'beta', 'gamma']));
+        expect(versionJson['metadata'], isA<Map>());
+        expect(versionJson['metadata']['version'], isA<int>());
+        expect(versionJson['items'], isA<List>());
+        expect(versionJson['items'][0]['price'], isA<double>());
       });
     });
 
@@ -234,7 +235,7 @@ void main() {
         final result = await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {'image': null},
+          jsonEncode({'image': null}),
         );
 
         final data = jsonDecode(result.data!) as Map<String, dynamic>;
@@ -254,9 +255,9 @@ void main() {
         final result = await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {
+          jsonEncode({
             'image': {'url': 'https://example.com/new.jpg', 'alt': 'New photo'},
-          },
+          }),
         );
 
         final data = jsonDecode(result.data!) as Map<String, dynamic>;
@@ -279,7 +280,7 @@ void main() {
         await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {'image': null},
+          jsonEncode({'image': null}),
         );
 
         // Verify cleared
@@ -294,9 +295,9 @@ void main() {
         final result = await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {
+          jsonEncode({
             'image': {'url': 'https://example.com/v2.jpg', 'alt': 'V2'},
-          },
+          }),
         );
 
         final finalData = jsonDecode(result.data!) as Map<String, dynamic>;
@@ -318,12 +319,12 @@ void main() {
         await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {'x': '2'},
+          jsonEncode({'x': '2'}),
         );
         await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {'y': '3'},
+          jsonEncode({'y': '3'}),
         );
 
         final count = await endpoints.documentCollaboration.getOperationCount(
@@ -345,7 +346,7 @@ void main() {
         await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          {'z': '2'},
+          jsonEncode({'z': '2'}),
         );
 
         final hlc = await endpoints.documentCollaboration.getCurrentHlc(

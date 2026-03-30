@@ -5,7 +5,6 @@ import 'package:crypto/crypto.dart';
 import 'package:mime/mime.dart';
 import 'package:serverpod/serverpod.dart';
 
-import '../auth/api_key_context.dart';
 import '../auth/dart_desk_session.dart';
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
@@ -46,7 +45,7 @@ class MediaEndpoint extends Endpoint {
     String blurHash,
     String contentHash,
   ) async {
-    final (auth, _) = await _authenticateAndResolve(session);
+    final auth = await _authenticateAndResolve(session);
 
     // Validate MIME type
     final mimeType = lookupMimeType(fileName);
@@ -82,7 +81,7 @@ class MediaEndpoint extends Endpoint {
 
     // Create DB record
     final asset = MediaAsset(
-      clientId: auth.apiKey.clientId,
+      projectId: auth.projectId!,
       assetId: assetId,
       fileName: fileName,
       mimeType: mimeType,
@@ -123,7 +122,7 @@ class MediaEndpoint extends Endpoint {
     String fileName,
     ByteData fileData,
   ) async {
-    final (auth, _) = await _authenticateAndResolve(session);
+    final auth = await _authenticateAndResolve(session);
 
     // Validate file size
     if (fileData.lengthInBytes > _maxFileSize) {
@@ -157,7 +156,7 @@ class MediaEndpoint extends Endpoint {
 
     // Create DB record
     final asset = MediaAsset(
-      clientId: auth.apiKey.clientId,
+      projectId: auth.projectId!,
       assetId: assetId,
       fileName: fileName,
       mimeType: mimeType,
@@ -233,13 +232,18 @@ class MediaEndpoint extends Endpoint {
     Session session, {
     String? search,
     String? mimeTypePrefix,
-    String sortBy = 'dateDesc',
-    int limit = 50,
-    int offset = 0,
+    required String sortBy,
+    required int limit,
+    required int offset,
   }) async {
     return await MediaAsset.db.find(
       session,
-      where: (t) => _buildWhereClause(t, search: search, mimeTypePrefix: mimeTypePrefix),
+      where: (t) => _buildWhereClause(
+        t,
+        projectId: session.projectId!,
+        search: search,
+        mimeTypePrefix: mimeTypePrefix,
+      ),
       orderBy: (t) => _buildOrderBy(t, sortBy),
       orderDescending: sortBy.endsWith('Desc'),
       limit: limit,
@@ -255,7 +259,12 @@ class MediaEndpoint extends Endpoint {
   }) async {
     return await MediaAsset.db.count(
       session,
-      where: (t) => _buildWhereClause(t, search: search, mimeTypePrefix: mimeTypePrefix),
+      where: (t) => _buildWhereClause(
+        t,
+        projectId: session.projectId!,
+        search: search,
+        mimeTypePrefix: mimeTypePrefix,
+      ),
     );
   }
 
@@ -299,21 +308,26 @@ class MediaEndpoint extends Endpoint {
   // Private helpers
   // ------------------------------------------------------------------
 
-  Future<(({ApiKeyContext apiKey, User? user}), int?)> _authenticateAndResolve(Session session) async {
-    final apiKey = session.apiKey;
-    if (apiKey == null) throw Exception('Missing API key');
-    final user = await resolveUser(session, clientId: apiKey.clientId);
-    final authResult = (apiKey: apiKey, user: user as User?);
-    return (authResult, apiKey.clientId);
+  Future<({User? user, int? clientId, int? projectId})> _authenticateAndResolve(
+    Session session,
+  ) async {
+    if (!session.canRead) throw Exception('Missing read permission');
+    final user = await resolveUser(session, clientId: session.clientId);
+    return (
+      user: user as User?,
+      clientId: session.clientId,
+      projectId: session.projectId,
+    );
   }
 
   /// Build a WHERE expression from search and mimeTypePrefix filters.
   Expression _buildWhereClause(
     MediaAssetTable t, {
+    required int projectId,
     String? search,
     String? mimeTypePrefix,
   }) {
-    Expression where = Constant.bool(true);
+    Expression where = t.projectId.equals(projectId);
 
     if (search != null && search.isNotEmpty) {
       where = where & t.fileName.like('%$search%');

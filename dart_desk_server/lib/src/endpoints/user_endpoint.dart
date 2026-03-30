@@ -7,10 +7,10 @@ import '../generated/protocol.dart';
 /// Endpoint for managing users.
 class UserEndpoint extends Endpoint {
   /// Get the current authenticated user.
-  /// [clientId] is optional — if omitted, falls back to session.apiKey.clientId.
-  /// The _manage app passes clientId explicitly; consumer apps rely on x-api-key.
+  /// [clientId] is optional — if omitted, falls back to session.clientId.
+  /// The _manage app passes clientId explicitly; consumer apps rely on API key in Authorization header.
   Future<User?> getCurrentUser(Session session, {int? clientId}) async {
-    final effectiveClientId = clientId ?? session.apiKey?.clientId;
+    final effectiveClientId = clientId ?? session.clientId;
     return await resolveUser(session, clientId: effectiveClientId);
   }
 

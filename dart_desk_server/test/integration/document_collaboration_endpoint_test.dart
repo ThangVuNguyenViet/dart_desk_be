@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';
 import 'helpers/test_data_factory.dart';
@@ -28,7 +30,7 @@ void main() {
           authed,
           doc.id!,
           'session-1',
-          {'body': 'edited', 'newField': 'value'},
+          jsonEncode({'body': 'edited', 'newField': 'value'}),
         );
 
         expect(updated.id, equals(doc.id));
@@ -55,13 +57,13 @@ void main() {
           authed,
           doc.id!,
           'session-1',
-          {'field': 'v2'},
+          jsonEncode({'field': 'v2'}),
         );
         await endpoints.documentCollaboration.submitEdit(
           authed,
           doc.id!,
           'session-1',
-          {'field': 'v3'},
+          jsonEncode({'field': 'v3'}),
         );
 
         // Fetch operations since the initial HLC
@@ -107,7 +109,7 @@ void main() {
           authed,
           doc.id!,
           'session-active',
-          {'content': 'updated'},
+          jsonEncode({'content': 'updated'}),
         );
 
         final editors = await endpoints.documentCollaboration.getActiveEditors(
@@ -116,7 +118,11 @@ void main() {
         );
 
         // Should include the test user who just edited
-        expect(editors, isA<List<Map<String, dynamic>>>());
+        expect(editors, isA<List<String>>());
+        expect(editors, isNotEmpty);
+        final firstEditor = jsonDecode(editors.first) as Map<String, dynamic>;
+        expect(firstEditor, contains('userId'));
+        expect(firstEditor, contains('lastEdit'));
       });
 
       test('returns empty list for nonexistent document', () async {
@@ -143,7 +149,7 @@ void main() {
             authed,
             doc.id!,
             'session-compact',
-            {'field': 'v${i + 2}'},
+            jsonEncode({'field': 'v${i + 2}'}),
           );
         }
 

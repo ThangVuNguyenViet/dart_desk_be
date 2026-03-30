@@ -1,4 +1,3 @@
-import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:test/test.dart';

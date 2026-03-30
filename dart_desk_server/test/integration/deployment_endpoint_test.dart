@@ -1,12 +1,21 @@
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
+import 'helpers/test_data_factory.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod('DeploymentEndpoint', (sessionBuilder, endpoints) {
     const adminUserId = 'deploy-admin-1';
     const projectSlug = 'deploy-project';
+    late TestDataFactory factory;
+
+    setUp(() {
+      factory = TestDataFactory(
+        sessionBuilder: sessionBuilder,
+        endpoints: endpoints,
+      );
+    });
 
     TestSessionBuilder authed({String userIdentifier = adminUserId}) {
       return sessionBuilder.copyWith(
@@ -19,14 +28,20 @@ void main() {
 
     Future<Project> seedProjectAndAdmin() async {
       final session = sessionBuilder.build();
+      await factory.ensureTestClient();
       final project = await Project.db.insertRow(
         session,
-        Project(name: 'Deploy Project', slug: projectSlug, isActive: true),
+        Project(
+          clientId: TestDataFactory.testClientId,
+          name: 'Deploy Project',
+          slug: projectSlug,
+          isActive: true,
+        ),
       );
       await User.db.insertRow(
         session,
         User(
-          clientId: project.id,
+          clientId: TestDataFactory.testClientId,
           email: 'admin@deploy.test',
           role: 'admin',
           isActive: true,
@@ -77,7 +92,7 @@ void main() {
         await User.db.insertRow(
           session,
           User(
-            clientId: project.id,
+            clientId: TestDataFactory.testClientId,
             email: 'viewer@deploy.test',
             role: 'viewer',
             isActive: true,

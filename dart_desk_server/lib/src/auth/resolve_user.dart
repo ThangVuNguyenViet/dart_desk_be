@@ -20,8 +20,6 @@ Future<User> resolveUser(Session session, {int? clientId}) async {
       var expr = t.serverpodUserId.equals(serverpodUserId);
       if (clientId != null) {
         expr = expr & t.clientId.equals(clientId);
-      } else {
-        expr = expr & t.clientId.equals(null);
       }
       return expr;
     },

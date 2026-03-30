@@ -19,7 +19,11 @@ void main() {
         final authed = factory.authenticatedSession();
 
         final tokenResult = await endpoints.apiToken.createToken(
-          authed, 'Read Token', 'read', null,
+          authed,
+          'Read Token',
+          'read',
+          null,
+          projectId: TestDataFactory.testProjectId,
         );
 
         expect(tokenResult.plaintextToken, startsWith('cms_r_'));
@@ -31,7 +35,11 @@ void main() {
         final authed = factory.authenticatedSession();
 
         final tokenResult = await endpoints.apiToken.createToken(
-          authed, 'Write Token', 'write', null,
+          authed,
+          'Write Token',
+          'write',
+          null,
+          projectId: TestDataFactory.testProjectId,
         );
 
         expect(tokenResult.plaintextToken, startsWith('cms_w_'));
@@ -43,7 +51,11 @@ void main() {
 
         expect(
           () => endpoints.apiToken.createToken(
-            authed, 'Bad Token', 'admin', null,
+            authed,
+            'Bad Token',
+            'admin',
+            null,
+            projectId: TestDataFactory.testProjectId,
           ),
           throwsA(isA<Exception>()),
         );
@@ -54,10 +66,25 @@ void main() {
       test('lists tokens', () async {
         final authed = factory.authenticatedSession();
 
-        await endpoints.apiToken.createToken(authed, 'Token A', 'read', null);
-        await endpoints.apiToken.createToken(authed, 'Token B', 'write', null);
+        await endpoints.apiToken.createToken(
+          authed,
+          'Token A',
+          'read',
+          null,
+          projectId: TestDataFactory.testProjectId,
+        );
+        await endpoints.apiToken.createToken(
+          authed,
+          'Token B',
+          'write',
+          null,
+          projectId: TestDataFactory.testProjectId,
+        );
 
-        final tokens = await endpoints.apiToken.getTokens(authed);
+        final tokens = await endpoints.apiToken.getTokens(
+          authed,
+          projectId: TestDataFactory.testProjectId,
+        );
         expect(tokens.length, equals(2));
       });
     });
@@ -66,11 +93,20 @@ void main() {
       test('updates token name', () async {
         final authed = factory.authenticatedSession();
         final created = await endpoints.apiToken.createToken(
-          authed, 'Original Name', 'read', null,
+          authed,
+          'Original Name',
+          'read',
+          null,
+          projectId: TestDataFactory.testProjectId,
         );
 
         final updated = await endpoints.apiToken.updateToken(
-          authed, created.token.id!, 'Updated Name', null, null,
+          authed,
+          created.token.id!,
+          'Updated Name',
+          null,
+          null,
+          projectId: TestDataFactory.testProjectId,
         );
 
         expect(updated.name, equals('Updated Name'));
@@ -79,11 +115,20 @@ void main() {
       test('deactivates token', () async {
         final authed = factory.authenticatedSession();
         final created = await endpoints.apiToken.createToken(
-          authed, 'Active Token', 'write', null,
+          authed,
+          'Active Token',
+          'write',
+          null,
+          projectId: TestDataFactory.testProjectId,
         );
 
         final updated = await endpoints.apiToken.updateToken(
-          authed, created.token.id!, null, false, null,
+          authed,
+          created.token.id!,
+          null,
+          false,
+          null,
+          projectId: TestDataFactory.testProjectId,
         );
 
         expect(updated.isActive, isFalse);
@@ -94,12 +139,18 @@ void main() {
       test('returns new token value with same role prefix', () async {
         final authed = factory.authenticatedSession();
         final created = await endpoints.apiToken.createToken(
-          authed, 'Regen Token', 'write', null,
+          authed,
+          'Regen Token',
+          'write',
+          null,
+          projectId: TestDataFactory.testProjectId,
         );
         final originalToken = created.plaintextToken;
 
         final regenerated = await endpoints.apiToken.regenerateToken(
-          authed, created.token.id!,
+          authed,
+          created.token.id!,
+          projectId: TestDataFactory.testProjectId,
         );
 
         expect(regenerated.plaintextToken, startsWith('cms_w_'));
@@ -113,11 +164,17 @@ void main() {
         final authed = factory.authenticatedSession();
 
         final tokenResult = await endpoints.apiToken.createToken(
-          authed, 'Temp Token', 'read', null,
+          authed,
+          'Temp Token',
+          'read',
+          null,
+          projectId: TestDataFactory.testProjectId,
         );
 
         final deleted = await endpoints.apiToken.deleteToken(
-          authed, tokenResult.token.id!,
+          authed,
+          tokenResult.token.id!,
+          projectId: TestDataFactory.testProjectId,
         );
         expect(deleted, isTrue);
       });

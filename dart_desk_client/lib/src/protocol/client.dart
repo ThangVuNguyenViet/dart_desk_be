@@ -38,7 +38,7 @@ import 'protocol.dart' as _i20;
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
-/// Authorization: caller must be a User belonging to the resolved tenant.
+/// Authorization: caller must be a User belonging to the project's tenant.
 /// {@category Endpoint}
 class EndpointApiToken extends _i1.EndpointRef {
   EndpointApiToken(_i1.EndpointCaller caller) : super(caller);
@@ -46,12 +46,12 @@ class EndpointApiToken extends _i1.EndpointRef {
   @override
   String get name => 'apiToken';
 
-  /// List all tokens for the current tenant (metadata only, never the hash).
-  _i2.Future<List<_i3.ApiToken>> getTokens({int? clientId}) =>
+  /// List all tokens for a project (metadata only, never the hash).
+  _i2.Future<List<_i3.ApiToken>> getTokens({required int projectId}) =>
       caller.callServerEndpoint<List<_i3.ApiToken>>(
         'apiToken',
         'getTokens',
-        {'clientId': clientId},
+        {'projectId': projectId},
       );
 
   /// Create a new named token. Returns plaintext token (shown once).
@@ -59,7 +59,7 @@ class EndpointApiToken extends _i1.EndpointRef {
     String name,
     String role,
     DateTime? expiresAt, {
-    int? clientId,
+    required int projectId,
   }) => caller.callServerEndpoint<_i4.ApiTokenWithValue>(
     'apiToken',
     'createToken',
@@ -67,7 +67,7 @@ class EndpointApiToken extends _i1.EndpointRef {
       'name': name,
       'role': role,
       'expiresAt': expiresAt,
-      'clientId': clientId,
+      'projectId': projectId,
     },
   );
 
@@ -77,7 +77,7 @@ class EndpointApiToken extends _i1.EndpointRef {
     String? name,
     bool? isActive,
     DateTime? expiresAt, {
-    int? clientId,
+    required int projectId,
   }) => caller.callServerEndpoint<_i3.ApiToken>(
     'apiToken',
     'updateToken',
@@ -86,33 +86,33 @@ class EndpointApiToken extends _i1.EndpointRef {
       'name': name,
       'isActive': isActive,
       'expiresAt': expiresAt,
-      'clientId': clientId,
+      'projectId': projectId,
     },
   );
 
   /// Regenerate token value. Returns new plaintext token (shown once).
   _i2.Future<_i4.ApiTokenWithValue> regenerateToken(
     int tokenId, {
-    int? clientId,
+    required int projectId,
   }) => caller.callServerEndpoint<_i4.ApiTokenWithValue>(
     'apiToken',
     'regenerateToken',
     {
       'tokenId': tokenId,
-      'clientId': clientId,
+      'projectId': projectId,
     },
   );
 
   /// Delete a token permanently.
   _i2.Future<bool> deleteToken(
     int tokenId, {
-    int? clientId,
+    required int projectId,
   }) => caller.callServerEndpoint<bool>(
     'apiToken',
     'deleteToken',
     {
       'tokenId': tokenId,
-      'clientId': clientId,
+      'projectId': projectId,
     },
   );
 }
@@ -198,21 +198,21 @@ class EndpointDocumentCollaboration extends _i1.EndpointRef {
   _i2.Future<_i7.Document> submitEdit(
     int documentId,
     String sessionId,
-    Map<String, dynamic> fieldUpdates,
+    String fieldUpdatesJson,
   ) => caller.callServerEndpoint<_i7.Document>(
     'documentCollaboration',
     'submitEdit',
     {
       'documentId': documentId,
       'sessionId': sessionId,
-      'fieldUpdates': fieldUpdates,
+      'fieldUpdatesJson': fieldUpdatesJson,
     },
   );
 
   /// Get list of users currently editing this document
   /// Based on recent operation activity (last 5 minutes)
-  _i2.Future<List<Map<String, dynamic>>> getActiveEditors(int documentId) =>
-      caller.callServerEndpoint<List<Map<String, dynamic>>>(
+  _i2.Future<List<String>> getActiveEditors(int documentId) =>
+      caller.callServerEndpoint<List<String>>(
         'documentCollaboration',
         'getActiveEditors',
         {'documentId': documentId},
@@ -301,7 +301,7 @@ class EndpointDocument extends _i1.EndpointRef {
   _i2.Future<_i7.Document> createDocument(
     String documentType,
     String title,
-    Map<String, dynamic> data, {
+    String dataJson, {
     String? slug,
     required bool isDefault,
   }) => caller.callServerEndpoint<_i7.Document>(
@@ -310,7 +310,7 @@ class EndpointDocument extends _i1.EndpointRef {
     {
       'documentType': documentType,
       'title': title,
-      'data': data,
+      'dataJson': dataJson,
       'slug': slug,
       'isDefault': isDefault,
     },
@@ -320,14 +320,14 @@ class EndpointDocument extends _i1.EndpointRef {
   /// Only changed fields need to be provided - they will be merged automatically
   _i2.Future<_i7.Document> updateDocumentData(
     int documentId,
-    Map<String, dynamic> updates, {
+    String updatesJson, {
     String? sessionId,
   }) => caller.callServerEndpoint<_i7.Document>(
     'document',
     'updateDocumentData',
     {
       'documentId': documentId,
-      'updates': updates,
+      'updatesJson': updatesJson,
       'sessionId': sessionId,
     },
   );
@@ -410,8 +410,8 @@ class EndpointDocument extends _i1.EndpointRef {
 
   /// Get the document data for a specific version.
   /// Reconstructs the data from CRDT operations at the version's HLC snapshot.
-  _i2.Future<Map<String, dynamic>?> getDocumentVersionData(int versionId) =>
-      caller.callServerEndpoint<Map<String, dynamic>?>(
+  _i2.Future<String?> getDocumentVersionData(int versionId) =>
+      caller.callServerEndpoint<String?>(
         'document',
         'getDocumentVersionData',
         {'versionId': versionId},
@@ -457,12 +457,12 @@ class EndpointDocument extends _i1.EndpointRef {
         {'versionId': versionId},
       );
 
-  /// Get total document count for the specified client.
-  _i2.Future<int> getDocumentCount({required int clientId}) =>
+  /// Get total document count for the specified project.
+  _i2.Future<int> getDocumentCount({required int projectId}) =>
       caller.callServerEndpoint<int>(
         'document',
         'getDocumentCount',
-        {'clientId': clientId},
+        {'projectId': projectId},
       );
 }
 
@@ -885,8 +885,8 @@ class EndpointProject extends _i1.EndpointRef {
 }
 
 /// Read-only public content API for external consumers.
-/// Requires x-api-key with read permission.
-/// ClientId is derived from the API key.
+/// Requires a project API key with read permission.
+/// Project scope is derived from the API key.
 /// {@category Endpoint}
 class EndpointPublicContent extends _i1.EndpointRef {
   EndpointPublicContent(_i1.EndpointCaller caller) : super(caller);
@@ -1005,8 +1005,8 @@ class EndpointUser extends _i1.EndpointRef {
   String get name => 'user';
 
   /// Get the current authenticated user.
-  /// [clientId] is optional — if omitted, falls back to session.apiKey.clientId.
-  /// The _manage app passes clientId explicitly; consumer apps rely on x-api-key.
+  /// [clientId] is optional — if omitted, falls back to session.clientId.
+  /// The _manage app passes clientId explicitly; consumer apps rely on API key in Authorization header.
   _i2.Future<_i19.User?> getCurrentUser({int? clientId}) =>
       caller.callServerEndpoint<_i19.User?>(
         'user',

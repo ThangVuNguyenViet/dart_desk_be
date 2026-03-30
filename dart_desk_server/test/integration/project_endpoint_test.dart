@@ -1,6 +1,7 @@
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
+import 'helpers/test_data_factory.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 TestSessionBuilder authedSession(
@@ -17,22 +18,43 @@ TestSessionBuilder authedSession(
 
 void main() {
   withServerpod('ProjectEndpoint', (sessionBuilder, endpoints) {
+    late TestDataFactory factory;
+    var projectSeedCounter = 0;
+
+    setUp(() async {
+      factory = TestDataFactory(
+        sessionBuilder: sessionBuilder,
+        endpoints: endpoints,
+      );
+      await factory.ensureTestUser(
+        userIdentifier: 'owner-1',
+        clientId: TestDataFactory.testClientId,
+      );
+    });
+
     Future<Project> seedProject({
       String name = 'Test Project',
       String slug = 'test-project',
       bool isActive = true,
     }) async {
       final session = sessionBuilder.build();
+      await factory.ensureTestClient();
+      projectSeedCounter++;
       return Project.db.insertRow(
         session,
-        Project(name: name, slug: slug, isActive: isActive),
+        Project(
+          clientId: TestDataFactory.testClientId,
+          name: '$name-$projectSeedCounter',
+          slug: '$slug-$projectSeedCounter',
+          isActive: isActive,
+        ),
       );
     }
 
     group('getProjects', () {
       test('returns empty list when search yields no results', () async {
         final result = await endpoints.project.getProjects(
-          sessionBuilder,
+          authedSession(sessionBuilder),
           search: 'zzz-no-match-xyz',
           limit: 20,
           offset: 0,
@@ -45,7 +67,7 @@ void main() {
         await seedProject(name: 'GetProjAlpha', slug: 'getprojtest-alpha');
         await seedProject(name: 'GetProjBeta', slug: 'getprojtest-beta');
         final result = await endpoints.project.getProjects(
-          sessionBuilder,
+          authedSession(sessionBuilder),
           search: 'getprojtest',
           limit: 20,
           offset: 0,
@@ -59,7 +81,7 @@ void main() {
           await seedProject(name: 'Paginate$i', slug: 'paginatetest-$i');
         }
         final result = await endpoints.project.getProjects(
-          sessionBuilder,
+          authedSession(sessionBuilder),
           search: 'paginatetest',
           limit: 2,
           offset: 0,
@@ -74,38 +96,38 @@ void main() {
         await seedProject(name: 'Alpha Unique App', slug: 'alpha-unique-app');
         await seedProject(name: 'Beta Unique App', slug: 'beta-unique-app');
         final result = await endpoints.project.getProjects(
-          sessionBuilder,
+          authedSession(sessionBuilder),
           search: 'Alpha Unique',
           limit: 20,
           offset: 0,
         );
         expect(result.projects.length, equals(1));
-        expect(result.projects.first.name, equals('Alpha Unique App'));
+        expect(result.projects.first.name, startsWith('Alpha Unique App'));
       });
 
       test('filters by search term on slug', () async {
         await seedProject(name: 'My App', slug: 'my-xuniquex-slug');
         await seedProject(name: 'Other App', slug: 'other-yuniquey-slug');
         final result = await endpoints.project.getProjects(
-          sessionBuilder,
+          authedSession(sessionBuilder),
           search: 'xuniquex',
           limit: 20,
           offset: 0,
         );
         expect(result.projects.length, equals(1));
-        expect(result.projects.first.slug, equals('my-xuniquex-slug'));
+        expect(result.projects.first.slug, startsWith('my-xuniquex-slug'));
       });
     });
 
     group('getProjectBySlug', () {
       test('returns matching project', () async {
-        await seedProject(slug: 'find-me-slug');
+        final seeded = await seedProject(slug: 'find-me-slug');
         final p = await endpoints.project.getProjectBySlug(
           sessionBuilder,
-          'find-me-slug',
+          seeded.slug,
         );
         expect(p, isNotNull);
-        expect(p!.slug, equals('find-me-slug'));
+        expect(p!.slug, equals(seeded.slug));
       });
 
       test('returns null for unknown slug', () async {
@@ -310,64 +332,4 @@ void main() {
     });
   });
 
-  // createProjectWithOwner success tests run with DB rollback disabled
-  // because the endpoint uses an internal transaction (session.db.transaction)
-  // which is incompatible with the test framework's per-test rollback wrapper.
-  withServerpod(
-    'ProjectEndpoint createProjectWithOwner success',
-    (sessionBuilder, endpoints) {
-      final insertedProjectIds = <int>[];
-
-      tearDown(() async {
-        // Clean up rows inserted during this test since rollback is disabled.
-        final session = sessionBuilder.build();
-        for (final id in insertedProjectIds) {
-          await User.db.deleteWhere(
-            session,
-            where: (t) => t.clientId.equals(id),
-          );
-          await Project.db.deleteWhere(
-            session,
-            where: (t) => t.id.equals(id),
-          );
-        }
-        insertedProjectIds.clear();
-      });
-
-      test('creates Project and admin User in transaction', () async {
-        final project = await endpoints.project.createProjectWithOwner(
-          authedSession(sessionBuilder),
-          name: 'Owner Project',
-          slug: 'owner-project',
-        );
-        insertedProjectIds.add(project.id!);
-        expect(project.id, isNotNull);
-        expect(project.slug, equals('owner-project'));
-        final user = await User.db.findFirstRow(
-          sessionBuilder.build(),
-          where: (t) => t.clientId.equals(project.id!),
-        );
-        expect(user, isNotNull);
-        expect(user!.role, equals('admin'));
-        expect(user.serverpodUserId, equals('owner-1'));
-        expect(user.isActive, isTrue);
-      });
-
-      test('falls back to userIdentifier as email when profile absent',
-          () async {
-        final project = await endpoints.project.createProjectWithOwner(
-          authedSession(sessionBuilder),
-          name: 'Fallback Email',
-          slug: 'fallback-email',
-        );
-        insertedProjectIds.add(project.id!);
-        final user = await User.db.findFirstRow(
-          sessionBuilder.build(),
-          where: (t) => t.clientId.equals(project.id!),
-        );
-        expect(user!.email, equals('owner-1'));
-      });
-    },
-    rollbackDatabase: RollbackDatabase.disabled,
-  );
 }

@@ -12,10 +12,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class Project implements _i1.SerializableModel {
-  Project._({
+abstract class CmsClient implements _i1.SerializableModel {
+  CmsClient._({
     this.id,
-    required this.clientId,
     required this.name,
     required this.slug,
     this.description,
@@ -27,9 +26,8 @@ abstract class Project implements _i1.SerializableModel {
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
-  factory Project({
+  factory CmsClient({
     int? id,
-    required int clientId,
     required String name,
     required String slug,
     String? description,
@@ -37,12 +35,11 @@ abstract class Project implements _i1.SerializableModel {
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) = _ProjectImpl;
+  }) = _CmsClientImpl;
 
-  factory Project.fromJson(Map<String, dynamic> jsonSerialization) {
-    return Project(
+  factory CmsClient.fromJson(Map<String, dynamic> jsonSerialization) {
+    return CmsClient(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int,
       name: jsonSerialization['name'] as String,
       slug: jsonSerialization['slug'] as String,
       description: jsonSerialization['description'] as String?,
@@ -64,8 +61,6 @@ abstract class Project implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int clientId;
-
   String name;
 
   String slug;
@@ -80,12 +75,11 @@ abstract class Project implements _i1.SerializableModel {
 
   DateTime? updatedAt;
 
-  /// Returns a shallow copy of this [Project]
+  /// Returns a shallow copy of this [CmsClient]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Project copyWith({
+  CmsClient copyWith({
     int? id,
-    int? clientId,
     String? name,
     String? slug,
     String? description,
@@ -97,9 +91,8 @@ abstract class Project implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'Project',
+      '__className__': 'CmsClient',
       if (id != null) 'id': id,
-      'clientId': clientId,
       'name': name,
       'slug': slug,
       if (description != null) 'description': description,
@@ -118,10 +111,9 @@ abstract class Project implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _ProjectImpl extends Project {
-  _ProjectImpl({
+class _CmsClientImpl extends CmsClient {
+  _CmsClientImpl({
     int? id,
-    required int clientId,
     required String name,
     required String slug,
     String? description,
@@ -131,7 +123,6 @@ class _ProjectImpl extends Project {
     DateTime? updatedAt,
   }) : super._(
          id: id,
-         clientId: clientId,
          name: name,
          slug: slug,
          description: description,
@@ -141,13 +132,12 @@ class _ProjectImpl extends Project {
          updatedAt: updatedAt,
        );
 
-  /// Returns a shallow copy of this [Project]
+  /// Returns a shallow copy of this [CmsClient]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  Project copyWith({
+  CmsClient copyWith({
     Object? id = _Undefined,
-    int? clientId,
     String? name,
     String? slug,
     Object? description = _Undefined,
@@ -156,9 +146,8 @@ class _ProjectImpl extends Project {
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
   }) {
-    return Project(
+    return CmsClient(
       id: id is int? ? id : this.id,
-      clientId: clientId ?? this.clientId,
       name: name ?? this.name,
       slug: slug ?? this.slug,
       description: description is String? ? description : this.description,

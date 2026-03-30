@@ -1,7 +1,7 @@
 class: Document
 table: documents
 fields:
-  clientId: int?
+  projectId: int, relation(parent=projects, onDelete=Cascade)
   documentType: String
   title: String
   slug: String
@@ -15,14 +15,14 @@ fields:
   createdByUserId: int?, relation(parent=users, onDelete=SetNull)
   updatedByUserId: int?, relation(parent=users, onDelete=SetNull)
 indexes:
-  documents_client_type_idx:
-    fields: clientId, documentType
-  documents_client_type_slug_idx:
-    fields: clientId, documentType, slug
+  documents_project_type_idx:
+    fields: projectId, documentType
+  documents_project_type_slug_idx:
+    fields: projectId, documentType, slug
     unique: true
   documents_type_default_idx:
     fields: documentType, isDefault
   documents_created_at_idx:
     fields: createdAt
-  documents_client_published_idx:
-    fields: clientId, publishedAt
+  documents_project_published_idx:
+    fields: projectId, publishedAt

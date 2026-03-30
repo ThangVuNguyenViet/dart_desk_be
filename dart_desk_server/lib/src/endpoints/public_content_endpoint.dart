@@ -6,19 +6,19 @@ import '../auth/dart_desk_session.dart';
 import '../generated/protocol.dart';
 
 /// Read-only public content API for external consumers.
-/// Requires x-api-key with read permission.
-/// ClientId is derived from the API key.
+/// Requires a project API key with read permission.
+/// Project scope is derived from the API key.
 class PublicContentEndpoint extends Endpoint {
   /// Returns all published documents grouped by document type.
   Future<Map<String, List<PublicDocument>>> getAllContents(
     Session session,
   ) async {
-    final clientId = _requireReadAccess(session);
+    final projectId = _requireReadAccess(session);
 
     final documents = await Document.db.find(
       session,
       where: (t) =>
-          t.clientId.equals(clientId) & t.publishedAt.notEquals(null),
+          t.projectId.equals(projectId) & t.publishedAt.notEquals(null),
     );
 
     final grouped = <String, List<PublicDocument>>{};
@@ -33,12 +33,12 @@ class PublicContentEndpoint extends Endpoint {
   Future<Map<String, PublicDocument>> getDefaultContents(
     Session session,
   ) async {
-    final clientId = _requireReadAccess(session);
+    final projectId = _requireReadAccess(session);
 
     final documents = await Document.db.find(
       session,
       where: (t) =>
-          t.clientId.equals(clientId) &
+          t.projectId.equals(projectId) &
           t.publishedAt.notEquals(null) &
           t.isDefault.equals(true),
     );
@@ -55,12 +55,12 @@ class PublicContentEndpoint extends Endpoint {
     Session session,
     String documentType,
   ) async {
-    final clientId = _requireReadAccess(session);
+    final projectId = _requireReadAccess(session);
 
     final documents = await Document.db.find(
       session,
       where: (t) =>
-          t.clientId.equals(clientId) &
+          t.projectId.equals(projectId) &
           t.publishedAt.notEquals(null) &
           t.documentType.equals(documentType),
     );
@@ -73,12 +73,12 @@ class PublicContentEndpoint extends Endpoint {
     Session session,
     String documentType,
   ) async {
-    final clientId = _requireReadAccess(session);
+    final projectId = _requireReadAccess(session);
 
     final document = await Document.db.findFirstRow(
       session,
       where: (t) =>
-          t.clientId.equals(clientId) &
+          t.projectId.equals(projectId) &
           t.publishedAt.notEquals(null) &
           t.documentType.equals(documentType) &
           t.isDefault.equals(true),
@@ -99,12 +99,12 @@ class PublicContentEndpoint extends Endpoint {
     String documentType,
     String slug,
   ) async {
-    final clientId = _requireReadAccess(session);
+    final projectId = _requireReadAccess(session);
 
     final document = await Document.db.findFirstRow(
       session,
       where: (t) =>
-          t.clientId.equals(clientId) &
+          t.projectId.equals(projectId) &
           t.publishedAt.notEquals(null) &
           t.documentType.equals(documentType) &
           t.slug.equals(slug),
@@ -123,16 +123,16 @@ class PublicContentEndpoint extends Endpoint {
   // Private helpers
   // ------------------------------------------------------------------
 
-  /// Validates the API key has read access and returns the clientId.
-  int? _requireReadAccess(Session session) {
-    final apiKey = session.apiKey;
-    if (apiKey == null) {
-      throw Exception('Missing API key');
+  /// Validates the API key has read access and returns the projectId.
+  int _requireReadAccess(Session session) {
+    if (!session.canRead) {
+      throw Exception('Missing read permission');
     }
-    if (!apiKey.canRead) {
-      throw Exception('API key does not have read permission.');
+    final projectId = session.projectId;
+    if (projectId == null) {
+      throw Exception('Missing project scope');
     }
-    return apiKey.clientId;
+    return projectId;
   }
 
   Future<PublicDocument> _toPublicDocument(Session session, Document doc) async {

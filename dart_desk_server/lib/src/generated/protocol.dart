@@ -18,33 +18,35 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i4;
 import 'api_token.dart' as _i5;
 import 'api_token_with_value.dart' as _i6;
-import 'crdt_operation_type.dart' as _i7;
-import 'deployment.dart' as _i8;
-import 'deployment_status.dart' as _i9;
-import 'document.dart' as _i10;
-import 'document_crdt_operation.dart' as _i11;
-import 'document_crdt_snapshot.dart' as _i12;
-import 'document_data.dart' as _i13;
-import 'document_list.dart' as _i14;
-import 'document_version.dart' as _i15;
-import 'document_version_list.dart' as _i16;
-import 'document_version_list_with_operations.dart' as _i17;
-import 'document_version_status.dart' as _i18;
-import 'document_version_with_operations.dart' as _i19;
-import 'media_asset.dart' as _i20;
-import 'media_asset_metadata_status.dart' as _i21;
-import 'project.dart' as _i22;
-import 'project_list.dart' as _i23;
-import 'public_document.dart' as _i24;
-import 'user.dart' as _i25;
-import 'package:dart_desk_server/src/generated/api_token.dart' as _i26;
-import 'package:dart_desk_server/src/generated/deployment.dart' as _i27;
+import 'cms_client.dart' as _i7;
+import 'crdt_operation_type.dart' as _i8;
+import 'deployment.dart' as _i9;
+import 'deployment_status.dart' as _i10;
+import 'document.dart' as _i11;
+import 'document_crdt_operation.dart' as _i12;
+import 'document_crdt_snapshot.dart' as _i13;
+import 'document_data.dart' as _i14;
+import 'document_list.dart' as _i15;
+import 'document_version.dart' as _i16;
+import 'document_version_list.dart' as _i17;
+import 'document_version_list_with_operations.dart' as _i18;
+import 'document_version_status.dart' as _i19;
+import 'document_version_with_operations.dart' as _i20;
+import 'media_asset.dart' as _i21;
+import 'media_asset_metadata_status.dart' as _i22;
+import 'project.dart' as _i23;
+import 'project_list.dart' as _i24;
+import 'public_document.dart' as _i25;
+import 'user.dart' as _i26;
+import 'package:dart_desk_server/src/generated/api_token.dart' as _i27;
+import 'package:dart_desk_server/src/generated/deployment.dart' as _i28;
 import 'package:dart_desk_server/src/generated/document_crdt_operation.dart'
-    as _i28;
-import 'package:dart_desk_server/src/generated/media_asset.dart' as _i29;
-import 'package:dart_desk_server/src/generated/public_document.dart' as _i30;
+    as _i29;
+import 'package:dart_desk_server/src/generated/media_asset.dart' as _i30;
+import 'package:dart_desk_server/src/generated/public_document.dart' as _i31;
 export 'api_token.dart';
 export 'api_token_with_value.dart';
+export 'cms_client.dart';
 export 'crdt_operation_type.dart';
 export 'deployment.dart';
 export 'deployment_status.dart';
@@ -87,10 +89,10 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'api_tokens_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'clientId',
+          name: 'projectId',
           columnType: _i2.ColumnType.bigint,
-          isNullable: true,
-          dartType: 'int?',
+          isNullable: false,
+          dartType: 'int',
         ),
         _i2.ColumnDefinition(
           name: 'name',
@@ -158,6 +160,16 @@ class Protocol extends _i1.SerializationManagerServer {
       foreignKeys: [
         _i2.ForeignKeyDefinition(
           constraintName: 'api_tokens_fk_0',
+          columns: ['projectId'],
+          referenceTable: 'projects',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'api_tokens_fk_1',
           columns: ['createdByUserId'],
           referenceTable: 'users',
           referenceTableSchema: 'public',
@@ -182,12 +194,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'api_token_client_idx',
+          indexName: 'api_token_project_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
+              definition: 'projectId',
             ),
           ],
           type: 'btree',
@@ -200,7 +212,7 @@ class Protocol extends _i1.SerializationManagerServer {
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
+              definition: 'projectId',
             ),
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
@@ -226,6 +238,109 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'tokenSuffix',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'clients',
+      dartName: 'CmsClient',
+      schema: 'public',
+      module: 'dart_desk',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'clients_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'slug',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'description',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isActive',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'true',
+        ),
+        _i2.ColumnDefinition(
+          name: 'settings',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'clients_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'clients_slug_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'slug',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'clients_is_active_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'isActive',
             ),
           ],
           type: 'btree',
@@ -882,10 +997,10 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'documents_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'clientId',
+          name: 'projectId',
           columnType: _i2.ColumnType.bigint,
-          isNullable: true,
-          dartType: 'int?',
+          isNullable: false,
+          dartType: 'int',
         ),
         _i2.ColumnDefinition(
           name: 'documentType',
@@ -966,6 +1081,16 @@ class Protocol extends _i1.SerializationManagerServer {
       foreignKeys: [
         _i2.ForeignKeyDefinition(
           constraintName: 'documents_fk_0',
+          columns: ['projectId'],
+          referenceTable: 'projects',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'documents_fk_1',
           columns: ['createdByUserId'],
           referenceTable: 'users',
           referenceTableSchema: 'public',
@@ -975,7 +1100,7 @@ class Protocol extends _i1.SerializationManagerServer {
           matchType: null,
         ),
         _i2.ForeignKeyDefinition(
-          constraintName: 'documents_fk_1',
+          constraintName: 'documents_fk_2',
           columns: ['updatedByUserId'],
           referenceTable: 'users',
           referenceTableSchema: 'public',
@@ -1000,12 +1125,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'documents_client_type_idx',
+          indexName: 'documents_project_type_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
+              definition: 'projectId',
             ),
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
@@ -1017,12 +1142,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'documents_client_type_slug_idx',
+          indexName: 'documents_project_type_slug_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
+              definition: 'projectId',
             ),
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
@@ -1068,12 +1193,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'documents_client_published_idx',
+          indexName: 'documents_project_published_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
+              definition: 'projectId',
             ),
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
@@ -1210,10 +1335,10 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'media_assets_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'clientId',
+          name: 'projectId',
           columnType: _i2.ColumnType.bigint,
-          isNullable: true,
-          dartType: 'int?',
+          isNullable: false,
+          dartType: 'int',
         ),
         _i2.ColumnDefinition(
           name: 'assetId',
@@ -1325,7 +1450,18 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'protocol:MediaAssetMetadataStatus',
         ),
       ],
-      foreignKeys: [],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'media_assets_fk_0',
+          columns: ['projectId'],
+          referenceTable: 'projects',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
       indexes: [
         _i2.IndexDefinition(
           indexName: 'media_assets_pkey',
@@ -1341,12 +1477,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'media_asset_client_id_idx',
+          indexName: 'media_asset_project_id_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'clientId',
+              definition: 'projectId',
             ),
           ],
           type: 'btree',
@@ -1409,6 +1545,12 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'projects_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
+          name: 'clientId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
           name: 'name',
           columnType: _i2.ColumnType.text,
           isNullable: false,
@@ -1454,7 +1596,18 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'CURRENT_TIMESTAMP',
         ),
       ],
-      foreignKeys: [],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'projects_fk_0',
+          columns: ['clientId'],
+          referenceTable: 'clients',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
       indexes: [
         _i2.IndexDefinition(
           indexName: 'projects_pkey',
@@ -1468,6 +1621,19 @@ class Protocol extends _i1.SerializationManagerServer {
           type: 'btree',
           isUnique: true,
           isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'projects_client_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'clientId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
         ),
         _i2.IndexDefinition(
           indexName: 'projects_slug_idx',
@@ -1676,62 +1842,65 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i6.ApiTokenWithValue) {
       return _i6.ApiTokenWithValue.fromJson(data) as T;
     }
-    if (t == _i7.CrdtOperationType) {
-      return _i7.CrdtOperationType.fromJson(data) as T;
+    if (t == _i7.CmsClient) {
+      return _i7.CmsClient.fromJson(data) as T;
     }
-    if (t == _i8.Deployment) {
-      return _i8.Deployment.fromJson(data) as T;
+    if (t == _i8.CrdtOperationType) {
+      return _i8.CrdtOperationType.fromJson(data) as T;
     }
-    if (t == _i9.DeploymentStatus) {
-      return _i9.DeploymentStatus.fromJson(data) as T;
+    if (t == _i9.Deployment) {
+      return _i9.Deployment.fromJson(data) as T;
     }
-    if (t == _i10.Document) {
-      return _i10.Document.fromJson(data) as T;
+    if (t == _i10.DeploymentStatus) {
+      return _i10.DeploymentStatus.fromJson(data) as T;
     }
-    if (t == _i11.DocumentCrdtOperation) {
-      return _i11.DocumentCrdtOperation.fromJson(data) as T;
+    if (t == _i11.Document) {
+      return _i11.Document.fromJson(data) as T;
     }
-    if (t == _i12.DocumentCrdtSnapshot) {
-      return _i12.DocumentCrdtSnapshot.fromJson(data) as T;
+    if (t == _i12.DocumentCrdtOperation) {
+      return _i12.DocumentCrdtOperation.fromJson(data) as T;
     }
-    if (t == _i13.DocumentData) {
-      return _i13.DocumentData.fromJson(data) as T;
+    if (t == _i13.DocumentCrdtSnapshot) {
+      return _i13.DocumentCrdtSnapshot.fromJson(data) as T;
     }
-    if (t == _i14.DocumentList) {
-      return _i14.DocumentList.fromJson(data) as T;
+    if (t == _i14.DocumentData) {
+      return _i14.DocumentData.fromJson(data) as T;
     }
-    if (t == _i15.DocumentVersion) {
-      return _i15.DocumentVersion.fromJson(data) as T;
+    if (t == _i15.DocumentList) {
+      return _i15.DocumentList.fromJson(data) as T;
     }
-    if (t == _i16.DocumentVersionList) {
-      return _i16.DocumentVersionList.fromJson(data) as T;
+    if (t == _i16.DocumentVersion) {
+      return _i16.DocumentVersion.fromJson(data) as T;
     }
-    if (t == _i17.DocumentVersionListWithOperations) {
-      return _i17.DocumentVersionListWithOperations.fromJson(data) as T;
+    if (t == _i17.DocumentVersionList) {
+      return _i17.DocumentVersionList.fromJson(data) as T;
     }
-    if (t == _i18.DocumentVersionStatus) {
-      return _i18.DocumentVersionStatus.fromJson(data) as T;
+    if (t == _i18.DocumentVersionListWithOperations) {
+      return _i18.DocumentVersionListWithOperations.fromJson(data) as T;
     }
-    if (t == _i19.DocumentVersionWithOperations) {
-      return _i19.DocumentVersionWithOperations.fromJson(data) as T;
+    if (t == _i19.DocumentVersionStatus) {
+      return _i19.DocumentVersionStatus.fromJson(data) as T;
     }
-    if (t == _i20.MediaAsset) {
-      return _i20.MediaAsset.fromJson(data) as T;
+    if (t == _i20.DocumentVersionWithOperations) {
+      return _i20.DocumentVersionWithOperations.fromJson(data) as T;
     }
-    if (t == _i21.MediaAssetMetadataStatus) {
-      return _i21.MediaAssetMetadataStatus.fromJson(data) as T;
+    if (t == _i21.MediaAsset) {
+      return _i21.MediaAsset.fromJson(data) as T;
     }
-    if (t == _i22.Project) {
-      return _i22.Project.fromJson(data) as T;
+    if (t == _i22.MediaAssetMetadataStatus) {
+      return _i22.MediaAssetMetadataStatus.fromJson(data) as T;
     }
-    if (t == _i23.ProjectList) {
-      return _i23.ProjectList.fromJson(data) as T;
+    if (t == _i23.Project) {
+      return _i23.Project.fromJson(data) as T;
     }
-    if (t == _i24.PublicDocument) {
-      return _i24.PublicDocument.fromJson(data) as T;
+    if (t == _i24.ProjectList) {
+      return _i24.ProjectList.fromJson(data) as T;
     }
-    if (t == _i25.User) {
-      return _i25.User.fromJson(data) as T;
+    if (t == _i25.PublicDocument) {
+      return _i25.PublicDocument.fromJson(data) as T;
+    }
+    if (t == _i26.User) {
+      return _i26.User.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.ApiToken?>()) {
       return (data != null ? _i5.ApiToken.fromJson(data) : null) as T;
@@ -1739,164 +1908,146 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i6.ApiTokenWithValue?>()) {
       return (data != null ? _i6.ApiTokenWithValue.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.CrdtOperationType?>()) {
-      return (data != null ? _i7.CrdtOperationType.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.CmsClient?>()) {
+      return (data != null ? _i7.CmsClient.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i8.Deployment?>()) {
-      return (data != null ? _i8.Deployment.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.CrdtOperationType?>()) {
+      return (data != null ? _i8.CrdtOperationType.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.DeploymentStatus?>()) {
-      return (data != null ? _i9.DeploymentStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i9.Deployment?>()) {
+      return (data != null ? _i9.Deployment.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.Document?>()) {
-      return (data != null ? _i10.Document.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.DeploymentStatus?>()) {
+      return (data != null ? _i10.DeploymentStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i11.DocumentCrdtOperation?>()) {
-      return (data != null ? _i11.DocumentCrdtOperation.fromJson(data) : null)
+    if (t == _i1.getType<_i11.Document?>()) {
+      return (data != null ? _i11.Document.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i12.DocumentCrdtOperation?>()) {
+      return (data != null ? _i12.DocumentCrdtOperation.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i12.DocumentCrdtSnapshot?>()) {
-      return (data != null ? _i12.DocumentCrdtSnapshot.fromJson(data) : null)
+    if (t == _i1.getType<_i13.DocumentCrdtSnapshot?>()) {
+      return (data != null ? _i13.DocumentCrdtSnapshot.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i13.DocumentData?>()) {
-      return (data != null ? _i13.DocumentData.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.DocumentData?>()) {
+      return (data != null ? _i14.DocumentData.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.DocumentList?>()) {
-      return (data != null ? _i14.DocumentList.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i15.DocumentList?>()) {
+      return (data != null ? _i15.DocumentList.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i15.DocumentVersion?>()) {
-      return (data != null ? _i15.DocumentVersion.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i16.DocumentVersion?>()) {
+      return (data != null ? _i16.DocumentVersion.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.DocumentVersionList?>()) {
-      return (data != null ? _i16.DocumentVersionList.fromJson(data) : null)
+    if (t == _i1.getType<_i17.DocumentVersionList?>()) {
+      return (data != null ? _i17.DocumentVersionList.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i17.DocumentVersionListWithOperations?>()) {
+    if (t == _i1.getType<_i18.DocumentVersionListWithOperations?>()) {
       return (data != null
-              ? _i17.DocumentVersionListWithOperations.fromJson(data)
+              ? _i18.DocumentVersionListWithOperations.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i18.DocumentVersionStatus?>()) {
-      return (data != null ? _i18.DocumentVersionStatus.fromJson(data) : null)
+    if (t == _i1.getType<_i19.DocumentVersionStatus?>()) {
+      return (data != null ? _i19.DocumentVersionStatus.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i19.DocumentVersionWithOperations?>()) {
+    if (t == _i1.getType<_i20.DocumentVersionWithOperations?>()) {
       return (data != null
-              ? _i19.DocumentVersionWithOperations.fromJson(data)
+              ? _i20.DocumentVersionWithOperations.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i20.MediaAsset?>()) {
-      return (data != null ? _i20.MediaAsset.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i21.MediaAsset?>()) {
+      return (data != null ? _i21.MediaAsset.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i21.MediaAssetMetadataStatus?>()) {
+    if (t == _i1.getType<_i22.MediaAssetMetadataStatus?>()) {
       return (data != null
-              ? _i21.MediaAssetMetadataStatus.fromJson(data)
+              ? _i22.MediaAssetMetadataStatus.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i22.Project?>()) {
-      return (data != null ? _i22.Project.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i23.Project?>()) {
+      return (data != null ? _i23.Project.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i23.ProjectList?>()) {
-      return (data != null ? _i23.ProjectList.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i24.ProjectList?>()) {
+      return (data != null ? _i24.ProjectList.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i24.PublicDocument?>()) {
-      return (data != null ? _i24.PublicDocument.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i25.PublicDocument?>()) {
+      return (data != null ? _i25.PublicDocument.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i25.User?>()) {
-      return (data != null ? _i25.User.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i26.User?>()) {
+      return (data != null ? _i26.User.fromJson(data) : null) as T;
     }
-    if (t == List<_i10.Document>) {
-      return (data as List).map((e) => deserialize<_i10.Document>(e)).toList()
+    if (t == List<_i11.Document>) {
+      return (data as List).map((e) => deserialize<_i11.Document>(e)).toList()
           as T;
     }
-    if (t == List<_i15.DocumentVersion>) {
+    if (t == List<_i16.DocumentVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i15.DocumentVersion>(e))
+              .map((e) => deserialize<_i16.DocumentVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i19.DocumentVersionWithOperations>) {
+    if (t == List<_i20.DocumentVersionWithOperations>) {
       return (data as List)
-              .map((e) => deserialize<_i19.DocumentVersionWithOperations>(e))
+              .map((e) => deserialize<_i20.DocumentVersionWithOperations>(e))
               .toList()
           as T;
     }
-    if (t == List<_i11.DocumentCrdtOperation>) {
+    if (t == List<_i12.DocumentCrdtOperation>) {
       return (data as List)
-              .map((e) => deserialize<_i11.DocumentCrdtOperation>(e))
+              .map((e) => deserialize<_i12.DocumentCrdtOperation>(e))
               .toList()
           as T;
     }
-    if (t == List<_i22.Project>) {
-      return (data as List).map((e) => deserialize<_i22.Project>(e)).toList()
+    if (t == List<_i23.Project>) {
+      return (data as List).map((e) => deserialize<_i23.Project>(e)).toList()
           as T;
     }
-    if (t == List<_i26.ApiToken>) {
-      return (data as List).map((e) => deserialize<_i26.ApiToken>(e)).toList()
+    if (t == List<_i27.ApiToken>) {
+      return (data as List).map((e) => deserialize<_i27.ApiToken>(e)).toList()
           as T;
     }
-    if (t == List<_i27.Deployment>) {
-      return (data as List).map((e) => deserialize<_i27.Deployment>(e)).toList()
+    if (t == List<_i28.Deployment>) {
+      return (data as List).map((e) => deserialize<_i28.Deployment>(e)).toList()
           as T;
     }
-    if (t == List<_i28.DocumentCrdtOperation>) {
+    if (t == List<_i29.DocumentCrdtOperation>) {
       return (data as List)
-              .map((e) => deserialize<_i28.DocumentCrdtOperation>(e))
-              .toList()
-          as T;
-    }
-    if (t == Map<String, dynamic>) {
-      return (data as Map).map(
-            (k, v) => MapEntry(deserialize<String>(k), deserialize<dynamic>(v)),
-          )
-          as T;
-    }
-    if (t == List<Map<String, dynamic>>) {
-      return (data as List)
-              .map((e) => deserialize<Map<String, dynamic>>(e))
+              .map((e) => deserialize<_i29.DocumentCrdtOperation>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == _i1.getType<Map<String, dynamic>?>()) {
-      return (data != null
-              ? (data as Map).map(
-                  (k, v) =>
-                      MapEntry(deserialize<String>(k), deserialize<dynamic>(v)),
-                )
-              : null)
+    if (t == List<_i30.MediaAsset>) {
+      return (data as List).map((e) => deserialize<_i30.MediaAsset>(e)).toList()
           as T;
     }
-    if (t == List<_i29.MediaAsset>) {
-      return (data as List).map((e) => deserialize<_i29.MediaAsset>(e)).toList()
-          as T;
-    }
-    if (t == Map<String, List<_i30.PublicDocument>>) {
+    if (t == Map<String, List<_i31.PublicDocument>>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<List<_i30.PublicDocument>>(v),
+              deserialize<List<_i31.PublicDocument>>(v),
             ),
           )
           as T;
     }
-    if (t == List<_i30.PublicDocument>) {
+    if (t == List<_i31.PublicDocument>) {
       return (data as List)
-              .map((e) => deserialize<_i30.PublicDocument>(e))
+              .map((e) => deserialize<_i31.PublicDocument>(e))
               .toList()
           as T;
     }
-    if (t == Map<String, _i30.PublicDocument>) {
+    if (t == Map<String, _i31.PublicDocument>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i30.PublicDocument>(v),
+              deserialize<_i31.PublicDocument>(v),
             ),
           )
           as T;
@@ -1917,26 +2068,27 @@ class Protocol extends _i1.SerializationManagerServer {
     return switch (type) {
       _i5.ApiToken => 'ApiToken',
       _i6.ApiTokenWithValue => 'ApiTokenWithValue',
-      _i7.CrdtOperationType => 'CrdtOperationType',
-      _i8.Deployment => 'Deployment',
-      _i9.DeploymentStatus => 'DeploymentStatus',
-      _i10.Document => 'Document',
-      _i11.DocumentCrdtOperation => 'DocumentCrdtOperation',
-      _i12.DocumentCrdtSnapshot => 'DocumentCrdtSnapshot',
-      _i13.DocumentData => 'DocumentData',
-      _i14.DocumentList => 'DocumentList',
-      _i15.DocumentVersion => 'DocumentVersion',
-      _i16.DocumentVersionList => 'DocumentVersionList',
-      _i17.DocumentVersionListWithOperations =>
+      _i7.CmsClient => 'CmsClient',
+      _i8.CrdtOperationType => 'CrdtOperationType',
+      _i9.Deployment => 'Deployment',
+      _i10.DeploymentStatus => 'DeploymentStatus',
+      _i11.Document => 'Document',
+      _i12.DocumentCrdtOperation => 'DocumentCrdtOperation',
+      _i13.DocumentCrdtSnapshot => 'DocumentCrdtSnapshot',
+      _i14.DocumentData => 'DocumentData',
+      _i15.DocumentList => 'DocumentList',
+      _i16.DocumentVersion => 'DocumentVersion',
+      _i17.DocumentVersionList => 'DocumentVersionList',
+      _i18.DocumentVersionListWithOperations =>
         'DocumentVersionListWithOperations',
-      _i18.DocumentVersionStatus => 'DocumentVersionStatus',
-      _i19.DocumentVersionWithOperations => 'DocumentVersionWithOperations',
-      _i20.MediaAsset => 'MediaAsset',
-      _i21.MediaAssetMetadataStatus => 'MediaAssetMetadataStatus',
-      _i22.Project => 'Project',
-      _i23.ProjectList => 'ProjectList',
-      _i24.PublicDocument => 'PublicDocument',
-      _i25.User => 'User',
+      _i19.DocumentVersionStatus => 'DocumentVersionStatus',
+      _i20.DocumentVersionWithOperations => 'DocumentVersionWithOperations',
+      _i21.MediaAsset => 'MediaAsset',
+      _i22.MediaAssetMetadataStatus => 'MediaAssetMetadataStatus',
+      _i23.Project => 'Project',
+      _i24.ProjectList => 'ProjectList',
+      _i25.PublicDocument => 'PublicDocument',
+      _i26.User => 'User',
       _ => null,
     };
   }
@@ -1955,43 +2107,45 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'ApiToken';
       case _i6.ApiTokenWithValue():
         return 'ApiTokenWithValue';
-      case _i7.CrdtOperationType():
+      case _i7.CmsClient():
+        return 'CmsClient';
+      case _i8.CrdtOperationType():
         return 'CrdtOperationType';
-      case _i8.Deployment():
+      case _i9.Deployment():
         return 'Deployment';
-      case _i9.DeploymentStatus():
+      case _i10.DeploymentStatus():
         return 'DeploymentStatus';
-      case _i10.Document():
+      case _i11.Document():
         return 'Document';
-      case _i11.DocumentCrdtOperation():
+      case _i12.DocumentCrdtOperation():
         return 'DocumentCrdtOperation';
-      case _i12.DocumentCrdtSnapshot():
+      case _i13.DocumentCrdtSnapshot():
         return 'DocumentCrdtSnapshot';
-      case _i13.DocumentData():
+      case _i14.DocumentData():
         return 'DocumentData';
-      case _i14.DocumentList():
+      case _i15.DocumentList():
         return 'DocumentList';
-      case _i15.DocumentVersion():
+      case _i16.DocumentVersion():
         return 'DocumentVersion';
-      case _i16.DocumentVersionList():
+      case _i17.DocumentVersionList():
         return 'DocumentVersionList';
-      case _i17.DocumentVersionListWithOperations():
+      case _i18.DocumentVersionListWithOperations():
         return 'DocumentVersionListWithOperations';
-      case _i18.DocumentVersionStatus():
+      case _i19.DocumentVersionStatus():
         return 'DocumentVersionStatus';
-      case _i19.DocumentVersionWithOperations():
+      case _i20.DocumentVersionWithOperations():
         return 'DocumentVersionWithOperations';
-      case _i20.MediaAsset():
+      case _i21.MediaAsset():
         return 'MediaAsset';
-      case _i21.MediaAssetMetadataStatus():
+      case _i22.MediaAssetMetadataStatus():
         return 'MediaAssetMetadataStatus';
-      case _i22.Project():
+      case _i23.Project():
         return 'Project';
-      case _i23.ProjectList():
+      case _i24.ProjectList():
         return 'ProjectList';
-      case _i24.PublicDocument():
+      case _i25.PublicDocument():
         return 'PublicDocument';
-      case _i25.User():
+      case _i26.User():
         return 'User';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -2021,62 +2175,65 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'ApiTokenWithValue') {
       return deserialize<_i6.ApiTokenWithValue>(data['data']);
     }
+    if (dataClassName == 'CmsClient') {
+      return deserialize<_i7.CmsClient>(data['data']);
+    }
     if (dataClassName == 'CrdtOperationType') {
-      return deserialize<_i7.CrdtOperationType>(data['data']);
+      return deserialize<_i8.CrdtOperationType>(data['data']);
     }
     if (dataClassName == 'Deployment') {
-      return deserialize<_i8.Deployment>(data['data']);
+      return deserialize<_i9.Deployment>(data['data']);
     }
     if (dataClassName == 'DeploymentStatus') {
-      return deserialize<_i9.DeploymentStatus>(data['data']);
+      return deserialize<_i10.DeploymentStatus>(data['data']);
     }
     if (dataClassName == 'Document') {
-      return deserialize<_i10.Document>(data['data']);
+      return deserialize<_i11.Document>(data['data']);
     }
     if (dataClassName == 'DocumentCrdtOperation') {
-      return deserialize<_i11.DocumentCrdtOperation>(data['data']);
+      return deserialize<_i12.DocumentCrdtOperation>(data['data']);
     }
     if (dataClassName == 'DocumentCrdtSnapshot') {
-      return deserialize<_i12.DocumentCrdtSnapshot>(data['data']);
+      return deserialize<_i13.DocumentCrdtSnapshot>(data['data']);
     }
     if (dataClassName == 'DocumentData') {
-      return deserialize<_i13.DocumentData>(data['data']);
+      return deserialize<_i14.DocumentData>(data['data']);
     }
     if (dataClassName == 'DocumentList') {
-      return deserialize<_i14.DocumentList>(data['data']);
+      return deserialize<_i15.DocumentList>(data['data']);
     }
     if (dataClassName == 'DocumentVersion') {
-      return deserialize<_i15.DocumentVersion>(data['data']);
+      return deserialize<_i16.DocumentVersion>(data['data']);
     }
     if (dataClassName == 'DocumentVersionList') {
-      return deserialize<_i16.DocumentVersionList>(data['data']);
+      return deserialize<_i17.DocumentVersionList>(data['data']);
     }
     if (dataClassName == 'DocumentVersionListWithOperations') {
-      return deserialize<_i17.DocumentVersionListWithOperations>(data['data']);
+      return deserialize<_i18.DocumentVersionListWithOperations>(data['data']);
     }
     if (dataClassName == 'DocumentVersionStatus') {
-      return deserialize<_i18.DocumentVersionStatus>(data['data']);
+      return deserialize<_i19.DocumentVersionStatus>(data['data']);
     }
     if (dataClassName == 'DocumentVersionWithOperations') {
-      return deserialize<_i19.DocumentVersionWithOperations>(data['data']);
+      return deserialize<_i20.DocumentVersionWithOperations>(data['data']);
     }
     if (dataClassName == 'MediaAsset') {
-      return deserialize<_i20.MediaAsset>(data['data']);
+      return deserialize<_i21.MediaAsset>(data['data']);
     }
     if (dataClassName == 'MediaAssetMetadataStatus') {
-      return deserialize<_i21.MediaAssetMetadataStatus>(data['data']);
+      return deserialize<_i22.MediaAssetMetadataStatus>(data['data']);
     }
     if (dataClassName == 'Project') {
-      return deserialize<_i22.Project>(data['data']);
+      return deserialize<_i23.Project>(data['data']);
     }
     if (dataClassName == 'ProjectList') {
-      return deserialize<_i23.ProjectList>(data['data']);
+      return deserialize<_i24.ProjectList>(data['data']);
     }
     if (dataClassName == 'PublicDocument') {
-      return deserialize<_i24.PublicDocument>(data['data']);
+      return deserialize<_i25.PublicDocument>(data['data']);
     }
     if (dataClassName == 'User') {
-      return deserialize<_i25.User>(data['data']);
+      return deserialize<_i26.User>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -2116,24 +2273,26 @@ class Protocol extends _i1.SerializationManagerServer {
     switch (t) {
       case _i5.ApiToken:
         return _i5.ApiToken.t;
-      case _i8.Deployment:
-        return _i8.Deployment.t;
-      case _i10.Document:
-        return _i10.Document.t;
-      case _i11.DocumentCrdtOperation:
-        return _i11.DocumentCrdtOperation.t;
-      case _i12.DocumentCrdtSnapshot:
-        return _i12.DocumentCrdtSnapshot.t;
-      case _i13.DocumentData:
-        return _i13.DocumentData.t;
-      case _i15.DocumentVersion:
-        return _i15.DocumentVersion.t;
-      case _i20.MediaAsset:
-        return _i20.MediaAsset.t;
-      case _i22.Project:
-        return _i22.Project.t;
-      case _i25.User:
-        return _i25.User.t;
+      case _i7.CmsClient:
+        return _i7.CmsClient.t;
+      case _i9.Deployment:
+        return _i9.Deployment.t;
+      case _i11.Document:
+        return _i11.Document.t;
+      case _i12.DocumentCrdtOperation:
+        return _i12.DocumentCrdtOperation.t;
+      case _i13.DocumentCrdtSnapshot:
+        return _i13.DocumentCrdtSnapshot.t;
+      case _i14.DocumentData:
+        return _i14.DocumentData.t;
+      case _i16.DocumentVersion:
+        return _i16.DocumentVersion.t;
+      case _i21.MediaAsset:
+        return _i21.MediaAsset.t;
+      case _i23.Project:
+        return _i23.Project.t;
+      case _i26.User:
+        return _i26.User.t;
     }
     return null;
   }

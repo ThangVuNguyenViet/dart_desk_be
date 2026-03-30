@@ -1,7 +1,8 @@
 import 'package:dart_desk_server/src/auth/api_key_validator.dart';
 import 'package:test/test.dart';
-import 'test_tools/serverpod_test_tools.dart';
+
 import 'helpers/test_data_factory.dart';
+import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod('API key validation', (sessionBuilder, endpoints) {
@@ -19,7 +20,11 @@ void main() {
       final authed = factory.authenticatedSession();
 
       final tokenResult = await endpoints.apiToken.createToken(
-        authed, 'Test Write Token', 'write', null,
+        authed,
+        'Test Write Token',
+        'write',
+        null,
+        projectId: TestDataFactory.testProjectId,
       );
 
       final session = sessionBuilder.build();
@@ -29,15 +34,19 @@ void main() {
       );
 
       expect(context, isNotNull);
-      expect(context!.role, equals('write'));
-      expect(context.canWrite, isTrue);
+      expect(context!.projectId, equals(TestDataFactory.testProjectId));
+      expect(context.role, equals('write'));
     });
 
     test('validates a created read token', () async {
       final authed = factory.authenticatedSession();
 
       final tokenResult = await endpoints.apiToken.createToken(
-        authed, 'Test Read Token', 'read', null,
+        authed,
+        'Test Read Token',
+        'read',
+        null,
+        projectId: TestDataFactory.testProjectId,
       );
 
       final session = sessionBuilder.build();
@@ -47,9 +56,8 @@ void main() {
       );
 
       expect(context, isNotNull);
-      expect(context!.role, equals('read'));
-      expect(context.canWrite, isFalse);
-      expect(context.canRead, isTrue);
+      expect(context!.projectId, equals(TestDataFactory.testProjectId));
+      expect(context.role, equals('read'));
     });
 
     test('rejects invalid token', () async {
@@ -66,11 +74,20 @@ void main() {
       final authed = factory.authenticatedSession();
 
       final tokenResult = await endpoints.apiToken.createToken(
-        authed, 'Deactivated Token', 'read', null,
+        authed,
+        'Deactivated Token',
+        'read',
+        null,
+        projectId: TestDataFactory.testProjectId,
       );
 
       await endpoints.apiToken.updateToken(
-        authed, tokenResult.token.id!, null, false, null,
+        authed,
+        tokenResult.token.id!,
+        null,
+        false,
+        null,
+        projectId: TestDataFactory.testProjectId,
       );
 
       final session = sessionBuilder.build();
@@ -91,6 +108,7 @@ void main() {
         'Expired Token',
         'write',
         DateTime.now().subtract(Duration(hours: 1)),
+        projectId: TestDataFactory.testProjectId,
       );
 
       final session = sessionBuilder.build();

@@ -4,7 +4,6 @@ import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
-import 'api_key_context.dart';
 
 /// Result of parsing an API key string.
 class ParsedApiKey {
@@ -19,10 +18,10 @@ class ParsedApiKey {
   });
 }
 
-/// Validates x-api-key header values against the ApiToken table.
+/// Validates Authorization API key values against the ApiToken table.
 ///
 /// This is a stateless utility. Call [validate] from endpoint methods
-/// or from the pre-endpoint handler in server.dart.
+/// or from the authentication handler in server.dart.
 class ApiKeyValidator {
   static const _validPrefixes = {'cms_r_', 'cms_w_'};
   static const _prefixLength = 6;
@@ -54,8 +53,8 @@ class ApiKeyValidator {
   }
 
   /// Validate an API key against the database.
-  /// Returns ApiKeyContext on success, null on failure.
-  static Future<ApiKeyContext?> validate(
+  /// Returns the matching [ApiToken] row on success, null on failure.
+  static Future<ApiToken?> validate(
     Session session,
     String apiKey,
   ) async {
@@ -97,11 +96,7 @@ class ApiKeyValidator {
         }
       }
 
-      return ApiKeyContext(
-        clientId: candidate.clientId,
-        role: candidate.role,
-        tokenId: candidate.id!,
-      );
+      return candidate;
     }
 
     return null;

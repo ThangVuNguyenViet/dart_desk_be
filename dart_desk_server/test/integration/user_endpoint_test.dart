@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';
 import 'helpers/test_data_factory.dart';
@@ -16,14 +18,13 @@ void main() {
 
     group('getCurrentUser', () {
       test('returns user when User record exists', () async {
-        await factory.ensureTestUser();
+        final expectedUser = await factory.ensureTestUser();
         final authed = factory.authenticatedSession();
 
         final user = await endpoints.user.getCurrentUser(authed, clientId: TestDataFactory.testClientId);
 
         expect(user, isNotNull);
-        // Email comes from the pre-inserted test record
-        expect(user!.email, equals('test@example.com'));
+        expect(user!.email, equals(expectedUser.email));
       });
 
       test('throws when no User record exists', () async {
@@ -55,7 +56,10 @@ void main() {
         final authed = factory.authenticatedSession();
 
         final doc = await endpoints.document.createDocument(
-          authed, 'assoc_test', 'User Assoc Doc', {},
+          authed,
+          'assoc_test',
+          'User Assoc Doc',
+          jsonEncode({}),
           isDefault: false,
         );
 

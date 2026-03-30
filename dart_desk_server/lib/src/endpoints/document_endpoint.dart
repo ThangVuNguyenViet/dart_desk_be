@@ -2,13 +2,12 @@ import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
 
-import '../auth/api_key_context.dart';
 import '../auth/dart_desk_session.dart';
 import '../auth/resolve_user.dart';
 import '../plugin/dart_desk_session.dart';
 import '../generated/protocol.dart';
 
-typedef AuthResult = ({ApiKeyContext apiKey, User? user});
+typedef AuthResult = ({int? clientId, int? projectId, User? user});
 
 /// Endpoint for managing CMS documents
 /// All write operations require authentication
@@ -23,20 +22,20 @@ class DocumentEndpoint extends Endpoint {
   }) async {
     final auth = await _requireAuth(session);
 
-    // Get total count filtered by clientId
+    // Get total count filtered by projectId
     final total = await Document.db.count(
       session,
       where: (t) =>
           t.documentType.equals(documentType) &
-          t.clientId.equals(auth.apiKey.clientId),
+          t.projectId.equals(auth.projectId),
     );
 
-    // Get paginated documents filtered by clientId
+    // Get paginated documents filtered by projectId
     final documents = await Document.db.find(
       session,
       where: (t) {
         var expr = t.documentType.equals(documentType) &
-            t.clientId.equals(auth.apiKey.clientId);
+            t.projectId.equals(auth.projectId);
         if (search != null && search.isNotEmpty) {
           // Search in title and data (cached latest version)
           expr = expr & (t.title.like('%$search%') | t.data.like('%$search%'));
@@ -98,23 +97,23 @@ class DocumentEndpoint extends Endpoint {
     Session session,
     String documentType,
     String title,
-    Map<String, dynamic> data, {
+    String dataJson, {
     String? slug,
     bool isDefault = false,
   }) async {
     final auth = await _requireUser(session);
     final userId = auth.user!.id!;
+    final data = jsonDecode(dataJson) as Map<String, dynamic>;
 
     // Create the document — encode data as JSON for storage
-    final encodedData = jsonEncode(data);
     final effectiveSlug = slug ?? title.toLowerCase().replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(RegExp(r'\s+'), '-').replaceAll(RegExp(r'-+'), '-').trim();
     final document = Document(
-      clientId: auth.apiKey.clientId,
+      projectId: auth.projectId!,
       documentType: documentType,
       title: title,
       slug: effectiveSlug,
       isDefault: isDefault,
-      data: encodedData, // Cache the initial data
+      data: dataJson, // Cache the initial data
       crdtNodeId: null, // Will be set when CRDT is initialized
       crdtHlc: null, // Will be set when CRDT is initialized
       createdAt: DateTime.now(),
@@ -127,7 +126,7 @@ class DocumentEndpoint extends Endpoint {
     final existing = await Document.db.findFirstRow(
       session,
       where: (t) =>
-          t.clientId.equals(document.clientId) &
+          t.projectId.equals(document.projectId) &
           t.documentType.equals(documentType) &
           t.slug.equals(effectiveSlug),
     );
@@ -181,10 +180,11 @@ class DocumentEndpoint extends Endpoint {
   Future<Document> updateDocumentData(
     Session session,
     int documentId,
-    Map<String, dynamic> updates, {
+    String updatesJson, {
     String? sessionId,
   }) async {
     final auth = await _requireAuth(session);
+    final updates = jsonDecode(updatesJson) as Map<String, dynamic>;
 
     // Use user ID as session ID if not provided
     final editSessionId = sessionId ?? 'user-${auth.user?.id}';
@@ -218,8 +218,8 @@ class DocumentEndpoint extends Endpoint {
     }
 
     // Verify the document belongs to the user's client
-    if (existing.clientId != auth.apiKey.clientId) {
-      throw Exception('Access denied: document belongs to a different client');
+    if (existing.projectId != auth.projectId) {
+      throw Exception('Access denied: document belongs to a different project');
     }
 
     final updated = existing.copyWith(
@@ -248,8 +248,8 @@ class DocumentEndpoint extends Endpoint {
     }
 
     // Verify the document belongs to the user's client
-    if (existing.clientId != auth.apiKey.clientId) {
-      throw Exception('Access denied: document belongs to a different client');
+    if (existing.projectId != auth.projectId) {
+      throw Exception('Access denied: document belongs to a different project');
     }
 
     await Document.db.deleteRow(session, existing);
@@ -312,18 +312,18 @@ class DocumentEndpoint extends Endpoint {
   /// Get all document types (unique document type names)
   Future<List<String>> getDocumentTypes(Session session) async {
     final auth = await _requireAuth(session);
-    final clientId = auth.apiKey.clientId;
+    final projectId = auth.projectId;
 
-    final result = clientId != null
+    final result = projectId != null
         ? await session.db.unsafeQuery(
             'SELECT DISTINCT "documentType" FROM documents '
-            'WHERE "clientId" = \$1 '
+            'WHERE "projectId" = \$1 '
             'ORDER BY "documentType"',
-            parameters: QueryParameters.positional([clientId]),
+            parameters: QueryParameters.positional([projectId]),
           )
         : await session.db.unsafeQuery(
             'SELECT DISTINCT "documentType" FROM documents '
-            'WHERE "clientId" IS NULL '
+            'WHERE "projectId" IS NULL '
             'ORDER BY "documentType"',
           );
 
@@ -442,7 +442,7 @@ class DocumentEndpoint extends Endpoint {
 
   /// Get the document data for a specific version.
   /// Reconstructs the data from CRDT operations at the version's HLC snapshot.
-  Future<Map<String, dynamic>?> getDocumentVersionData(
+  Future<String?> getDocumentVersionData(
     Session session,
     int versionId,
   ) async {
@@ -451,15 +451,16 @@ class DocumentEndpoint extends Endpoint {
 
     // If version has no HLC snapshot, return empty data
     if (version.snapshotHlc == null) {
-      return {};
+      return '{}';
     }
 
     // Reconstruct document state at this version's HLC
-    return await session.crdtService.getStateAtHlc(
+    final data = await session.crdtService.getStateAtHlc(
       session,
       version.documentId,
       version.snapshotHlc!,
     );
+    return jsonEncode(data);
   }
 
   /// Create a new version for a document
@@ -604,31 +605,41 @@ class DocumentEndpoint extends Endpoint {
     return true;
   }
 
-  /// Get total document count for the specified client.
-  Future<int> getDocumentCount(Session session, {required int clientId}) async {
-    await resolveUser(session, clientId: clientId);
+  /// Get total document count for the specified project.
+  Future<int> getDocumentCount(Session session, {required int projectId}) async {
+    final project = await Project.db.findById(session, projectId);
+    if (project == null) {
+      throw Exception('Project not found');
+    }
+    await resolveUser(session, clientId: project.clientId);
     return await Document.db.count(
       session,
-      where: (t) => t.clientId.equals(clientId),
+      where: (t) => t.projectId.equals(projectId),
     );
   }
 
-  /// Authenticate the current request via session.apiKey.
+  /// Authenticate the current request via scopes.
   Future<AuthResult> _requireAuth(Session session) async {
-    final apiKey = session.apiKey;
-    if (apiKey == null) {
-      throw Exception('Missing API key');
+    if (!session.canRead) {
+      throw Exception('Missing read permission');
     }
-    return (apiKey: apiKey, user: null);
+    return (
+      clientId: session.clientId,
+      projectId: session.projectId,
+      user: null,
+    );
   }
 
   /// Authenticate and require a user identity (for write operations).
   Future<AuthResult> _requireUser(Session session) async {
-    final apiKey = session.apiKey;
-    if (apiKey == null) {
-      throw Exception('Missing API key');
+    if (!session.canWrite) {
+      throw Exception('Missing write permission');
     }
-    final user = await resolveUser(session, clientId: apiKey.clientId);
-    return (apiKey: apiKey, user: user);
+    final user = await resolveUser(session, clientId: session.clientId);
+    return (
+      clientId: session.clientId,
+      projectId: session.projectId,
+      user: user,
+    );
   }
 }

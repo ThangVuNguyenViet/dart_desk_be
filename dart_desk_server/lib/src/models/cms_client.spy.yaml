@@ -1,7 +1,6 @@
-class: Project
-table: projects
+class: CmsClient
+table: clients
 fields:
-  clientId: int, relation(parent=clients, onDelete=Cascade)
   name: String
   slug: String
   description: String?
@@ -10,10 +9,8 @@ fields:
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
 indexes:
-  projects_client_idx:
-    fields: clientId
-  projects_slug_idx:
+  clients_slug_idx:
     fields: slug
     unique: true
-  projects_is_active_idx:
+  clients_is_active_idx:
     fields: isActive

@@ -115,10 +115,10 @@ class Endpoints extends _i1.EndpointDispatch {
         'getTokens': _i1.MethodConnector(
           name: 'getTokens',
           params: {
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
-              type: _i1.getType<int?>(),
-              nullable: true,
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
+              type: _i1.getType<int>(),
+              nullable: false,
             ),
           },
           call:
@@ -128,7 +128,7 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['apiToken'] as _i2.ApiTokenEndpoint).getTokens(
                     session,
-                    clientId: params['clientId'],
+                    projectId: params['projectId'],
                   ),
         ),
         'createToken': _i1.MethodConnector(
@@ -149,10 +149,10 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<DateTime?>(),
               nullable: true,
             ),
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
-              type: _i1.getType<int?>(),
-              nullable: true,
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
+              type: _i1.getType<int>(),
+              nullable: false,
             ),
           },
           call:
@@ -165,7 +165,7 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['name'],
                     params['role'],
                     params['expiresAt'],
-                    clientId: params['clientId'],
+                    projectId: params['projectId'],
                   ),
         ),
         'updateToken': _i1.MethodConnector(
@@ -191,10 +191,10 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<DateTime?>(),
               nullable: true,
             ),
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
-              type: _i1.getType<int?>(),
-              nullable: true,
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
+              type: _i1.getType<int>(),
+              nullable: false,
             ),
           },
           call:
@@ -208,7 +208,7 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['name'],
                     params['isActive'],
                     params['expiresAt'],
-                    clientId: params['clientId'],
+                    projectId: params['projectId'],
                   ),
         ),
         'regenerateToken': _i1.MethodConnector(
@@ -219,10 +219,10 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<int>(),
               nullable: false,
             ),
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
-              type: _i1.getType<int?>(),
-              nullable: true,
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
+              type: _i1.getType<int>(),
+              nullable: false,
             ),
           },
           call:
@@ -233,7 +233,7 @@ class Endpoints extends _i1.EndpointDispatch {
                   .regenerateToken(
                     session,
                     params['tokenId'],
-                    clientId: params['clientId'],
+                    projectId: params['projectId'],
                   ),
         ),
         'deleteToken': _i1.MethodConnector(
@@ -244,10 +244,10 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<int>(),
               nullable: false,
             ),
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
-              type: _i1.getType<int?>(),
-              nullable: true,
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
+              type: _i1.getType<int>(),
+              nullable: false,
             ),
           },
           call:
@@ -258,7 +258,7 @@ class Endpoints extends _i1.EndpointDispatch {
                   (endpoints['apiToken'] as _i2.ApiTokenEndpoint).deleteToken(
                     session,
                     params['tokenId'],
-                    clientId: params['clientId'],
+                    projectId: params['projectId'],
                   ),
         ),
       },
@@ -407,9 +407,9 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<String>(),
               nullable: false,
             ),
-            'fieldUpdates': _i1.ParameterDescription(
-              name: 'fieldUpdates',
-              type: _i1.getType<Map<String, dynamic>>(),
+            'fieldUpdatesJson': _i1.ParameterDescription(
+              name: 'fieldUpdatesJson',
+              type: _i1.getType<String>(),
               nullable: false,
             ),
           },
@@ -424,7 +424,7 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['documentId'],
                         params['sessionId'],
-                        params['fieldUpdates'],
+                        params['fieldUpdatesJson'],
                       ),
         ),
         'getActiveEditors': _i1.MethodConnector(
@@ -624,9 +624,9 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<String>(),
               nullable: false,
             ),
-            'data': _i1.ParameterDescription(
-              name: 'data',
-              type: _i1.getType<Map<String, dynamic>>(),
+            'dataJson': _i1.ParameterDescription(
+              name: 'dataJson',
+              type: _i1.getType<String>(),
               nullable: false,
             ),
             'slug': _i1.ParameterDescription(
@@ -649,7 +649,7 @@ class Endpoints extends _i1.EndpointDispatch {
                     session,
                     params['documentType'],
                     params['title'],
-                    params['data'],
+                    params['dataJson'],
                     slug: params['slug'],
                     isDefault: params['isDefault'],
                   ),
@@ -662,9 +662,9 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<int>(),
               nullable: false,
             ),
-            'updates': _i1.ParameterDescription(
-              name: 'updates',
-              type: _i1.getType<Map<String, dynamic>>(),
+            'updatesJson': _i1.ParameterDescription(
+              name: 'updatesJson',
+              type: _i1.getType<String>(),
               nullable: false,
             ),
             'sessionId': _i1.ParameterDescription(
@@ -681,7 +681,7 @@ class Endpoints extends _i1.EndpointDispatch {
                   .updateDocumentData(
                     session,
                     params['documentId'],
-                    params['updates'],
+                    params['updatesJson'],
                     sessionId: params['sessionId'],
                   ),
         ),
@@ -942,8 +942,8 @@ class Endpoints extends _i1.EndpointDispatch {
         'getDocumentCount': _i1.MethodConnector(
           name: 'getDocumentCount',
           params: {
-            'clientId': _i1.ParameterDescription(
-              name: 'clientId',
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
               type: _i1.getType<int>(),
               nullable: false,
             ),
@@ -955,7 +955,7 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async => (endpoints['document'] as _i5.DocumentEndpoint)
                   .getDocumentCount(
                     session,
-                    clientId: params['clientId'],
+                    projectId: params['projectId'],
                   ),
         ),
       },

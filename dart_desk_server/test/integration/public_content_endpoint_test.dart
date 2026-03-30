@@ -70,7 +70,7 @@ void main() {
         );
 
         final result = await endpoints.publicContent.getAllContents(
-          sessionBuilder,
+          factory.authenticatedSession(),
         );
 
         expect(result, containsPair('blog', hasLength(2)));
@@ -91,7 +91,7 @@ void main() {
         );
 
         final result = await endpoints.publicContent.getAllContents(
-          sessionBuilder,
+          factory.authenticatedSession(),
         );
 
         expect(result['blog'], hasLength(1));
@@ -120,7 +120,7 @@ void main() {
         );
 
         final result = await endpoints.publicContent.getDefaultContents(
-          sessionBuilder,
+          factory.authenticatedSession(),
         );
 
         expect(result, hasLength(2));
@@ -148,7 +148,7 @@ void main() {
         );
 
         final result = await endpoints.publicContent.getContentsByType(
-          sessionBuilder,
+          factory.authenticatedSession(),
           'blog',
         );
 
@@ -167,7 +167,7 @@ void main() {
         );
 
         final result = await endpoints.publicContent.getDefaultContent(
-          sessionBuilder,
+          factory.authenticatedSession(),
           'blog',
         );
 
@@ -184,7 +184,7 @@ void main() {
 
         await expectLater(
           () => endpoints.publicContent.getDefaultContent(
-            sessionBuilder,
+            factory.authenticatedSession(),
             'blog',
           ),
           throwsA(isA<Exception>()),
@@ -201,7 +201,7 @@ void main() {
         );
 
         final result = await endpoints.publicContent.getContentBySlug(
-          sessionBuilder,
+          factory.authenticatedSession(),
           'blog',
           'my-post',
         );
@@ -213,7 +213,7 @@ void main() {
       test('throws when no match', () async {
         await expectLater(
           () => endpoints.publicContent.getContentBySlug(
-            sessionBuilder,
+            factory.authenticatedSession(),
             'blog',
             'nonexistent',
           ),
@@ -291,7 +291,7 @@ void main() {
         );
 
         final result = await endpoints.publicContent.getContentBySlug(
-          sessionBuilder,
+          factory.authenticatedSession(),
           'blog',
           'image-post',
         );
@@ -325,7 +325,7 @@ void main() {
         );
 
         final result = await endpoints.publicContent.getContentBySlug(
-          sessionBuilder,
+          factory.authenticatedSession(),
           'blog',
           'gallery-post',
         );
@@ -346,7 +346,7 @@ void main() {
         );
 
         final result = await endpoints.publicContent.getContentBySlug(
-          sessionBuilder,
+          factory.authenticatedSession(),
           'blog',
           'text-post',
         );

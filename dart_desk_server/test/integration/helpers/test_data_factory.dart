@@ -1,17 +1,17 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:dart_desk_server/src/auth/api_key_context.dart';
-import 'package:dart_desk_server/src/auth/dart_desk_session.dart';
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:dart_desk_server/src/plugin/dart_desk_registry.dart';
 import 'package:dart_desk_server/src/plugin/dart_desk_session.dart';
 import 'package:dart_desk_server/src/services/document_crdt_service.dart';
+import 'package:serverpod/serverpod.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
 
 class TestDataFactory {
   static const testClientId = 1;
+  static const testProjectId = 1;
 
   final TestSessionBuilder sessionBuilder;
   final TestEndpoints endpoints;
@@ -25,23 +25,66 @@ class TestDataFactory {
     final registry = DartDeskRegistry();
     registry.documentCrdtService = DocumentCrdtService('test-node');
     DartDeskSession.setRegistry(registry);
-
-    // Provide a default API key for integration tests. See
-    // DartDeskSessionExt.testDefault for why this is necessary.
-    DartDeskSessionExt.testDefault = ApiKeyContext(
-      clientId: testClientId,
-      role: 'write',
-      tokenId: 0,
-    );
   }
 
   TestSessionBuilder authenticatedSession({
     String userIdentifier = 'test-user-1',
+    int clientId = testClientId,
+    int projectId = testProjectId,
   }) {
     return sessionBuilder.copyWith(
       authentication: AuthenticationOverride.authenticationInfo(
         userIdentifier,
-        {},
+        {
+          Scope('client:$clientId'),
+          Scope('project:$projectId'),
+          Scope('project.read'),
+          Scope('project.write'),
+        },
+      ),
+    );
+  }
+
+  Future<CmsClient> ensureTestClient({
+    int clientId = testClientId,
+    String name = 'Test Client',
+    String slug = 'test-client',
+  }) async {
+    final session = sessionBuilder.build();
+    final existing = await CmsClient.db.findById(session, clientId);
+    if (existing != null) return existing;
+
+    return CmsClient.db.insertRow(
+      session,
+      CmsClient(
+        id: clientId,
+        name: name,
+        slug: slug,
+        isActive: true,
+      ),
+    );
+  }
+
+  Future<Project> ensureTestProject({
+    int projectId = testProjectId,
+    int clientId = testClientId,
+    String name = 'Test Project',
+    String slug = 'test-project',
+  }) async {
+    final session = sessionBuilder.build();
+    await ensureTestClient(clientId: clientId);
+
+    final existing = await Project.db.findById(session, projectId);
+    if (existing != null) return existing;
+
+    return Project.db.insertRow(
+      session,
+      Project(
+        id: projectId,
+        clientId: clientId,
+        name: name,
+        slug: slug,
+        isActive: true,
       ),
     );
   }
@@ -51,17 +94,23 @@ class TestDataFactory {
   /// DB operations unsupported in the Serverpod test transaction wrapper.
   Future<User> ensureTestUser({
     String userIdentifier = 'test-user-1',
-    String email = 'test@example.com',
+    String? email,
     String name = 'Test User',
     String role = 'viewer',
     int? clientId = testClientId,
   }) async {
     final session = sessionBuilder.build();
+    if (clientId != null) {
+      await ensureTestClient(clientId: clientId);
+      await ensureTestProject(clientId: clientId);
+    }
 
     // Check if user already exists
     final existing = await User.db.findFirstRow(
       session,
-      where: (t) => t.serverpodUserId.equals(userIdentifier),
+      where: (t) =>
+          t.serverpodUserId.equals(userIdentifier) &
+          t.clientId.equals(clientId),
     );
     if (existing != null) return existing;
 
@@ -70,7 +119,7 @@ class TestDataFactory {
       session,
       User(
         clientId: clientId,
-        email: email,
+        email: email ?? '$userIdentifier@example.com',
         name: name,
         role: role,
         isActive: true,
@@ -92,7 +141,7 @@ class TestDataFactory {
       authed,
       documentType,
       title,
-      data,
+      jsonEncode(data),
       slug: slug,
       isDefault: isDefault,
     );
@@ -137,19 +186,86 @@ class TestDataFactory {
   }) async {
     final authed = authenticatedSession();
     final pngBytes = <int>[
-      0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
-      0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
-      0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
-      0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
-      0xDE, 0x00, 0x00, 0x00, 0x0C, 0x49, 0x44, 0x41,
-      0x54, 0x08, 0xD7, 0x63, 0xF8, 0xCF, 0xC0, 0x00,
-      0x00, 0x00, 0x02, 0x00, 0x01, 0xE2, 0x21, 0xBC,
-      0x33, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E,
-      0x44, 0xAE, 0x42, 0x60, 0x82,
+      0x89,
+      0x50,
+      0x4E,
+      0x47,
+      0x0D,
+      0x0A,
+      0x1A,
+      0x0A,
+      0x00,
+      0x00,
+      0x00,
+      0x0D,
+      0x49,
+      0x48,
+      0x44,
+      0x52,
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      0x08,
+      0x02,
+      0x00,
+      0x00,
+      0x00,
+      0x90,
+      0x77,
+      0x53,
+      0xDE,
+      0x00,
+      0x00,
+      0x00,
+      0x0C,
+      0x49,
+      0x44,
+      0x41,
+      0x54,
+      0x08,
+      0xD7,
+      0x63,
+      0xF8,
+      0xCF,
+      0xC0,
+      0x00,
+      0x00,
+      0x00,
+      0x02,
+      0x00,
+      0x01,
+      0xE2,
+      0x21,
+      0xBC,
+      0x33,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x49,
+      0x45,
+      0x4E,
+      0x44,
+      0xAE,
+      0x42,
+      0x60,
+      0x82,
     ];
     final byteData = ByteData.sublistView(Uint8List.fromList(pngBytes));
     return await endpoints.media.uploadImage(
-      authed, fileName, byteData, 1, 1, false, 'L00000fQfQfQfQfQfQfQfQfQfQ', 'testhash',
+      authed,
+      fileName,
+      byteData,
+      1,
+      1,
+      false,
+      'L00000fQfQfQfQfQfQfQfQfQfQ',
+      'testhash',
     );
   }
 

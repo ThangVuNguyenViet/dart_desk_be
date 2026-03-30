@@ -94,7 +94,7 @@ void main() {
         await endpoints.document.updateDocumentData(
           authed,
           doc.id!,
-          updates,
+          jsonEncode(updates),
         );
 
         // Capture HLC at midpoint

@@ -17,7 +17,7 @@ abstract class MediaAsset
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   MediaAsset._({
     this.id,
-    this.clientId,
+    required this.projectId,
     required this.assetId,
     required this.fileName,
     required this.mimeType,
@@ -40,7 +40,7 @@ abstract class MediaAsset
 
   factory MediaAsset({
     int? id,
-    int? clientId,
+    required int projectId,
     required String assetId,
     required String fileName,
     required String mimeType,
@@ -64,7 +64,7 @@ abstract class MediaAsset
   factory MediaAsset.fromJson(Map<String, dynamic> jsonSerialization) {
     return MediaAsset(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int?,
+      projectId: jsonSerialization['projectId'] as int,
       assetId: jsonSerialization['assetId'] as String,
       fileName: jsonSerialization['fileName'] as String,
       mimeType: jsonSerialization['mimeType'] as String,
@@ -97,7 +97,7 @@ abstract class MediaAsset
   @override
   int? id;
 
-  int? clientId;
+  int projectId;
 
   String assetId;
 
@@ -143,7 +143,7 @@ abstract class MediaAsset
   @_i1.useResult
   MediaAsset copyWith({
     int? id,
-    int? clientId,
+    int? projectId,
     String? assetId,
     String? fileName,
     String? mimeType,
@@ -168,7 +168,7 @@ abstract class MediaAsset
     return {
       '__className__': 'MediaAsset',
       if (id != null) 'id': id,
-      if (clientId != null) 'clientId': clientId,
+      'projectId': projectId,
       'assetId': assetId,
       'fileName': fileName,
       'mimeType': mimeType,
@@ -195,7 +195,7 @@ abstract class MediaAsset
     return {
       '__className__': 'MediaAsset',
       if (id != null) 'id': id,
-      if (clientId != null) 'clientId': clientId,
+      'projectId': projectId,
       'assetId': assetId,
       'fileName': fileName,
       'mimeType': mimeType,
@@ -252,7 +252,7 @@ class _Undefined {}
 class _MediaAssetImpl extends MediaAsset {
   _MediaAssetImpl({
     int? id,
-    int? clientId,
+    required int projectId,
     required String assetId,
     required String fileName,
     required String mimeType,
@@ -273,7 +273,7 @@ class _MediaAssetImpl extends MediaAsset {
     required _i2.MediaAssetMetadataStatus metadataStatus,
   }) : super._(
          id: id,
-         clientId: clientId,
+         projectId: projectId,
          assetId: assetId,
          fileName: fileName,
          mimeType: mimeType,
@@ -300,7 +300,7 @@ class _MediaAssetImpl extends MediaAsset {
   @override
   MediaAsset copyWith({
     Object? id = _Undefined,
-    Object? clientId = _Undefined,
+    int? projectId,
     String? assetId,
     String? fileName,
     String? mimeType,
@@ -322,7 +322,7 @@ class _MediaAssetImpl extends MediaAsset {
   }) {
     return MediaAsset(
       id: id is int? ? id : this.id,
-      clientId: clientId is int? ? clientId : this.clientId,
+      projectId: projectId ?? this.projectId,
       assetId: assetId ?? this.assetId,
       fileName: fileName ?? this.fileName,
       mimeType: mimeType ?? this.mimeType,
@@ -350,8 +350,8 @@ class _MediaAssetImpl extends MediaAsset {
 class MediaAssetUpdateTable extends _i1.UpdateTable<MediaAssetTable> {
   MediaAssetUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> clientId(int? value) => _i1.ColumnValue(
-    table.clientId,
+  _i1.ColumnValue<int, int> projectId(int value) => _i1.ColumnValue(
+    table.projectId,
     value,
   );
 
@@ -451,8 +451,8 @@ class MediaAssetUpdateTable extends _i1.UpdateTable<MediaAssetTable> {
 class MediaAssetTable extends _i1.Table<int?> {
   MediaAssetTable({super.tableRelation}) : super(tableName: 'media_assets') {
     updateTable = MediaAssetUpdateTable(this);
-    clientId = _i1.ColumnInt(
-      'clientId',
+    projectId = _i1.ColumnInt(
+      'projectId',
       this,
     );
     assetId = _i1.ColumnString(
@@ -533,7 +533,7 @@ class MediaAssetTable extends _i1.Table<int?> {
 
   late final MediaAssetUpdateTable updateTable;
 
-  late final _i1.ColumnInt clientId;
+  late final _i1.ColumnInt projectId;
 
   late final _i1.ColumnString assetId;
 
@@ -574,7 +574,7 @@ class MediaAssetTable extends _i1.Table<int?> {
   @override
   List<_i1.Column> get columns => [
     id,
-    clientId,
+    projectId,
     assetId,
     fileName,
     mimeType,

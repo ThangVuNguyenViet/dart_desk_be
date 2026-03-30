@@ -15,7 +15,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 abstract class Document implements _i1.SerializableModel {
   Document._({
     this.id,
-    this.clientId,
+    required this.projectId,
     required this.documentType,
     required this.title,
     required this.slug,
@@ -34,7 +34,7 @@ abstract class Document implements _i1.SerializableModel {
 
   factory Document({
     int? id,
-    int? clientId,
+    required int projectId,
     required String documentType,
     required String title,
     required String slug,
@@ -52,7 +52,7 @@ abstract class Document implements _i1.SerializableModel {
   factory Document.fromJson(Map<String, dynamic> jsonSerialization) {
     return Document(
       id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int?,
+      projectId: jsonSerialization['projectId'] as int,
       documentType: jsonSerialization['documentType'] as String,
       title: jsonSerialization['title'] as String,
       slug: jsonSerialization['slug'] as String,
@@ -83,7 +83,7 @@ abstract class Document implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int? clientId;
+  int projectId;
 
   String documentType;
 
@@ -114,7 +114,7 @@ abstract class Document implements _i1.SerializableModel {
   @_i1.useResult
   Document copyWith({
     int? id,
-    int? clientId,
+    int? projectId,
     String? documentType,
     String? title,
     String? slug,
@@ -133,7 +133,7 @@ abstract class Document implements _i1.SerializableModel {
     return {
       '__className__': 'Document',
       if (id != null) 'id': id,
-      if (clientId != null) 'clientId': clientId,
+      'projectId': projectId,
       'documentType': documentType,
       'title': title,
       'slug': slug,
@@ -160,7 +160,7 @@ class _Undefined {}
 class _DocumentImpl extends Document {
   _DocumentImpl({
     int? id,
-    int? clientId,
+    required int projectId,
     required String documentType,
     required String title,
     required String slug,
@@ -175,7 +175,7 @@ class _DocumentImpl extends Document {
     int? updatedByUserId,
   }) : super._(
          id: id,
-         clientId: clientId,
+         projectId: projectId,
          documentType: documentType,
          title: title,
          slug: slug,
@@ -196,7 +196,7 @@ class _DocumentImpl extends Document {
   @override
   Document copyWith({
     Object? id = _Undefined,
-    Object? clientId = _Undefined,
+    int? projectId,
     String? documentType,
     String? title,
     String? slug,
@@ -212,7 +212,7 @@ class _DocumentImpl extends Document {
   }) {
     return Document(
       id: id is int? ? id : this.id,
-      clientId: clientId is int? ? clientId : this.clientId,
+      projectId: projectId ?? this.projectId,
       documentType: documentType ?? this.documentType,
       title: title ?? this.title,
       slug: slug ?? this.slug,

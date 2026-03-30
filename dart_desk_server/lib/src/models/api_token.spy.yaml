@@ -1,7 +1,7 @@
 class: ApiToken
 table: api_tokens
 fields:
-  clientId: int?
+  projectId: int, relation(parent=projects, onDelete=Cascade)
   name: String
   tokenHash: String
   tokenPrefix: String
@@ -13,10 +13,10 @@ fields:
   isActive: bool, default=true
   createdAt: DateTime?, default=now
 indexes:
-  api_token_client_idx:
-    fields: clientId
+  api_token_project_idx:
+    fields: projectId
   api_token_lookup_idx:
-    fields: clientId, tokenPrefix, tokenSuffix
+    fields: projectId, tokenPrefix, tokenSuffix
     unique: true
   api_token_prefix_suffix_idx:
     fields: tokenPrefix, tokenSuffix

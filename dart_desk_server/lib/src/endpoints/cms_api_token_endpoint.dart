@@ -4,13 +4,12 @@ import 'dart:math';
 import 'package:serverpod/serverpod.dart';
 
 import '../auth/api_key_validator.dart';
-import '../auth/dart_desk_session.dart';
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
-/// Authorization: caller must be a User belonging to the resolved tenant.
+/// Authorization: caller must be a User belonging to the project's tenant.
 class ApiTokenEndpoint extends Endpoint {
   static const _maxRetries = 5;
   static const _rolePrefixes = {
@@ -18,13 +17,14 @@ class ApiTokenEndpoint extends Endpoint {
     'write': 'cms_w_',
   };
 
-  /// List all tokens for the current tenant (metadata only, never the hash).
-  Future<List<ApiToken>> getTokens(Session session, {int? clientId}) async {
-    final auth = await _requireAuth(session, clientId: clientId);
+  /// List all tokens for a project (metadata only, never the hash).
+  Future<List<ApiToken>> getTokens(Session session,
+      {required int projectId}) async {
+    await _requireAuth(session, projectId: projectId);
 
     return await ApiToken.db.find(
       session,
-      where: (t) => auth.clientId != null ? t.clientId.equals(auth.clientId) : t.clientId.equals(null),
+      where: (t) => t.projectId.equals(projectId),
       orderBy: (t) => t.createdAt,
       orderDescending: true,
     );
@@ -36,9 +36,9 @@ class ApiTokenEndpoint extends Endpoint {
     String name,
     String role,
     DateTime? expiresAt, {
-    int? clientId,
+    required int projectId,
   }) async {
-    final auth = await _requireAuth(session, clientId: clientId);
+    final auth = await _requireAuth(session, projectId: projectId);
 
     if (!_rolePrefixes.containsKey(role)) {
       throw Exception('Invalid role: $role. Must be read or write.');
@@ -51,24 +51,24 @@ class ApiTokenEndpoint extends Endpoint {
       final suffix = rawToken.substring(rawToken.length - 4);
       final hash = ApiKeyValidator.hashToken(rawToken);
 
-      // Check for collision on (clientId, tokenPrefix, tokenSuffix)
+      // Check for collision on (projectId, tokenPrefix, tokenSuffix)
       final existing = await ApiToken.db.findFirstRow(
         session,
         where: (t) =>
-            (auth.clientId != null ? t.clientId.equals(auth.clientId) : t.clientId.equals(null)) &
+            t.projectId.equals(auth.projectId) &
             t.tokenPrefix.equals(prefix) &
             t.tokenSuffix.equals(suffix),
       );
       if (existing != null) continue;
 
       final token = ApiToken(
-        clientId: auth.clientId,
+        projectId: auth.projectId,
         name: name,
         tokenHash: hash,
         tokenPrefix: prefix,
         tokenSuffix: suffix,
         role: role,
-        createdByUserId: auth.user!.id!,
+        createdByUserId: auth.user.id!,
         isActive: true,
         createdAt: DateTime.now(),
       );
@@ -92,12 +92,15 @@ class ApiTokenEndpoint extends Endpoint {
     String? name,
     bool? isActive,
     DateTime? expiresAt, {
-    int? clientId,
+    required int projectId,
   }) async {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) throw Exception('Token not found: $tokenId');
 
-    await _requireAuth(session, clientId: clientId);
+    await _requireAuth(session, projectId: projectId);
+    if (token.projectId != projectId) {
+      throw Exception('Token belongs to a different project');
+    }
 
     final updated = token.copyWith(
       name: name ?? token.name,
@@ -112,12 +115,15 @@ class ApiTokenEndpoint extends Endpoint {
   Future<ApiTokenWithValue> regenerateToken(
     Session session,
     int tokenId, {
-    int? clientId,
+    required int projectId,
   }) async {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) throw Exception('Token not found: $tokenId');
 
-    await _requireAuth(session, clientId: clientId);
+    await _requireAuth(session, projectId: projectId);
+    if (token.projectId != projectId) {
+      throw Exception('Token belongs to a different project');
+    }
 
     final prefix = _rolePrefixes[token.role]!;
 
@@ -130,7 +136,7 @@ class ApiTokenEndpoint extends Endpoint {
       final existing = await ApiToken.db.findFirstRow(
         session,
         where: (t) =>
-            (token.clientId != null ? t.clientId.equals(token.clientId) : t.clientId.equals(null)) &
+            t.projectId.equals(token.projectId) &
             t.tokenPrefix.equals(prefix) &
             t.tokenSuffix.equals(suffix) &
             t.id.notEquals(tokenId),
@@ -154,33 +160,36 @@ class ApiTokenEndpoint extends Endpoint {
   Future<bool> deleteToken(
     Session session,
     int tokenId, {
-    int? clientId,
+    required int projectId,
   }) async {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) return false;
 
-    await _requireAuth(session, clientId: clientId);
+    await _requireAuth(session, projectId: projectId);
+    if (token.projectId != projectId) {
+      throw Exception('Token belongs to a different project');
+    }
 
     await ApiToken.db.deleteRow(session, token);
     return true;
   }
 
-  /// Verify the caller is an authenticated User and resolve tenant.
-  Future<({User? user, int? clientId})> _requireAuth(
+  /// Verify the caller is an authenticated User and resolve the owning tenant.
+  Future<({User user, int clientId, int projectId})> _requireAuth(
     Session session, {
-    int? clientId,
+    required int projectId,
   }) async {
-    final apiKey = session.apiKey;
-    if (apiKey != null) {
-      final user = await resolveUser(session, clientId: apiKey.clientId);
-      return (user: user as User?, clientId: apiKey.clientId);
-    }
-    // Session auth (manage app)
     if (session.authenticated == null) {
       throw Exception('Authentication required');
     }
-    final user = await resolveUser(session, clientId: clientId);
-    return (user: user as User?, clientId: clientId);
+
+    final project = await Project.db.findById(session, projectId);
+    if (project == null) {
+      throw Exception('Project not found: $projectId');
+    }
+
+    final user = await resolveUser(session, clientId: project.clientId);
+    return (user: user, clientId: project.clientId, projectId: projectId);
   }
 
   /// Generate a crypto-random API token with the given prefix.

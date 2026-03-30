@@ -1,4 +1,3 @@
-import 'package:dart_desk_server/src/auth/api_key_context.dart';
 import 'package:dart_desk_server/src/auth/dart_desk_session.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:serverpod/serverpod.dart';
@@ -9,55 +8,64 @@ class _MockSession extends Mock implements Session {}
 void main() {
   group('DartDeskSessionExt', () {
     late _MockSession session;
+    late AuthenticationInfo authInfo;
 
     setUp(() {
       session = _MockSession();
-      DartDeskSessionExt.testDefault = null;
+      authInfo = AuthenticationInfo(
+        'user-1',
+        {
+          Scope('client:7'),
+          Scope('project:12'),
+          Scope('project.read'),
+          Scope('project.write'),
+        },
+        authId: 'auth-1',
+      );
     });
 
-    test('apiKey getter returns stored ApiKeyContext', () {
-      final ctx = ApiKeyContext(clientId: 1, role: 'read', tokenId: 42);
-      when(() => session.requestContext).thenReturn({'apiKey': ctx});
+    test('clientId getter reads tenant scope', () {
+      when(() => session.authenticated).thenReturn(authInfo);
 
-      expect(session.apiKey, same(ctx));
-      expect(session.apiKey!.clientId, 1);
-      expect(session.apiKey!.role, 'read');
-      expect(session.apiKey!.tokenId, 42);
+      expect(session.clientId, 7);
     });
 
-    test('apiKey getter returns null when requestContext is null', () {
-      when(() => session.requestContext).thenReturn(null);
+    test('projectId getter reads project scope', () {
+      when(() => session.authenticated).thenReturn(authInfo);
 
-      expect(session.apiKey, isNull);
+      expect(session.projectId, 12);
     });
 
-    test('apiKey getter returns null when key is missing from context', () {
-      when(() => session.requestContext).thenReturn({});
+    test('clientId getter returns null when client scope is missing', () {
+      when(() => session.authenticated).thenReturn(
+        AuthenticationInfo('user-1', {Scope('project:12')}, authId: 'auth-1'),
+      );
 
-      expect(session.apiKey, isNull);
+      expect(session.clientId, isNull);
     });
 
-    test('canWrite is true for write role', () {
-      final ctx = ApiKeyContext(clientId: 1, role: 'write', tokenId: 10);
-      when(() => session.requestContext).thenReturn({'apiKey': ctx});
+    test('canRead is true when project.read scope exists', () {
+      when(() => session.authenticated).thenReturn(authInfo);
 
-      expect(session.apiKey!.canWrite, isTrue);
-      expect(session.apiKey!.canRead, isTrue);
+      expect(session.canRead, isTrue);
     });
 
-    test('canWrite is false for read role', () {
-      final ctx = ApiKeyContext(clientId: 1, role: 'read', tokenId: 10);
-      when(() => session.requestContext).thenReturn({'apiKey': ctx});
+    test('canWrite is true when project.write scope exists', () {
+      when(() => session.authenticated).thenReturn(authInfo);
 
-      expect(session.apiKey!.canWrite, isFalse);
-      expect(session.apiKey!.canRead, isTrue);
+      expect(session.canWrite, isTrue);
     });
 
-    test('clientId can be null for single-tenant keys', () {
-      final ctx = ApiKeyContext(clientId: null, role: 'read', tokenId: 10);
-      when(() => session.requestContext).thenReturn({'apiKey': ctx});
+    test('canWrite is false without project.write scope', () {
+      when(() => session.authenticated).thenReturn(
+        AuthenticationInfo(
+          'user-1',
+          {Scope('project.read')},
+          authId: 'auth-1',
+        ),
+      );
 
-      expect(session.apiKey!.clientId, isNull);
+      expect(session.canWrite, isFalse);
     });
   });
 }

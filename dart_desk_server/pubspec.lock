@@ -138,7 +138,7 @@ packages:
     source: hosted
     version: "3.1.2"
   coverage:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: coverage
       sha256: "5da775aa218eaf2151c721b16c01c7676fbfdd99cebba2bf64e8b807a28ff94d"
@@ -508,71 +508,59 @@ packages:
   serverpod:
     dependency: "direct main"
     description:
-      path: "packages/serverpod"
-      ref: main
-      resolved-ref: "7fdee2c484e60a5ac8431e6d055846c8a4687e72"
-      url: "https://github.com/ThangVuNguyenViet/serverpod.git"
-    source: git
-    version: "3.4.4"
+      name: serverpod
+      sha256: "2dfb1bd29a411aa15c75292d1ce6e9a2a2ee3d23e7ddccf5eb73436367a07b27"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.5"
   serverpod_auth_core_server:
     dependency: "direct main"
     description:
       name: serverpod_auth_core_server
-      sha256: "18375637922f4a3f70d93584525c7264fed4f3cbb1301b12a2c4b218946c0cf6"
+      sha256: b4ff3097cf367580f9bab3ebbf9f16b0ec8ecb2267f696264b6b7ff7a2620436
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.4"
+    version: "3.4.5"
   serverpod_auth_idp_server:
     dependency: "direct main"
     description:
       name: serverpod_auth_idp_server
-      sha256: "81a8272b9c597a5cd0cdbfe1e249e91fcbe20695671400e6a1c222f56a42aaf0"
+      sha256: "25038b081a14c6a6244a92a5408be087a8a449523a18dd30f75e58790bd7fbd9"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.4"
-  serverpod_database:
-    dependency: "direct overridden"
-    description:
-      path: "packages/serverpod_database"
-      ref: main
-      resolved-ref: "7fdee2c484e60a5ac8431e6d055846c8a4687e72"
-      url: "https://github.com/ThangVuNguyenViet/serverpod.git"
-    source: git
-    version: "3.4.4"
+    version: "3.4.5"
   serverpod_lints:
     dependency: transitive
     description:
       name: serverpod_lints
-      sha256: ad270a1d5315f1edd4f7474a00dc937b4e3a8043d59c15c19cf5bdd0272183ca
+      sha256: "04ce1b4023c12499351b7945884ee5dce69ebe8edd7f5787673a53ef941b976f"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.4"
+    version: "3.4.5"
   serverpod_serialization:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "packages/serverpod_serialization"
-      ref: main
-      resolved-ref: "7fdee2c484e60a5ac8431e6d055846c8a4687e72"
-      url: "https://github.com/ThangVuNguyenViet/serverpod.git"
-    source: git
-    version: "3.4.4"
+      name: serverpod_serialization
+      sha256: be8f84c9409bafe35d1ab65abeaa5c2f7d92116155059e489366c7fdedcca55f
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.5"
   serverpod_shared:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "packages/serverpod_shared"
-      ref: main
-      resolved-ref: "7fdee2c484e60a5ac8431e6d055846c8a4687e72"
-      url: "https://github.com/ThangVuNguyenViet/serverpod.git"
-    source: git
-    version: "3.4.4"
+      name: serverpod_shared
+      sha256: de25d8bfe73f43544f120ae7584fefe37d47f713bf98d2af4a784d89cccadc2d
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.5"
   serverpod_test:
     dependency: "direct dev"
     description:
       name: serverpod_test
-      sha256: e7812df4dba0f674c1d6effa4d726b20d3e125ad0b47ef7cad4be7d0f8b9cc19
+      sha256: ea5a11baf845a2c673597278eb434d9c287263b59738bb833c1fa2ab556423d4
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.4"
+    version: "3.4.5"
   shelf:
     dependency: transitive
     description:

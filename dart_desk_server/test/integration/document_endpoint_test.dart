@@ -262,12 +262,15 @@ void main() {
     });
 
     group('getDocumentCount', () {
-      test('returns count of documents for tenant', () async {
+      test('returns count of documents for project', () async {
         await factory.createTestDocument(title: 'Count 1');
         await factory.createTestDocument(title: 'Count 2');
 
         final authed = factory.authenticatedSession();
-        final count = await endpoints.document.getDocumentCount(authed, clientId: TestDataFactory.testClientId);
+        final count = await endpoints.document.getDocumentCount(
+          authed,
+          projectId: TestDataFactory.testProjectId,
+        );
 
         expect(count, greaterThanOrEqualTo(2));
       });

@@ -134,7 +134,7 @@ class DeploymentEndpoint extends Endpoint {
       session,
       where: (t) =>
           t.serverpodUserId.equals(authInfo.userIdentifier) &
-          t.clientId.equals(project.id!) &
+          t.clientId.equals(project.clientId) &
           t.isActive.equals(true),
     );
     if (user == null) {

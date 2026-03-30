@@ -237,7 +237,7 @@ class _ApiTokenEndpoint {
 
   _i3.Future<List<_i4.ApiToken>> getTokens(
     _i1.TestSessionBuilder sessionBuilder, {
-    int? clientId,
+    required int projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -250,7 +250,7 @@ class _ApiTokenEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'apiToken',
           methodName: 'getTokens',
-          parameters: _i1.testObjectToJson({'clientId': clientId}),
+          parameters: _i1.testObjectToJson({'projectId': projectId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -271,7 +271,7 @@ class _ApiTokenEndpoint {
     String name,
     String role,
     DateTime? expiresAt, {
-    int? clientId,
+    required int projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -288,7 +288,7 @@ class _ApiTokenEndpoint {
             'name': name,
             'role': role,
             'expiresAt': expiresAt,
-            'clientId': clientId,
+            'projectId': projectId,
           }),
           serializationManager: _serializationManager,
         );
@@ -311,7 +311,7 @@ class _ApiTokenEndpoint {
     String? name,
     bool? isActive,
     DateTime? expiresAt, {
-    int? clientId,
+    required int projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -329,7 +329,7 @@ class _ApiTokenEndpoint {
             'name': name,
             'isActive': isActive,
             'expiresAt': expiresAt,
-            'clientId': clientId,
+            'projectId': projectId,
           }),
           serializationManager: _serializationManager,
         );
@@ -349,7 +349,7 @@ class _ApiTokenEndpoint {
   _i3.Future<_i5.ApiTokenWithValue> regenerateToken(
     _i1.TestSessionBuilder sessionBuilder,
     int tokenId, {
-    int? clientId,
+    required int projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -364,7 +364,7 @@ class _ApiTokenEndpoint {
           methodName: 'regenerateToken',
           parameters: _i1.testObjectToJson({
             'tokenId': tokenId,
-            'clientId': clientId,
+            'projectId': projectId,
           }),
           serializationManager: _serializationManager,
         );
@@ -384,7 +384,7 @@ class _ApiTokenEndpoint {
   _i3.Future<bool> deleteToken(
     _i1.TestSessionBuilder sessionBuilder,
     int tokenId, {
-    int? clientId,
+    required int projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -399,7 +399,7 @@ class _ApiTokenEndpoint {
           methodName: 'deleteToken',
           parameters: _i1.testObjectToJson({
             'tokenId': tokenId,
-            'clientId': clientId,
+            'projectId': projectId,
           }),
           serializationManager: _serializationManager,
         );
@@ -611,7 +611,7 @@ class _DocumentCollaborationEndpoint {
     _i1.TestSessionBuilder sessionBuilder,
     int documentId,
     String sessionId,
-    Map<String, dynamic> fieldUpdates,
+    String fieldUpdatesJson,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -627,7 +627,7 @@ class _DocumentCollaborationEndpoint {
           parameters: _i1.testObjectToJson({
             'documentId': documentId,
             'sessionId': sessionId,
-            'fieldUpdates': fieldUpdates,
+            'fieldUpdatesJson': fieldUpdatesJson,
           }),
           serializationManager: _serializationManager,
         );
@@ -644,7 +644,7 @@ class _DocumentCollaborationEndpoint {
     });
   }
 
-  _i3.Future<List<Map<String, dynamic>>> getActiveEditors(
+  _i3.Future<List<String>> getActiveEditors(
     _i1.TestSessionBuilder sessionBuilder,
     int documentId,
   ) async {
@@ -667,7 +667,7 @@ class _DocumentCollaborationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<Map<String, dynamic>>>);
+                as _i3.Future<List<String>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -915,7 +915,7 @@ class _DocumentEndpoint {
     _i1.TestSessionBuilder sessionBuilder,
     String documentType,
     String title,
-    Map<String, dynamic> data, {
+    String dataJson, {
     String? slug,
     required bool isDefault,
   }) async {
@@ -933,7 +933,7 @@ class _DocumentEndpoint {
           parameters: _i1.testObjectToJson({
             'documentType': documentType,
             'title': title,
-            'data': data,
+            'dataJson': dataJson,
             'slug': slug,
             'isDefault': isDefault,
           }),
@@ -955,7 +955,7 @@ class _DocumentEndpoint {
   _i3.Future<_i8.Document> updateDocumentData(
     _i1.TestSessionBuilder sessionBuilder,
     int documentId,
-    Map<String, dynamic> updates, {
+    String updatesJson, {
     String? sessionId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -971,7 +971,7 @@ class _DocumentEndpoint {
           methodName: 'updateDocumentData',
           parameters: _i1.testObjectToJson({
             'documentId': documentId,
-            'updates': updates,
+            'updatesJson': updatesJson,
             'sessionId': sessionId,
           }),
           serializationManager: _serializationManager,
@@ -1194,7 +1194,7 @@ class _DocumentEndpoint {
     });
   }
 
-  _i3.Future<Map<String, dynamic>?> getDocumentVersionData(
+  _i3.Future<String?> getDocumentVersionData(
     _i1.TestSessionBuilder sessionBuilder,
     int versionId,
   ) async {
@@ -1217,7 +1217,7 @@ class _DocumentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<Map<String, dynamic>?>);
+                as _i3.Future<String?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1357,7 +1357,7 @@ class _DocumentEndpoint {
 
   _i3.Future<int> getDocumentCount(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int clientId,
+    required int projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1370,7 +1370,7 @@ class _DocumentEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'document',
           methodName: 'getDocumentCount',
-          parameters: _i1.testObjectToJson({'clientId': clientId}),
+          parameters: _i1.testObjectToJson({'projectId': projectId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =

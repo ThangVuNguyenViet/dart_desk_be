@@ -18,7 +18,11 @@ void main() {
     test('created token validates successfully', () async {
       final authed = factory.authenticatedSession();
       final result = await endpoints.apiToken.createToken(
-        authed, 'Valid Token', 'write', null,
+        authed,
+        'Valid Token',
+        'write',
+        null,
+        projectId: TestDataFactory.testProjectId,
       );
 
       final session = sessionBuilder.build();
@@ -34,11 +38,20 @@ void main() {
     test('deactivated token fails validation', () async {
       final authed = factory.authenticatedSession();
       final result = await endpoints.apiToken.createToken(
-        authed, 'Deactivated', 'read', null,
+        authed,
+        'Deactivated',
+        'read',
+        null,
+        projectId: TestDataFactory.testProjectId,
       );
 
       await endpoints.apiToken.updateToken(
-        authed, result.token.id!, null, false, null,
+        authed,
+        result.token.id!,
+        null,
+        false,
+        null,
+        projectId: TestDataFactory.testProjectId,
       );
 
       final session = sessionBuilder.build();
@@ -53,12 +66,18 @@ void main() {
     test('regenerated token invalidates old, validates new', () async {
       final authed = factory.authenticatedSession();
       final original = await endpoints.apiToken.createToken(
-        authed, 'Regen', 'write', null,
+        authed,
+        'Regen',
+        'write',
+        null,
+        projectId: TestDataFactory.testProjectId,
       );
       final oldToken = original.plaintextToken;
 
       final regenerated = await endpoints.apiToken.regenerateToken(
-        authed, original.token.id!,
+        authed,
+        original.token.id!,
+        projectId: TestDataFactory.testProjectId,
       );
 
       final session = sessionBuilder.build();
@@ -81,11 +100,19 @@ void main() {
     test('deleted token fails validation', () async {
       final authed = factory.authenticatedSession();
       final result = await endpoints.apiToken.createToken(
-        authed, 'Deleted', 'read', null,
+        authed,
+        'Deleted',
+        'read',
+        null,
+        projectId: TestDataFactory.testProjectId,
       );
       final token = result.plaintextToken;
 
-      await endpoints.apiToken.deleteToken(authed, result.token.id!);
+      await endpoints.apiToken.deleteToken(
+        authed,
+        result.token.id!,
+        projectId: TestDataFactory.testProjectId,
+      );
 
       final session = sessionBuilder.build();
       expect(
