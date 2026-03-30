@@ -6,7 +6,7 @@ import '../generated/protocol.dart';
 ///
 /// Requires [session.authenticated] to be non-null (caller must be logged in).
 /// Throws if no matching User record exists — users must be created explicitly
-/// (e.g., via [ProjectEndpoint.createProjectWithOwner]).
+/// (e.g., via [ProjectEndpoint.createClientWithOwner]).
 Future<User> resolveUser(Session session, {int? clientId}) async {
   final auth = session.authenticated;
   if (auth == null) {
