@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:dart_desk_server/src/web/routes/root.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    hide Protocol, Endpoints;
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
@@ -13,13 +15,6 @@ import 'src/plugin/dart_desk_plugin.dart';
 import 'src/plugin/dart_desk_registry.dart';
 import 'src/plugin/dart_desk_session.dart';
 import 'src/services/document_crdt_service.dart';
-
-const _apiKeyExemptEndpoints = {
-  'emailIdp',
-  'googleIdp',
-  'project.createProjectWithOwner',
-  'studioConfig.getStudioUrlTemplate',
-};
 
 /// This is the starting point of your Serverpod server. In most cases, you will
 /// only need to make additions to this file if you add future calls, routes, or
@@ -40,62 +35,6 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
     args,
     Protocol(),
     Endpoints(),
-    authenticationHandler: (session, token) async {
-      final parts = token.split(':');
-      final authToken = parts[0];
-      final apiKey = parts.length > 1 ? parts[1] : null;
-
-      final scopes = <Scope>{};
-      String? userIdentifier;
-      String? authId;
-
-      if (authToken.isNotEmpty && authToken != 'null') {
-        try {
-          final authInfo = await UserAuthentication.authenticateRequest(
-            session,
-            authToken,
-          );
-          if (authInfo != null) {
-            userIdentifier = authInfo.userIdentifier;
-            authId = authInfo.authId;
-            scopes.addAll(authInfo.scopes);
-          }
-        } catch (_) {
-          // Ignore JWT errors and continue. The request may still authenticate
-          // through a project API key.
-        }
-      }
-
-      if (apiKey != null && apiKey.isNotEmpty && apiKey != 'null') {
-        final tokenRow = await ApiKeyValidator.validate(session, apiKey);
-        if (tokenRow != null) {
-          final project =
-              await Project.db.findById(session, tokenRow.projectId);
-          if (project != null) {
-            scopes.add(Scope('project:${project.id!}'));
-            scopes.add(Scope('project.read'));
-            if (tokenRow.role == 'write' ||
-                tokenRow.role == 'editor' ||
-                tokenRow.role == 'admin') {
-              scopes.add(Scope('project.write'));
-            }
-            scopes.add(Scope('client:${project.clientId}'));
-            userIdentifier ??= 'api-token:${tokenRow.id!}';
-            authId ??= 'api-token:${tokenRow.id!}';
-          }
-        }
-      }
-
-      if (scopes.isEmpty || userIdentifier == null || authId == null) {
-        return null;
-      }
-
-      return AuthenticationInfo(
-        userIdentifier,
-        scopes,
-        authId: authId,
-      );
-    },
   );
 
   // Initialize CRDT service with node ID from passwords.yaml
@@ -134,6 +73,64 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
       ),
     ],
   );
+
+  // Override the authentication handler to chain JWT auth + API key auth.
+  // initializeAuthServices sets the default JWT handler; we wrap it to also
+  // support project API keys passed as "jwtToken:apiKey" compound tokens.
+  final defaultHandler = pod.authenticationHandler;
+  pod.authenticationHandler = (session, token) async {
+    final parts = token.split(':');
+    final authToken = parts[0];
+    final apiKey = parts.length > 1 ? parts[1] : null;
+
+    final scopes = <Scope>{};
+    String? userIdentifier;
+    String? authId;
+
+    if (authToken.isNotEmpty && authToken != 'null') {
+      try {
+        final authInfo = await defaultHandler?.call(session, authToken);
+        if (authInfo != null) {
+          userIdentifier = authInfo.userIdentifier;
+          authId = authInfo.authId;
+          scopes.addAll(authInfo.scopes);
+        }
+      } catch (_) {
+        // Ignore JWT errors and continue. The request may still authenticate
+        // through a project API key.
+      }
+    }
+
+    if (apiKey != null && apiKey.isNotEmpty && apiKey != 'null') {
+      final tokenRow = await ApiKeyValidator.validate(session, apiKey);
+      if (tokenRow != null) {
+        final project =
+            await Project.db.findById(session, tokenRow.projectId);
+        if (project != null) {
+          scopes.add(Scope('project:${project.id!}'));
+          scopes.add(Scope('project.read'));
+          if (tokenRow.role == 'write' ||
+              tokenRow.role == 'editor' ||
+              tokenRow.role == 'admin') {
+            scopes.add(Scope('project.write'));
+          }
+          scopes.add(Scope('client:${project.clientId}'));
+          userIdentifier ??= 'api-token:${tokenRow.id!}';
+          authId ??= 'api-token:${tokenRow.id!}';
+        }
+      }
+    }
+
+    if (scopes.isEmpty || userIdentifier == null || authId == null) {
+      return null;
+    }
+
+    return AuthenticationInfo(
+      userIdentifier,
+      scopes,
+      authId: authId,
+    );
+  };
 
   // Start the server.
   await pod.start();
