@@ -53,11 +53,10 @@ void main() {
     'MetadataExtractor',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, endpoints) {
-      late TestDataFactory factory;
       late int projectId;
 
       setUpAll(() async {
-        factory = TestDataFactory(
+        final factory = TestDataFactory(
           sessionBuilder: sessionBuilder,
           endpoints: endpoints,
         );
