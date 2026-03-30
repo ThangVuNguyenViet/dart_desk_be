@@ -17,8 +17,14 @@ class ProjectEndpoint extends Endpoint {
       throw Exception('User must be authenticated to list projects');
     }
 
-    final member = await resolveUser(session);
-    final clientId = member.clientId;
+    final user = await User.db.findFirstRow(
+      session,
+      where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
+    );
+    if (user == null) {
+      return ProjectList(projects: [], total: 0, page: 1, pageSize: limit);
+    }
+    final clientId = user.clientId;
 
     final total = await Project.db.count(
       session,
@@ -158,6 +164,16 @@ class ProjectEndpoint extends Endpoint {
 
     await Project.db.deleteRow(session, existing);
     return true;
+  }
+
+  /// Create a new CmsClient (workspace) and an admin User for the caller in one transaction.
+  /// Used by the manage app's setup wizard for first-time users.
+  Future<CmsClient> createClientWithOwner(
+    Session session, {
+    required String clientName,
+    required String clientSlug,
+  }) async {
+    throw UnimplementedError();
   }
 
   /// Reserved slugs that cannot be used as project slugs.

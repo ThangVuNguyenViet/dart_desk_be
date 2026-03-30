@@ -32,9 +32,10 @@ import 'package:dart_desk_client/src/protocol/media_asset.dart' as _i14;
 import 'dart:typed_data' as _i15;
 import 'package:dart_desk_client/src/protocol/project_list.dart' as _i16;
 import 'package:dart_desk_client/src/protocol/project.dart' as _i17;
-import 'package:dart_desk_client/src/protocol/public_document.dart' as _i18;
-import 'package:dart_desk_client/src/protocol/user.dart' as _i19;
-import 'protocol.dart' as _i20;
+import 'package:dart_desk_client/src/protocol/cms_client.dart' as _i18;
+import 'package:dart_desk_client/src/protocol/public_document.dart' as _i19;
+import 'package:dart_desk_client/src/protocol/user.dart' as _i20;
+import 'protocol.dart' as _i21;
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
@@ -869,6 +870,20 @@ class EndpointProject extends _i1.EndpointRef {
         {'projectId': projectId},
       );
 
+  /// Create a new CmsClient (workspace) and an admin User for the caller in one transaction.
+  /// Used by the manage app's setup wizard for first-time users.
+  _i2.Future<_i18.CmsClient> createClientWithOwner({
+    required String clientName,
+    required String clientSlug,
+  }) => caller.callServerEndpoint<_i18.CmsClient>(
+    'project',
+    'createClientWithOwner',
+    {
+      'clientName': clientName,
+      'clientSlug': clientSlug,
+    },
+  );
+
   /// Create a new project and an admin User for the caller in one transaction.
   /// Used by the manage app's setup wizard for first-time users.
   _i2.Future<_i17.Project> createProjectWithOwner({
@@ -895,43 +910,43 @@ class EndpointPublicContent extends _i1.EndpointRef {
   String get name => 'publicContent';
 
   /// Returns all published documents grouped by document type.
-  _i2.Future<Map<String, List<_i18.PublicDocument>>> getAllContents() =>
-      caller.callServerEndpoint<Map<String, List<_i18.PublicDocument>>>(
+  _i2.Future<Map<String, List<_i19.PublicDocument>>> getAllContents() =>
+      caller.callServerEndpoint<Map<String, List<_i19.PublicDocument>>>(
         'publicContent',
         'getAllContents',
         {},
       );
 
   /// Returns the default published document for each document type.
-  _i2.Future<Map<String, _i18.PublicDocument>> getDefaultContents() =>
-      caller.callServerEndpoint<Map<String, _i18.PublicDocument>>(
+  _i2.Future<Map<String, _i19.PublicDocument>> getDefaultContents() =>
+      caller.callServerEndpoint<Map<String, _i19.PublicDocument>>(
         'publicContent',
         'getDefaultContents',
         {},
       );
 
   /// Returns all published documents of a specific type.
-  _i2.Future<List<_i18.PublicDocument>> getContentsByType(
+  _i2.Future<List<_i19.PublicDocument>> getContentsByType(
     String documentType,
-  ) => caller.callServerEndpoint<List<_i18.PublicDocument>>(
+  ) => caller.callServerEndpoint<List<_i19.PublicDocument>>(
     'publicContent',
     'getContentsByType',
     {'documentType': documentType},
   );
 
   /// Returns the default published document for a specific type.
-  _i2.Future<_i18.PublicDocument> getDefaultContent(String documentType) =>
-      caller.callServerEndpoint<_i18.PublicDocument>(
+  _i2.Future<_i19.PublicDocument> getDefaultContent(String documentType) =>
+      caller.callServerEndpoint<_i19.PublicDocument>(
         'publicContent',
         'getDefaultContent',
         {'documentType': documentType},
       );
 
   /// Returns a single published document by type and slug.
-  _i2.Future<_i18.PublicDocument> getContentBySlug(
+  _i2.Future<_i19.PublicDocument> getContentBySlug(
     String documentType,
     String slug,
-  ) => caller.callServerEndpoint<_i18.PublicDocument>(
+  ) => caller.callServerEndpoint<_i19.PublicDocument>(
     'publicContent',
     'getContentBySlug',
     {
@@ -1007,8 +1022,8 @@ class EndpointUser extends _i1.EndpointRef {
   /// Get the current authenticated user.
   /// [clientId] is optional — if omitted, falls back to session.clientId.
   /// The _manage app passes clientId explicitly; consumer apps rely on API key in Authorization header.
-  _i2.Future<_i19.User?> getCurrentUser({int? clientId}) =>
-      caller.callServerEndpoint<_i19.User?>(
+  _i2.Future<_i20.User?> getCurrentUser({int? clientId}) =>
+      caller.callServerEndpoint<_i20.User?>(
         'user',
         'getCurrentUser',
         {'clientId': clientId},
@@ -1054,7 +1069,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i20.Protocol(),
+         _i21.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
