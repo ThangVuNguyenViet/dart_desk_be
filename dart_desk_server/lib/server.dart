@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dart_desk_server/src/web/routes/root.dart';
+import 'package:mailer/mailer.dart' as mailer;
+import 'package:mailer/smtp_server.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     hide Protocol, Endpoints;
@@ -155,6 +157,13 @@ void _sendRegistrationCode(
 }) {
   session.log('[EmailIdp] Registration code ($email): $verificationCode');
   stdout.writeln('[EmailIdp] Registration code ($email): $verificationCode');
+  _sendSmtpEmail(
+    session: session,
+    to: email,
+    subject: 'Your Dart Desk verification code',
+    text: 'Your verification code is: $verificationCode',
+    html: '<p>Your Dart Desk verification code is: <strong>$verificationCode</strong></p>',
+  );
 }
 
 void _sendPasswordResetCode(
@@ -165,4 +174,55 @@ void _sendPasswordResetCode(
   required Transaction? transaction,
 }) {
   session.log('[EmailIdp] Password reset code ($email): $verificationCode');
+  stdout.writeln('[EmailIdp] Password reset code ($email): $verificationCode');
+  _sendSmtpEmail(
+    session: session,
+    to: email,
+    subject: 'Your Dart Desk password reset code',
+    text: 'Your password reset code is: $verificationCode',
+    html: '<p>Your Dart Desk password reset code is: <strong>$verificationCode</strong></p>',
+  );
+}
+
+Future<void> _sendSmtpEmail({
+  required Session session,
+  required String to,
+  required String subject,
+  required String text,
+  required String html,
+}) async {
+  final pod = Serverpod.instance;
+  final smtpHost = pod.getPassword('smtpHost');
+  if (smtpHost == null || smtpHost.isEmpty) {
+    session.log('[EmailIdp] smtpHost not configured — skipping SMTP send');
+    return;
+  }
+
+  final smtpPort = int.tryParse(pod.getPassword('smtpPort') ?? '587') ?? 587;
+  final smtpUsername = pod.getPassword('smtpUsername') ?? '';
+  final smtpPassword = pod.getPassword('smtpPassword') ?? '';
+  final fromAddress = pod.getPassword('emailFromAddress') ?? smtpUsername;
+  final fromName = pod.getPassword('emailFromName') ?? 'Dart Desk';
+
+  final smtpServer = SmtpServer(
+    smtpHost,
+    port: smtpPort,
+    username: smtpUsername,
+    password: smtpPassword,
+  );
+
+  final message = mailer.Message()
+    ..from = mailer.Address(fromAddress, fromName)
+    ..recipients.add(to)
+    ..subject = subject
+    ..text = text
+    ..html = html;
+
+  try {
+    await mailer.send(message, smtpServer);
+    session.log('[EmailIdp] Email sent to $to');
+  } catch (e) {
+    session.log('[EmailIdp] Failed to send email to $to: $e', level: LogLevel.error);
+    stderr.writeln('[EmailIdp] Failed to send email to $to: $e');
+  }
 }
