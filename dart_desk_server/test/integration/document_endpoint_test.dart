@@ -304,5 +304,88 @@ void main() {
         expect(slug, isNot(equals('duplicate')));
       });
     });
+
+    // ============================================================
+    // setDefaultDocument
+    // ============================================================
+    group('setDefaultDocument', () {
+      test('swaps isDefault from current default to new document', () async {
+        final docA = await factory.createTestDocument(
+          documentType: 'article',
+          title: 'Doc A',
+          isDefault: true,
+        );
+        final docB = await factory.createTestDocument(
+          documentType: 'article',
+          title: 'Doc B',
+        );
+
+        final authed = factory.authenticatedSession();
+        final result = await endpoints.document.setDefaultDocument(
+          authed,
+          'article',
+          docB.id!,
+        );
+
+        expect(result.id, docB.id);
+        expect(result.isDefault, isTrue);
+
+        final fetchedA = await endpoints.document.getDocument(
+          sessionBuilder,
+          docA.id!,
+        );
+        expect(fetchedA?.isDefault, isFalse);
+      });
+
+      test('returns the updated document with isDefault true', () async {
+        final doc = await factory.createTestDocument(
+          documentType: 'article',
+          title: 'Target',
+        );
+
+        final authed = factory.authenticatedSession();
+        final result = await endpoints.document.setDefaultDocument(
+          authed,
+          'article',
+          doc.id!,
+        );
+
+        expect(result.id, doc.id);
+        expect(result.isDefault, isTrue);
+      });
+
+      test('does not affect documents of other types', () async {
+        final blog = await factory.createTestDocument(
+          documentType: 'blog',
+          title: 'Blog Default',
+          isDefault: true,
+        );
+        final article = await factory.createTestDocument(
+          documentType: 'article',
+          title: 'Article',
+        );
+
+        final authed = factory.authenticatedSession();
+        await endpoints.document.setDefaultDocument(
+          authed,
+          'article',
+          article.id!,
+        );
+
+        final fetchedBlog = await endpoints.document.getDocument(
+          sessionBuilder,
+          blog.id!,
+        );
+        expect(fetchedBlog?.isDefault, isTrue);
+      });
+
+      test('throws for unknown documentId', () async {
+        final authed = factory.authenticatedSession();
+        expect(
+          () => endpoints.document.setDefaultDocument(authed, 'article', 999999),
+          throwsA(anything),
+        );
+      });
+    });
   });
 }

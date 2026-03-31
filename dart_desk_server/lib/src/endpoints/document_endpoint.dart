@@ -234,6 +234,50 @@ class DocumentEndpoint extends Endpoint {
     return updated;
   }
 
+  /// Atomically unsets the current default for [documentTypeSlug] in this
+  /// project and sets [documentId] as the new default. Returns the updated
+  /// document.
+  Future<Document> setDefaultDocument(
+    Session session,
+    String documentTypeSlug,
+    int documentId,
+  ) async {
+    final auth = await _requireUser(session);
+
+    final doc = await Document.db.findById(session, documentId);
+    if (doc == null) {
+      throw Exception('Document not found: $documentId');
+    }
+    if (doc.projectId != auth.projectId) {
+      throw Exception('Access denied: document belongs to a different project');
+    }
+
+    // Find the current default for this type (may be null or already this doc)
+    final currentDefault = await Document.db.findFirstRow(
+      session,
+      where: (t) =>
+          t.documentType.equals(documentTypeSlug) &
+          t.projectId.equals(doc.projectId) &
+          t.isDefault.equals(true),
+    );
+
+    return await session.db.transaction<Document>((transaction) async {
+      // Unset old default (skip if it's already the target document)
+      if (currentDefault != null && currentDefault.id != documentId) {
+        await Document.db.updateRow(
+          session,
+          currentDefault.copyWith(isDefault: false),
+          transaction: transaction,
+        );
+      }
+
+      // Set new default
+      final updated = doc.copyWith(isDefault: true);
+      await Document.db.updateRow(session, updated, transaction: transaction);
+      return updated;
+    });
+  }
+
   /// Delete a document
   Future<bool> deleteDocument(
     Session session,
