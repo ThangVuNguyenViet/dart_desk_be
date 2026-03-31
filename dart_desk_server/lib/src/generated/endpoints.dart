@@ -722,6 +722,31 @@ class Endpoints extends _i1.EndpointDispatch {
                     isDefault: params['isDefault'],
                   ),
         ),
+        'setDefaultDocument': _i1.MethodConnector(
+          name: 'setDefaultDocument',
+          params: {
+            'documentTypeSlug': _i1.ParameterDescription(
+              name: 'documentTypeSlug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'documentId': _i1.ParameterDescription(
+              name: 'documentId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['document'] as _i5.DocumentEndpoint)
+                  .setDefaultDocument(
+                    session,
+                    params['documentTypeSlug'],
+                    params['documentId'],
+                  ),
+        ),
         'deleteDocument': _i1.MethodConnector(
           name: 'deleteDocument',
           params: {

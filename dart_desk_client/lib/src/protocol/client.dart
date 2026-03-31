@@ -351,6 +351,21 @@ class EndpointDocument extends _i1.EndpointRef {
     },
   );
 
+  /// Atomically unsets the current default for [documentTypeSlug] in this
+  /// project and sets [documentId] as the new default. Returns the updated
+  /// document.
+  _i2.Future<_i7.Document> setDefaultDocument(
+    String documentTypeSlug,
+    int documentId,
+  ) => caller.callServerEndpoint<_i7.Document>(
+    'document',
+    'setDefaultDocument',
+    {
+      'documentTypeSlug': documentTypeSlug,
+      'documentId': documentId,
+    },
+  );
+
   /// Delete a document
   _i2.Future<bool> deleteDocument(int documentId) =>
       caller.callServerEndpoint<bool>(

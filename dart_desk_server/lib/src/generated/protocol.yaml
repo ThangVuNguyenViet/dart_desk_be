@@ -24,6 +24,7 @@ document:
   - createDocument:
   - updateDocumentData:
   - updateDocument:
+  - setDefaultDocument:
   - deleteDocument:
   - suggestSlug:
   - getDocumentTypes:
