@@ -32,10 +32,9 @@ class DartDeskAuthKeyProvider implements ClientAuthKeyProvider {
     final innerValue = await inner?.authHeaderValue;
     // format: <authToken>:<apiKey>
     // Serverpod prepends "Bearer " to this value in the final HTTP header.
-    if (innerValue != null) {
+    if (innerValue != null && innerValue != 'null') {
       return '$innerValue:$apiKey';
     }
-    // If no auth token, send 'null' as placeholder for authToken
-    return 'null:$apiKey';
+    return '$apiKey';
   }
 }

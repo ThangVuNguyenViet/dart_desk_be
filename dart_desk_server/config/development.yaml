@@ -44,6 +44,8 @@ redis:
   #user: # defaults to empty
   #requireSsl: true # defaults to false
 
+validateHeaders: false
+
 maxRequestSize: 104857600 # The maximum size of requests allowed in bytes (100MB for deployment uploads)
 
 # Storage configuration for file uploads
