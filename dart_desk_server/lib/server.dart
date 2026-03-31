@@ -82,14 +82,15 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   final defaultHandler = pod.authenticationHandler;
   pod.authenticationHandler = (session, token) async {
     final parts = token.split(':');
-    final authToken = parts[0];
-    final apiKey = parts.length > 1 ? parts[1] : null;
+    final hasCompound = parts.length > 1;
+    final authToken = hasCompound ? parts[0] : null;
+    final apiKey = hasCompound ? parts[1] : parts[0];
 
     final scopes = <Scope>{};
     String? userIdentifier;
     String? authId;
 
-    if (authToken.isNotEmpty && authToken != 'null') {
+    if (authToken != null && authToken.isNotEmpty && authToken != 'null') {
       try {
         final authInfo = await defaultHandler?.call(session, authToken);
         if (authInfo != null) {
