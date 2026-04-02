@@ -99,8 +99,8 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
 
     final parts = token.split(':');
     final hasCompound = parts.length > 1;
-    final authToken = hasCompound ? parts[0] : null;
-    final apiKey = hasCompound ? parts[1] : parts[0];
+    final authToken = hasCompound ? parts[0] : token;
+    final apiKey = hasCompound ? parts[1] : null;
 
     final scopes = <Scope>{};
     String? userIdentifier;
@@ -125,7 +125,7 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
       }
     }
 
-    if (apiKey.isNotEmpty && apiKey != 'null') {
+    if (apiKey != null && apiKey.isNotEmpty && apiKey != 'null') {
       final tokenRow = await ApiKeyValidator.validate(session, apiKey);
       if (tokenRow != null) {
         final project = await Project.db.findById(session, tokenRow.projectId);

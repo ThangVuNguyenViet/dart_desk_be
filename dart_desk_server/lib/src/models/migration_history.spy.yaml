@@ -1,0 +1,13 @@
+class: MigrationHistory
+table: migration_history
+fields:
+  projectId: int, relation(parent=projects, onDelete=Cascade)
+  name: String
+  documentType: String
+  appliedAt: DateTime, default=now
+  operationsJson: String  # JSON of the operations applied (for audit)
+  report: String  # JSON of the execution report
+indexes:
+  migration_history_project_name_idx:
+    fields: projectId, name
+    unique: true
