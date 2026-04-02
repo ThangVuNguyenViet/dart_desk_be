@@ -44,7 +44,8 @@ import 'package:dart_desk_server/src/generated/deployment.dart' as _i29;
 import 'package:dart_desk_server/src/generated/document_crdt_operation.dart'
     as _i30;
 import 'package:dart_desk_server/src/generated/media_asset.dart' as _i31;
-import 'package:dart_desk_server/src/generated/public_document.dart' as _i32;
+import 'package:dart_desk_server/src/generated/migration_history.dart' as _i32;
+import 'package:dart_desk_server/src/generated/public_document.dart' as _i33;
 export 'api_token.dart';
 export 'api_token_with_value.dart';
 export 'cms_client.dart';
@@ -2133,26 +2134,32 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List).map((e) => deserialize<_i31.MediaAsset>(e)).toList()
           as T;
     }
-    if (t == Map<String, List<_i32.PublicDocument>>) {
+    if (t == List<_i32.MigrationHistory>) {
+      return (data as List)
+              .map((e) => deserialize<_i32.MigrationHistory>(e))
+              .toList()
+          as T;
+    }
+    if (t == Map<String, List<_i33.PublicDocument>>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<List<_i32.PublicDocument>>(v),
+              deserialize<List<_i33.PublicDocument>>(v),
             ),
           )
           as T;
     }
-    if (t == List<_i32.PublicDocument>) {
+    if (t == List<_i33.PublicDocument>) {
       return (data as List)
-              .map((e) => deserialize<_i32.PublicDocument>(e))
+              .map((e) => deserialize<_i33.PublicDocument>(e))
               .toList()
           as T;
     }
-    if (t == Map<String, _i32.PublicDocument>) {
+    if (t == Map<String, _i33.PublicDocument>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i32.PublicDocument>(v),
+              deserialize<_i33.PublicDocument>(v),
             ),
           )
           as T;

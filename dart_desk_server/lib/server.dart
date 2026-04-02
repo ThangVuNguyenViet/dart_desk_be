@@ -11,6 +11,7 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 
 import 'src/auth/api_key_validator.dart';
+import 'src/auth/compound_token_parser.dart';
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
 import 'src/plugin/dart_desk_plugin.dart';
@@ -97,10 +98,9 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
       );
     }
 
-    final parts = token.split(':');
-    final hasCompound = parts.length > 1;
-    final authToken = hasCompound ? parts[0] : token;
-    final apiKey = hasCompound ? parts[1] : null;
+    final parsed = CompoundTokenParser.parse(token);
+    final authToken = parsed.jwtToken;
+    final apiKey = parsed.apiKey;
 
     final scopes = <Scope>{};
     String? userIdentifier;

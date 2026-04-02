@@ -57,6 +57,9 @@ media:
   - listMediaCount:
   - getMediaUsageCount:
   - updateMediaAsset:
+migration:
+  - runMigration:
+  - listMigrations:
 project:
   - getProjects:
   - getProjectBySlug:
