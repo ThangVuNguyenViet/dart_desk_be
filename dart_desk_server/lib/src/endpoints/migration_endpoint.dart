@@ -80,9 +80,10 @@ class MigrationEndpoint extends Endpoint {
 
       // Persist if not a dry run and the document was modified
       if (!dryRun && result.status == 'modified' && result.newData != null) {
-        await session.crdtService.applyOperations(
+        await session.crdtService.applyMigrationResult(
           session,
           doc.id!,
+          data,
           result.newData!,
           'migration',
         );

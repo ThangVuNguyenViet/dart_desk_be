@@ -122,6 +122,80 @@ class DocumentCrdtService {
     return updated;
   }
 
+  /// Apply a migration result to a document.
+  ///
+  /// Compares [oldData] with [newData] to emit CRDT delete operations for
+  /// any top-level keys present in [oldData] but absent in [newData], in
+  /// addition to put operations for new/changed values.
+  Future<Document> applyMigrationResult(
+    Session session,
+    int documentId,
+    Map<String, dynamic> oldData,
+    Map<String, dynamic> newData,
+    String sessionId, {
+    int? cmsUserId,
+  }) async {
+    final doc = await Document.db.findById(session, documentId);
+    if (doc == null) {
+      throw Exception('Document not found: $documentId');
+    }
+
+    final currentHlc = doc.crdtHlc != null ? Hlc.parse(doc.crdtHlc!) : null;
+    final newHlc =
+        currentHlc != null ? currentHlc.increment() : Hlc.now(nodeId);
+    final hlcString = newHlc.toString();
+    final peerId = '$nodeId:$sessionId';
+
+    // Flatten both states for comparison
+    final flatOld = _flattenMap(oldData);
+    final flatNew = _flattenMap(newData);
+
+    // Emit delete ops for fields removed in new data
+    final removedKeys =
+        flatOld.keys.where((k) => !flatNew.containsKey(k)).toList();
+    for (final key in removedKeys) {
+      final op = DocumentCrdtOperation(
+        documentId: documentId,
+        hlc: hlcString,
+        nodeId: peerId,
+        operationType: CrdtOperationType.delete,
+        fieldPath: key,
+        fieldValue: null,
+        createdAt: DateTime.now(),
+        createdByUserId: cmsUserId,
+      );
+      await DocumentCrdtOperation.db.insertRow(session, op);
+    }
+
+    // Emit put ops for added/changed fields
+    for (final entry in flatNew.entries) {
+      final op = DocumentCrdtOperation(
+        documentId: documentId,
+        hlc: hlcString,
+        nodeId: peerId,
+        operationType: CrdtOperationType.put,
+        fieldPath: entry.key,
+        fieldValue: jsonEncode(entry.value),
+        createdAt: DateTime.now(),
+        createdByUserId: cmsUserId,
+      );
+      await DocumentCrdtOperation.db.insertRow(session, op);
+    }
+
+    // Rebuild current state from all operations
+    final currentState = await getCurrentState(session, documentId);
+
+    final updated = doc.copyWith(
+      data: jsonEncode(currentState),
+      crdtHlc: hlcString,
+      updatedAt: DateTime.now(),
+      updatedByUserId: cmsUserId,
+    );
+    await Document.db.updateRow(session, updated);
+
+    return updated;
+  }
+
   /// Get current merged state from all CRDT operations
   Future<Map<String, dynamic>> getCurrentState(
     Session session,
