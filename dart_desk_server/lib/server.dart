@@ -79,8 +79,24 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   // Override the authentication handler to chain JWT auth + API key auth.
   // initializeAuthServices sets the default JWT handler; we wrap it to also
   // support project API keys passed as "jwtToken:apiKey" compound tokens.
+  final cloudAdminKey = pod.getPassword('cloudAdminKey');
   final defaultHandler = pod.authenticationHandler;
   pod.authenticationHandler = (session, token) async {
+    // Cloud admin: a single privileged key stored in passwords.yaml / env.
+    if (cloudAdminKey != null &&
+        cloudAdminKey.isNotEmpty &&
+        token == cloudAdminKey) {
+      return AuthenticationInfo(
+        'cloud-admin',
+        {
+          Scope('admin'),
+          Scope('project.read'),
+          Scope('project.write'),
+        },
+        authId: 'cloud-admin',
+      );
+    }
+
     final parts = token.split(':');
     final hasCompound = parts.length > 1;
     final authToken = hasCompound ? parts[0] : null;
@@ -109,7 +125,7 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
       }
     }
 
-    if (apiKey != null && apiKey.isNotEmpty && apiKey != 'null') {
+    if (apiKey.isNotEmpty && apiKey != 'null') {
       final tokenRow = await ApiKeyValidator.validate(session, apiKey);
       if (tokenRow != null) {
         final project = await Project.db.findById(session, tokenRow.projectId);
@@ -163,7 +179,8 @@ void _sendRegistrationCode(
     to: email,
     subject: 'Your Dart Desk verification code',
     text: 'Your verification code is: $verificationCode',
-    html: '<p>Your Dart Desk verification code is: <strong>$verificationCode</strong></p>',
+    html:
+        '<p>Your Dart Desk verification code is: <strong>$verificationCode</strong></p>',
   );
 }
 
@@ -181,7 +198,8 @@ void _sendPasswordResetCode(
     to: email,
     subject: 'Your Dart Desk password reset code',
     text: 'Your password reset code is: $verificationCode',
-    html: '<p>Your Dart Desk password reset code is: <strong>$verificationCode</strong></p>',
+    html:
+        '<p>Your Dart Desk password reset code is: <strong>$verificationCode</strong></p>',
   );
 }
 
@@ -223,7 +241,8 @@ Future<void> _sendSmtpEmail({
     await mailer.send(message, smtpServer);
     session.log('[EmailIdp] Email sent to $to');
   } catch (e) {
-    session.log('[EmailIdp] Failed to send email to $to: $e', level: LogLevel.error);
+    session.log('[EmailIdp] Failed to send email to $to: $e',
+        level: LogLevel.error);
     stderr.writeln('[EmailIdp] Failed to send email to $to: $e');
   }
 }
