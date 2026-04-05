@@ -87,7 +87,6 @@ void main() {
       });
 
       test('throws when user role is not admin', () async {
-        final project = await seedProjectAndAdmin();
         final session = sessionBuilder.build();
         await User.db.insertRow(
           session,
@@ -135,15 +134,19 @@ void main() {
     group('getActive', () {
       test('returns null when no active deployment', () async {
         final project = await seedProjectAndAdmin();
-        await seedDeployment(project.id!, version: 1, status: DeploymentStatus.inactive);
-        final result = await endpoints.deployment.getActive(authed(), projectSlug);
+        await seedDeployment(project.id!,
+            version: 1, status: DeploymentStatus.inactive);
+        final result =
+            await endpoints.deployment.getActive(authed(), projectSlug);
         expect(result, isNull);
       });
 
       test('returns the active deployment', () async {
         final project = await seedProjectAndAdmin();
-        final active = await seedDeployment(project.id!, version: 1, status: DeploymentStatus.active);
-        final result = await endpoints.deployment.getActive(authed(), projectSlug);
+        final active = await seedDeployment(project.id!,
+            version: 1, status: DeploymentStatus.active);
+        final result =
+            await endpoints.deployment.getActive(authed(), projectSlug);
         expect(result, isNotNull);
         expect(result!.id, equals(active.id));
         expect(result.status, equals(DeploymentStatus.active));
@@ -154,17 +157,20 @@ void main() {
       test('sets target deployment to active', () async {
         final project = await seedProjectAndAdmin();
         await seedDeployment(project.id!, version: 1);
-        final result = await endpoints.deployment.activate(authed(), projectSlug, 1);
+        final result =
+            await endpoints.deployment.activate(authed(), projectSlug, 1);
         expect(result.status, equals(DeploymentStatus.active));
       });
 
       test('deactivates previously active deployment', () async {
         final project = await seedProjectAndAdmin();
-        final wasActive = await seedDeployment(project.id!, version: 1, status: DeploymentStatus.active);
+        final wasActive = await seedDeployment(project.id!,
+            version: 1, status: DeploymentStatus.active);
         await seedDeployment(project.id!, version: 2);
         await endpoints.deployment.activate(authed(), projectSlug, 2);
         final session = sessionBuilder.build();
-        final nowInactive = await Deployment.db.findById(session, wasActive.id!);
+        final nowInactive =
+            await Deployment.db.findById(session, wasActive.id!);
         expect(nowInactive!.status, equals(DeploymentStatus.inactive));
       });
 
@@ -181,7 +187,8 @@ void main() {
       test('returns true and removes the row', () async {
         final project = await seedProjectAndAdmin();
         await seedDeployment(project.id!, version: 1);
-        final result = await endpoints.deployment.delete(authed(), projectSlug, 1);
+        final result =
+            await endpoints.deployment.delete(authed(), projectSlug, 1);
         expect(result, isTrue);
         final session = sessionBuilder.build();
         final gone = await Deployment.db.findFirstRow(
@@ -193,13 +200,15 @@ void main() {
 
       test('returns false when version does not exist', () async {
         await seedProjectAndAdmin();
-        final result = await endpoints.deployment.delete(authed(), projectSlug, 999);
+        final result =
+            await endpoints.deployment.delete(authed(), projectSlug, 999);
         expect(result, isFalse);
       });
 
       test('throws when attempting to delete active deployment', () async {
         final project = await seedProjectAndAdmin();
-        await seedDeployment(project.id!, version: 1, status: DeploymentStatus.active);
+        await seedDeployment(project.id!,
+            version: 1, status: DeploymentStatus.active);
         await expectLater(
           () => endpoints.deployment.delete(authed(), projectSlug, 1),
           throwsA(isA<Exception>()),
