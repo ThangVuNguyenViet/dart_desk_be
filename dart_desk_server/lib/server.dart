@@ -229,18 +229,23 @@ Future<void> _sendEmail({
   required String text,
   required String html,
 }) async {
+  stdout.writeln('[EmailIdp] _sendEmail called for $to');
   final service = _emailService;
   if (service == null) {
+    stdout.writeln('[EmailIdp] smtpHost not configured — skipping SMTP send');
     session.log('[EmailIdp] smtpHost not configured — skipping SMTP send');
     return;
   }
 
+  stdout.writeln('[EmailIdp] Attempting SMTP send to $to...');
   try {
     await service.send(to: to, subject: subject, text: text, html: html);
+    stdout.writeln('[EmailIdp] Email sent to $to');
     session.log('[EmailIdp] Email sent to $to');
-  } catch (e) {
+  } catch (e, st) {
+    stdout.writeln('[EmailIdp] Failed to send email to $to: $e');
+    stderr.writeln('[EmailIdp] Failed to send email to $to: $e\n$st');
     session.log('[EmailIdp] Failed to send email to $to: $e',
         level: LogLevel.error);
-    stderr.writeln('[EmailIdp] Failed to send email to $to: $e');
   }
 }
