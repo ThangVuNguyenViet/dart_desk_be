@@ -1,8 +1,7 @@
 import 'dart:io';
 
+import 'package:dart_desk_server/src/services/email_service.dart';
 import 'package:dart_desk_server/src/web/routes/root.dart';
-import 'package:mailer/mailer.dart' as mailer;
-import 'package:mailer/smtp_server.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     hide Protocol, Endpoints;
@@ -39,6 +38,9 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
     Protocol(),
     Endpoints(),
   );
+
+  // Initialize email service from SMTP passwords.
+  _emailService = _initEmailService(pod);
 
   // Initialize CRDT service with node ID from passwords.yaml
   final nodeId = pod.getPassword('crdtNodeId') ?? 'postgres-main';
@@ -165,16 +167,33 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   await registry.runStartupHooks(pod);
 }
 
-void _sendRegistrationCode(
+EmailService? _emailService;
+
+EmailService? _initEmailService(Serverpod pod) {
+  final smtpHost = pod.getPassword('smtpHost');
+  if (smtpHost == null || smtpHost.isEmpty) return null;
+
+  return EmailService(SmtpConfig(
+    host: smtpHost,
+    port: int.tryParse(pod.getPassword('smtpPort') ?? '587') ?? 587,
+    username: pod.getPassword('smtpUsername') ?? '',
+    password: pod.getPassword('smtpPassword') ?? '',
+    fromAddress:
+        pod.getPassword('emailFromAddress') ?? pod.getPassword('smtpUsername') ?? '',
+    fromName: pod.getPassword('emailFromName') ?? 'Dart Desk',
+  ));
+}
+
+Future<void> _sendRegistrationCode(
   Session session, {
   required String email,
   required UuidValue accountRequestId,
   required String verificationCode,
   required Transaction? transaction,
-}) {
+}) async {
   session.log('[EmailIdp] Registration code ($email): $verificationCode');
   stdout.writeln('[EmailIdp] Registration code ($email): $verificationCode');
-  _sendSmtpEmail(
+  await _sendEmail(
     session: session,
     to: email,
     subject: 'Your Dart Desk verification code',
@@ -184,16 +203,16 @@ void _sendRegistrationCode(
   );
 }
 
-void _sendPasswordResetCode(
+Future<void> _sendPasswordResetCode(
   Session session, {
   required String email,
   required UuidValue passwordResetRequestId,
   required String verificationCode,
   required Transaction? transaction,
-}) {
+}) async {
   session.log('[EmailIdp] Password reset code ($email): $verificationCode');
   stdout.writeln('[EmailIdp] Password reset code ($email): $verificationCode');
-  _sendSmtpEmail(
+  await _sendEmail(
     session: session,
     to: email,
     subject: 'Your Dart Desk password reset code',
@@ -203,42 +222,21 @@ void _sendPasswordResetCode(
   );
 }
 
-Future<void> _sendSmtpEmail({
+Future<void> _sendEmail({
   required Session session,
   required String to,
   required String subject,
   required String text,
   required String html,
 }) async {
-  final pod = Serverpod.instance;
-  final smtpHost = pod.getPassword('smtpHost');
-  if (smtpHost == null || smtpHost.isEmpty) {
+  final service = _emailService;
+  if (service == null) {
     session.log('[EmailIdp] smtpHost not configured — skipping SMTP send');
     return;
   }
 
-  final smtpPort = int.tryParse(pod.getPassword('smtpPort') ?? '587') ?? 587;
-  final smtpUsername = pod.getPassword('smtpUsername') ?? '';
-  final smtpPassword = pod.getPassword('smtpPassword') ?? '';
-  final fromAddress = pod.getPassword('emailFromAddress') ?? smtpUsername;
-  final fromName = pod.getPassword('emailFromName') ?? 'Dart Desk';
-
-  final smtpServer = SmtpServer(
-    smtpHost,
-    port: smtpPort,
-    username: smtpUsername,
-    password: smtpPassword,
-  );
-
-  final message = mailer.Message()
-    ..from = mailer.Address(fromAddress, fromName)
-    ..recipients.add(to)
-    ..subject = subject
-    ..text = text
-    ..html = html;
-
   try {
-    await mailer.send(message, smtpServer);
+    await service.send(to: to, subject: subject, text: text, html: html);
     session.log('[EmailIdp] Email sent to $to');
   } catch (e) {
     session.log('[EmailIdp] Failed to send email to $to: $e',
