@@ -167,6 +167,12 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   await registry.runStartupHooks(pod);
 }
 
+void _debugLog(String message) {
+  final line = '${DateTime.now().toUtc().toIso8601String()} [EmailIdp] $message';
+  File('/home/ec2-user/email_debug.log')
+      .writeAsStringSync('$line\n', mode: FileMode.append, flush: true);
+}
+
 EmailService? _emailService;
 
 EmailService? _initEmailService(Serverpod pod) {
@@ -192,15 +198,21 @@ Future<void> _sendRegistrationCode(
   required Transaction? transaction,
 }) async {
   session.log('[EmailIdp] Registration code ($email): $verificationCode');
-  stdout.writeln('[EmailIdp] Registration code ($email): $verificationCode');
-  await _sendEmail(
-    session: session,
-    to: email,
-    subject: 'Your Dart Desk verification code',
-    text: 'Your verification code is: $verificationCode',
-    html:
-        '<p>Your Dart Desk verification code is: <strong>$verificationCode</strong></p>',
-  );
+  _debugLog('Registration code ($email): $verificationCode');
+  try {
+    await _sendEmail(
+      session: session,
+      to: email,
+      subject: 'Your Dart Desk verification code',
+      text: 'Your verification code is: $verificationCode',
+      html:
+          '<p>Your Dart Desk verification code is: <strong>$verificationCode</strong></p>',
+    );
+    _debugLog('_sendEmail completed for $email');
+  } catch (e, st) {
+    _debugLog('_sendEmail threw for $email: $e\n$st');
+    rethrow;
+  }
 }
 
 Future<void> _sendPasswordResetCode(
@@ -229,21 +241,21 @@ Future<void> _sendEmail({
   required String text,
   required String html,
 }) async {
-  stdout.writeln('[EmailIdp] _sendEmail called for $to');
+  _debugLog('_sendEmail called for $to');
   final service = _emailService;
   if (service == null) {
-    stdout.writeln('[EmailIdp] smtpHost not configured — skipping SMTP send');
+    _debugLog('smtpHost not configured — skipping SMTP send');
     session.log('[EmailIdp] smtpHost not configured — skipping SMTP send');
     return;
   }
 
-  stdout.writeln('[EmailIdp] Attempting SMTP send to $to...');
+  _debugLog('Attempting SMTP send to $to (host: ${service.config.host}:${service.config.port})');
   try {
     await service.send(to: to, subject: subject, text: text, html: html);
-    stdout.writeln('[EmailIdp] Email sent to $to');
+    _debugLog('Email sent to $to');
     session.log('[EmailIdp] Email sent to $to');
   } catch (e, st) {
-    stdout.writeln('[EmailIdp] Failed to send email to $to: $e');
+    _debugLog('Failed to send email to $to: $e\n$st');
     stderr.writeln('[EmailIdp] Failed to send email to $to: $e\n$st');
     session.log('[EmailIdp] Failed to send email to $to: $e',
         level: LogLevel.error);
