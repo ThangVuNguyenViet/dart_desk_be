@@ -169,8 +169,13 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
 
 void _debugLog(String message) {
   final line = '${DateTime.now().toUtc().toIso8601String()} [EmailIdp] $message';
-  File('/home/ec2-user/email_debug.log')
-      .writeAsStringSync('$line\n', mode: FileMode.append, flush: true);
+  stdout.writeln(line);
+  try {
+    File('/tmp/dart_desk_email_debug.log')
+        .writeAsStringSync('$line\n', mode: FileMode.append, flush: true);
+  } catch (_) {
+    // Ignore file write errors — stdout already has the message.
+  }
 }
 
 EmailService? _emailService;
