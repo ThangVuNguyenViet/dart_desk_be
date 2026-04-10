@@ -139,8 +139,8 @@ class DeploymentEndpoint extends Endpoint {
     if (user == null) {
       throw ApiException(message: 'User does not belong to project $projectSlug', code: 403);
     }
-    if (user.role != 'admin') {
-      throw ApiException(message: 'Admin role required', code: 403);
+    if (user.role != ClientRole.admin && user.role != ClientRole.owner) {
+      throw ApiException(message: 'Admin access required', code: 403);
     }
     return user;
   }
