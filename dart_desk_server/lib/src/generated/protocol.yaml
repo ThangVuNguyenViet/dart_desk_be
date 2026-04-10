@@ -57,6 +57,11 @@ media:
   - listMediaCount:
   - getMediaUsageCount:
   - updateMediaAsset:
+member:
+  - listMembers:
+  - inviteMember:
+  - updateMemberRole:
+  - removeMember:
 migration:
   - runMigration:
   - listMigrations:

@@ -30,13 +30,14 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i13;
 import 'package:dart_desk_client/src/protocol/media_asset.dart' as _i14;
 import 'dart:typed_data' as _i15;
-import 'package:dart_desk_client/src/protocol/migration_history.dart' as _i16;
-import 'package:dart_desk_client/src/protocol/project_list.dart' as _i17;
-import 'package:dart_desk_client/src/protocol/project.dart' as _i18;
-import 'package:dart_desk_client/src/protocol/cms_client.dart' as _i19;
-import 'package:dart_desk_client/src/protocol/public_document.dart' as _i20;
-import 'package:dart_desk_client/src/protocol/user.dart' as _i21;
-import 'protocol.dart' as _i22;
+import 'package:dart_desk_client/src/protocol/user.dart' as _i16;
+import 'package:dart_desk_client/src/protocol/client_role.dart' as _i17;
+import 'package:dart_desk_client/src/protocol/migration_history.dart' as _i18;
+import 'package:dart_desk_client/src/protocol/project_list.dart' as _i19;
+import 'package:dart_desk_client/src/protocol/project.dart' as _i20;
+import 'package:dart_desk_client/src/protocol/cms_client.dart' as _i21;
+import 'package:dart_desk_client/src/protocol/public_document.dart' as _i22;
+import 'protocol.dart' as _i23;
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
@@ -813,6 +814,61 @@ class EndpointMedia extends _i1.EndpointRef {
   );
 }
 
+/// {@category Endpoint}
+class EndpointMember extends _i1.EndpointRef {
+  EndpointMember(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'member';
+
+  _i2.Future<List<_i16.User>> listMembers({required int clientId}) =>
+      caller.callServerEndpoint<List<_i16.User>>(
+        'member',
+        'listMembers',
+        {'clientId': clientId},
+      );
+
+  _i2.Future<_i16.User> inviteMember({
+    required int clientId,
+    required String email,
+    required _i17.ClientRole role,
+  }) => caller.callServerEndpoint<_i16.User>(
+    'member',
+    'inviteMember',
+    {
+      'clientId': clientId,
+      'email': email,
+      'role': role,
+    },
+  );
+
+  _i2.Future<_i16.User> updateMemberRole({
+    required int clientId,
+    required int userId,
+    required _i17.ClientRole role,
+  }) => caller.callServerEndpoint<_i16.User>(
+    'member',
+    'updateMemberRole',
+    {
+      'clientId': clientId,
+      'userId': userId,
+      'role': role,
+    },
+  );
+
+  _i2.Future<void> removeMember({
+    required int clientId,
+    required int userId,
+  }) => caller.callServerEndpoint<void>(
+    'member',
+    'removeMember',
+    {
+      'clientId': clientId,
+      'userId': userId,
+    },
+  );
+}
+
 /// Endpoint for running and listing data migrations.
 /// Both methods require read AND write scopes.
 /// {@category Endpoint}
@@ -847,8 +903,8 @@ class EndpointMigration extends _i1.EndpointRef {
   );
 
   /// Return all [MigrationHistory] records for the current project.
-  _i2.Future<List<_i16.MigrationHistory>> listMigrations() =>
-      caller.callServerEndpoint<List<_i16.MigrationHistory>>(
+  _i2.Future<List<_i18.MigrationHistory>> listMigrations() =>
+      caller.callServerEndpoint<List<_i18.MigrationHistory>>(
         'migration',
         'listMigrations',
         {},
@@ -864,11 +920,11 @@ class EndpointProject extends _i1.EndpointRef {
   String get name => 'project';
 
   /// Get all projects with pagination and optional search.
-  _i2.Future<_i17.ProjectList> getProjects({
+  _i2.Future<_i19.ProjectList> getProjects({
     String? search,
     required int limit,
     required int offset,
-  }) => caller.callServerEndpoint<_i17.ProjectList>(
+  }) => caller.callServerEndpoint<_i19.ProjectList>(
     'project',
     'getProjects',
     {
@@ -879,28 +935,28 @@ class EndpointProject extends _i1.EndpointRef {
   );
 
   /// Get a project by slug.
-  _i2.Future<_i18.Project?> getProjectBySlug(String slug) =>
-      caller.callServerEndpoint<_i18.Project?>(
+  _i2.Future<_i20.Project?> getProjectBySlug(String slug) =>
+      caller.callServerEndpoint<_i20.Project?>(
         'project',
         'getProjectBySlug',
         {'slug': slug},
       );
 
   /// Get a project by ID.
-  _i2.Future<_i18.Project?> getProject(int projectId) =>
-      caller.callServerEndpoint<_i18.Project?>(
+  _i2.Future<_i20.Project?> getProject(int projectId) =>
+      caller.callServerEndpoint<_i20.Project?>(
         'project',
         'getProject',
         {'projectId': projectId},
       );
 
   /// Create a new project (requires authentication).
-  _i2.Future<_i18.Project> createProject(
+  _i2.Future<_i20.Project> createProject(
     String name,
     String slug, {
     String? description,
     String? settings,
-  }) => caller.callServerEndpoint<_i18.Project>(
+  }) => caller.callServerEndpoint<_i20.Project>(
     'project',
     'createProject',
     {
@@ -912,13 +968,13 @@ class EndpointProject extends _i1.EndpointRef {
   );
 
   /// Update an existing project (requires authentication).
-  _i2.Future<_i18.Project?> updateProject(
+  _i2.Future<_i20.Project?> updateProject(
     int projectId, {
     String? name,
     String? description,
     bool? isActive,
     String? settings,
-  }) => caller.callServerEndpoint<_i18.Project?>(
+  }) => caller.callServerEndpoint<_i20.Project?>(
     'project',
     'updateProject',
     {
@@ -940,10 +996,10 @@ class EndpointProject extends _i1.EndpointRef {
 
   /// Create a new CmsClient (workspace) and an admin User for the caller in one transaction.
   /// Used by the manage app's setup wizard for first-time users.
-  _i2.Future<_i19.CmsClient> createClientWithOwner({
+  _i2.Future<_i21.CmsClient> createClientWithOwner({
     required String clientName,
     required String clientSlug,
-  }) => caller.callServerEndpoint<_i19.CmsClient>(
+  }) => caller.callServerEndpoint<_i21.CmsClient>(
     'project',
     'createClientWithOwner',
     {
@@ -964,43 +1020,43 @@ class EndpointPublicContent extends _i1.EndpointRef {
   String get name => 'publicContent';
 
   /// Returns all published documents grouped by document type.
-  _i2.Future<Map<String, List<_i20.PublicDocument>>> getAllContents() =>
-      caller.callServerEndpoint<Map<String, List<_i20.PublicDocument>>>(
+  _i2.Future<Map<String, List<_i22.PublicDocument>>> getAllContents() =>
+      caller.callServerEndpoint<Map<String, List<_i22.PublicDocument>>>(
         'publicContent',
         'getAllContents',
         {},
       );
 
   /// Returns the default published document for each document type.
-  _i2.Future<Map<String, _i20.PublicDocument>> getDefaultContents() =>
-      caller.callServerEndpoint<Map<String, _i20.PublicDocument>>(
+  _i2.Future<Map<String, _i22.PublicDocument>> getDefaultContents() =>
+      caller.callServerEndpoint<Map<String, _i22.PublicDocument>>(
         'publicContent',
         'getDefaultContents',
         {},
       );
 
   /// Returns all published documents of a specific type.
-  _i2.Future<List<_i20.PublicDocument>> getContentsByType(
+  _i2.Future<List<_i22.PublicDocument>> getContentsByType(
     String documentType,
-  ) => caller.callServerEndpoint<List<_i20.PublicDocument>>(
+  ) => caller.callServerEndpoint<List<_i22.PublicDocument>>(
     'publicContent',
     'getContentsByType',
     {'documentType': documentType},
   );
 
   /// Returns the default published document for a specific type.
-  _i2.Future<_i20.PublicDocument> getDefaultContent(String documentType) =>
-      caller.callServerEndpoint<_i20.PublicDocument>(
+  _i2.Future<_i22.PublicDocument> getDefaultContent(String documentType) =>
+      caller.callServerEndpoint<_i22.PublicDocument>(
         'publicContent',
         'getDefaultContent',
         {'documentType': documentType},
       );
 
   /// Returns a single published document by type and slug.
-  _i2.Future<_i20.PublicDocument> getContentBySlug(
+  _i2.Future<_i22.PublicDocument> getContentBySlug(
     String documentType,
     String slug,
-  ) => caller.callServerEndpoint<_i20.PublicDocument>(
+  ) => caller.callServerEndpoint<_i22.PublicDocument>(
     'publicContent',
     'getContentBySlug',
     {
@@ -1076,8 +1132,8 @@ class EndpointUser extends _i1.EndpointRef {
   /// Get the current authenticated user.
   /// [clientId] is optional — if omitted, falls back to session.clientId.
   /// The _manage app passes clientId explicitly; consumer apps rely on API key in Authorization header.
-  _i2.Future<_i21.User?> getCurrentUser({int? clientId}) =>
-      caller.callServerEndpoint<_i21.User?>(
+  _i2.Future<_i16.User?> getCurrentUser({int? clientId}) =>
+      caller.callServerEndpoint<_i16.User?>(
         'user',
         'getCurrentUser',
         {'clientId': clientId},
@@ -1123,7 +1179,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i22.Protocol(),
+         _i23.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -1139,6 +1195,7 @@ class Client extends _i1.ServerpodClientShared {
     emailIdp = EndpointEmailIdp(this);
     googleIdp = EndpointGoogleIdp(this);
     media = EndpointMedia(this);
+    member = EndpointMember(this);
     migration = EndpointMigration(this);
     project = EndpointProject(this);
     publicContent = EndpointPublicContent(this);
@@ -1161,6 +1218,8 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointGoogleIdp googleIdp;
 
   late final EndpointMedia media;
+
+  late final EndpointMember member;
 
   late final EndpointMigration migration;
 
@@ -1185,6 +1244,7 @@ class Client extends _i1.ServerpodClientShared {
     'emailIdp': emailIdp,
     'googleIdp': googleIdp,
     'media': media,
+    'member': member,
     'migration': migration,
     'project': project,
     'publicContent': publicContent,
