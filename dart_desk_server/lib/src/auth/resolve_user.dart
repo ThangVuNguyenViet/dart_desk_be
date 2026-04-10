@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../generated/api_exception.dart';
 import '../generated/protocol.dart';
 
 /// Find the [User] record for the currently authenticated session.
@@ -10,7 +11,7 @@ import '../generated/protocol.dart';
 Future<User> resolveUser(Session session, {int? clientId}) async {
   final auth = session.authenticated;
   if (auth == null) {
-    throw Exception('User must be authenticated');
+    throw ApiException(message: 'User must be authenticated', code: 401);
   }
   final serverpodUserId = auth.userIdentifier;
 
@@ -26,7 +27,7 @@ Future<User> resolveUser(Session session, {int? clientId}) async {
   );
 
   if (user == null) {
-    throw Exception('No user record found for this account');
+    throw ApiException(message: 'No user record found for this account. Please create a client first.', code: 404);
   }
 
   return user;
