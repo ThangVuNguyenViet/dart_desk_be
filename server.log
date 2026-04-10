@@ -1,16 +1,1 @@
-SERVERPOD version: 3.4.4, dart: 3.11.1 (stable) (Tue Feb 24 00:03:07 2026 -0800) on "macos_arm64", time: 2026-03-23 07:33:06.573385Z
-runMode: development
-serverId: default
-role: monolith
-loggingMode: normal
-applyMigrations: true
-applyRepairMigration: false
-SERVERPOD initialized, time: 2026-03-23 07:33:06.663755Z
-Latest database migration already applied.
-2026-03-23 07:33:07.393263Z WebServer  INFO: Webserver listening on http://localhost:8082
-TIME                        ID         TYPE           CONTEXT                  DETAILS
---------------------------- ---------- -------------- ------------------------ ------------------------------
-2026-03-23 07:33:07.735904Z  577217239 INTERNAL       n/a                      queries=7, duration=318ms
-SIGTERM (15) received, time: 2026-03-23 15:55:33.860253Z
-SERVERPOD initiating shutdown, time: 2026-03-23 15:55:33.875132Z
-SERVERPOD shutdown completed, time: 2026-03-23 15:55:34.029505Z
+Error when reading 'bin/main.dart': No such file or directory.
