@@ -30,11 +30,12 @@ class DartDeskAuthKeyProvider implements ClientAuthKeyProvider {
   @override
   Future<String?> get authHeaderValue async {
     final innerValue = await inner?.authHeaderValue;
-    // format: <authToken>:<apiKey>
-    // Serverpod prepends "Bearer " to this value in the final HTTP header.
+    // The inner provider (FlutterAuthSessionManager) already returns
+    // "Bearer <jwt>". We append ":<apiKey>" to form a compound value.
+    // Before login, inner is null so we send "Bearer <apiKey>".
     if (innerValue != null && innerValue != 'null') {
       return '$innerValue:$apiKey';
     }
-    return '$apiKey';
+    return 'Bearer $apiKey';
   }
 }

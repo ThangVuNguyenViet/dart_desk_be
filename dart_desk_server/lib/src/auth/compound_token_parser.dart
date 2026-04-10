@@ -13,12 +13,14 @@ class CompoundTokenParser {
   /// Parse a raw authorization token into its JWT and API key components.
   ///
   /// When the token contains a `:` separator, the left side is the JWT and
-  /// the right side is the API key. A plain token (no `:`) is treated as a
-  /// JWT — never as an API key.
+  /// the right side is the API key. A plain token (no `:`) starting with
+  /// `cms_` is treated as an API key; otherwise it's treated as a JWT.
   static CompoundTokenParser parse(String token) {
     final colonIndex = token.indexOf(':');
     if (colonIndex == -1) {
-      // Plain token → JWT only
+      if (token.startsWith('cms_')) {
+        return CompoundTokenParser._(apiKey: token);
+      }
       return CompoundTokenParser._(jwtToken: token);
     }
 

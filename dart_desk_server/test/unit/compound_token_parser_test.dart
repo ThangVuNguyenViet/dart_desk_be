@@ -29,6 +29,12 @@ void main() {
       expect(result.apiKey, isNull);
     });
 
+    test('plain cms_ prefixed token returns apiKey only', () {
+      final result = CompoundTokenParser.parse('cms_w_abc1234567890');
+      expect(result.jwtToken, isNull);
+      expect(result.apiKey, equals('cms_w_abc1234567890'));
+    });
+
     test('token with multiple colons uses first as separator', () {
       // JWT tokens contain dots not colons, but API keys could theoretically
       // contain colons — only the first colon is the separator.
