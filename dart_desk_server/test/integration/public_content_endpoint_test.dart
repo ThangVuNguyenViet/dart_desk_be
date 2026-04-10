@@ -1,3 +1,4 @@
+import 'package:dart_desk_server/src/generated/api_exception.dart';
 import 'dart:convert';
 
 import 'package:dart_desk_server/src/generated/protocol.dart';
@@ -187,7 +188,7 @@ void main() {
             factory.authenticatedSession(),
             'blog',
           ),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });
@@ -217,7 +218,7 @@ void main() {
             'blog',
             'nonexistent',
           ),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });

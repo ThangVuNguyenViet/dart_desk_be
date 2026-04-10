@@ -1,3 +1,4 @@
+import 'package:dart_desk_server/src/generated/api_exception.dart';
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -174,7 +175,7 @@ void main() {
       test('throws when not authenticated', () async {
         await expectLater(
           () => endpoints.project.createProject(sessionBuilder, 'X', 'x-slug'),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });
@@ -223,7 +224,7 @@ void main() {
         final seeded = await seedProject();
         await expectLater(
           () => endpoints.project.updateProject(sessionBuilder, seeded.id!),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });
@@ -255,7 +256,7 @@ void main() {
         final seeded = await seedProject();
         await expectLater(
           () => endpoints.project.deleteProject(sessionBuilder, seeded.id!),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });

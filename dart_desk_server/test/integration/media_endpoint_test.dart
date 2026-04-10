@@ -1,3 +1,4 @@
+import 'package:dart_desk_server/src/generated/api_exception.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:test/test.dart';
@@ -36,7 +37,7 @@ void main() {
           () => endpoints.media.uploadImage(
             authed, 'bad.xyz', byteData, 1, 1, false, '', 'hash',
           ),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });
@@ -160,7 +161,7 @@ void main() {
             'nonexistent-asset-id',
             fileName: 'nope.png',
           ),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });
@@ -173,7 +174,7 @@ void main() {
           () => endpoints.media.uploadImage(
             authed, 'huge.png', oversized, 1, 1, false, '', 'hash',
           ),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });

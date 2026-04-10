@@ -1,3 +1,4 @@
+import 'package:dart_desk_server/src/generated/api_exception.dart';
 import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';
 import 'helpers/test_data_factory.dart';
@@ -57,7 +58,7 @@ void main() {
             null,
             projectId: TestDataFactory.testProjectId,
           ),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });

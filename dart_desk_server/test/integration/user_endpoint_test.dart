@@ -1,3 +1,4 @@
+import 'package:dart_desk_server/src/generated/api_exception.dart';
 import 'dart:convert';
 
 import 'package:test/test.dart';
@@ -34,7 +35,7 @@ void main() {
 
         expect(
           () => endpoints.user.getCurrentUser(authed, clientId: TestDataFactory.testClientId),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });

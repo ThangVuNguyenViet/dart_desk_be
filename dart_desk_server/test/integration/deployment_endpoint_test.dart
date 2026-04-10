@@ -1,3 +1,4 @@
+import 'package:dart_desk_server/src/generated/api_exception.dart';
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -73,7 +74,7 @@ void main() {
         await seedProjectAndAdmin();
         await expectLater(
           () => endpoints.deployment.list(sessionBuilder, projectSlug),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
 
@@ -82,7 +83,7 @@ void main() {
         final stranger = authed(userIdentifier: 'stranger');
         await expectLater(
           () => endpoints.deployment.list(stranger, projectSlug),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
 
@@ -103,14 +104,14 @@ void main() {
             authed(userIdentifier: 'viewer-user'),
             projectSlug,
           ),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
 
       test('throws when project slug does not exist', () async {
         await expectLater(
           () => endpoints.deployment.list(authed(), 'no-such-project'),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });
@@ -178,7 +179,7 @@ void main() {
         await seedProjectAndAdmin();
         await expectLater(
           () => endpoints.deployment.activate(authed(), projectSlug, 999),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });
@@ -211,7 +212,7 @@ void main() {
             version: 1, status: DeploymentStatus.active);
         await expectLater(
           () => endpoints.deployment.delete(authed(), projectSlug, 1),
-          throwsA(isA<Exception>()),
+          throwsA(isA<ApiException>()),
         );
       });
     });
