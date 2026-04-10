@@ -1,0 +1,38 @@
+name: dart_desk_be
+packages:
+  - dart_desk_server
+  - dart_desk_client
+command:
+  version:
+    message: "chore(release): publish packages"
+    includeCommitId: true
+    workspaceChangelog: false
+    changelogs:
+      - path: CHANGELOG.md
+        packageFilters:
+          scope: '*'
+  publish:
+    hooks:
+      pre: melos run analyze
+scripts:
+  analyze:
+    run: dart analyze --fatal-infos
+    packageFilters:
+      scope:
+        - dart_desk_server
+        - dart_desk_client
+  test:
+    run: dart test
+    packageFilters:
+      dirExists: test
+  generate:
+    run: serverpod generate
+    packageFilters:
+      scope:
+        - dart_desk_server
+  dry-run:
+    run: dart pub publish --dry-run
+    packageFilters:
+      scope:
+        - dart_desk_server
+        - dart_desk_client

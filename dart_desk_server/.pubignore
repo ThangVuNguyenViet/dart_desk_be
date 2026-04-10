@@ -1,6 +1,13 @@
 storage/
 config/passwords.yaml
 config/google_client_secret.json
+config/development.yaml
+config/staging.yaml
+config/production.yaml
+config/test.yaml
+config/test.yaml.bak
+config/e2e.yaml
+docker-compose.yaml
 *.iml
 devtools_options.yaml
 doc/

@@ -32,3 +32,10 @@ deploy/
 
 # Git worktrees
 .worktrees/
+
+# IDE
+.idea/
+*.iml
+
+# Melos
+pubspec.lock

@@ -7,6 +7,8 @@ topics:
   - serverpod
   - headless-cms
 
+resolution: workspace
+
 environment:
   sdk: '>=3.5.0 <4.0.0'
 
