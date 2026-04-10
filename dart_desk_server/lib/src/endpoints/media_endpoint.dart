@@ -50,14 +50,12 @@ class MediaEndpoint extends Endpoint {
     // Validate MIME type
     final mimeType = lookupMimeType(fileName);
     if (mimeType == null || !_allowedImageMimeTypes.contains(mimeType)) {
-      throw Exception(
-        'Invalid image type. Allowed types: ${_allowedImageMimeTypes.join(", ")}',
-      );
+      throw ApiException(message: 'Invalid image type. Allowed types: ${_allowedImageMimeTypes.join(", ")}', code: 400);
     }
 
     // Validate file size
     if (fileData.lengthInBytes > _maxFileSize) {
-      throw Exception('File size exceeds maximum allowed size of 10MB');
+      throw ApiException(message: 'File size exceeds maximum allowed size of 10MB', code: 400);
     }
 
     // Build asset ID for deduplication
@@ -126,7 +124,7 @@ class MediaEndpoint extends Endpoint {
 
     // Validate file size
     if (fileData.lengthInBytes > _maxFileSize) {
-      throw Exception('File size exceeds maximum allowed size of 10MB');
+      throw ApiException(message: 'File size exceeds maximum allowed size of 10MB', code: 400);
     }
 
     // Determine MIME type (allow any for generic files)
@@ -195,9 +193,7 @@ class MediaEndpoint extends Endpoint {
     // Safety check: refuse delete if asset is in use
     final usageCount = await getMediaUsageCount(session, assetId);
     if (usageCount > 0) {
-      throw Exception(
-        'Cannot delete asset "$assetId": it is referenced in $usageCount document(s)',
-      );
+      throw ApiException(message: 'Cannot delete asset "$assetId": it is referenced in $usageCount document(s)', code: 400);
     }
 
     // Find the asset
@@ -294,7 +290,7 @@ class MediaEndpoint extends Endpoint {
       where: (t) => t.assetId.equals(assetId),
     );
     if (asset == null) {
-      throw Exception('Media asset not found: $assetId');
+      throw ApiException(message: 'Media asset not found: $assetId', code: 404);
     }
 
     if (fileName != null) {
@@ -311,7 +307,7 @@ class MediaEndpoint extends Endpoint {
   Future<({User? user, int? clientId, int? projectId})> _authenticateAndResolve(
     Session session,
   ) async {
-    if (!session.canRead) throw Exception('Missing read permission');
+    if (!session.canRead) throw ApiException(message: 'Missing read permission', code: 403);
     final user = await resolveUser(session, clientId: session.clientId);
     return (
       user: user as User?,

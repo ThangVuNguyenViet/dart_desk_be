@@ -54,7 +54,7 @@ class DeploymentEndpoint extends Endpoint {
           t.projectId.equals(project.id!) & t.version.equals(version),
     );
     if (target == null) {
-      throw Exception('Deployment version $version not found');
+      throw ApiException(message: 'Deployment version $version not found', code: 404);
     }
 
     // Deactivate currently active deployment
@@ -100,8 +100,7 @@ class DeploymentEndpoint extends Endpoint {
     if (deployment == null) return false;
 
     if (deployment.status == DeploymentStatus.active) {
-      throw Exception(
-          'Cannot delete the active deployment. Activate another version first.');
+      throw ApiException(message: 'Cannot delete the active deployment. Activate another version first.', code: 400);
     }
 
     await Deployment.db.deleteRow(session, deployment);
@@ -115,7 +114,7 @@ class DeploymentEndpoint extends Endpoint {
       where: (t) => t.slug.equals(slug) & t.isActive.equals(true),
     );
     if (project == null) {
-      throw Exception('Project not found: $slug');
+      throw ApiException(message: 'Project not found: $slug', code: 404);
     }
     return project;
   }
@@ -125,7 +124,7 @@ class DeploymentEndpoint extends Endpoint {
   Future<User> _requireAdminUser(Session session, String projectSlug) async {
     final authInfo = session.authenticated;
     if (authInfo == null) {
-      throw Exception('User must be authenticated');
+      throw ApiException(message: 'User must be authenticated', code: 401);
     }
 
     final project = await _getProject(session, projectSlug);
@@ -138,10 +137,10 @@ class DeploymentEndpoint extends Endpoint {
           t.isActive.equals(true),
     );
     if (user == null) {
-      throw Exception('User does not belong to project $projectSlug');
+      throw ApiException(message: 'User does not belong to project $projectSlug', code: 403);
     }
     if (user.role != 'admin') {
-      throw Exception('Admin role required');
+      throw ApiException(message: 'Admin role required', code: 403);
     }
     return user;
   }

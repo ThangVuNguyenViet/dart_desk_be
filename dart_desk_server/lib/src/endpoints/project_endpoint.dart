@@ -14,7 +14,7 @@ class ProjectEndpoint extends Endpoint {
   }) async {
     final authInfo = session.authenticated;
     if (authInfo == null) {
-      throw Exception('User must be authenticated to list projects');
+      throw ApiException(message: 'User must be authenticated to list projects', code: 401);
     }
 
     final user = await User.db.findFirstRow(
@@ -89,7 +89,7 @@ class ProjectEndpoint extends Endpoint {
   }) async {
     final authInfo = session.authenticated;
     if (authInfo == null) {
-      throw Exception('User must be authenticated to create projects');
+      throw ApiException(message: 'User must be authenticated to create projects', code: 401);
     }
     final member = await resolveUser(session);
 
@@ -119,7 +119,7 @@ class ProjectEndpoint extends Endpoint {
   }) async {
     final authInfo = session.authenticated;
     if (authInfo == null) {
-      throw Exception('User must be authenticated to update projects');
+      throw ApiException(message: 'User must be authenticated to update projects', code: 401);
     }
     final member = await resolveUser(session);
 
@@ -128,7 +128,7 @@ class ProjectEndpoint extends Endpoint {
       return null;
     }
     if (existing.clientId != member.clientId) {
-      throw Exception('Project belongs to a different client');
+      throw ApiException(message: 'Project belongs to a different client', code: 403);
     }
 
     final updated = existing.copyWith(
@@ -150,7 +150,7 @@ class ProjectEndpoint extends Endpoint {
   ) async {
     final authInfo = session.authenticated;
     if (authInfo == null) {
-      throw Exception('User must be authenticated to delete projects');
+      throw ApiException(message: 'User must be authenticated to delete projects', code: 401);
     }
     final member = await resolveUser(session);
 
@@ -159,7 +159,7 @@ class ProjectEndpoint extends Endpoint {
       return false;
     }
     if (existing.clientId != member.clientId) {
-      throw Exception('Project belongs to a different client');
+      throw ApiException(message: 'Project belongs to a different client', code: 403);
     }
 
     await Project.db.deleteRow(session, existing);
@@ -175,7 +175,7 @@ class ProjectEndpoint extends Endpoint {
   }) async {
     final authInfo = session.authenticated;
     if (authInfo == null) {
-      throw Exception('User must be authenticated');
+      throw ApiException(message: 'User must be authenticated', code: 401);
     }
 
     // Guard: caller already has a workspace
@@ -184,18 +184,16 @@ class ProjectEndpoint extends Endpoint {
       where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
     );
     if (existingUser != null) {
-      throw Exception('Account already has a workspace');
+      throw ApiException(message: 'Account already has a workspace', code: 409);
     }
 
     // Validate slug format
     if (!_slugRegex.hasMatch(clientSlug)) {
-      throw Exception(
-        'Invalid slug: must be 3-63 characters, lowercase alphanumeric and hyphens, '
-        'cannot start or end with a hyphen',
-      );
+      throw ApiException(message: 'Invalid slug: must be 3-63 characters, lowercase alphanumeric and hyphens, '
+        'cannot start or end with a hyphen', code: 400);
     }
     if (_reservedSlugs.contains(clientSlug)) {
-      throw Exception('Slug "$clientSlug" is reserved and cannot be used');
+      throw ApiException(message: 'Slug "$clientSlug" is reserved and cannot be used', code: 400);
     }
 
     // Check slug uniqueness in CmsClient table
@@ -204,7 +202,7 @@ class ProjectEndpoint extends Endpoint {
       where: (t) => t.slug.equals(clientSlug),
     );
     if (existing != null) {
-      throw Exception('Slug "$clientSlug" is already taken');
+      throw ApiException(message: 'Slug "$clientSlug" is already taken', code: 409);
     }
 
     // Get user profile for email

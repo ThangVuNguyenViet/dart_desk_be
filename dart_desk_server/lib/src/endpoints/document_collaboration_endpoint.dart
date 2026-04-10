@@ -39,7 +39,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
     String sessionId,
     String fieldUpdatesJson,
   ) async {
-    if (!session.canWrite) throw Exception('Missing write permission');
+    if (!session.canWrite) throw ApiException(message: 'Missing write permission', code: 403);
     final user = await resolveUser(session, clientId: session.clientId);
     final fieldUpdates = jsonDecode(fieldUpdatesJson) as Map<String, dynamic>;
 
@@ -130,7 +130,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
-    if (!session.canWrite) throw Exception('Missing write permission');
+    if (!session.canWrite) throw ApiException(message: 'Missing write permission', code: 403);
     await resolveUser(session, clientId: session.clientId);
 
     await session.crdtService.compactOperations(session, documentId);

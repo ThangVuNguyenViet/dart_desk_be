@@ -131,9 +131,7 @@ class DocumentEndpoint extends Endpoint {
           t.slug.equals(effectiveSlug),
     );
     if (existing != null) {
-      throw Exception(
-        'A document with slug "$effectiveSlug" already exists for type "$documentType".',
-      );
+      throw ApiException(message: 'A document with slug "$effectiveSlug" already exists for type "$documentType".', code: 409);
     }
 
     final created = await Document.db.insertRow(session, document);
@@ -219,7 +217,7 @@ class DocumentEndpoint extends Endpoint {
 
     // Verify the document belongs to the user's client
     if (existing.projectId != auth.projectId) {
-      throw Exception('Access denied: document belongs to a different project');
+      throw ApiException(message: 'Access denied: document belongs to a different project', code: 403);
     }
 
     final updated = existing.copyWith(
@@ -246,10 +244,10 @@ class DocumentEndpoint extends Endpoint {
 
     final doc = await Document.db.findById(session, documentId);
     if (doc == null) {
-      throw Exception('Document not found: $documentId');
+      throw ApiException(message: 'Document not found: $documentId', code: 404);
     }
     if (doc.projectId != auth.projectId) {
-      throw Exception('Access denied: document belongs to a different project');
+      throw ApiException(message: 'Access denied: document belongs to a different project', code: 403);
     }
 
     // Find the current default for this type (may be null or already this doc)
@@ -293,7 +291,7 @@ class DocumentEndpoint extends Endpoint {
 
     // Verify the document belongs to the user's client
     if (existing.projectId != auth.projectId) {
-      throw Exception('Access denied: document belongs to a different project');
+      throw ApiException(message: 'Access denied: document belongs to a different project', code: 403);
     }
 
     await Document.db.deleteRow(session, existing);
@@ -653,7 +651,7 @@ class DocumentEndpoint extends Endpoint {
   Future<int> getDocumentCount(Session session, {required int projectId}) async {
     final project = await Project.db.findById(session, projectId);
     if (project == null) {
-      throw Exception('Project not found');
+      throw ApiException(message: 'Project not found', code: 404);
     }
     await resolveUser(session, clientId: project.clientId);
     return await Document.db.count(
@@ -665,7 +663,7 @@ class DocumentEndpoint extends Endpoint {
   /// Authenticate the current request via scopes.
   Future<AuthResult> _requireAuth(Session session) async {
     if (!session.canRead) {
-      throw Exception('Missing read permission');
+      throw ApiException(message: 'Missing read permission', code: 403);
     }
     return (
       clientId: session.clientId,
@@ -677,7 +675,7 @@ class DocumentEndpoint extends Endpoint {
   /// Authenticate and require a user identity (for write operations).
   Future<AuthResult> _requireUser(Session session) async {
     if (!session.canWrite) {
-      throw Exception('Missing write permission');
+      throw ApiException(message: 'Missing write permission', code: 403);
     }
     final user = await resolveUser(session, clientId: session.clientId);
     return (

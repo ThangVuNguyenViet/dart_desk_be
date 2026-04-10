@@ -85,9 +85,7 @@ class PublicContentEndpoint extends Endpoint {
     );
 
     if (document == null) {
-      throw Exception(
-        'No default published document found for type "$documentType".',
-      );
+      throw ApiException(message: 'No default published document found for type "$documentType".', code: 400);
     }
 
     return _toPublicDocument(session, document);
@@ -111,9 +109,7 @@ class PublicContentEndpoint extends Endpoint {
     );
 
     if (document == null) {
-      throw Exception(
-        'No published document found for type "$documentType" with slug "$slug".',
-      );
+      throw ApiException(message: 'No published document found for type "$documentType" with slug "$slug".', code: 400);
     }
 
     return _toPublicDocument(session, document);
@@ -126,11 +122,11 @@ class PublicContentEndpoint extends Endpoint {
   /// Validates the API key has read access and returns the projectId.
   int _requireReadAccess(Session session) {
     if (!session.canRead) {
-      throw Exception('Missing read permission');
+      throw ApiException(message: 'Missing read permission', code: 403);
     }
     final projectId = session.projectId;
     if (projectId == null) {
-      throw Exception('Missing project scope');
+      throw ApiException(message: 'Missing project scope', code: 400);
     }
     return projectId;
   }

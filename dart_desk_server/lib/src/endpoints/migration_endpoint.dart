@@ -32,7 +32,7 @@ class MigrationEndpoint extends Endpoint {
     final auth = await _requireAuth(session);
     final projectId = auth.projectId;
     if (projectId == null) {
-      throw Exception('No project associated with this session');
+      throw ApiException(message: 'No project associated with this session', code: 400);
     }
 
     // Parse operations
@@ -48,9 +48,7 @@ class MigrationEndpoint extends Endpoint {
         where: (t) => t.name.equals(title) & t.projectId.equals(projectId),
       );
       if (existing != null) {
-        throw Exception(
-          'Migration "$title" has already been applied to project $projectId',
-        );
+        throw ApiException(message: 'Migration "$title" has already been applied to project $projectId', code: 409);
       }
     }
 
@@ -123,7 +121,7 @@ class MigrationEndpoint extends Endpoint {
     final auth = await _requireAuth(session);
     final projectId = auth.projectId;
     if (projectId == null) {
-      throw Exception('No project associated with this session');
+      throw ApiException(message: 'No project associated with this session', code: 400);
     }
 
     return MigrationHistory.db.find(
@@ -137,10 +135,10 @@ class MigrationEndpoint extends Endpoint {
   /// Requires both read and write scopes.
   Future<_AuthResult> _requireAuth(Session session) async {
     if (!session.canRead) {
-      throw Exception('Missing read permission');
+      throw ApiException(message: 'Missing read permission', code: 403);
     }
     if (!session.canWrite) {
-      throw Exception('Missing write permission');
+      throw ApiException(message: 'Missing write permission', code: 403);
     }
     return (clientId: session.clientId, projectId: session.projectId);
   }

@@ -41,7 +41,7 @@ class ApiTokenEndpoint extends Endpoint {
     final auth = await _requireAuth(session, projectId: projectId);
 
     if (!_rolePrefixes.containsKey(role)) {
-      throw Exception('Invalid role: $role. Must be read or write.');
+      throw ApiException(message: 'Invalid role: $role. Must be read or write.', code: 400);
     }
 
     final prefix = _rolePrefixes[role]!;
@@ -81,8 +81,7 @@ class ApiTokenEndpoint extends Endpoint {
       return ApiTokenWithValue(token: inserted, plaintextToken: rawToken);
     }
 
-    throw Exception(
-        'Failed to generate unique token after $_maxRetries attempts');
+    throw ApiException(message: 'Failed to generate unique token after $_maxRetries attempts', code: 400);
   }
 
   /// Update token metadata (name, isActive, expiresAt).
@@ -95,11 +94,11 @@ class ApiTokenEndpoint extends Endpoint {
     required int projectId,
   }) async {
     final token = await ApiToken.db.findById(session, tokenId);
-    if (token == null) throw Exception('Token not found: $tokenId');
+    if (token == null) throw ApiException(message: 'Token not found: $tokenId', code: 404);
 
     await _requireAuth(session, projectId: projectId);
     if (token.projectId != projectId) {
-      throw Exception('Token belongs to a different project');
+      throw ApiException(message: 'Token belongs to a different project', code: 403);
     }
 
     final updated = token.copyWith(
@@ -118,11 +117,11 @@ class ApiTokenEndpoint extends Endpoint {
     required int projectId,
   }) async {
     final token = await ApiToken.db.findById(session, tokenId);
-    if (token == null) throw Exception('Token not found: $tokenId');
+    if (token == null) throw ApiException(message: 'Token not found: $tokenId', code: 404);
 
     await _requireAuth(session, projectId: projectId);
     if (token.projectId != projectId) {
-      throw Exception('Token belongs to a different project');
+      throw ApiException(message: 'Token belongs to a different project', code: 403);
     }
 
     final prefix = _rolePrefixes[token.role]!;
@@ -152,8 +151,7 @@ class ApiTokenEndpoint extends Endpoint {
       return ApiTokenWithValue(token: result, plaintextToken: rawToken);
     }
 
-    throw Exception(
-        'Failed to generate unique token after $_maxRetries attempts');
+    throw ApiException(message: 'Failed to generate unique token after $_maxRetries attempts', code: 400);
   }
 
   /// Delete a token permanently.
@@ -167,7 +165,7 @@ class ApiTokenEndpoint extends Endpoint {
 
     await _requireAuth(session, projectId: projectId);
     if (token.projectId != projectId) {
-      throw Exception('Token belongs to a different project');
+      throw ApiException(message: 'Token belongs to a different project', code: 403);
     }
 
     await ApiToken.db.deleteRow(session, token);
@@ -180,12 +178,12 @@ class ApiTokenEndpoint extends Endpoint {
     required int projectId,
   }) async {
     if (session.authenticated == null) {
-      throw Exception('Authentication required');
+      throw ApiException(message: 'Authentication required', code: 401);
     }
 
     final project = await Project.db.findById(session, projectId);
     if (project == null) {
-      throw Exception('Project not found: $projectId');
+      throw ApiException(message: 'Project not found: $projectId', code: 404);
     }
 
     final user = await resolveUser(session, clientId: project.clientId);
