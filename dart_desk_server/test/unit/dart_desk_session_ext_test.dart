@@ -5,13 +5,17 @@ import 'package:test/test.dart';
 
 class _MockSession extends Mock implements Session {}
 
+class _MockAuthInfo extends Mock implements AuthenticationInfo {}
+
 void main() {
   group('DartDeskSessionExt', () {
     late _MockSession session;
     late AuthenticationInfo authInfo;
+    late _MockAuthInfo mockAuth;
 
     setUp(() {
       session = _MockSession();
+      mockAuth = _MockAuthInfo();
       authInfo = AuthenticationInfo(
         'user-1',
         {
@@ -66,6 +70,45 @@ void main() {
       );
 
       expect(session.canWrite, isFalse);
+    });
+
+    test('isClientAdmin returns true for admin scope', () {
+      when(() => mockAuth.scopes).thenReturn({
+        const Scope('client:1'),
+        const Scope('client.role:admin'),
+      });
+      when(() => session.authenticated).thenReturn(mockAuth);
+
+      expect(session.isClientAdmin, isTrue);
+    });
+
+    test('isClientAdmin returns true for owner scope', () {
+      when(() => mockAuth.scopes).thenReturn({
+        const Scope('client:1'),
+        const Scope('client.role:owner'),
+      });
+      when(() => session.authenticated).thenReturn(mockAuth);
+
+      expect(session.isClientAdmin, isTrue);
+    });
+
+    test('isClientAdmin returns false for member scope', () {
+      when(() => mockAuth.scopes).thenReturn({
+        const Scope('client:1'),
+        const Scope('client.role:member'),
+      });
+      when(() => session.authenticated).thenReturn(mockAuth);
+
+      expect(session.isClientAdmin, isFalse);
+    });
+
+    test('clientRole parses role from scope', () {
+      when(() => mockAuth.scopes).thenReturn({
+        const Scope('client.role:admin'),
+      });
+      when(() => session.authenticated).thenReturn(mockAuth);
+
+      expect(session.clientRole, equals('admin'));
     });
   });
 }

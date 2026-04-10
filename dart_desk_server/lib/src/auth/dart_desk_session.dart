@@ -29,4 +29,20 @@ extension DartDeskSessionExt on Session {
 
   bool get canWrite =>
       (authenticated?.scopes ?? {}).contains(const Scope('project.write'));
+
+  String? get clientRole {
+    final activeScopes = authenticated?.scopes ?? {};
+    for (final scope in activeScopes) {
+      final name = scope.name;
+      if (name != null && name.startsWith('client.role:')) {
+        return name.substring(12);
+      }
+    }
+    return null;
+  }
+
+  bool get isClientAdmin {
+    final role = clientRole;
+    return role == 'owner' || role == 'admin';
+  }
 }
