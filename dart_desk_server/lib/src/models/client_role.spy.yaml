@@ -1,0 +1,7 @@
+enum: ClientRole
+serialized: byName
+values:
+  - owner
+  - admin
+  - member
+  - viewer

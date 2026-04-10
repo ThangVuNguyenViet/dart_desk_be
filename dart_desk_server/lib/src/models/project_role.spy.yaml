@@ -1,0 +1,6 @@
+enum: ProjectRole
+serialized: byName
+values:
+  - admin
+  - editor
+  - viewer

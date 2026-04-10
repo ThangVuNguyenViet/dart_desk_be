@@ -4,7 +4,7 @@ fields:
   clientId: int?
   email: String
   name: String?
-  role: String, default='viewer'
+  role: ClientRole, default=viewer
   isActive: bool, default=true
   serverpodUserId: String?
   createdAt: DateTime?, default=now

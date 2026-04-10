@@ -241,7 +241,7 @@ class ProjectEndpoint extends Endpoint {
           clientId: client.id!,
           email: email ?? authInfo.userIdentifier,
           name: userName,
-          role: 'admin',
+          role: ClientRole.admin,
           isActive: true,
           serverpodUserId: authInfo.userIdentifier,
           createdAt: DateTime.now(),

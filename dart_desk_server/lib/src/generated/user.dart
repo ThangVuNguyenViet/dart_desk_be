@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'client_role.dart' as _i2;
 
 abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   User._({
@@ -18,12 +19,12 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     this.clientId,
     required this.email,
     this.name,
-    String? role,
+    _i2.ClientRole? role,
     bool? isActive,
     this.serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : role = role ?? 'viewer',
+  }) : role = role ?? _i2.ClientRole.viewer,
        isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
@@ -33,7 +34,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? clientId,
     required String email,
     String? name,
-    String? role,
+    _i2.ClientRole? role,
     bool? isActive,
     String? serverpodUserId,
     DateTime? createdAt,
@@ -46,7 +47,9 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       clientId: jsonSerialization['clientId'] as int?,
       email: jsonSerialization['email'] as String,
       name: jsonSerialization['name'] as String?,
-      role: jsonSerialization['role'] as String?,
+      role: jsonSerialization['role'] == null
+          ? null
+          : _i2.ClientRole.fromJson((jsonSerialization['role'] as String)),
       isActive: jsonSerialization['isActive'] == null
           ? null
           : _i1.BoolJsonExtension.fromJson(jsonSerialization['isActive']),
@@ -73,7 +76,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   String? name;
 
-  String role;
+  _i2.ClientRole role;
 
   bool isActive;
 
@@ -94,7 +97,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? clientId,
     String? email,
     String? name,
-    String? role,
+    _i2.ClientRole? role,
     bool? isActive,
     String? serverpodUserId,
     DateTime? createdAt,
@@ -108,7 +111,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (clientId != null) 'clientId': clientId,
       'email': email,
       if (name != null) 'name': name,
-      'role': role,
+      'role': role.toJson(),
       'isActive': isActive,
       if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
@@ -124,7 +127,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (clientId != null) 'clientId': clientId,
       'email': email,
       if (name != null) 'name': name,
-      'role': role,
+      'role': role.toJson(),
       'isActive': isActive,
       if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
@@ -170,7 +173,7 @@ class _UserImpl extends User {
     int? clientId,
     required String email,
     String? name,
-    String? role,
+    _i2.ClientRole? role,
     bool? isActive,
     String? serverpodUserId,
     DateTime? createdAt,
@@ -196,7 +199,7 @@ class _UserImpl extends User {
     Object? clientId = _Undefined,
     String? email,
     Object? name = _Undefined,
-    String? role,
+    _i2.ClientRole? role,
     bool? isActive,
     Object? serverpodUserId = _Undefined,
     Object? createdAt = _Undefined,
@@ -236,10 +239,11 @@ class UserUpdateTable extends _i1.UpdateTable<UserTable> {
     value,
   );
 
-  _i1.ColumnValue<String, String> role(String value) => _i1.ColumnValue(
-    table.role,
-    value,
-  );
+  _i1.ColumnValue<_i2.ClientRole, _i2.ClientRole> role(_i2.ClientRole value) =>
+      _i1.ColumnValue(
+        table.role,
+        value,
+      );
 
   _i1.ColumnValue<bool, bool> isActive(bool value) => _i1.ColumnValue(
     table.isActive,
@@ -280,9 +284,10 @@ class UserTable extends _i1.Table<int?> {
       'name',
       this,
     );
-    role = _i1.ColumnString(
+    role = _i1.ColumnEnum(
       'role',
       this,
+      _i1.EnumSerialization.byName,
       hasDefault: true,
     );
     isActive = _i1.ColumnBool(
@@ -314,7 +319,7 @@ class UserTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString name;
 
-  late final _i1.ColumnString role;
+  late final _i1.ColumnEnum<_i2.ClientRole> role;
 
   late final _i1.ColumnBool isActive;
 

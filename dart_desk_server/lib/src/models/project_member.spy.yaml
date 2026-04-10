@@ -1,0 +1,13 @@
+class: ProjectMember
+table: project_members
+fields:
+  userId: int, relation(parent=users, onDelete=Cascade)
+  projectId: int, relation(parent=projects, onDelete=Cascade)
+  role: ProjectRole
+  createdAt: DateTime?, default=now
+indexes:
+  project_member_unique:
+    fields: userId, projectId
+    unique: true
+  project_member_project_idx:
+    fields: projectId

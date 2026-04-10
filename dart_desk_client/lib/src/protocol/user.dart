@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'client_role.dart' as _i2;
 
 abstract class User implements _i1.SerializableModel {
   User._({
@@ -18,12 +19,12 @@ abstract class User implements _i1.SerializableModel {
     this.clientId,
     required this.email,
     this.name,
-    String? role,
+    _i2.ClientRole? role,
     bool? isActive,
     this.serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : role = role ?? 'viewer',
+  }) : role = role ?? _i2.ClientRole.viewer,
        isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
@@ -33,7 +34,7 @@ abstract class User implements _i1.SerializableModel {
     int? clientId,
     required String email,
     String? name,
-    String? role,
+    _i2.ClientRole? role,
     bool? isActive,
     String? serverpodUserId,
     DateTime? createdAt,
@@ -46,7 +47,9 @@ abstract class User implements _i1.SerializableModel {
       clientId: jsonSerialization['clientId'] as int?,
       email: jsonSerialization['email'] as String,
       name: jsonSerialization['name'] as String?,
-      role: jsonSerialization['role'] as String?,
+      role: jsonSerialization['role'] == null
+          ? null
+          : _i2.ClientRole.fromJson((jsonSerialization['role'] as String)),
       isActive: jsonSerialization['isActive'] == null
           ? null
           : _i1.BoolJsonExtension.fromJson(jsonSerialization['isActive']),
@@ -71,7 +74,7 @@ abstract class User implements _i1.SerializableModel {
 
   String? name;
 
-  String role;
+  _i2.ClientRole role;
 
   bool isActive;
 
@@ -89,7 +92,7 @@ abstract class User implements _i1.SerializableModel {
     int? clientId,
     String? email,
     String? name,
-    String? role,
+    _i2.ClientRole? role,
     bool? isActive,
     String? serverpodUserId,
     DateTime? createdAt,
@@ -103,7 +106,7 @@ abstract class User implements _i1.SerializableModel {
       if (clientId != null) 'clientId': clientId,
       'email': email,
       if (name != null) 'name': name,
-      'role': role,
+      'role': role.toJson(),
       'isActive': isActive,
       if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
@@ -125,7 +128,7 @@ class _UserImpl extends User {
     int? clientId,
     required String email,
     String? name,
-    String? role,
+    _i2.ClientRole? role,
     bool? isActive,
     String? serverpodUserId,
     DateTime? createdAt,
@@ -151,7 +154,7 @@ class _UserImpl extends User {
     Object? clientId = _Undefined,
     String? email,
     Object? name = _Undefined,
-    String? role,
+    _i2.ClientRole? role,
     bool? isActive,
     Object? serverpodUserId = _Undefined,
     Object? createdAt = _Undefined,
