@@ -45,11 +45,12 @@ import 'package:dart_desk_client/src/protocol/document_crdt_operation.dart'
 import 'package:dart_desk_client/src/protocol/media_asset.dart' as _i32;
 import 'package:dart_desk_client/src/protocol/user.dart' as _i33;
 import 'package:dart_desk_client/src/protocol/migration_history.dart' as _i34;
-import 'package:dart_desk_client/src/protocol/public_document.dart' as _i35;
+import 'package:dart_desk_client/src/protocol/project_member.dart' as _i35;
+import 'package:dart_desk_client/src/protocol/public_document.dart' as _i36;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i36;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i37;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i38;
 export 'api_exception.dart';
 export 'api_token.dart';
 export 'api_token_with_value.dart';
@@ -344,35 +345,41 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == Map<String, List<_i35.PublicDocument>>) {
-      return (data as Map).map(
-            (k, v) => MapEntry(
-              deserialize<String>(k),
-              deserialize<List<_i35.PublicDocument>>(v),
-            ),
-          )
-          as T;
-    }
-    if (t == List<_i35.PublicDocument>) {
+    if (t == List<_i35.ProjectMember>) {
       return (data as List)
-              .map((e) => deserialize<_i35.PublicDocument>(e))
+              .map((e) => deserialize<_i35.ProjectMember>(e))
               .toList()
           as T;
     }
-    if (t == Map<String, _i35.PublicDocument>) {
+    if (t == Map<String, List<_i36.PublicDocument>>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i35.PublicDocument>(v),
+              deserialize<List<_i36.PublicDocument>>(v),
+            ),
+          )
+          as T;
+    }
+    if (t == List<_i36.PublicDocument>) {
+      return (data as List)
+              .map((e) => deserialize<_i36.PublicDocument>(e))
+              .toList()
+          as T;
+    }
+    if (t == Map<String, _i36.PublicDocument>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(
+              deserialize<String>(k),
+              deserialize<_i36.PublicDocument>(v),
             ),
           )
           as T;
     }
     try {
-      return _i36.Protocol().deserialize<T>(data, t);
+      return _i37.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i37.Protocol().deserialize<T>(data, t);
+      return _i38.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -476,11 +483,11 @@ class Protocol extends _i1.SerializationManager {
       case _i28.User():
         return 'User';
     }
-    className = _i36.Protocol().getClassNameForObject(data);
+    className = _i37.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
-    className = _i37.Protocol().getClassNameForObject(data);
+    className = _i38.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
@@ -576,11 +583,11 @@ class Protocol extends _i1.SerializationManager {
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i36.Protocol().deserializeByClassName(data);
+      return _i37.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i37.Protocol().deserializeByClassName(data);
+      return _i38.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -595,10 +602,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i36.Protocol().mapRecordToJson(record);
+      return _i37.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i37.Protocol().mapRecordToJson(record);
+      return _i38.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

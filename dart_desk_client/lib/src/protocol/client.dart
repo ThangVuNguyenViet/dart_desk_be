@@ -36,8 +36,10 @@ import 'package:dart_desk_client/src/protocol/migration_history.dart' as _i18;
 import 'package:dart_desk_client/src/protocol/project_list.dart' as _i19;
 import 'package:dart_desk_client/src/protocol/project.dart' as _i20;
 import 'package:dart_desk_client/src/protocol/cms_client.dart' as _i21;
-import 'package:dart_desk_client/src/protocol/public_document.dart' as _i22;
-import 'protocol.dart' as _i23;
+import 'package:dart_desk_client/src/protocol/project_member.dart' as _i22;
+import 'package:dart_desk_client/src/protocol/project_role.dart' as _i23;
+import 'package:dart_desk_client/src/protocol/public_document.dart' as _i24;
+import 'protocol.dart' as _i25;
 
 /// Endpoint for managing CMS API tokens.
 /// All methods require Serverpod auth (session.authenticated).
@@ -1009,6 +1011,62 @@ class EndpointProject extends _i1.EndpointRef {
   );
 }
 
+/// {@category Endpoint}
+class EndpointProjectMember extends _i1.EndpointRef {
+  EndpointProjectMember(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'projectMember';
+
+  _i2.Future<List<_i22.ProjectMember>> listProjectMembers({
+    required int projectId,
+  }) => caller.callServerEndpoint<List<_i22.ProjectMember>>(
+    'projectMember',
+    'listProjectMembers',
+    {'projectId': projectId},
+  );
+
+  _i2.Future<_i22.ProjectMember> addProjectMember({
+    required int projectId,
+    required int userId,
+    required _i23.ProjectRole role,
+  }) => caller.callServerEndpoint<_i22.ProjectMember>(
+    'projectMember',
+    'addProjectMember',
+    {
+      'projectId': projectId,
+      'userId': userId,
+      'role': role,
+    },
+  );
+
+  _i2.Future<_i22.ProjectMember> updateProjectMemberRole({
+    required int projectId,
+    required int userId,
+    required _i23.ProjectRole role,
+  }) => caller.callServerEndpoint<_i22.ProjectMember>(
+    'projectMember',
+    'updateProjectMemberRole',
+    {
+      'projectId': projectId,
+      'userId': userId,
+      'role': role,
+    },
+  );
+
+  _i2.Future<void> removeProjectMember({
+    required int projectId,
+    required int userId,
+  }) => caller.callServerEndpoint<void>(
+    'projectMember',
+    'removeProjectMember',
+    {
+      'projectId': projectId,
+      'userId': userId,
+    },
+  );
+}
+
 /// Read-only public content API for external consumers.
 /// Requires a project API key with read permission.
 /// Project scope is derived from the API key.
@@ -1020,43 +1078,43 @@ class EndpointPublicContent extends _i1.EndpointRef {
   String get name => 'publicContent';
 
   /// Returns all published documents grouped by document type.
-  _i2.Future<Map<String, List<_i22.PublicDocument>>> getAllContents() =>
-      caller.callServerEndpoint<Map<String, List<_i22.PublicDocument>>>(
+  _i2.Future<Map<String, List<_i24.PublicDocument>>> getAllContents() =>
+      caller.callServerEndpoint<Map<String, List<_i24.PublicDocument>>>(
         'publicContent',
         'getAllContents',
         {},
       );
 
   /// Returns the default published document for each document type.
-  _i2.Future<Map<String, _i22.PublicDocument>> getDefaultContents() =>
-      caller.callServerEndpoint<Map<String, _i22.PublicDocument>>(
+  _i2.Future<Map<String, _i24.PublicDocument>> getDefaultContents() =>
+      caller.callServerEndpoint<Map<String, _i24.PublicDocument>>(
         'publicContent',
         'getDefaultContents',
         {},
       );
 
   /// Returns all published documents of a specific type.
-  _i2.Future<List<_i22.PublicDocument>> getContentsByType(
+  _i2.Future<List<_i24.PublicDocument>> getContentsByType(
     String documentType,
-  ) => caller.callServerEndpoint<List<_i22.PublicDocument>>(
+  ) => caller.callServerEndpoint<List<_i24.PublicDocument>>(
     'publicContent',
     'getContentsByType',
     {'documentType': documentType},
   );
 
   /// Returns the default published document for a specific type.
-  _i2.Future<_i22.PublicDocument> getDefaultContent(String documentType) =>
-      caller.callServerEndpoint<_i22.PublicDocument>(
+  _i2.Future<_i24.PublicDocument> getDefaultContent(String documentType) =>
+      caller.callServerEndpoint<_i24.PublicDocument>(
         'publicContent',
         'getDefaultContent',
         {'documentType': documentType},
       );
 
   /// Returns a single published document by type and slug.
-  _i2.Future<_i22.PublicDocument> getContentBySlug(
+  _i2.Future<_i24.PublicDocument> getContentBySlug(
     String documentType,
     String slug,
-  ) => caller.callServerEndpoint<_i22.PublicDocument>(
+  ) => caller.callServerEndpoint<_i24.PublicDocument>(
     'publicContent',
     'getContentBySlug',
     {
@@ -1179,7 +1237,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i23.Protocol(),
+         _i25.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -1198,6 +1256,7 @@ class Client extends _i1.ServerpodClientShared {
     member = EndpointMember(this);
     migration = EndpointMigration(this);
     project = EndpointProject(this);
+    projectMember = EndpointProjectMember(this);
     publicContent = EndpointPublicContent(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
     studioConfig = EndpointStudioConfig(this);
@@ -1225,6 +1284,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointProject project;
 
+  late final EndpointProjectMember projectMember;
+
   late final EndpointPublicContent publicContent;
 
   late final EndpointRefreshJwtTokens refreshJwtTokens;
@@ -1247,6 +1308,7 @@ class Client extends _i1.ServerpodClientShared {
     'member': member,
     'migration': migration,
     'project': project,
+    'projectMember': projectMember,
     'publicContent': publicContent,
     'refreshJwtTokens': refreshJwtTokens,
     'studioConfig': studioConfig,

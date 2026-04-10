@@ -37,7 +37,9 @@ import 'package:dart_desk_server/src/generated/migration_history.dart' as _i18;
 import 'package:dart_desk_server/src/generated/project_list.dart' as _i19;
 import 'package:dart_desk_server/src/generated/project.dart' as _i20;
 import 'package:dart_desk_server/src/generated/cms_client.dart' as _i21;
-import 'package:dart_desk_server/src/generated/public_document.dart' as _i22;
+import 'package:dart_desk_server/src/generated/project_member.dart' as _i22;
+import 'package:dart_desk_server/src/generated/project_role.dart' as _i23;
+import 'package:dart_desk_server/src/generated/public_document.dart' as _i24;
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:dart_desk_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -165,6 +167,8 @@ class TestEndpoints {
 
   late final _ProjectEndpoint project;
 
+  late final _ProjectMemberEndpoint projectMember;
+
   late final _PublicContentEndpoint publicContent;
 
   late final _RefreshJwtTokensEndpoint refreshJwtTokens;
@@ -218,6 +222,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     project = _ProjectEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    projectMember = _ProjectMemberEndpoint(
       endpoints,
       serializationManager,
     );
@@ -2569,6 +2577,157 @@ class _ProjectEndpoint {
   }
 }
 
+class _ProjectMemberEndpoint {
+  _ProjectMemberEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<List<_i22.ProjectMember>> listProjectMembers(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int projectId,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'projectMember',
+            method: 'listProjectMembers',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'projectMember',
+          methodName: 'listProjectMembers',
+          parameters: _i1.testObjectToJson({'projectId': projectId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i22.ProjectMember>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i22.ProjectMember> addProjectMember(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int projectId,
+    required int userId,
+    required _i23.ProjectRole role,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'projectMember',
+            method: 'addProjectMember',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'projectMember',
+          methodName: 'addProjectMember',
+          parameters: _i1.testObjectToJson({
+            'projectId': projectId,
+            'userId': userId,
+            'role': role,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i22.ProjectMember>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i22.ProjectMember> updateProjectMemberRole(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int projectId,
+    required int userId,
+    required _i23.ProjectRole role,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'projectMember',
+            method: 'updateProjectMemberRole',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'projectMember',
+          methodName: 'updateProjectMemberRole',
+          parameters: _i1.testObjectToJson({
+            'projectId': projectId,
+            'userId': userId,
+            'role': role,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i22.ProjectMember>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> removeProjectMember(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int projectId,
+    required int userId,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'projectMember',
+            method: 'removeProjectMember',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'projectMember',
+          methodName: 'removeProjectMember',
+          parameters: _i1.testObjectToJson({
+            'projectId': projectId,
+            'userId': userId,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _PublicContentEndpoint {
   _PublicContentEndpoint(
     this._endpointDispatch,
@@ -2579,7 +2738,7 @@ class _PublicContentEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<Map<String, List<_i22.PublicDocument>>> getAllContents(
+  _i3.Future<Map<String, List<_i24.PublicDocument>>> getAllContents(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2601,7 +2760,7 @@ class _PublicContentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<Map<String, List<_i22.PublicDocument>>>);
+                as _i3.Future<Map<String, List<_i24.PublicDocument>>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2609,7 +2768,7 @@ class _PublicContentEndpoint {
     });
   }
 
-  _i3.Future<Map<String, _i22.PublicDocument>> getDefaultContents(
+  _i3.Future<Map<String, _i24.PublicDocument>> getDefaultContents(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2631,7 +2790,7 @@ class _PublicContentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<Map<String, _i22.PublicDocument>>);
+                as _i3.Future<Map<String, _i24.PublicDocument>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2639,7 +2798,7 @@ class _PublicContentEndpoint {
     });
   }
 
-  _i3.Future<List<_i22.PublicDocument>> getContentsByType(
+  _i3.Future<List<_i24.PublicDocument>> getContentsByType(
     _i1.TestSessionBuilder sessionBuilder,
     String documentType,
   ) async {
@@ -2662,7 +2821,7 @@ class _PublicContentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i22.PublicDocument>>);
+                as _i3.Future<List<_i24.PublicDocument>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2670,7 +2829,7 @@ class _PublicContentEndpoint {
     });
   }
 
-  _i3.Future<_i22.PublicDocument> getDefaultContent(
+  _i3.Future<_i24.PublicDocument> getDefaultContent(
     _i1.TestSessionBuilder sessionBuilder,
     String documentType,
   ) async {
@@ -2693,7 +2852,7 @@ class _PublicContentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i22.PublicDocument>);
+                as _i3.Future<_i24.PublicDocument>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2701,7 +2860,7 @@ class _PublicContentEndpoint {
     });
   }
 
-  _i3.Future<_i22.PublicDocument> getContentBySlug(
+  _i3.Future<_i24.PublicDocument> getContentBySlug(
     _i1.TestSessionBuilder sessionBuilder,
     String documentType,
     String slug,
@@ -2728,7 +2887,7 @@ class _PublicContentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i22.PublicDocument>);
+                as _i3.Future<_i24.PublicDocument>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

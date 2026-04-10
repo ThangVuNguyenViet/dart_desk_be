@@ -73,6 +73,11 @@ project:
   - updateProject:
   - deleteProject:
   - createClientWithOwner:
+projectMember:
+  - listProjectMembers:
+  - addProjectMember:
+  - updateProjectMemberRole:
+  - removeProjectMember:
 publicContent:
   - getAllContents:
   - getDefaultContents:

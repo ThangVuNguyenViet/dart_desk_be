@@ -21,18 +21,20 @@ import '../endpoints/media_endpoint.dart' as _i8;
 import '../endpoints/member_endpoint.dart' as _i9;
 import '../endpoints/migration_endpoint.dart' as _i10;
 import '../endpoints/project_endpoint.dart' as _i11;
-import '../endpoints/public_content_endpoint.dart' as _i12;
-import '../endpoints/refresh_jwt_tokens_endpoint.dart' as _i13;
-import '../endpoints/studio_config_endpoint.dart' as _i14;
-import '../endpoints/user_endpoint.dart' as _i15;
+import '../endpoints/project_member_endpoint.dart' as _i12;
+import '../endpoints/public_content_endpoint.dart' as _i13;
+import '../endpoints/refresh_jwt_tokens_endpoint.dart' as _i14;
+import '../endpoints/studio_config_endpoint.dart' as _i15;
+import '../endpoints/user_endpoint.dart' as _i16;
 import 'package:dart_desk_server/src/generated/document_version_status.dart'
-    as _i16;
-import 'dart:typed_data' as _i17;
-import 'package:dart_desk_server/src/generated/client_role.dart' as _i18;
+    as _i17;
+import 'dart:typed_data' as _i18;
+import 'package:dart_desk_server/src/generated/client_role.dart' as _i19;
+import 'package:dart_desk_server/src/generated/project_role.dart' as _i20;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i19;
+    as _i21;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i20;
+    as _i22;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -98,25 +100,31 @@ class Endpoints extends _i1.EndpointDispatch {
           'project',
           null,
         ),
-      'publicContent': _i12.PublicContentEndpoint()
+      'projectMember': _i12.ProjectMemberEndpoint()
+        ..initialize(
+          server,
+          'projectMember',
+          null,
+        ),
+      'publicContent': _i13.PublicContentEndpoint()
         ..initialize(
           server,
           'publicContent',
           null,
         ),
-      'refreshJwtTokens': _i13.RefreshJwtTokensEndpoint()
+      'refreshJwtTokens': _i14.RefreshJwtTokensEndpoint()
         ..initialize(
           server,
           'refreshJwtTokens',
           null,
         ),
-      'studioConfig': _i14.StudioConfigEndpoint()
+      'studioConfig': _i15.StudioConfigEndpoint()
         ..initialize(
           server,
           'studioConfig',
           null,
         ),
-      'user': _i15.UserEndpoint()
+      'user': _i16.UserEndpoint()
         ..initialize(
           server,
           'user',
@@ -901,7 +909,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'status': _i1.ParameterDescription(
               name: 'status',
-              type: _i1.getType<_i16.DocumentVersionStatus>(),
+              type: _i1.getType<_i17.DocumentVersionStatus>(),
               nullable: false,
             ),
             'changeLog': _i1.ParameterDescription(
@@ -1234,7 +1242,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'fileData': _i1.ParameterDescription(
               name: 'fileData',
-              type: _i1.getType<_i17.ByteData>(),
+              type: _i1.getType<_i18.ByteData>(),
               nullable: false,
             ),
             'width': _i1.ParameterDescription(
@@ -1288,7 +1296,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'fileData': _i1.ParameterDescription(
               name: 'fileData',
-              type: _i1.getType<_i17.ByteData>(),
+              type: _i1.getType<_i18.ByteData>(),
               nullable: false,
             ),
           },
@@ -1489,7 +1497,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i18.ClientRole>(),
+              type: _i1.getType<_i19.ClientRole>(),
               nullable: false,
             ),
           },
@@ -1520,7 +1528,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i18.ClientRole>(),
+              type: _i1.getType<_i19.ClientRole>(),
               nullable: false,
             ),
           },
@@ -1815,6 +1823,122 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['projectMember'] = _i1.EndpointConnector(
+      name: 'projectMember',
+      endpoint: endpoints['projectMember']!,
+      methodConnectors: {
+        'listProjectMembers': _i1.MethodConnector(
+          name: 'listProjectMembers',
+          params: {
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['projectMember'] as _i12.ProjectMemberEndpoint)
+                      .listProjectMembers(
+                        session,
+                        projectId: params['projectId'],
+                      ),
+        ),
+        'addProjectMember': _i1.MethodConnector(
+          name: 'addProjectMember',
+          params: {
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'role': _i1.ParameterDescription(
+              name: 'role',
+              type: _i1.getType<_i20.ProjectRole>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['projectMember'] as _i12.ProjectMemberEndpoint)
+                      .addProjectMember(
+                        session,
+                        projectId: params['projectId'],
+                        userId: params['userId'],
+                        role: params['role'],
+                      ),
+        ),
+        'updateProjectMemberRole': _i1.MethodConnector(
+          name: 'updateProjectMemberRole',
+          params: {
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'role': _i1.ParameterDescription(
+              name: 'role',
+              type: _i1.getType<_i20.ProjectRole>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['projectMember'] as _i12.ProjectMemberEndpoint)
+                      .updateProjectMemberRole(
+                        session,
+                        projectId: params['projectId'],
+                        userId: params['userId'],
+                        role: params['role'],
+                      ),
+        ),
+        'removeProjectMember': _i1.MethodConnector(
+          name: 'removeProjectMember',
+          params: {
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['projectMember'] as _i12.ProjectMemberEndpoint)
+                      .removeProjectMember(
+                        session,
+                        projectId: params['projectId'],
+                        userId: params['userId'],
+                      ),
+        ),
+      },
+    );
     connectors['publicContent'] = _i1.EndpointConnector(
       name: 'publicContent',
       endpoint: endpoints['publicContent']!,
@@ -1827,7 +1951,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['publicContent'] as _i12.PublicContentEndpoint)
+                  (endpoints['publicContent'] as _i13.PublicContentEndpoint)
                       .getAllContents(session),
         ),
         'getDefaultContents': _i1.MethodConnector(
@@ -1838,7 +1962,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['publicContent'] as _i12.PublicContentEndpoint)
+                  (endpoints['publicContent'] as _i13.PublicContentEndpoint)
                       .getDefaultContents(session),
         ),
         'getContentsByType': _i1.MethodConnector(
@@ -1855,7 +1979,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['publicContent'] as _i12.PublicContentEndpoint)
+                  (endpoints['publicContent'] as _i13.PublicContentEndpoint)
                       .getContentsByType(
                         session,
                         params['documentType'],
@@ -1875,7 +1999,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['publicContent'] as _i12.PublicContentEndpoint)
+                  (endpoints['publicContent'] as _i13.PublicContentEndpoint)
                       .getDefaultContent(
                         session,
                         params['documentType'],
@@ -1900,7 +2024,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['publicContent'] as _i12.PublicContentEndpoint)
+                  (endpoints['publicContent'] as _i13.PublicContentEndpoint)
                       .getContentBySlug(
                         session,
                         params['documentType'],
@@ -1928,7 +2052,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['refreshJwtTokens']
-                          as _i13.RefreshJwtTokensEndpoint)
+                          as _i14.RefreshJwtTokensEndpoint)
                       .refreshAccessToken(
                         session,
                         refreshToken: params['refreshToken'],
@@ -1948,7 +2072,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['studioConfig'] as _i14.StudioConfigEndpoint)
+                  (endpoints['studioConfig'] as _i15.StudioConfigEndpoint)
                       .getStudioUrlTemplate(session),
         ),
       },
@@ -1971,7 +2095,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _i15.UserEndpoint).getCurrentUser(
+                  (endpoints['user'] as _i16.UserEndpoint).getCurrentUser(
                     session,
                     clientId: params['clientId'],
                   ),
@@ -1989,16 +2113,16 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i15.UserEndpoint).getUserCount(
+              ) async => (endpoints['user'] as _i16.UserEndpoint).getUserCount(
                 session,
                 clientId: params['clientId'],
               ),
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i19.Endpoints()
+    modules['serverpod_auth_core'] = _i21.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i20.Endpoints()
+    modules['serverpod_auth_idp'] = _i22.Endpoints()
       ..initializeEndpoints(server);
   }
 }
