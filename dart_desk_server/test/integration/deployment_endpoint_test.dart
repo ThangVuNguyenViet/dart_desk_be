@@ -44,7 +44,7 @@ void main() {
         User(
           clientId: TestDataFactory.testClientId,
           email: 'admin@deploy.test',
-          role: 'admin',
+          role: ClientRole.admin,
           isActive: true,
           serverpodUserId: adminUserId,
         ),
@@ -94,7 +94,7 @@ void main() {
           User(
             clientId: TestDataFactory.testClientId,
             email: 'viewer@deploy.test',
-            role: 'viewer',
+            role: ClientRole.viewer,
             isActive: true,
             serverpodUserId: 'viewer-user',
           ),

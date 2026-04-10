@@ -96,7 +96,7 @@ class TestDataFactory {
     String userIdentifier = 'test-user-1',
     String? email,
     String name = 'Test User',
-    String role = 'viewer',
+    ClientRole role = ClientRole.viewer,
     int? clientId = testClientId,
   }) async {
     final session = sessionBuilder.build();
@@ -127,6 +127,28 @@ class TestDataFactory {
       ),
     );
     return user;
+  }
+
+  Future<ProjectMember> ensureTestProjectMember({
+    required int userId,
+    int projectId = testProjectId,
+    ProjectRole role = ProjectRole.editor,
+  }) async {
+    final session = sessionBuilder.build();
+    final existing = await ProjectMember.db.findFirstRow(
+      session,
+      where: (t) => t.userId.equals(userId) & t.projectId.equals(projectId),
+    );
+    if (existing != null) return existing;
+
+    return ProjectMember.db.insertRow(
+      session,
+      ProjectMember(
+        userId: userId,
+        projectId: projectId,
+        role: role,
+      ),
+    );
   }
 
   Future<Document> createTestDocument({

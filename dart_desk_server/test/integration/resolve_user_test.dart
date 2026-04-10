@@ -14,7 +14,7 @@ void main() {
           clientId: null,
           email: 'test@example.com',
           name: 'Test',
-          role: 'admin',
+          role: ClientRole.admin,
           isActive: true,
           serverpodUserId: 'user-1',
         ),
