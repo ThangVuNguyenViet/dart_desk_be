@@ -17,11 +17,20 @@ class MemberEndpoint extends Endpoint {
     return caller;
   }
 
+  /// Require caller is at least a member of the given client.
+  Future<User> _requireClientMember(Session session, int clientId) async {
+    final auth = session.authenticated;
+    if (auth == null) {
+      throw ApiException(message: 'User must be authenticated', code: 401);
+    }
+    return resolveUser(session, clientId: clientId);
+  }
+
   Future<List<User>> listMembers(
     Session session, {
     required int clientId,
   }) async {
-    await _requireClientAdmin(session, clientId);
+    await _requireClientMember(session, clientId);
 
     return User.db.find(
       session,

@@ -1,4 +1,3 @@
-import 'package:dart_desk_server/src/generated/api_exception.dart';
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 

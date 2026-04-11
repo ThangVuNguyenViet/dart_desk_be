@@ -1,10 +1,10 @@
-import 'package:dart_desk_server/src/generated/api_exception.dart';
 import 'dart:convert';
 
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
-import 'test_tools/serverpod_test_tools.dart';
+
 import 'helpers/test_data_factory.dart';
+import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod('PublicContent endpoint', (sessionBuilder, endpoints) {
@@ -20,12 +20,18 @@ void main() {
 
       // Clean up leftover data from rollback-disabled groups.
       final session = sessionBuilder.build();
-      await DocumentCrdtOperation.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
-      await DocumentCrdtSnapshot.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
-      await DocumentVersion.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
-      await DocumentData.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
-      await Document.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
-      await MediaAsset.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+      await DocumentCrdtOperation.db
+          .deleteWhere(session, where: (t) => t.id.notEquals(null));
+      await DocumentCrdtSnapshot.db
+          .deleteWhere(session, where: (t) => t.id.notEquals(null));
+      await DocumentVersion.db
+          .deleteWhere(session, where: (t) => t.id.notEquals(null));
+      await DocumentData.db
+          .deleteWhere(session, where: (t) => t.id.notEquals(null));
+      await Document.db
+          .deleteWhere(session, where: (t) => t.id.notEquals(null));
+      await MediaAsset.db
+          .deleteWhere(session, where: (t) => t.id.notEquals(null));
     });
 
     /// Helper: create a document, create a version, publish it.
@@ -222,7 +228,6 @@ void main() {
         );
       });
     });
-
   });
 
   withServerpod(
@@ -240,12 +245,18 @@ void main() {
 
         // Clean up leftover data from previous runs (rollback disabled).
         final session = sessionBuilder.build();
-        await DocumentCrdtOperation.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
-        await DocumentCrdtSnapshot.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
-        await DocumentVersion.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
-        await DocumentData.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
-        await Document.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
-        await MediaAsset.db.deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentCrdtOperation.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentCrdtSnapshot.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentVersion.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentData.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await Document.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await MediaAsset.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
       });
 
       /// Helper: create a document, create a version, publish it.
