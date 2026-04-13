@@ -24,17 +24,18 @@ import '../endpoints/project_endpoint.dart' as _i11;
 import '../endpoints/project_member_endpoint.dart' as _i12;
 import '../endpoints/public_content_endpoint.dart' as _i13;
 import '../endpoints/refresh_jwt_tokens_endpoint.dart' as _i14;
-import '../endpoints/studio_config_endpoint.dart' as _i15;
-import '../endpoints/user_endpoint.dart' as _i16;
+import '../endpoints/restore_endpoint.dart' as _i15;
+import '../endpoints/studio_config_endpoint.dart' as _i16;
+import '../endpoints/user_endpoint.dart' as _i17;
 import 'package:dart_desk_server/src/generated/document_version_status.dart'
-    as _i17;
-import 'dart:typed_data' as _i18;
-import 'package:dart_desk_server/src/generated/client_role.dart' as _i19;
-import 'package:dart_desk_server/src/generated/project_role.dart' as _i20;
+    as _i18;
+import 'dart:typed_data' as _i19;
+import 'package:dart_desk_server/src/generated/client_role.dart' as _i20;
+import 'package:dart_desk_server/src/generated/project_role.dart' as _i21;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i21;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i22;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i23;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -118,13 +119,19 @@ class Endpoints extends _i1.EndpointDispatch {
           'refreshJwtTokens',
           null,
         ),
-      'studioConfig': _i15.StudioConfigEndpoint()
+      'restore': _i15.RestoreEndpoint()
+        ..initialize(
+          server,
+          'restore',
+          null,
+        ),
+      'studioConfig': _i16.StudioConfigEndpoint()
         ..initialize(
           server,
           'studioConfig',
           null,
         ),
-      'user': _i16.UserEndpoint()
+      'user': _i17.UserEndpoint()
         ..initialize(
           server,
           'user',
@@ -909,7 +916,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'status': _i1.ParameterDescription(
               name: 'status',
-              type: _i1.getType<_i17.DocumentVersionStatus>(),
+              type: _i1.getType<_i18.DocumentVersionStatus>(),
               nullable: false,
             ),
             'changeLog': _i1.ParameterDescription(
@@ -1242,7 +1249,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'fileData': _i1.ParameterDescription(
               name: 'fileData',
-              type: _i1.getType<_i18.ByteData>(),
+              type: _i1.getType<_i19.ByteData>(),
               nullable: false,
             ),
             'width': _i1.ParameterDescription(
@@ -1296,7 +1303,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'fileData': _i1.ParameterDescription(
               name: 'fileData',
-              type: _i1.getType<_i18.ByteData>(),
+              type: _i1.getType<_i19.ByteData>(),
               nullable: false,
             ),
           },
@@ -1497,7 +1504,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i19.ClientRole>(),
+              type: _i1.getType<_i20.ClientRole>(),
               nullable: false,
             ),
           },
@@ -1528,7 +1535,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i19.ClientRole>(),
+              type: _i1.getType<_i20.ClientRole>(),
               nullable: false,
             ),
           },
@@ -1862,7 +1869,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i20.ProjectRole>(),
+              type: _i1.getType<_i21.ProjectRole>(),
               nullable: false,
             ),
           },
@@ -1894,7 +1901,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i20.ProjectRole>(),
+              type: _i1.getType<_i21.ProjectRole>(),
               nullable: false,
             ),
           },
@@ -2060,6 +2067,69 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['restore'] = _i1.EndpointConnector(
+      name: 'restore',
+      endpoint: endpoints['restore']!,
+      methodConnectors: {
+        'restoreDocument': _i1.MethodConnector(
+          name: 'restoreDocument',
+          params: {
+            'documentId': _i1.ParameterDescription(
+              name: 'documentId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['restore'] as _i15.RestoreEndpoint)
+                  .restoreDocument(
+                    session,
+                    params['documentId'],
+                  ),
+        ),
+        'restoreProject': _i1.MethodConnector(
+          name: 'restoreProject',
+          params: {
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['restore'] as _i15.RestoreEndpoint).restoreProject(
+                    session,
+                    params['projectId'],
+                  ),
+        ),
+        'restoreUser': _i1.MethodConnector(
+          name: 'restoreUser',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['restore'] as _i15.RestoreEndpoint).restoreUser(
+                    session,
+                    params['userId'],
+                  ),
+        ),
+      },
+    );
     connectors['studioConfig'] = _i1.EndpointConnector(
       name: 'studioConfig',
       endpoint: endpoints['studioConfig']!,
@@ -2072,7 +2142,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['studioConfig'] as _i15.StudioConfigEndpoint)
+                  (endpoints['studioConfig'] as _i16.StudioConfigEndpoint)
                       .getStudioUrlTemplate(session),
         ),
       },
@@ -2095,7 +2165,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _i16.UserEndpoint).getCurrentUser(
+                  (endpoints['user'] as _i17.UserEndpoint).getCurrentUser(
                     session,
                     clientId: params['clientId'],
                   ),
@@ -2113,16 +2183,16 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i16.UserEndpoint).getUserCount(
+              ) async => (endpoints['user'] as _i17.UserEndpoint).getUserCount(
                 session,
                 clientId: params['clientId'],
               ),
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i21.Endpoints()
+    modules['serverpod_auth_core'] = _i22.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i22.Endpoints()
+    modules['serverpod_auth_idp'] = _i23.Endpoints()
       ..initializeEndpoints(server);
   }
 }

@@ -370,7 +370,7 @@ class EndpointDocument extends _i1.EndpointRef {
     },
   );
 
-  /// Delete a document
+  /// Delete a document (soft delete)
   _i2.Future<bool> deleteDocument(int documentId) =>
       caller.callServerEndpoint<bool>(
         'document',
@@ -469,7 +469,7 @@ class EndpointDocument extends _i1.EndpointRef {
         {'versionId': versionId},
       );
 
-  /// Delete a version
+  /// Delete a version (soft delete)
   _i2.Future<bool> deleteDocumentVersion(int versionId) =>
       caller.callServerEndpoint<bool>(
         'document',
@@ -988,7 +988,7 @@ class EndpointProject extends _i1.EndpointRef {
     },
   );
 
-  /// Delete a project (requires authentication).
+  /// Delete a project (requires owner role, soft delete).
   _i2.Future<bool> deleteProject(int projectId) =>
       caller.callServerEndpoint<bool>(
         'project',
@@ -1161,6 +1161,35 @@ class EndpointRefreshJwtTokens extends _i13.EndpointRefreshJwtTokens {
 }
 
 /// {@category Endpoint}
+class EndpointRestore extends _i1.EndpointRef {
+  EndpointRestore(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'restore';
+
+  _i2.Future<_i7.Document> restoreDocument(int documentId) =>
+      caller.callServerEndpoint<_i7.Document>(
+        'restore',
+        'restoreDocument',
+        {'documentId': documentId},
+      );
+
+  _i2.Future<_i20.Project> restoreProject(int projectId) =>
+      caller.callServerEndpoint<_i20.Project>(
+        'restore',
+        'restoreProject',
+        {'projectId': projectId},
+      );
+
+  _i2.Future<_i16.User> restoreUser(int userId) =>
+      caller.callServerEndpoint<_i16.User>(
+        'restore',
+        'restoreUser',
+        {'userId': userId},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointStudioConfig extends _i1.EndpointRef {
   EndpointStudioConfig(_i1.EndpointCaller caller) : super(caller);
 
@@ -1259,6 +1288,7 @@ class Client extends _i1.ServerpodClientShared {
     projectMember = EndpointProjectMember(this);
     publicContent = EndpointPublicContent(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
+    restore = EndpointRestore(this);
     studioConfig = EndpointStudioConfig(this);
     user = EndpointUser(this);
     modules = Modules(this);
@@ -1290,6 +1320,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointRefreshJwtTokens refreshJwtTokens;
 
+  late final EndpointRestore restore;
+
   late final EndpointStudioConfig studioConfig;
 
   late final EndpointUser user;
@@ -1311,6 +1343,7 @@ class Client extends _i1.ServerpodClientShared {
     'projectMember': projectMember,
     'publicContent': publicContent,
     'refreshJwtTokens': refreshJwtTokens,
+    'restore': restore,
     'studioConfig': studioConfig,
     'user': user,
   };

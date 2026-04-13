@@ -86,6 +86,10 @@ publicContent:
   - getContentBySlug:
 refreshJwtTokens:
   - refreshAccessToken:
+restore:
+  - restoreDocument:
+  - restoreProject:
+  - restoreUser:
 studioConfig:
   - getStudioUrlTemplate:
 user:
