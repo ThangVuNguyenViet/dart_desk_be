@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 
 import '../auth/require_role.dart';
 import '../auth/resolve_user.dart';
@@ -243,17 +244,18 @@ class ProjectEndpoint extends Endpoint {
     String? email;
     String? userName;
     try {
-      final profileRows = await session.db.unsafeQuery(
-        r'SELECT "email", "fullName" FROM "serverpod_auth_core_profile" '
-        r'WHERE "authUserId" = $1 LIMIT 1',
-        parameters: QueryParameters.positional([authInfo.userIdentifier]),
+      final authUserId = UuidValue.fromString(authInfo.userIdentifier);
+      final profile = await UserProfile.db.findFirstRow(
+        session,
+        where: (t) => t.authUserId.equals(authUserId),
       );
-      if (profileRows.isNotEmpty) {
-        email = profileRows.first[0] as String?;
-        userName = profileRows.first[1] as String?;
+      if (profile != null) {
+        email = profile.email;
+        userName = profile.fullName;
       }
     } catch (e) {
-      // Profile lookup failed; use identifier as fallback
+      session.log('Profile lookup failed for ${authInfo.userIdentifier}: $e',
+          level: LogLevel.warning);
     }
 
     final client = await session.db.transaction((transaction) async {
