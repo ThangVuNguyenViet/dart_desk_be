@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../auth/require_role.dart';
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
 
@@ -29,7 +30,7 @@ class ProjectEndpoint extends Endpoint {
     final total = await Project.db.count(
       session,
       where: (t) {
-        var expr = t.clientId.equals(clientId);
+        var expr = t.clientId.equals(clientId) & t.deletedAt.equals(null);
         if (search != null && search.isNotEmpty) {
           expr = expr & (t.name.like('%$search%') | t.slug.like('%$search%'));
         }
@@ -40,7 +41,7 @@ class ProjectEndpoint extends Endpoint {
     final projects = await Project.db.find(
       session,
       where: (t) {
-        var expr = t.clientId.equals(clientId);
+        var expr = t.clientId.equals(clientId) & t.deletedAt.equals(null);
         if (search != null && search.isNotEmpty) {
           expr = expr & (t.name.like('%$search%') | t.slug.like('%$search%'));
         }
@@ -66,10 +67,14 @@ class ProjectEndpoint extends Endpoint {
     Session session,
     String slug,
   ) async {
-    return await Project.db.findFirstRow(
+    final project = await Project.db.findFirstRow(
       session,
       where: (t) => t.slug.equals(slug),
     );
+    if (project != null && project.deletedAt != null) {
+      throw ApiException(message: 'Project has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
+    }
+    return project;
   }
 
   /// Get a project by ID.
@@ -77,7 +82,11 @@ class ProjectEndpoint extends Endpoint {
     Session session,
     int projectId,
   ) async {
-    return await Project.db.findById(session, projectId);
+    final project = await Project.db.findById(session, projectId);
+    if (project != null && project.deletedAt != null) {
+      throw ApiException(message: 'Project has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
+    }
+    return project;
   }
 
   /// Create a new project (requires authentication).
@@ -103,6 +112,8 @@ class ProjectEndpoint extends Endpoint {
       settings: settings,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
+      createdByUserId: member.id,
+      updatedByUserId: member.id,
     );
 
     final inserted = await Project.db.insertRow(session, project);
@@ -138,32 +149,51 @@ class ProjectEndpoint extends Endpoint {
       isActive: isActive ?? existing.isActive,
       settings: settings ?? existing.settings,
       updatedAt: DateTime.now(),
+      updatedByUserId: member.id,
     );
 
     await Project.db.updateRow(session, updated);
     return updated;
   }
 
-  /// Delete a project (requires authentication).
+  /// Delete a project (requires owner role, soft delete).
   Future<bool> deleteProject(
     Session session,
     int projectId,
   ) async {
     final authInfo = session.authenticated;
     if (authInfo == null) {
-      throw ApiException(message: 'User must be authenticated to delete projects', code: 401);
+      throw ApiException(message: 'User must be authenticated', code: 401);
     }
-    final member = await resolveUser(session);
+    final user = await RoleGuard.requireRole(session, allowed: [ClientRole.owner]);
 
     final existing = await Project.db.findById(session, projectId);
-    if (existing == null) {
-      return false;
-    }
-    if (existing.clientId != member.clientId) {
+    if (existing == null || existing.deletedAt != null) return false;
+    if (existing.clientId != user.clientId) {
       throw ApiException(message: 'Project belongs to a different client', code: 403);
     }
 
-    await Project.db.deleteRow(session, existing);
+    final now = DateTime.now();
+    existing.deletedAt = now;
+    await Project.db.updateRow(session, existing);
+
+    // Soft-delete all documents in project
+    final docs = await Document.db.find(
+      session,
+      where: (t) => t.projectId.equals(projectId) & t.deletedAt.equals(null),
+    );
+    for (final doc in docs) {
+      doc.deletedAt = now;
+      await Document.db.updateRow(session, doc);
+      final versions = await DocumentVersion.db.find(
+        session,
+        where: (t) => t.documentId.equals(doc.id!) & t.deletedAt.equals(null),
+      );
+      for (final v in versions) {
+        v.deletedAt = now;
+        await DocumentVersion.db.updateRow(session, v);
+      }
+    }
     return true;
   }
 
