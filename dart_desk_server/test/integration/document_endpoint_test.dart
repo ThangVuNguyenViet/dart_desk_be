@@ -1,3 +1,4 @@
+import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';
 import 'helpers/test_data_factory.dart';
@@ -12,7 +13,7 @@ void main() {
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      await factory.ensureTestUser();
+      await factory.ensureTestUser(role: ClientRole.admin);
     });
 
     group('createDocument', () {
@@ -138,7 +139,7 @@ void main() {
           offset: 0,
         );
 
-        expect(result.documents.length, equals(3));
+        expect(result.items.length, equals(3));
         expect(result.total, equals(5));
       });
 
@@ -160,8 +161,8 @@ void main() {
           offset: 0,
         );
 
-        expect(result.documents.length, equals(1));
-        expect(result.documents.first.title, equals('Alpha Post'));
+        expect(result.items.length, equals(1));
+        expect(result.items.first.title, equals('Alpha Post'));
       });
     });
 
@@ -203,11 +204,11 @@ void main() {
 
         expect(result, isTrue);
 
-        final fetched = await endpoints.document.getDocument(
-          sessionBuilder,
-          doc.id!,
+        // Soft delete: getDocument throws 410 for deleted documents
+        await expectLater(
+          () => endpoints.document.getDocument(sessionBuilder, doc.id!),
+          throwsA(isA<ApiException>()),
         );
-        expect(fetched, isNull);
       });
     });
 

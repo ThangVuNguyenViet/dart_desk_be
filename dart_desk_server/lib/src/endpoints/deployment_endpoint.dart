@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../auth/require_role.dart';
 import '../generated/protocol.dart';
 
 /// Endpoint for managing deployments.
@@ -43,7 +44,7 @@ class DeploymentEndpoint extends Endpoint {
     String projectSlug,
     int version,
   ) async {
-    await _requireAdminUser(session, projectSlug);
+    await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles);
 
     final project = await _getProject(session, projectSlug);
 
@@ -79,7 +80,9 @@ class DeploymentEndpoint extends Endpoint {
       status: DeploymentStatus.active,
       updatedAt: DateTime.now(),
     );
-    return await Deployment.db.updateRow(session, activated);
+    final result = await Deployment.db.updateRow(session, activated);
+    session.log('Activated Deployment projectSlug=$projectSlug version=$version', level: LogLevel.info);
+    return result;
   }
 
   /// Delete a deployment version.
@@ -88,7 +91,7 @@ class DeploymentEndpoint extends Endpoint {
     String projectSlug,
     int version,
   ) async {
-    await _requireAdminUser(session, projectSlug);
+    await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles);
 
     final project = await _getProject(session, projectSlug);
 
@@ -104,6 +107,7 @@ class DeploymentEndpoint extends Endpoint {
     }
 
     await Deployment.db.deleteRow(session, deployment);
+    session.log('Deleted Deployment projectSlug=$projectSlug version=$version', level: LogLevel.info);
     return true;
   }
 

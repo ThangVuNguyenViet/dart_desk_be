@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:serverpod/serverpod.dart';
 
 import '../auth/api_key_validator.dart';
+import '../auth/require_role.dart';
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
 
@@ -39,6 +40,7 @@ class ApiTokenEndpoint extends Endpoint {
     required int projectId,
   }) async {
     final auth = await _requireAuth(session, projectId: projectId);
+    await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles);
 
     if (!_rolePrefixes.containsKey(role)) {
       throw ApiException(message: 'Invalid role: $role. Must be read or write.', code: 400);
@@ -78,6 +80,7 @@ class ApiTokenEndpoint extends Endpoint {
       }
 
       final inserted = await ApiToken.db.insertRow(session, token);
+      session.log('Created ApiToken id=${inserted.id} projectId=$projectId role=$role', level: LogLevel.info);
       return ApiTokenWithValue(token: inserted, plaintextToken: rawToken);
     }
 
@@ -120,6 +123,7 @@ class ApiTokenEndpoint extends Endpoint {
     if (token == null) throw ApiException(message: 'Token not found: $tokenId', code: 404);
 
     await _requireAuth(session, projectId: projectId);
+    await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles);
     if (token.projectId != projectId) {
       throw ApiException(message: 'Token belongs to a different project', code: 403);
     }
@@ -148,6 +152,7 @@ class ApiTokenEndpoint extends Endpoint {
       );
 
       final result = await ApiToken.db.updateRow(session, updated);
+      session.log('Regenerated ApiToken id=$tokenId projectId=$projectId', level: LogLevel.info);
       return ApiTokenWithValue(token: result, plaintextToken: rawToken);
     }
 
@@ -164,11 +169,13 @@ class ApiTokenEndpoint extends Endpoint {
     if (token == null) return false;
 
     await _requireAuth(session, projectId: projectId);
+    await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles);
     if (token.projectId != projectId) {
       throw ApiException(message: 'Token belongs to a different project', code: 403);
     }
 
     await ApiToken.db.deleteRow(session, token);
+    session.log('Deleted ApiToken id=$tokenId projectId=$projectId', level: LogLevel.info);
     return true;
   }
 

@@ -18,7 +18,7 @@ import 'package:dart_desk_client/src/protocol/deployment.dart' as _i5;
 import 'package:dart_desk_client/src/protocol/document_crdt_operation.dart'
     as _i6;
 import 'package:dart_desk_client/src/protocol/document.dart' as _i7;
-import 'package:dart_desk_client/src/protocol/document_list.dart' as _i8;
+import 'package:dart_desk_client/src/protocol/paginated_documents.dart' as _i8;
 import 'package:dart_desk_client/src/protocol/document_version_list_with_operations.dart'
     as _i9;
 import 'package:dart_desk_client/src/protocol/document_version.dart' as _i10;
@@ -33,7 +33,7 @@ import 'dart:typed_data' as _i15;
 import 'package:dart_desk_client/src/protocol/user.dart' as _i16;
 import 'package:dart_desk_client/src/protocol/client_role.dart' as _i17;
 import 'package:dart_desk_client/src/protocol/migration_history.dart' as _i18;
-import 'package:dart_desk_client/src/protocol/project_list.dart' as _i19;
+import 'package:dart_desk_client/src/protocol/paginated_projects.dart' as _i19;
 import 'package:dart_desk_client/src/protocol/project.dart' as _i20;
 import 'package:dart_desk_client/src/protocol/cms_client.dart' as _i21;
 import 'package:dart_desk_client/src/protocol/project_member.dart' as _i22;
@@ -261,12 +261,12 @@ class EndpointDocument extends _i1.EndpointRef {
   String get name => 'document';
 
   /// Get all documents for a specific document type with pagination
-  _i2.Future<_i8.DocumentList> getDocuments(
+  _i2.Future<_i8.PaginatedDocuments> getDocuments(
     String documentType, {
     String? search,
     required int limit,
     required int offset,
-  }) => caller.callServerEndpoint<_i8.DocumentList>(
+  }) => caller.callServerEndpoint<_i8.PaginatedDocuments>(
     'document',
     'getDocuments',
     {
@@ -370,7 +370,7 @@ class EndpointDocument extends _i1.EndpointRef {
     },
   );
 
-  /// Delete a document
+  /// Delete a document (soft delete)
   _i2.Future<bool> deleteDocument(int documentId) =>
       caller.callServerEndpoint<bool>(
         'document',
@@ -469,7 +469,7 @@ class EndpointDocument extends _i1.EndpointRef {
         {'versionId': versionId},
       );
 
-  /// Delete a version
+  /// Delete a version (soft delete)
   _i2.Future<bool> deleteDocumentVersion(int versionId) =>
       caller.callServerEndpoint<bool>(
         'document',
@@ -690,6 +690,20 @@ class EndpointGoogleIdp extends _i12.EndpointGoogleIdpBase {
   _i2.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'googleIdp',
     'hasAccount',
+    {},
+  );
+}
+
+/// {@category Endpoint}
+class EndpointHealth extends _i1.EndpointRef {
+  EndpointHealth(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'health';
+
+  _i2.Future<String> check() => caller.callServerEndpoint<String>(
+    'health',
+    'check',
     {},
   );
 }
@@ -922,11 +936,11 @@ class EndpointProject extends _i1.EndpointRef {
   String get name => 'project';
 
   /// Get all projects with pagination and optional search.
-  _i2.Future<_i19.ProjectList> getProjects({
+  _i2.Future<_i19.PaginatedProjects> getProjects({
     String? search,
     required int limit,
     required int offset,
-  }) => caller.callServerEndpoint<_i19.ProjectList>(
+  }) => caller.callServerEndpoint<_i19.PaginatedProjects>(
     'project',
     'getProjects',
     {
@@ -988,7 +1002,7 @@ class EndpointProject extends _i1.EndpointRef {
     },
   );
 
-  /// Delete a project (requires authentication).
+  /// Delete a project (requires owner role, soft delete).
   _i2.Future<bool> deleteProject(int projectId) =>
       caller.callServerEndpoint<bool>(
         'project',
@@ -1161,6 +1175,35 @@ class EndpointRefreshJwtTokens extends _i13.EndpointRefreshJwtTokens {
 }
 
 /// {@category Endpoint}
+class EndpointRestore extends _i1.EndpointRef {
+  EndpointRestore(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'restore';
+
+  _i2.Future<_i7.Document> restoreDocument(int documentId) =>
+      caller.callServerEndpoint<_i7.Document>(
+        'restore',
+        'restoreDocument',
+        {'documentId': documentId},
+      );
+
+  _i2.Future<_i20.Project> restoreProject(int projectId) =>
+      caller.callServerEndpoint<_i20.Project>(
+        'restore',
+        'restoreProject',
+        {'projectId': projectId},
+      );
+
+  _i2.Future<_i16.User> restoreUser(int userId) =>
+      caller.callServerEndpoint<_i16.User>(
+        'restore',
+        'restoreUser',
+        {'userId': userId},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointStudioConfig extends _i1.EndpointRef {
   EndpointStudioConfig(_i1.EndpointCaller caller) : super(caller);
 
@@ -1252,6 +1295,7 @@ class Client extends _i1.ServerpodClientShared {
     document = EndpointDocument(this);
     emailIdp = EndpointEmailIdp(this);
     googleIdp = EndpointGoogleIdp(this);
+    health = EndpointHealth(this);
     media = EndpointMedia(this);
     member = EndpointMember(this);
     migration = EndpointMigration(this);
@@ -1259,6 +1303,7 @@ class Client extends _i1.ServerpodClientShared {
     projectMember = EndpointProjectMember(this);
     publicContent = EndpointPublicContent(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
+    restore = EndpointRestore(this);
     studioConfig = EndpointStudioConfig(this);
     user = EndpointUser(this);
     modules = Modules(this);
@@ -1276,6 +1321,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointGoogleIdp googleIdp;
 
+  late final EndpointHealth health;
+
   late final EndpointMedia media;
 
   late final EndpointMember member;
@@ -1289,6 +1336,8 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointPublicContent publicContent;
 
   late final EndpointRefreshJwtTokens refreshJwtTokens;
+
+  late final EndpointRestore restore;
 
   late final EndpointStudioConfig studioConfig;
 
@@ -1304,6 +1353,7 @@ class Client extends _i1.ServerpodClientShared {
     'document': document,
     'emailIdp': emailIdp,
     'googleIdp': googleIdp,
+    'health': health,
     'media': media,
     'member': member,
     'migration': migration,
@@ -1311,6 +1361,7 @@ class Client extends _i1.ServerpodClientShared {
     'projectMember': projectMember,
     'publicContent': publicContent,
     'refreshJwtTokens': refreshJwtTokens,
+    'restore': restore,
     'studioConfig': studioConfig,
     'user': user,
   };

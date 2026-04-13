@@ -96,6 +96,7 @@ class MediaEndpoint extends Endpoint {
 
     try {
       final inserted = await MediaAsset.db.insertRow(session, asset);
+      session.log('Uploaded image MediaAsset assetId=$assetId', level: LogLevel.info);
       unawaited(MetadataExtractor.extractAndUpdate(session, inserted));
       return inserted;
     } catch (e) {
@@ -170,7 +171,9 @@ class MediaEndpoint extends Endpoint {
     );
 
     try {
-      return await MediaAsset.db.insertRow(session, asset);
+      final inserted = await MediaAsset.db.insertRow(session, asset);
+      session.log('Uploaded file MediaAsset assetId=$assetId', level: LogLevel.info);
+      return inserted;
     } catch (e) {
       // Race condition: another request may have inserted the same assetId.
       final reFetched = await MediaAsset.db.findFirstRow(
@@ -211,6 +214,7 @@ class MediaEndpoint extends Endpoint {
 
     // Delete DB record
     await MediaAsset.db.deleteRow(session, asset);
+    session.log('Deleted MediaAsset assetId=$assetId', level: LogLevel.info);
 
     return true;
   }
@@ -297,7 +301,9 @@ class MediaEndpoint extends Endpoint {
       asset.fileName = fileName;
     }
 
-    return await MediaAsset.db.updateRow(session, asset);
+    final updated = await MediaAsset.db.updateRow(session, asset);
+    session.log('Updated MediaAsset assetId=$assetId', level: LogLevel.info);
+    return updated;
   }
 
   // ------------------------------------------------------------------

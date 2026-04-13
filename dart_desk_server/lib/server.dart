@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' show Directory;
 
 import 'package:dart_desk_server/src/services/email_service.dart';
 import 'package:dart_desk_server/src/web/routes/root.dart';
@@ -18,6 +18,8 @@ import 'src/plugin/dart_desk_plugin.dart';
 import 'src/plugin/dart_desk_registry.dart';
 import 'src/plugin/dart_desk_session.dart';
 import 'src/services/document_crdt_service.dart';
+import 'src/services/purge_service.dart'; // ignore: unused_import — used by PurgeFutureCall (see TODO below)
+import 'src/services/rate_limiter.dart';
 
 /// This is the starting point of your Serverpod server. In most cases, you will
 /// only need to make additions to this file if you add future calls, routes, or
@@ -96,12 +98,25 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
     ],
   );
 
+  // TODO(purge): Schedule daily purge of soft-deleted records using a
+  // FutureCall. Requires defining a PurgeFutureCall class and running
+  // `serverpod generate`. Retention period is configured via
+  // `softDeleteRetentionDays` in passwords.yaml (default: 30 days).
+  // Example: pod.futureCalls.callWithDelay(Duration(hours: 24)).purge.doWork()
+  // See PurgeService for the purge logic.
+
   // Override the authentication handler to chain JWT auth + API key auth.
   // initializeAuthServices sets the default JWT handler; we wrap it to also
   // support project API keys passed as "jwtToken:apiKey" compound tokens.
   final cloudAdminKey = pod.getPassword('cloudAdminKey');
   final defaultHandler = pod.authenticationHandler;
+  final authRateLimiter = RateLimiter(maxAttempts: 10, windowDuration: Duration(minutes: 1));
   pod.authenticationHandler = (session, token) async {
+      final tokenKey = token.length > 8 ? token.substring(0, 8) : token;
+      if (!authRateLimiter.isAllowed(tokenKey)) {
+        session.log('Rate limited auth attempt', level: LogLevel.warning);
+        return null;
+      }
     // Cloud admin: a single privileged key stored in passwords.yaml / env.
     if (cloudAdminKey != null &&
         cloudAdminKey.isNotEmpty &&
@@ -184,17 +199,6 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   await registry.runStartupHooks(pod);
 }
 
-void _debugLog(String message) {
-  final line = '${DateTime.now().toUtc().toIso8601String()} [EmailIdp] $message';
-  stdout.writeln(line);
-  try {
-    File('/tmp/dart_desk_email_debug.log')
-        .writeAsStringSync('$line\n', mode: FileMode.append, flush: true);
-  } catch (_) {
-    // Ignore file write errors — stdout already has the message.
-  }
-}
-
 EmailService? _emailService;
 
 EmailService? _initEmailService(Serverpod pod) {
@@ -219,22 +223,15 @@ Future<void> _sendRegistrationCode(
   required String verificationCode,
   required Transaction? transaction,
 }) async {
-  session.log('[EmailIdp] Registration code ($email): $verificationCode');
-  _debugLog('Registration code ($email): $verificationCode');
-  try {
-    await _sendEmail(
-      session: session,
-      to: email,
-      subject: 'Your Dart Desk verification code',
-      text: 'Your verification code is: $verificationCode',
-      html:
-          '<p>Your Dart Desk verification code is: <strong>$verificationCode</strong></p>',
-    );
-    _debugLog('_sendEmail completed for $email');
-  } catch (e, st) {
-    _debugLog('_sendEmail threw for $email: $e\n$st');
-    rethrow;
-  }
+  session.log('Registration code ($email): $verificationCode', level: LogLevel.info);
+  await _sendEmail(
+    session: session,
+    to: email,
+    subject: 'Your Dart Desk verification code',
+    text: 'Your verification code is: $verificationCode',
+    html:
+        '<p>Your Dart Desk verification code is: <strong>$verificationCode</strong></p>',
+  );
 }
 
 Future<void> _sendPasswordResetCode(
@@ -244,8 +241,7 @@ Future<void> _sendPasswordResetCode(
   required String verificationCode,
   required Transaction? transaction,
 }) async {
-  session.log('[EmailIdp] Password reset code ($email): $verificationCode');
-  stdout.writeln('[EmailIdp] Password reset code ($email): $verificationCode');
+  session.log('Password reset code ($email): $verificationCode', level: LogLevel.info);
   await _sendEmail(
     session: session,
     to: email,
@@ -263,23 +259,16 @@ Future<void> _sendEmail({
   required String text,
   required String html,
 }) async {
-  _debugLog('_sendEmail called for $to');
   final service = _emailService;
   if (service == null) {
-    _debugLog('smtpHost not configured — skipping SMTP send');
-    session.log('[EmailIdp] smtpHost not configured — skipping SMTP send');
+    session.log('[EmailIdp] smtpHost not configured — skipping SMTP send', level: LogLevel.warning);
     return;
   }
 
-  _debugLog('Attempting SMTP send to $to (host: ${service.config.host}:${service.config.port})');
   try {
     await service.send(to: to, subject: subject, text: text, html: html);
-    _debugLog('Email sent to $to');
-    session.log('[EmailIdp] Email sent to $to');
-  } catch (e, st) {
-    _debugLog('Failed to send email to $to: $e\n$st');
-    stderr.writeln('[EmailIdp] Failed to send email to $to: $e\n$st');
-    session.log('[EmailIdp] Failed to send email to $to: $e',
-        level: LogLevel.error);
+    session.log('[EmailIdp] Email sent to $to', level: LogLevel.info);
+  } catch (e) {
+    session.log('[EmailIdp] Failed to send email to $to: $e', level: LogLevel.error);
   }
 }

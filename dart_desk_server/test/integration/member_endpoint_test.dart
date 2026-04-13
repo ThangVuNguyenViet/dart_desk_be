@@ -115,7 +115,7 @@ void main() {
     });
 
     group('removeMember', () {
-      test('deletes user from client', () async {
+      test('soft-deletes user and removes project memberships', () async {
         final client = await factory.ensureTestClient();
         await factory.ensureTestUser(
           userIdentifier: 'admin-user',
@@ -124,6 +124,42 @@ void main() {
         final target = await factory.ensureTestUser(
           userIdentifier: 'target-user',
           email: 'target@example.com',
+          role: ClientRole.viewer,
+        );
+        await factory.ensureTestProjectMember(userId: target.id!);
+
+        final authed =
+            factory.authenticatedSession(userIdentifier: 'admin-user');
+        await endpoints.member.removeMember(
+          authed,
+          clientId: client.id!,
+          userId: target.id!,
+        );
+
+        // User should still exist but be soft-deleted
+        final session = sessionBuilder.build();
+        final found = await User.db.findById(session, target.id!);
+        expect(found, isNotNull);
+        expect(found!.isActive, isFalse);
+        expect(found.deletedAt, isNotNull);
+
+        // Project memberships should be hard-deleted
+        final memberships = await ProjectMember.db.find(
+          session,
+          where: (t) => t.userId.equals(target.id!),
+        );
+        expect(memberships, isEmpty);
+      });
+
+      test('does not show soft-deleted users in listMembers', () async {
+        final client = await factory.ensureTestClient();
+        await factory.ensureTestUser(
+          userIdentifier: 'admin-user',
+          role: ClientRole.admin,
+        );
+        final target = await factory.ensureTestUser(
+          userIdentifier: 'removed-user',
+          email: 'removed@example.com',
           role: ClientRole.viewer,
         );
 
@@ -135,9 +171,12 @@ void main() {
           userId: target.id!,
         );
 
-        final session = sessionBuilder.build();
-        final found = await User.db.findById(session, target.id!);
-        expect(found, isNull);
+        final members = await endpoints.member.listMembers(
+          authed,
+          clientId: client.id!,
+        );
+        final removedIds = members.map((m) => m.id).toList();
+        expect(removedIds, isNot(contains(target.id)));
       });
     });
   });

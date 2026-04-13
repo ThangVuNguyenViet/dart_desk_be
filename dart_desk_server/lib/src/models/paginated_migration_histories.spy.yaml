@@ -1,0 +1,7 @@
+class: PaginatedMigrationHistories
+fields:
+  items: List<MigrationHistory>
+  total: int
+  limit: int
+  offset: int
+  hasMore: bool

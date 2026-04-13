@@ -23,6 +23,9 @@ abstract class Project implements _i1.SerializableModel {
     this.settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    this.createdByUserId,
+    this.updatedByUserId,
+    this.deletedAt,
   }) : isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
@@ -37,6 +40,9 @@ abstract class Project implements _i1.SerializableModel {
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? createdByUserId,
+    int? updatedByUserId,
+    DateTime? deletedAt,
   }) = _ProjectImpl;
 
   factory Project.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -56,6 +62,11 @@ abstract class Project implements _i1.SerializableModel {
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
+      createdByUserId: jsonSerialization['createdByUserId'] as int?,
+      updatedByUserId: jsonSerialization['updatedByUserId'] as int?,
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
     );
   }
 
@@ -80,6 +91,12 @@ abstract class Project implements _i1.SerializableModel {
 
   DateTime? updatedAt;
 
+  int? createdByUserId;
+
+  int? updatedByUserId;
+
+  DateTime? deletedAt;
+
   /// Returns a shallow copy of this [Project]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -93,6 +110,9 @@ abstract class Project implements _i1.SerializableModel {
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? createdByUserId,
+    int? updatedByUserId,
+    DateTime? deletedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -107,6 +127,9 @@ abstract class Project implements _i1.SerializableModel {
       if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
+      if (createdByUserId != null) 'createdByUserId': createdByUserId,
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -129,6 +152,9 @@ class _ProjectImpl extends Project {
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? createdByUserId,
+    int? updatedByUserId,
+    DateTime? deletedAt,
   }) : super._(
          id: id,
          clientId: clientId,
@@ -139,6 +165,9 @@ class _ProjectImpl extends Project {
          settings: settings,
          createdAt: createdAt,
          updatedAt: updatedAt,
+         createdByUserId: createdByUserId,
+         updatedByUserId: updatedByUserId,
+         deletedAt: deletedAt,
        );
 
   /// Returns a shallow copy of this [Project]
@@ -155,6 +184,9 @@ class _ProjectImpl extends Project {
     Object? settings = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
+    Object? createdByUserId = _Undefined,
+    Object? updatedByUserId = _Undefined,
+    Object? deletedAt = _Undefined,
   }) {
     return Project(
       id: id is int? ? id : this.id,
@@ -166,6 +198,13 @@ class _ProjectImpl extends Project {
       settings: settings is String? ? settings : this.settings,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
+      createdByUserId: createdByUserId is int?
+          ? createdByUserId
+          : this.createdByUserId,
+      updatedByUserId: updatedByUserId is int?
+          ? updatedByUserId
+          : this.updatedByUserId,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
     );
   }
 }

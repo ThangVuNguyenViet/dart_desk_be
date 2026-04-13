@@ -16,7 +16,7 @@ void main() {
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      await factory.ensureTestUser();
+      await factory.ensureTestUser(role: ClientRole.admin);
     });
 
     group('createDocumentVersion', () {
@@ -262,11 +262,11 @@ void main() {
         );
         expect(result, isTrue);
 
-        final fetched = await endpoints.document.getDocumentVersion(
-          sessionBuilder,
-          version.id!,
+        // Soft delete: getDocumentVersion throws 410 for deleted versions
+        await expectLater(
+          () => endpoints.document.getDocumentVersion(sessionBuilder, version.id!),
+          throwsA(isA<ApiException>()),
         );
-        expect(fetched, isNull);
       });
     });
   });

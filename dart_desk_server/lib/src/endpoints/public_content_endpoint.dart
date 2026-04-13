@@ -18,7 +18,9 @@ class PublicContentEndpoint extends Endpoint {
     final documents = await Document.db.find(
       session,
       where: (t) =>
-          t.projectId.equals(projectId) & t.publishedAt.notEquals(null),
+          t.projectId.equals(projectId) &
+          t.publishedAt.notEquals(null) &
+          t.deletedAt.equals(null),
     );
 
     final grouped = <String, List<PublicDocument>>{};
@@ -40,7 +42,8 @@ class PublicContentEndpoint extends Endpoint {
       where: (t) =>
           t.projectId.equals(projectId) &
           t.publishedAt.notEquals(null) &
-          t.isDefault.equals(true),
+          t.isDefault.equals(true) &
+          t.deletedAt.equals(null),
     );
 
     final result = <String, PublicDocument>{};
@@ -62,7 +65,8 @@ class PublicContentEndpoint extends Endpoint {
       where: (t) =>
           t.projectId.equals(projectId) &
           t.publishedAt.notEquals(null) &
-          t.documentType.equals(documentType),
+          t.documentType.equals(documentType) &
+          t.deletedAt.equals(null),
     );
 
     return Future.wait(documents.map((d) => _toPublicDocument(session, d)));
@@ -81,11 +85,12 @@ class PublicContentEndpoint extends Endpoint {
           t.projectId.equals(projectId) &
           t.publishedAt.notEquals(null) &
           t.documentType.equals(documentType) &
-          t.isDefault.equals(true),
+          t.isDefault.equals(true) &
+          t.deletedAt.equals(null),
     );
 
     if (document == null) {
-      throw ApiException(message: 'No default published document found for type "$documentType".', code: 400);
+      throw ApiException(message: 'No default published document found for type "$documentType".', code: 404);
     }
 
     return _toPublicDocument(session, document);
@@ -105,11 +110,12 @@ class PublicContentEndpoint extends Endpoint {
           t.projectId.equals(projectId) &
           t.publishedAt.notEquals(null) &
           t.documentType.equals(documentType) &
-          t.slug.equals(slug),
+          t.slug.equals(slug) &
+          t.deletedAt.equals(null),
     );
 
     if (document == null) {
-      throw ApiException(message: 'No published document found for type "$documentType" with slug "$slug".', code: 400);
+      throw ApiException(message: 'No published document found for type "$documentType" with slug "$slug".', code: 404);
     }
 
     return _toPublicDocument(session, document);

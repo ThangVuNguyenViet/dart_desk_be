@@ -34,7 +34,10 @@ class MemberEndpoint extends Endpoint {
 
     return User.db.find(
       session,
-      where: (t) => t.clientId.equals(clientId) & t.isActive.equals(true),
+      where: (t) =>
+          t.clientId.equals(clientId) &
+          t.isActive.equals(true) &
+          t.deletedAt.equals(null),
       orderBy: (t) => t.createdAt,
       orderDescending: true,
     );
@@ -60,7 +63,7 @@ class MemberEndpoint extends Endpoint {
       );
     }
 
-    return User.db.insertRow(
+    final invited = await User.db.insertRow(
       session,
       User(
         clientId: clientId,
@@ -69,6 +72,8 @@ class MemberEndpoint extends Endpoint {
         isActive: true,
       ),
     );
+    session.log('Invited Member id=${invited.id} clientId=$clientId role=$role', level: LogLevel.info);
+    return invited;
   }
 
   Future<User> updateMemberRole(
@@ -101,6 +106,7 @@ class MemberEndpoint extends Endpoint {
 
     final updated = target.copyWith(role: role, updatedAt: DateTime.now());
     await User.db.updateRow(session, updated);
+    session.log('Updated Member id=$userId clientId=$clientId role=$role', level: LogLevel.info);
     return updated;
   }
 
@@ -121,16 +127,33 @@ class MemberEndpoint extends Endpoint {
       final ownerCount = await User.db.count(
         session,
         where: (t) =>
-            t.clientId.equals(clientId) & t.role.equals(ClientRole.owner),
+            t.clientId.equals(clientId) &
+            t.role.equals(ClientRole.owner) &
+            t.isActive.equals(true) &
+            t.deletedAt.equals(null),
       );
       if (ownerCount <= 1) {
         throw ApiException(
-          message: 'Cannot remove the last owner',
+          message: 'Cannot remove the last owner. Transfer ownership first.',
           code: 400,
+          errorCode: 'LAST_OWNER',
         );
       }
     }
 
-    await User.db.deleteRow(session, target);
+    // Soft-delete user
+    target.isActive = false;
+    target.deletedAt = DateTime.now();
+    await User.db.updateRow(session, target);
+
+    // Hard-delete all project memberships
+    final memberships = await ProjectMember.db.find(
+      session,
+      where: (t) => t.userId.equals(userId),
+    );
+    for (final m in memberships) {
+      await ProjectMember.db.deleteRow(session, m);
+    }
+    session.log('Removed Member id=$userId clientId=$clientId', level: LogLevel.info);
   }
 }

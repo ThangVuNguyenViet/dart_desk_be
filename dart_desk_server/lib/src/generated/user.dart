@@ -24,6 +24,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     this.serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    this.deletedAt,
   }) : role = role ?? _i2.ClientRole.viewer,
        isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now(),
@@ -39,6 +40,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     String? serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? deletedAt,
   }) = _UserImpl;
 
   factory User.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -60,6 +62,9 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
     );
   }
 
@@ -86,6 +91,8 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   DateTime? updatedAt;
 
+  DateTime? deletedAt;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -102,6 +109,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     String? serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? deletedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -116,6 +124,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -132,6 +141,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (serverpodUserId != null) 'serverpodUserId': serverpodUserId,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -178,6 +188,7 @@ class _UserImpl extends User {
     String? serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? deletedAt,
   }) : super._(
          id: id,
          clientId: clientId,
@@ -188,6 +199,7 @@ class _UserImpl extends User {
          serverpodUserId: serverpodUserId,
          createdAt: createdAt,
          updatedAt: updatedAt,
+         deletedAt: deletedAt,
        );
 
   /// Returns a shallow copy of this [User]
@@ -204,6 +216,7 @@ class _UserImpl extends User {
     Object? serverpodUserId = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
+    Object? deletedAt = _Undefined,
   }) {
     return User(
       id: id is int? ? id : this.id,
@@ -217,6 +230,7 @@ class _UserImpl extends User {
           : this.serverpodUserId,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
     );
   }
 }
@@ -267,6 +281,12 @@ class UserUpdateTable extends _i1.UpdateTable<UserTable> {
         table.updatedAt,
         value,
       );
+
+  _i1.ColumnValue<DateTime, DateTime> deletedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.deletedAt,
+        value,
+      );
 }
 
 class UserTable extends _i1.Table<int?> {
@@ -309,6 +329,10 @@ class UserTable extends _i1.Table<int?> {
       this,
       hasDefault: true,
     );
+    deletedAt = _i1.ColumnDateTime(
+      'deletedAt',
+      this,
+    );
   }
 
   late final UserUpdateTable updateTable;
@@ -329,6 +353,8 @@ class UserTable extends _i1.Table<int?> {
 
   late final _i1.ColumnDateTime updatedAt;
 
+  late final _i1.ColumnDateTime deletedAt;
+
   @override
   List<_i1.Column> get columns => [
     id,
@@ -340,6 +366,7 @@ class UserTable extends _i1.Table<int?> {
     serverpodUserId,
     createdAt,
     updatedAt,
+    deletedAt,
   ];
 }
 
