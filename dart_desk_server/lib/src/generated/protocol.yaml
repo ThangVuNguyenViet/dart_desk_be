@@ -48,6 +48,8 @@ emailIdp:
 googleIdp:
   - login:
   - hasAccount:
+health:
+  - check:
 media:
   - uploadImage:
   - uploadFile:

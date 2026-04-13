@@ -694,6 +694,20 @@ class EndpointGoogleIdp extends _i12.EndpointGoogleIdpBase {
   );
 }
 
+/// {@category Endpoint}
+class EndpointHealth extends _i1.EndpointRef {
+  EndpointHealth(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'health';
+
+  _i2.Future<String> check() => caller.callServerEndpoint<String>(
+    'health',
+    'check',
+    {},
+  );
+}
+
 /// Endpoint for managing media assets (images and files).
 /// All operations require authentication.
 /// {@category Endpoint}
@@ -1281,6 +1295,7 @@ class Client extends _i1.ServerpodClientShared {
     document = EndpointDocument(this);
     emailIdp = EndpointEmailIdp(this);
     googleIdp = EndpointGoogleIdp(this);
+    health = EndpointHealth(this);
     media = EndpointMedia(this);
     member = EndpointMember(this);
     migration = EndpointMigration(this);
@@ -1305,6 +1320,8 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointEmailIdp emailIdp;
 
   late final EndpointGoogleIdp googleIdp;
+
+  late final EndpointHealth health;
 
   late final EndpointMedia media;
 
@@ -1336,6 +1353,7 @@ class Client extends _i1.ServerpodClientShared {
     'document': document,
     'emailIdp': emailIdp,
     'googleIdp': googleIdp,
+    'health': health,
     'media': media,
     'member': member,
     'migration': migration,
