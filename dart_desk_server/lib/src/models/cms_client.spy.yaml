@@ -1,6 +1,7 @@
 class: CmsClient
 table: clients
 fields:
+  id: UuidValue, defaultModel=random
   name: String
   slug: String
   description: String?

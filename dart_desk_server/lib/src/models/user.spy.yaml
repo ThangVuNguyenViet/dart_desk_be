@@ -1,7 +1,8 @@
 class: User
 table: users
 fields:
-  clientId: int?
+  id: UuidValue, defaultModel=random
+  clientId: UuidValue?
   email: String
   name: String?
   role: ClientRole, default=viewer

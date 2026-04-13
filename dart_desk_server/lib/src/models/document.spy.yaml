@@ -1,7 +1,8 @@
 class: Document
 table: documents
 fields:
-  projectId: int, relation(parent=projects, onDelete=Cascade)
+  id: UuidValue, defaultModel=random
+  projectId: UuidValue, relation(parent=projects, onDelete=Cascade)
   documentType: String
   title: String
   slug: String
@@ -12,8 +13,8 @@ fields:
   publishedAt: DateTime?
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
-  createdByUserId: int?, relation(parent=users, onDelete=SetNull)
-  updatedByUserId: int?, relation(parent=users, onDelete=SetNull)
+  createdByUserId: UuidValue?, relation(parent=users, onDelete=SetNull)
+  updatedByUserId: UuidValue?, relation(parent=users, onDelete=SetNull)
 indexes:
   documents_project_type_idx:
     fields: projectId, documentType

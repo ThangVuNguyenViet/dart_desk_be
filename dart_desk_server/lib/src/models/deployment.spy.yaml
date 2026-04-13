@@ -1,12 +1,13 @@
 class: Deployment
 table: deployments
 fields:
-  projectId: int, relation(parent=projects, onDelete=Restrict)
+  id: UuidValue, defaultModel=random
+  projectId: UuidValue, relation(parent=projects, onDelete=Restrict)
   version: int
   status: DeploymentStatus
   filePath: String
   fileSize: int?
-  uploadedByUserId: int?, relation(parent=users, onDelete=SetNull)
+  uploadedByUserId: UuidValue?, relation(parent=users, onDelete=SetNull)
   commitHash: String?
   metadata: String?
   createdAt: DateTime?, default=now

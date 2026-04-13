@@ -1,6 +1,6 @@
 class: PublicDocument
 fields:
-  id: int
+  id: UuidValue
   documentType: String
   title: String
   slug: String

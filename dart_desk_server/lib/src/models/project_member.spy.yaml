@@ -1,8 +1,9 @@
 class: ProjectMember
 table: project_members
 fields:
-  userId: int, relation(parent=users, onDelete=Cascade)
-  projectId: int, relation(parent=projects, onDelete=Cascade)
+  id: UuidValue, defaultModel=random
+  userId: UuidValue, relation(parent=users, onDelete=Cascade)
+  projectId: UuidValue, relation(parent=projects, onDelete=Cascade)
   role: ProjectRole
   createdAt: DateTime?, default=now
 indexes:

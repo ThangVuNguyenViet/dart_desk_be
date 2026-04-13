@@ -1,12 +1,13 @@
 class: DocumentData
 table: documents_data
 fields:
+  id: UuidValue, defaultModel=random
   documentType: String
   data: String  # JSON string for flexible document data
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
-  createdByUserId: int?
-  updatedByUserId: int?
+  createdByUserId: UuidValue?
+  updatedByUserId: UuidValue?
 indexes:
   documents_data_document_type_idx:
     fields: documentType

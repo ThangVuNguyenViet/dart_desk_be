@@ -1,7 +1,8 @@
 class: MigrationHistory
 table: migration_history
 fields:
-  projectId: int, relation(parent=projects, onDelete=Cascade)
+  id: UuidValue, defaultModel=random
+  projectId: UuidValue, relation(parent=projects, onDelete=Cascade)
   name: String
   documentType: String
   appliedAt: DateTime, default=now

@@ -1,13 +1,14 @@
 class: ApiToken
 table: api_tokens
 fields:
-  projectId: int, relation(parent=projects, onDelete=Cascade)
+  id: UuidValue, defaultModel=random
+  projectId: UuidValue, relation(parent=projects, onDelete=Cascade)
   name: String
   tokenHash: String
   tokenPrefix: String
   tokenSuffix: String
   role: String
-  createdByUserId: int?, relation(parent=users, onDelete=SetNull)
+  createdByUserId: UuidValue?, relation(parent=users, onDelete=SetNull)
   lastUsedAt: DateTime?
   expiresAt: DateTime?
   isActive: bool, default=true

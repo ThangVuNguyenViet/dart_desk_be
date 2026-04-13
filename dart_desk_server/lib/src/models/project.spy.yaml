@@ -1,7 +1,8 @@
 class: Project
 table: projects
 fields:
-  clientId: int, relation(parent=clients, onDelete=Cascade)
+  id: UuidValue, defaultModel=random
+  clientId: UuidValue, relation(parent=clients, onDelete=Cascade)
   name: String
   slug: String
   description: String?
