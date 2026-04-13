@@ -13,20 +13,21 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class MigrationHistory
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   MigrationHistory._({
-    this.id,
+    _i1.UuidValue? id,
     required this.projectId,
     required this.name,
     required this.documentType,
     DateTime? appliedAt,
     required this.operationsJson,
     required this.report,
-  }) : appliedAt = appliedAt ?? DateTime.now();
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       appliedAt = appliedAt ?? DateTime.now();
 
   factory MigrationHistory({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String name,
     required String documentType,
     DateTime? appliedAt,
@@ -36,8 +37,12 @@ abstract class MigrationHistory
 
   factory MigrationHistory.fromJson(Map<String, dynamic> jsonSerialization) {
     return MigrationHistory(
-      id: jsonSerialization['id'] as int?,
-      projectId: jsonSerialization['projectId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      projectId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['projectId'],
+      ),
       name: jsonSerialization['name'] as String,
       documentType: jsonSerialization['documentType'] as String,
       appliedAt: jsonSerialization['appliedAt'] == null
@@ -53,9 +58,9 @@ abstract class MigrationHistory
   static const db = MigrationHistoryRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue id;
 
-  int projectId;
+  _i1.UuidValue projectId;
 
   String name;
 
@@ -68,14 +73,14 @@ abstract class MigrationHistory
   String report;
 
   @override
-  _i1.Table<int?> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [MigrationHistory]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   MigrationHistory copyWith({
-    int? id,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? name,
     String? documentType,
     DateTime? appliedAt,
@@ -86,8 +91,8 @@ abstract class MigrationHistory
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'MigrationHistory',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'name': name,
       'documentType': documentType,
       'appliedAt': appliedAt.toJson(),
@@ -100,8 +105,8 @@ abstract class MigrationHistory
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'MigrationHistory',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'name': name,
       'documentType': documentType,
       'appliedAt': appliedAt.toJson(),
@@ -140,12 +145,10 @@ abstract class MigrationHistory
   }
 }
 
-class _Undefined {}
-
 class _MigrationHistoryImpl extends MigrationHistory {
   _MigrationHistoryImpl({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String name,
     required String documentType,
     DateTime? appliedAt,
@@ -166,8 +169,8 @@ class _MigrationHistoryImpl extends MigrationHistory {
   @_i1.useResult
   @override
   MigrationHistory copyWith({
-    Object? id = _Undefined,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? name,
     String? documentType,
     DateTime? appliedAt,
@@ -175,7 +178,7 @@ class _MigrationHistoryImpl extends MigrationHistory {
     String? report,
   }) {
     return MigrationHistory(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       name: name ?? this.name,
       documentType: documentType ?? this.documentType,
@@ -190,7 +193,9 @@ class MigrationHistoryUpdateTable
     extends _i1.UpdateTable<MigrationHistoryTable> {
   MigrationHistoryUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> projectId(int value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> projectId(
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
     table.projectId,
     value,
   );
@@ -223,11 +228,11 @@ class MigrationHistoryUpdateTable
   );
 }
 
-class MigrationHistoryTable extends _i1.Table<int?> {
+class MigrationHistoryTable extends _i1.Table<_i1.UuidValue> {
   MigrationHistoryTable({super.tableRelation})
     : super(tableName: 'migration_history') {
     updateTable = MigrationHistoryUpdateTable(this);
-    projectId = _i1.ColumnInt(
+    projectId = _i1.ColumnUuid(
       'projectId',
       this,
     );
@@ -256,7 +261,7 @@ class MigrationHistoryTable extends _i1.Table<int?> {
 
   late final MigrationHistoryUpdateTable updateTable;
 
-  late final _i1.ColumnInt projectId;
+  late final _i1.ColumnUuid projectId;
 
   late final _i1.ColumnString name;
 
@@ -287,7 +292,7 @@ class MigrationHistoryInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => MigrationHistory.t;
+  _i1.Table<_i1.UuidValue> get table => MigrationHistory.t;
 }
 
 class MigrationHistoryIncludeList extends _i1.IncludeList {
@@ -307,7 +312,7 @@ class MigrationHistoryIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => MigrationHistory.t;
+  _i1.Table<_i1.UuidValue> get table => MigrationHistory.t;
 }
 
 class MigrationHistoryRepository {
@@ -403,7 +408,7 @@ class MigrationHistoryRepository {
   /// Finds a single [MigrationHistory] by its [id] or null if no such row exists.
   Future<MigrationHistory?> findById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -491,7 +496,7 @@ class MigrationHistoryRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<MigrationHistory?> updateById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<MigrationHistoryUpdateTable>
     columnValues,
     _i1.Transaction? transaction,

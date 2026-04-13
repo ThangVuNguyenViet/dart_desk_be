@@ -14,9 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'crdt_operation_type.dart' as _i2;
 
 abstract class DocumentCrdtOperation
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   DocumentCrdtOperation._({
-    this.id,
+    _i1.UuidValue? id,
     required this.documentId,
     required this.hlc,
     required this.nodeId,
@@ -25,26 +25,31 @@ abstract class DocumentCrdtOperation
     this.fieldValue,
     DateTime? createdAt,
     this.createdByUserId,
-  }) : createdAt = createdAt ?? DateTime.now();
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       createdAt = createdAt ?? DateTime.now();
 
   factory DocumentCrdtOperation({
-    int? id,
-    required int documentId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue documentId,
     required String hlc,
     required String nodeId,
     required _i2.CrdtOperationType operationType,
     required String fieldPath,
     String? fieldValue,
     DateTime? createdAt,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
   }) = _DocumentCrdtOperationImpl;
 
   factory DocumentCrdtOperation.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return DocumentCrdtOperation(
-      id: jsonSerialization['id'] as int?,
-      documentId: jsonSerialization['documentId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      documentId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['documentId'],
+      ),
       hlc: jsonSerialization['hlc'] as String,
       nodeId: jsonSerialization['nodeId'] as String,
       operationType: _i2.CrdtOperationType.fromJson(
@@ -55,7 +60,11 @@ abstract class DocumentCrdtOperation
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      createdByUserId: jsonSerialization['createdByUserId'] as int?,
+      createdByUserId: jsonSerialization['createdByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['createdByUserId'],
+            ),
     );
   }
 
@@ -64,9 +73,9 @@ abstract class DocumentCrdtOperation
   static const db = DocumentCrdtOperationRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue id;
 
-  int documentId;
+  _i1.UuidValue documentId;
 
   String hlc;
 
@@ -80,38 +89,38 @@ abstract class DocumentCrdtOperation
 
   DateTime? createdAt;
 
-  int? createdByUserId;
+  _i1.UuidValue? createdByUserId;
 
   @override
-  _i1.Table<int?> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [DocumentCrdtOperation]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   DocumentCrdtOperation copyWith({
-    int? id,
-    int? documentId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? documentId,
     String? hlc,
     String? nodeId,
     _i2.CrdtOperationType? operationType,
     String? fieldPath,
     String? fieldValue,
     DateTime? createdAt,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'DocumentCrdtOperation',
-      if (id != null) 'id': id,
-      'documentId': documentId,
+      'id': id.toJson(),
+      'documentId': documentId.toJson(),
       'hlc': hlc,
       'nodeId': nodeId,
       'operationType': operationType.toJson(),
       'fieldPath': fieldPath,
       if (fieldValue != null) 'fieldValue': fieldValue,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
     };
   }
 
@@ -119,15 +128,15 @@ abstract class DocumentCrdtOperation
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'DocumentCrdtOperation',
-      if (id != null) 'id': id,
-      'documentId': documentId,
+      'id': id.toJson(),
+      'documentId': documentId.toJson(),
       'hlc': hlc,
       'nodeId': nodeId,
       'operationType': operationType.toJson(),
       'fieldPath': fieldPath,
       if (fieldValue != null) 'fieldValue': fieldValue,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
     };
   }
 
@@ -165,15 +174,15 @@ class _Undefined {}
 
 class _DocumentCrdtOperationImpl extends DocumentCrdtOperation {
   _DocumentCrdtOperationImpl({
-    int? id,
-    required int documentId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue documentId,
     required String hlc,
     required String nodeId,
     required _i2.CrdtOperationType operationType,
     required String fieldPath,
     String? fieldValue,
     DateTime? createdAt,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
   }) : super._(
          id: id,
          documentId: documentId,
@@ -191,8 +200,8 @@ class _DocumentCrdtOperationImpl extends DocumentCrdtOperation {
   @_i1.useResult
   @override
   DocumentCrdtOperation copyWith({
-    Object? id = _Undefined,
-    int? documentId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? documentId,
     String? hlc,
     String? nodeId,
     _i2.CrdtOperationType? operationType,
@@ -202,7 +211,7 @@ class _DocumentCrdtOperationImpl extends DocumentCrdtOperation {
     Object? createdByUserId = _Undefined,
   }) {
     return DocumentCrdtOperation(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       documentId: documentId ?? this.documentId,
       hlc: hlc ?? this.hlc,
       nodeId: nodeId ?? this.nodeId,
@@ -210,7 +219,7 @@ class _DocumentCrdtOperationImpl extends DocumentCrdtOperation {
       fieldPath: fieldPath ?? this.fieldPath,
       fieldValue: fieldValue is String? ? fieldValue : this.fieldValue,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
-      createdByUserId: createdByUserId is int?
+      createdByUserId: createdByUserId is _i1.UuidValue?
           ? createdByUserId
           : this.createdByUserId,
     );
@@ -221,7 +230,9 @@ class DocumentCrdtOperationUpdateTable
     extends _i1.UpdateTable<DocumentCrdtOperationTable> {
   DocumentCrdtOperationUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> documentId(int value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> documentId(
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
     table.documentId,
     value,
   );
@@ -259,17 +270,19 @@ class DocumentCrdtOperationUpdateTable
         value,
       );
 
-  _i1.ColumnValue<int, int> createdByUserId(int? value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> createdByUserId(
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
     table.createdByUserId,
     value,
   );
 }
 
-class DocumentCrdtOperationTable extends _i1.Table<int?> {
+class DocumentCrdtOperationTable extends _i1.Table<_i1.UuidValue> {
   DocumentCrdtOperationTable({super.tableRelation})
     : super(tableName: 'document_crdt_operations') {
     updateTable = DocumentCrdtOperationUpdateTable(this);
-    documentId = _i1.ColumnInt(
+    documentId = _i1.ColumnUuid(
       'documentId',
       this,
     );
@@ -299,7 +312,7 @@ class DocumentCrdtOperationTable extends _i1.Table<int?> {
       this,
       hasDefault: true,
     );
-    createdByUserId = _i1.ColumnInt(
+    createdByUserId = _i1.ColumnUuid(
       'createdByUserId',
       this,
     );
@@ -307,7 +320,7 @@ class DocumentCrdtOperationTable extends _i1.Table<int?> {
 
   late final DocumentCrdtOperationUpdateTable updateTable;
 
-  late final _i1.ColumnInt documentId;
+  late final _i1.ColumnUuid documentId;
 
   late final _i1.ColumnString hlc;
 
@@ -321,7 +334,7 @@ class DocumentCrdtOperationTable extends _i1.Table<int?> {
 
   late final _i1.ColumnDateTime createdAt;
 
-  late final _i1.ColumnInt createdByUserId;
+  late final _i1.ColumnUuid createdByUserId;
 
   @override
   List<_i1.Column> get columns => [
@@ -344,7 +357,7 @@ class DocumentCrdtOperationInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => DocumentCrdtOperation.t;
+  _i1.Table<_i1.UuidValue> get table => DocumentCrdtOperation.t;
 }
 
 class DocumentCrdtOperationIncludeList extends _i1.IncludeList {
@@ -364,7 +377,7 @@ class DocumentCrdtOperationIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => DocumentCrdtOperation.t;
+  _i1.Table<_i1.UuidValue> get table => DocumentCrdtOperation.t;
 }
 
 class DocumentCrdtOperationRepository {
@@ -460,7 +473,7 @@ class DocumentCrdtOperationRepository {
   /// Finds a single [DocumentCrdtOperation] by its [id] or null if no such row exists.
   Future<DocumentCrdtOperation?> findById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -548,7 +561,7 @@ class DocumentCrdtOperationRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<DocumentCrdtOperation?> updateById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<DocumentCrdtOperationUpdateTable>
     columnValues,
     _i1.Transaction? transaction,

@@ -14,9 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'media_asset_metadata_status.dart' as _i2;
 
 abstract class MediaAsset
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   MediaAsset._({
-    this.id,
+    _i1.UuidValue? id,
     required this.projectId,
     required this.assetId,
     required this.fileName,
@@ -36,11 +36,12 @@ abstract class MediaAsset
     this.uploadedByUserId,
     DateTime? createdAt,
     required this.metadataStatus,
-  }) : createdAt = createdAt ?? DateTime.now();
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       createdAt = createdAt ?? DateTime.now();
 
   factory MediaAsset({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String assetId,
     required String fileName,
     required String mimeType,
@@ -56,15 +57,19 @@ abstract class MediaAsset
     String? exifJson,
     double? locationLat,
     double? locationLng,
-    int? uploadedByUserId,
+    _i1.UuidValue? uploadedByUserId,
     DateTime? createdAt,
     required _i2.MediaAssetMetadataStatus metadataStatus,
   }) = _MediaAssetImpl;
 
   factory MediaAsset.fromJson(Map<String, dynamic> jsonSerialization) {
     return MediaAsset(
-      id: jsonSerialization['id'] as int?,
-      projectId: jsonSerialization['projectId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      projectId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['projectId'],
+      ),
       assetId: jsonSerialization['assetId'] as String,
       fileName: jsonSerialization['fileName'] as String,
       mimeType: jsonSerialization['mimeType'] as String,
@@ -80,7 +85,11 @@ abstract class MediaAsset
       exifJson: jsonSerialization['exifJson'] as String?,
       locationLat: (jsonSerialization['locationLat'] as num?)?.toDouble(),
       locationLng: (jsonSerialization['locationLng'] as num?)?.toDouble(),
-      uploadedByUserId: jsonSerialization['uploadedByUserId'] as int?,
+      uploadedByUserId: jsonSerialization['uploadedByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uploadedByUserId'],
+            ),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -95,9 +104,9 @@ abstract class MediaAsset
   static const db = MediaAssetRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue id;
 
-  int projectId;
+  _i1.UuidValue projectId;
 
   String assetId;
 
@@ -129,21 +138,21 @@ abstract class MediaAsset
 
   double? locationLng;
 
-  int? uploadedByUserId;
+  _i1.UuidValue? uploadedByUserId;
 
   DateTime? createdAt;
 
   _i2.MediaAssetMetadataStatus metadataStatus;
 
   @override
-  _i1.Table<int?> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [MediaAsset]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   MediaAsset copyWith({
-    int? id,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? assetId,
     String? fileName,
     String? mimeType,
@@ -159,7 +168,7 @@ abstract class MediaAsset
     String? exifJson,
     double? locationLat,
     double? locationLng,
-    int? uploadedByUserId,
+    _i1.UuidValue? uploadedByUserId,
     DateTime? createdAt,
     _i2.MediaAssetMetadataStatus? metadataStatus,
   });
@@ -167,8 +176,8 @@ abstract class MediaAsset
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'MediaAsset',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'assetId': assetId,
       'fileName': fileName,
       'mimeType': mimeType,
@@ -184,7 +193,8 @@ abstract class MediaAsset
       if (exifJson != null) 'exifJson': exifJson,
       if (locationLat != null) 'locationLat': locationLat,
       if (locationLng != null) 'locationLng': locationLng,
-      if (uploadedByUserId != null) 'uploadedByUserId': uploadedByUserId,
+      if (uploadedByUserId != null)
+        'uploadedByUserId': uploadedByUserId?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       'metadataStatus': metadataStatus.toJson(),
     };
@@ -194,8 +204,8 @@ abstract class MediaAsset
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'MediaAsset',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'assetId': assetId,
       'fileName': fileName,
       'mimeType': mimeType,
@@ -211,7 +221,8 @@ abstract class MediaAsset
       if (exifJson != null) 'exifJson': exifJson,
       if (locationLat != null) 'locationLat': locationLat,
       if (locationLng != null) 'locationLng': locationLng,
-      if (uploadedByUserId != null) 'uploadedByUserId': uploadedByUserId,
+      if (uploadedByUserId != null)
+        'uploadedByUserId': uploadedByUserId?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       'metadataStatus': metadataStatus.toJson(),
     };
@@ -251,8 +262,8 @@ class _Undefined {}
 
 class _MediaAssetImpl extends MediaAsset {
   _MediaAssetImpl({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String assetId,
     required String fileName,
     required String mimeType,
@@ -268,7 +279,7 @@ class _MediaAssetImpl extends MediaAsset {
     String? exifJson,
     double? locationLat,
     double? locationLng,
-    int? uploadedByUserId,
+    _i1.UuidValue? uploadedByUserId,
     DateTime? createdAt,
     required _i2.MediaAssetMetadataStatus metadataStatus,
   }) : super._(
@@ -299,8 +310,8 @@ class _MediaAssetImpl extends MediaAsset {
   @_i1.useResult
   @override
   MediaAsset copyWith({
-    Object? id = _Undefined,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? assetId,
     String? fileName,
     String? mimeType,
@@ -321,7 +332,7 @@ class _MediaAssetImpl extends MediaAsset {
     _i2.MediaAssetMetadataStatus? metadataStatus,
   }) {
     return MediaAsset(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       assetId: assetId ?? this.assetId,
       fileName: fileName ?? this.fileName,
@@ -338,7 +349,7 @@ class _MediaAssetImpl extends MediaAsset {
       exifJson: exifJson is String? ? exifJson : this.exifJson,
       locationLat: locationLat is double? ? locationLat : this.locationLat,
       locationLng: locationLng is double? ? locationLng : this.locationLng,
-      uploadedByUserId: uploadedByUserId is int?
+      uploadedByUserId: uploadedByUserId is _i1.UuidValue?
           ? uploadedByUserId
           : this.uploadedByUserId,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
@@ -350,7 +361,9 @@ class _MediaAssetImpl extends MediaAsset {
 class MediaAssetUpdateTable extends _i1.UpdateTable<MediaAssetTable> {
   MediaAssetUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> projectId(int value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> projectId(
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
     table.projectId,
     value,
   );
@@ -430,7 +443,9 @@ class MediaAssetUpdateTable extends _i1.UpdateTable<MediaAssetTable> {
     value,
   );
 
-  _i1.ColumnValue<int, int> uploadedByUserId(int? value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uploadedByUserId(
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
     table.uploadedByUserId,
     value,
   );
@@ -448,10 +463,10 @@ class MediaAssetUpdateTable extends _i1.UpdateTable<MediaAssetTable> {
   );
 }
 
-class MediaAssetTable extends _i1.Table<int?> {
+class MediaAssetTable extends _i1.Table<_i1.UuidValue> {
   MediaAssetTable({super.tableRelation}) : super(tableName: 'media_assets') {
     updateTable = MediaAssetUpdateTable(this);
-    projectId = _i1.ColumnInt(
+    projectId = _i1.ColumnUuid(
       'projectId',
       this,
     );
@@ -515,7 +530,7 @@ class MediaAssetTable extends _i1.Table<int?> {
       'locationLng',
       this,
     );
-    uploadedByUserId = _i1.ColumnInt(
+    uploadedByUserId = _i1.ColumnUuid(
       'uploadedByUserId',
       this,
     );
@@ -533,7 +548,7 @@ class MediaAssetTable extends _i1.Table<int?> {
 
   late final MediaAssetUpdateTable updateTable;
 
-  late final _i1.ColumnInt projectId;
+  late final _i1.ColumnUuid projectId;
 
   late final _i1.ColumnString assetId;
 
@@ -565,7 +580,7 @@ class MediaAssetTable extends _i1.Table<int?> {
 
   late final _i1.ColumnDouble locationLng;
 
-  late final _i1.ColumnInt uploadedByUserId;
+  late final _i1.ColumnUuid uploadedByUserId;
 
   late final _i1.ColumnDateTime createdAt;
 
@@ -603,7 +618,7 @@ class MediaAssetInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => MediaAsset.t;
+  _i1.Table<_i1.UuidValue> get table => MediaAsset.t;
 }
 
 class MediaAssetIncludeList extends _i1.IncludeList {
@@ -623,7 +638,7 @@ class MediaAssetIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => MediaAsset.t;
+  _i1.Table<_i1.UuidValue> get table => MediaAsset.t;
 }
 
 class MediaAssetRepository {
@@ -719,7 +734,7 @@ class MediaAssetRepository {
   /// Finds a single [MediaAsset] by its [id] or null if no such row exists.
   Future<MediaAsset?> findById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -807,7 +822,7 @@ class MediaAssetRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<MediaAsset?> updateById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<MediaAssetUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {

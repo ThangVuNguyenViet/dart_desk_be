@@ -13,9 +13,9 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class Project
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   Project._({
-    this.id,
+    _i1.UuidValue? id,
     required this.clientId,
     required this.name,
     required this.slug,
@@ -24,13 +24,14 @@ abstract class Project
     this.settings,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : isActive = isActive ?? true,
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
   factory Project({
-    int? id,
-    required int clientId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue clientId,
     required String name,
     required String slug,
     String? description,
@@ -42,8 +43,12 @@ abstract class Project
 
   factory Project.fromJson(Map<String, dynamic> jsonSerialization) {
     return Project(
-      id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      clientId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['clientId'],
+      ),
       name: jsonSerialization['name'] as String,
       slug: jsonSerialization['slug'] as String,
       description: jsonSerialization['description'] as String?,
@@ -65,9 +70,9 @@ abstract class Project
   static const db = ProjectRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue id;
 
-  int clientId;
+  _i1.UuidValue clientId;
 
   String name;
 
@@ -84,14 +89,14 @@ abstract class Project
   DateTime? updatedAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [Project]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   Project copyWith({
-    int? id,
-    int? clientId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? clientId,
     String? name,
     String? slug,
     String? description,
@@ -104,8 +109,8 @@ abstract class Project
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'Project',
-      if (id != null) 'id': id,
-      'clientId': clientId,
+      'id': id.toJson(),
+      'clientId': clientId.toJson(),
       'name': name,
       'slug': slug,
       if (description != null) 'description': description,
@@ -120,8 +125,8 @@ abstract class Project
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'Project',
-      if (id != null) 'id': id,
-      'clientId': clientId,
+      'id': id.toJson(),
+      'clientId': clientId.toJson(),
       'name': name,
       'slug': slug,
       if (description != null) 'description': description,
@@ -166,8 +171,8 @@ class _Undefined {}
 
 class _ProjectImpl extends Project {
   _ProjectImpl({
-    int? id,
-    required int clientId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue clientId,
     required String name,
     required String slug,
     String? description,
@@ -192,8 +197,8 @@ class _ProjectImpl extends Project {
   @_i1.useResult
   @override
   Project copyWith({
-    Object? id = _Undefined,
-    int? clientId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? clientId,
     String? name,
     String? slug,
     Object? description = _Undefined,
@@ -203,7 +208,7 @@ class _ProjectImpl extends Project {
     Object? updatedAt = _Undefined,
   }) {
     return Project(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       clientId: clientId ?? this.clientId,
       name: name ?? this.name,
       slug: slug ?? this.slug,
@@ -219,10 +224,11 @@ class _ProjectImpl extends Project {
 class ProjectUpdateTable extends _i1.UpdateTable<ProjectTable> {
   ProjectUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> clientId(int value) => _i1.ColumnValue(
-    table.clientId,
-    value,
-  );
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> clientId(_i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.clientId,
+        value,
+      );
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
     table.name,
@@ -262,10 +268,10 @@ class ProjectUpdateTable extends _i1.UpdateTable<ProjectTable> {
       );
 }
 
-class ProjectTable extends _i1.Table<int?> {
+class ProjectTable extends _i1.Table<_i1.UuidValue> {
   ProjectTable({super.tableRelation}) : super(tableName: 'projects') {
     updateTable = ProjectUpdateTable(this);
-    clientId = _i1.ColumnInt(
+    clientId = _i1.ColumnUuid(
       'clientId',
       this,
     );
@@ -304,7 +310,7 @@ class ProjectTable extends _i1.Table<int?> {
 
   late final ProjectUpdateTable updateTable;
 
-  late final _i1.ColumnInt clientId;
+  late final _i1.ColumnUuid clientId;
 
   late final _i1.ColumnString name;
 
@@ -341,7 +347,7 @@ class ProjectInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => Project.t;
+  _i1.Table<_i1.UuidValue> get table => Project.t;
 }
 
 class ProjectIncludeList extends _i1.IncludeList {
@@ -361,7 +367,7 @@ class ProjectIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Project.t;
+  _i1.Table<_i1.UuidValue> get table => Project.t;
 }
 
 class ProjectRepository {
@@ -457,7 +463,7 @@ class ProjectRepository {
   /// Finds a single [Project] by its [id] or null if no such row exists.
   Future<Project?> findById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -545,7 +551,7 @@ class ProjectRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<Project?> updateById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<ProjectUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {

@@ -13,9 +13,10 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'client_role.dart' as _i2;
 
-abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+abstract class User
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   User._({
-    this.id,
+    _i1.UuidValue? id,
     this.clientId,
     required this.email,
     this.name,
@@ -24,14 +25,15 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     this.serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : role = role ?? _i2.ClientRole.viewer,
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       role = role ?? _i2.ClientRole.viewer,
        isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
   factory User({
-    int? id,
-    int? clientId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? clientId,
     required String email,
     String? name,
     _i2.ClientRole? role,
@@ -43,8 +45,12 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   factory User.fromJson(Map<String, dynamic> jsonSerialization) {
     return User(
-      id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      clientId: jsonSerialization['clientId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['clientId']),
       email: jsonSerialization['email'] as String,
       name: jsonSerialization['name'] as String?,
       role: jsonSerialization['role'] == null
@@ -68,9 +74,9 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   static const db = UserRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue id;
 
-  int? clientId;
+  _i1.UuidValue? clientId;
 
   String email;
 
@@ -87,14 +93,14 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   DateTime? updatedAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [User]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   User copyWith({
-    int? id,
-    int? clientId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? clientId,
     String? email,
     String? name,
     _i2.ClientRole? role,
@@ -107,8 +113,8 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'User',
-      if (id != null) 'id': id,
-      if (clientId != null) 'clientId': clientId,
+      'id': id.toJson(),
+      if (clientId != null) 'clientId': clientId?.toJson(),
       'email': email,
       if (name != null) 'name': name,
       'role': role.toJson(),
@@ -123,8 +129,8 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'User',
-      if (id != null) 'id': id,
-      if (clientId != null) 'clientId': clientId,
+      'id': id.toJson(),
+      if (clientId != null) 'clientId': clientId?.toJson(),
       'email': email,
       if (name != null) 'name': name,
       'role': role.toJson(),
@@ -169,8 +175,8 @@ class _Undefined {}
 
 class _UserImpl extends User {
   _UserImpl({
-    int? id,
-    int? clientId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? clientId,
     required String email,
     String? name,
     _i2.ClientRole? role,
@@ -195,7 +201,7 @@ class _UserImpl extends User {
   @_i1.useResult
   @override
   User copyWith({
-    Object? id = _Undefined,
+    _i1.UuidValue? id,
     Object? clientId = _Undefined,
     String? email,
     Object? name = _Undefined,
@@ -206,8 +212,8 @@ class _UserImpl extends User {
     Object? updatedAt = _Undefined,
   }) {
     return User(
-      id: id is int? ? id : this.id,
-      clientId: clientId is int? ? clientId : this.clientId,
+      id: id ?? this.id,
+      clientId: clientId is _i1.UuidValue? ? clientId : this.clientId,
       email: email ?? this.email,
       name: name is String? ? name : this.name,
       role: role ?? this.role,
@@ -224,7 +230,9 @@ class _UserImpl extends User {
 class UserUpdateTable extends _i1.UpdateTable<UserTable> {
   UserUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> clientId(int? value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> clientId(
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
     table.clientId,
     value,
   );
@@ -269,10 +277,10 @@ class UserUpdateTable extends _i1.UpdateTable<UserTable> {
       );
 }
 
-class UserTable extends _i1.Table<int?> {
+class UserTable extends _i1.Table<_i1.UuidValue> {
   UserTable({super.tableRelation}) : super(tableName: 'users') {
     updateTable = UserUpdateTable(this);
-    clientId = _i1.ColumnInt(
+    clientId = _i1.ColumnUuid(
       'clientId',
       this,
     );
@@ -313,7 +321,7 @@ class UserTable extends _i1.Table<int?> {
 
   late final UserUpdateTable updateTable;
 
-  late final _i1.ColumnInt clientId;
+  late final _i1.ColumnUuid clientId;
 
   late final _i1.ColumnString email;
 
@@ -350,7 +358,7 @@ class UserInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => User.t;
+  _i1.Table<_i1.UuidValue> get table => User.t;
 }
 
 class UserIncludeList extends _i1.IncludeList {
@@ -370,7 +378,7 @@ class UserIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => User.t;
+  _i1.Table<_i1.UuidValue> get table => User.t;
 }
 
 class UserRepository {
@@ -466,7 +474,7 @@ class UserRepository {
   /// Finds a single [User] by its [id] or null if no such row exists.
   Future<User?> findById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -554,7 +562,7 @@ class UserRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<User?> updateById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<UserUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {

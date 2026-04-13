@@ -13,9 +13,9 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class Document
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   Document._({
-    this.id,
+    _i1.UuidValue? id,
     required this.projectId,
     required this.documentType,
     required this.title,
@@ -29,13 +29,14 @@ abstract class Document
     DateTime? updatedAt,
     this.createdByUserId,
     this.updatedByUserId,
-  }) : isDefault = isDefault ?? false,
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       isDefault = isDefault ?? false,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
   factory Document({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String documentType,
     required String title,
     required String slug,
@@ -46,14 +47,18 @@ abstract class Document
     DateTime? publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
-    int? updatedByUserId,
+    _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
   }) = _DocumentImpl;
 
   factory Document.fromJson(Map<String, dynamic> jsonSerialization) {
     return Document(
-      id: jsonSerialization['id'] as int?,
-      projectId: jsonSerialization['projectId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      projectId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['projectId'],
+      ),
       documentType: jsonSerialization['documentType'] as String,
       title: jsonSerialization['title'] as String,
       slug: jsonSerialization['slug'] as String,
@@ -74,8 +79,16 @@ abstract class Document
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
-      createdByUserId: jsonSerialization['createdByUserId'] as int?,
-      updatedByUserId: jsonSerialization['updatedByUserId'] as int?,
+      createdByUserId: jsonSerialization['createdByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['createdByUserId'],
+            ),
+      updatedByUserId: jsonSerialization['updatedByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['updatedByUserId'],
+            ),
     );
   }
 
@@ -84,9 +97,9 @@ abstract class Document
   static const db = DocumentRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue id;
 
-  int projectId;
+  _i1.UuidValue projectId;
 
   String documentType;
 
@@ -108,19 +121,19 @@ abstract class Document
 
   DateTime? updatedAt;
 
-  int? createdByUserId;
+  _i1.UuidValue? createdByUserId;
 
-  int? updatedByUserId;
+  _i1.UuidValue? updatedByUserId;
 
   @override
-  _i1.Table<int?> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [Document]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   Document copyWith({
-    int? id,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? documentType,
     String? title,
     String? slug,
@@ -131,15 +144,15 @@ abstract class Document
     DateTime? publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
-    int? updatedByUserId,
+    _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'Document',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'documentType': documentType,
       'title': title,
       'slug': slug,
@@ -150,8 +163,8 @@ abstract class Document
       if (publishedAt != null) 'publishedAt': publishedAt?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
-      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
     };
   }
 
@@ -159,8 +172,8 @@ abstract class Document
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'Document',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'documentType': documentType,
       'title': title,
       'slug': slug,
@@ -171,8 +184,8 @@ abstract class Document
       if (publishedAt != null) 'publishedAt': publishedAt?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
-      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
     };
   }
 
@@ -210,8 +223,8 @@ class _Undefined {}
 
 class _DocumentImpl extends Document {
   _DocumentImpl({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String documentType,
     required String title,
     required String slug,
@@ -222,8 +235,8 @@ class _DocumentImpl extends Document {
     DateTime? publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
-    int? updatedByUserId,
+    _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
   }) : super._(
          id: id,
          projectId: projectId,
@@ -246,8 +259,8 @@ class _DocumentImpl extends Document {
   @_i1.useResult
   @override
   Document copyWith({
-    Object? id = _Undefined,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? documentType,
     String? title,
     String? slug,
@@ -262,7 +275,7 @@ class _DocumentImpl extends Document {
     Object? updatedByUserId = _Undefined,
   }) {
     return Document(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       documentType: documentType ?? this.documentType,
       title: title ?? this.title,
@@ -274,10 +287,10 @@ class _DocumentImpl extends Document {
       publishedAt: publishedAt is DateTime? ? publishedAt : this.publishedAt,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
-      createdByUserId: createdByUserId is int?
+      createdByUserId: createdByUserId is _i1.UuidValue?
           ? createdByUserId
           : this.createdByUserId,
-      updatedByUserId: updatedByUserId is int?
+      updatedByUserId: updatedByUserId is _i1.UuidValue?
           ? updatedByUserId
           : this.updatedByUserId,
     );
@@ -287,7 +300,9 @@ class _DocumentImpl extends Document {
 class DocumentUpdateTable extends _i1.UpdateTable<DocumentTable> {
   DocumentUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> projectId(int value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> projectId(
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
     table.projectId,
     value,
   );
@@ -345,21 +360,25 @@ class DocumentUpdateTable extends _i1.UpdateTable<DocumentTable> {
         value,
       );
 
-  _i1.ColumnValue<int, int> createdByUserId(int? value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> createdByUserId(
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
     table.createdByUserId,
     value,
   );
 
-  _i1.ColumnValue<int, int> updatedByUserId(int? value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> updatedByUserId(
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
     table.updatedByUserId,
     value,
   );
 }
 
-class DocumentTable extends _i1.Table<int?> {
+class DocumentTable extends _i1.Table<_i1.UuidValue> {
   DocumentTable({super.tableRelation}) : super(tableName: 'documents') {
     updateTable = DocumentUpdateTable(this);
-    projectId = _i1.ColumnInt(
+    projectId = _i1.ColumnUuid(
       'projectId',
       this,
     );
@@ -406,11 +425,11 @@ class DocumentTable extends _i1.Table<int?> {
       this,
       hasDefault: true,
     );
-    createdByUserId = _i1.ColumnInt(
+    createdByUserId = _i1.ColumnUuid(
       'createdByUserId',
       this,
     );
-    updatedByUserId = _i1.ColumnInt(
+    updatedByUserId = _i1.ColumnUuid(
       'updatedByUserId',
       this,
     );
@@ -418,7 +437,7 @@ class DocumentTable extends _i1.Table<int?> {
 
   late final DocumentUpdateTable updateTable;
 
-  late final _i1.ColumnInt projectId;
+  late final _i1.ColumnUuid projectId;
 
   late final _i1.ColumnString documentType;
 
@@ -440,9 +459,9 @@ class DocumentTable extends _i1.Table<int?> {
 
   late final _i1.ColumnDateTime updatedAt;
 
-  late final _i1.ColumnInt createdByUserId;
+  late final _i1.ColumnUuid createdByUserId;
 
-  late final _i1.ColumnInt updatedByUserId;
+  late final _i1.ColumnUuid updatedByUserId;
 
   @override
   List<_i1.Column> get columns => [
@@ -470,7 +489,7 @@ class DocumentInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => Document.t;
+  _i1.Table<_i1.UuidValue> get table => Document.t;
 }
 
 class DocumentIncludeList extends _i1.IncludeList {
@@ -490,7 +509,7 @@ class DocumentIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Document.t;
+  _i1.Table<_i1.UuidValue> get table => Document.t;
 }
 
 class DocumentRepository {
@@ -586,7 +605,7 @@ class DocumentRepository {
   /// Finds a single [Document] by its [id] or null if no such row exists.
   Future<Document?> findById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -674,7 +693,7 @@ class DocumentRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<Document?> updateById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<DocumentUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {

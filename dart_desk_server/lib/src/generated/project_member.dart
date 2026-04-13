@@ -14,28 +14,33 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'project_role.dart' as _i2;
 
 abstract class ProjectMember
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   ProjectMember._({
-    this.id,
+    _i1.UuidValue? id,
     required this.userId,
     required this.projectId,
     required this.role,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       createdAt = createdAt ?? DateTime.now();
 
   factory ProjectMember({
-    int? id,
-    required int userId,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue userId,
+    required _i1.UuidValue projectId,
     required _i2.ProjectRole role,
     DateTime? createdAt,
   }) = _ProjectMemberImpl;
 
   factory ProjectMember.fromJson(Map<String, dynamic> jsonSerialization) {
     return ProjectMember(
-      id: jsonSerialization['id'] as int?,
-      userId: jsonSerialization['userId'] as int,
-      projectId: jsonSerialization['projectId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      userId: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['userId']),
+      projectId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['projectId'],
+      ),
       role: _i2.ProjectRole.fromJson((jsonSerialization['role'] as String)),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
@@ -48,26 +53,26 @@ abstract class ProjectMember
   static const db = ProjectMemberRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue id;
 
-  int userId;
+  _i1.UuidValue userId;
 
-  int projectId;
+  _i1.UuidValue projectId;
 
   _i2.ProjectRole role;
 
   DateTime? createdAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [ProjectMember]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   ProjectMember copyWith({
-    int? id,
-    int? userId,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? userId,
+    _i1.UuidValue? projectId,
     _i2.ProjectRole? role,
     DateTime? createdAt,
   });
@@ -75,9 +80,9 @@ abstract class ProjectMember
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectMember',
-      if (id != null) 'id': id,
-      'userId': userId,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'userId': userId.toJson(),
+      'projectId': projectId.toJson(),
       'role': role.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
     };
@@ -87,9 +92,9 @@ abstract class ProjectMember
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ProjectMember',
-      if (id != null) 'id': id,
-      'userId': userId,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'userId': userId.toJson(),
+      'projectId': projectId.toJson(),
       'role': role.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
     };
@@ -129,9 +134,9 @@ class _Undefined {}
 
 class _ProjectMemberImpl extends ProjectMember {
   _ProjectMemberImpl({
-    int? id,
-    required int userId,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue userId,
+    required _i1.UuidValue projectId,
     required _i2.ProjectRole role,
     DateTime? createdAt,
   }) : super._(
@@ -147,14 +152,14 @@ class _ProjectMemberImpl extends ProjectMember {
   @_i1.useResult
   @override
   ProjectMember copyWith({
-    Object? id = _Undefined,
-    int? userId,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? userId,
+    _i1.UuidValue? projectId,
     _i2.ProjectRole? role,
     Object? createdAt = _Undefined,
   }) {
     return ProjectMember(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       userId: userId ?? this.userId,
       projectId: projectId ?? this.projectId,
       role: role ?? this.role,
@@ -166,12 +171,15 @@ class _ProjectMemberImpl extends ProjectMember {
 class ProjectMemberUpdateTable extends _i1.UpdateTable<ProjectMemberTable> {
   ProjectMemberUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
-    table.userId,
-    value,
-  );
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> userId(_i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.userId,
+        value,
+      );
 
-  _i1.ColumnValue<int, int> projectId(int value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> projectId(
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
     table.projectId,
     value,
   );
@@ -190,15 +198,15 @@ class ProjectMemberUpdateTable extends _i1.UpdateTable<ProjectMemberTable> {
       );
 }
 
-class ProjectMemberTable extends _i1.Table<int?> {
+class ProjectMemberTable extends _i1.Table<_i1.UuidValue> {
   ProjectMemberTable({super.tableRelation})
     : super(tableName: 'project_members') {
     updateTable = ProjectMemberUpdateTable(this);
-    userId = _i1.ColumnInt(
+    userId = _i1.ColumnUuid(
       'userId',
       this,
     );
-    projectId = _i1.ColumnInt(
+    projectId = _i1.ColumnUuid(
       'projectId',
       this,
     );
@@ -216,9 +224,9 @@ class ProjectMemberTable extends _i1.Table<int?> {
 
   late final ProjectMemberUpdateTable updateTable;
 
-  late final _i1.ColumnInt userId;
+  late final _i1.ColumnUuid userId;
 
-  late final _i1.ColumnInt projectId;
+  late final _i1.ColumnUuid projectId;
 
   late final _i1.ColumnEnum<_i2.ProjectRole> role;
 
@@ -241,7 +249,7 @@ class ProjectMemberInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ProjectMember.t;
+  _i1.Table<_i1.UuidValue> get table => ProjectMember.t;
 }
 
 class ProjectMemberIncludeList extends _i1.IncludeList {
@@ -261,7 +269,7 @@ class ProjectMemberIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ProjectMember.t;
+  _i1.Table<_i1.UuidValue> get table => ProjectMember.t;
 }
 
 class ProjectMemberRepository {
@@ -357,7 +365,7 @@ class ProjectMemberRepository {
   /// Finds a single [ProjectMember] by its [id] or null if no such row exists.
   Future<ProjectMember?> findById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -445,7 +453,7 @@ class ProjectMemberRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<ProjectMember?> updateById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<ProjectMemberUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {

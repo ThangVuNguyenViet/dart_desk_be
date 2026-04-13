@@ -140,7 +140,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -174,7 +174,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -196,7 +196,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'tokenId': _i1.ParameterDescription(
               name: 'tokenId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'name': _i1.ParameterDescription(
@@ -216,7 +216,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -239,12 +239,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'tokenId': _i1.ParameterDescription(
               name: 'tokenId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -264,12 +264,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'tokenId': _i1.ParameterDescription(
               name: 'tokenId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -389,7 +389,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'sinceHlc': _i1.ParameterDescription(
@@ -422,7 +422,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'sessionId': _i1.ParameterDescription(
@@ -455,7 +455,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -476,7 +476,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -497,7 +497,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -518,7 +518,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -582,7 +582,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -682,7 +682,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'updatesJson': _i1.ParameterDescription(
@@ -713,7 +713,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'title': _i1.ParameterDescription(
@@ -755,7 +755,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -775,7 +775,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -829,7 +829,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'limit': _i1.ParameterDescription(
@@ -866,7 +866,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'versionId': _i1.ParameterDescription(
               name: 'versionId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -885,7 +885,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'versionId': _i1.ParameterDescription(
               name: 'versionId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -904,7 +904,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'documentId': _i1.ParameterDescription(
               name: 'documentId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'status': _i1.ParameterDescription(
@@ -935,7 +935,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'versionId': _i1.ParameterDescription(
               name: 'versionId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -954,7 +954,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'versionId': _i1.ParameterDescription(
               name: 'versionId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -973,7 +973,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'versionId': _i1.ParameterDescription(
               name: 'versionId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -992,7 +992,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -1468,7 +1468,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'clientId': _i1.ParameterDescription(
               name: 'clientId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -1487,7 +1487,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'clientId': _i1.ParameterDescription(
               name: 'clientId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'email': _i1.ParameterDescription(
@@ -1518,12 +1518,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'clientId': _i1.ParameterDescription(
               name: 'clientId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'userId': _i1.ParameterDescription(
               name: 'userId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'role': _i1.ParameterDescription(
@@ -1549,12 +1549,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'clientId': _i1.ParameterDescription(
               name: 'clientId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'userId': _i1.ParameterDescription(
               name: 'userId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -1683,7 +1683,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -1739,7 +1739,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'name': _i1.ParameterDescription(
@@ -1782,7 +1782,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -1832,7 +1832,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -1852,12 +1852,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'userId': _i1.ParameterDescription(
               name: 'userId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'role': _i1.ParameterDescription(
@@ -1884,12 +1884,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'userId': _i1.ParameterDescription(
               name: 'userId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'role': _i1.ParameterDescription(
@@ -1916,12 +1916,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
             'userId': _i1.ParameterDescription(
               name: 'userId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },
@@ -2086,7 +2086,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'clientId': _i1.ParameterDescription(
               name: 'clientId',
-              type: _i1.getType<int?>(),
+              type: _i1.getType<_i1.UuidValue?>(),
               nullable: true,
             ),
           },
@@ -2105,7 +2105,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'clientId': _i1.ParameterDescription(
               name: 'clientId',
-              type: _i1.getType<int>(),
+              type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
           },

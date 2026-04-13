@@ -13,19 +13,20 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DocumentCrdtSnapshot
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   DocumentCrdtSnapshot._({
-    this.id,
+    _i1.UuidValue? id,
     required this.documentId,
     required this.snapshotHlc,
     required this.snapshotData,
     required this.operationCountAtSnapshot,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       createdAt = createdAt ?? DateTime.now();
 
   factory DocumentCrdtSnapshot({
-    int? id,
-    required int documentId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue documentId,
     required String snapshotHlc,
     required String snapshotData,
     required int operationCountAtSnapshot,
@@ -36,8 +37,12 @@ abstract class DocumentCrdtSnapshot
     Map<String, dynamic> jsonSerialization,
   ) {
     return DocumentCrdtSnapshot(
-      id: jsonSerialization['id'] as int?,
-      documentId: jsonSerialization['documentId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      documentId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['documentId'],
+      ),
       snapshotHlc: jsonSerialization['snapshotHlc'] as String,
       snapshotData: jsonSerialization['snapshotData'] as String,
       operationCountAtSnapshot:
@@ -53,9 +58,9 @@ abstract class DocumentCrdtSnapshot
   static const db = DocumentCrdtSnapshotRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue id;
 
-  int documentId;
+  _i1.UuidValue documentId;
 
   String snapshotHlc;
 
@@ -66,14 +71,14 @@ abstract class DocumentCrdtSnapshot
   DateTime? createdAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [DocumentCrdtSnapshot]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   DocumentCrdtSnapshot copyWith({
-    int? id,
-    int? documentId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? documentId,
     String? snapshotHlc,
     String? snapshotData,
     int? operationCountAtSnapshot,
@@ -83,8 +88,8 @@ abstract class DocumentCrdtSnapshot
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'DocumentCrdtSnapshot',
-      if (id != null) 'id': id,
-      'documentId': documentId,
+      'id': id.toJson(),
+      'documentId': documentId.toJson(),
       'snapshotHlc': snapshotHlc,
       'snapshotData': snapshotData,
       'operationCountAtSnapshot': operationCountAtSnapshot,
@@ -96,8 +101,8 @@ abstract class DocumentCrdtSnapshot
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'DocumentCrdtSnapshot',
-      if (id != null) 'id': id,
-      'documentId': documentId,
+      'id': id.toJson(),
+      'documentId': documentId.toJson(),
       'snapshotHlc': snapshotHlc,
       'snapshotData': snapshotData,
       'operationCountAtSnapshot': operationCountAtSnapshot,
@@ -139,8 +144,8 @@ class _Undefined {}
 
 class _DocumentCrdtSnapshotImpl extends DocumentCrdtSnapshot {
   _DocumentCrdtSnapshotImpl({
-    int? id,
-    required int documentId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue documentId,
     required String snapshotHlc,
     required String snapshotData,
     required int operationCountAtSnapshot,
@@ -159,15 +164,15 @@ class _DocumentCrdtSnapshotImpl extends DocumentCrdtSnapshot {
   @_i1.useResult
   @override
   DocumentCrdtSnapshot copyWith({
-    Object? id = _Undefined,
-    int? documentId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? documentId,
     String? snapshotHlc,
     String? snapshotData,
     int? operationCountAtSnapshot,
     Object? createdAt = _Undefined,
   }) {
     return DocumentCrdtSnapshot(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       documentId: documentId ?? this.documentId,
       snapshotHlc: snapshotHlc ?? this.snapshotHlc,
       snapshotData: snapshotData ?? this.snapshotData,
@@ -182,7 +187,9 @@ class DocumentCrdtSnapshotUpdateTable
     extends _i1.UpdateTable<DocumentCrdtSnapshotTable> {
   DocumentCrdtSnapshotUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> documentId(int value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> documentId(
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
     table.documentId,
     value,
   );
@@ -210,11 +217,11 @@ class DocumentCrdtSnapshotUpdateTable
       );
 }
 
-class DocumentCrdtSnapshotTable extends _i1.Table<int?> {
+class DocumentCrdtSnapshotTable extends _i1.Table<_i1.UuidValue> {
   DocumentCrdtSnapshotTable({super.tableRelation})
     : super(tableName: 'document_crdt_snapshots') {
     updateTable = DocumentCrdtSnapshotUpdateTable(this);
-    documentId = _i1.ColumnInt(
+    documentId = _i1.ColumnUuid(
       'documentId',
       this,
     );
@@ -239,7 +246,7 @@ class DocumentCrdtSnapshotTable extends _i1.Table<int?> {
 
   late final DocumentCrdtSnapshotUpdateTable updateTable;
 
-  late final _i1.ColumnInt documentId;
+  late final _i1.ColumnUuid documentId;
 
   late final _i1.ColumnString snapshotHlc;
 
@@ -267,7 +274,7 @@ class DocumentCrdtSnapshotInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => DocumentCrdtSnapshot.t;
+  _i1.Table<_i1.UuidValue> get table => DocumentCrdtSnapshot.t;
 }
 
 class DocumentCrdtSnapshotIncludeList extends _i1.IncludeList {
@@ -287,7 +294,7 @@ class DocumentCrdtSnapshotIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => DocumentCrdtSnapshot.t;
+  _i1.Table<_i1.UuidValue> get table => DocumentCrdtSnapshot.t;
 }
 
 class DocumentCrdtSnapshotRepository {
@@ -383,7 +390,7 @@ class DocumentCrdtSnapshotRepository {
   /// Finds a single [DocumentCrdtSnapshot] by its [id] or null if no such row exists.
   Future<DocumentCrdtSnapshot?> findById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -471,7 +478,7 @@ class DocumentCrdtSnapshotRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<DocumentCrdtSnapshot?> updateById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<DocumentCrdtSnapshotUpdateTable>
     columnValues,
     _i1.Transaction? transaction,

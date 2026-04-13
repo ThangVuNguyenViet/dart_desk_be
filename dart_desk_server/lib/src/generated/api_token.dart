@@ -13,9 +13,9 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ApiToken
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   ApiToken._({
-    this.id,
+    _i1.UuidValue? id,
     required this.projectId,
     required this.name,
     required this.tokenHash,
@@ -27,18 +27,19 @@ abstract class ApiToken
     this.expiresAt,
     bool? isActive,
     DateTime? createdAt,
-  }) : isActive = isActive ?? true,
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now();
 
   factory ApiToken({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String name,
     required String tokenHash,
     required String tokenPrefix,
     required String tokenSuffix,
     required String role,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
     DateTime? lastUsedAt,
     DateTime? expiresAt,
     bool? isActive,
@@ -47,14 +48,22 @@ abstract class ApiToken
 
   factory ApiToken.fromJson(Map<String, dynamic> jsonSerialization) {
     return ApiToken(
-      id: jsonSerialization['id'] as int?,
-      projectId: jsonSerialization['projectId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      projectId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['projectId'],
+      ),
       name: jsonSerialization['name'] as String,
       tokenHash: jsonSerialization['tokenHash'] as String,
       tokenPrefix: jsonSerialization['tokenPrefix'] as String,
       tokenSuffix: jsonSerialization['tokenSuffix'] as String,
       role: jsonSerialization['role'] as String,
-      createdByUserId: jsonSerialization['createdByUserId'] as int?,
+      createdByUserId: jsonSerialization['createdByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['createdByUserId'],
+            ),
       lastUsedAt: jsonSerialization['lastUsedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUsedAt']),
@@ -75,9 +84,9 @@ abstract class ApiToken
   static const db = ApiTokenRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue id;
 
-  int projectId;
+  _i1.UuidValue projectId;
 
   String name;
 
@@ -89,7 +98,7 @@ abstract class ApiToken
 
   String role;
 
-  int? createdByUserId;
+  _i1.UuidValue? createdByUserId;
 
   DateTime? lastUsedAt;
 
@@ -100,20 +109,20 @@ abstract class ApiToken
   DateTime? createdAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [ApiToken]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   ApiToken copyWith({
-    int? id,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? name,
     String? tokenHash,
     String? tokenPrefix,
     String? tokenSuffix,
     String? role,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
     DateTime? lastUsedAt,
     DateTime? expiresAt,
     bool? isActive,
@@ -123,14 +132,14 @@ abstract class ApiToken
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ApiToken',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'name': name,
       'tokenHash': tokenHash,
       'tokenPrefix': tokenPrefix,
       'tokenSuffix': tokenSuffix,
       'role': role,
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
       if (lastUsedAt != null) 'lastUsedAt': lastUsedAt?.toJson(),
       if (expiresAt != null) 'expiresAt': expiresAt?.toJson(),
       'isActive': isActive,
@@ -142,14 +151,14 @@ abstract class ApiToken
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ApiToken',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'name': name,
       'tokenHash': tokenHash,
       'tokenPrefix': tokenPrefix,
       'tokenSuffix': tokenSuffix,
       'role': role,
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
       if (lastUsedAt != null) 'lastUsedAt': lastUsedAt?.toJson(),
       if (expiresAt != null) 'expiresAt': expiresAt?.toJson(),
       'isActive': isActive,
@@ -191,14 +200,14 @@ class _Undefined {}
 
 class _ApiTokenImpl extends ApiToken {
   _ApiTokenImpl({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String name,
     required String tokenHash,
     required String tokenPrefix,
     required String tokenSuffix,
     required String role,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
     DateTime? lastUsedAt,
     DateTime? expiresAt,
     bool? isActive,
@@ -223,8 +232,8 @@ class _ApiTokenImpl extends ApiToken {
   @_i1.useResult
   @override
   ApiToken copyWith({
-    Object? id = _Undefined,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? name,
     String? tokenHash,
     String? tokenPrefix,
@@ -237,14 +246,14 @@ class _ApiTokenImpl extends ApiToken {
     Object? createdAt = _Undefined,
   }) {
     return ApiToken(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       name: name ?? this.name,
       tokenHash: tokenHash ?? this.tokenHash,
       tokenPrefix: tokenPrefix ?? this.tokenPrefix,
       tokenSuffix: tokenSuffix ?? this.tokenSuffix,
       role: role ?? this.role,
-      createdByUserId: createdByUserId is int?
+      createdByUserId: createdByUserId is _i1.UuidValue?
           ? createdByUserId
           : this.createdByUserId,
       lastUsedAt: lastUsedAt is DateTime? ? lastUsedAt : this.lastUsedAt,
@@ -258,7 +267,9 @@ class _ApiTokenImpl extends ApiToken {
 class ApiTokenUpdateTable extends _i1.UpdateTable<ApiTokenTable> {
   ApiTokenUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> projectId(int value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> projectId(
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
     table.projectId,
     value,
   );
@@ -288,7 +299,9 @@ class ApiTokenUpdateTable extends _i1.UpdateTable<ApiTokenTable> {
     value,
   );
 
-  _i1.ColumnValue<int, int> createdByUserId(int? value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> createdByUserId(
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
     table.createdByUserId,
     value,
   );
@@ -317,10 +330,10 @@ class ApiTokenUpdateTable extends _i1.UpdateTable<ApiTokenTable> {
       );
 }
 
-class ApiTokenTable extends _i1.Table<int?> {
+class ApiTokenTable extends _i1.Table<_i1.UuidValue> {
   ApiTokenTable({super.tableRelation}) : super(tableName: 'api_tokens') {
     updateTable = ApiTokenUpdateTable(this);
-    projectId = _i1.ColumnInt(
+    projectId = _i1.ColumnUuid(
       'projectId',
       this,
     );
@@ -344,7 +357,7 @@ class ApiTokenTable extends _i1.Table<int?> {
       'role',
       this,
     );
-    createdByUserId = _i1.ColumnInt(
+    createdByUserId = _i1.ColumnUuid(
       'createdByUserId',
       this,
     );
@@ -370,7 +383,7 @@ class ApiTokenTable extends _i1.Table<int?> {
 
   late final ApiTokenUpdateTable updateTable;
 
-  late final _i1.ColumnInt projectId;
+  late final _i1.ColumnUuid projectId;
 
   late final _i1.ColumnString name;
 
@@ -382,7 +395,7 @@ class ApiTokenTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString role;
 
-  late final _i1.ColumnInt createdByUserId;
+  late final _i1.ColumnUuid createdByUserId;
 
   late final _i1.ColumnDateTime lastUsedAt;
 
@@ -416,7 +429,7 @@ class ApiTokenInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ApiToken.t;
+  _i1.Table<_i1.UuidValue> get table => ApiToken.t;
 }
 
 class ApiTokenIncludeList extends _i1.IncludeList {
@@ -436,7 +449,7 @@ class ApiTokenIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ApiToken.t;
+  _i1.Table<_i1.UuidValue> get table => ApiToken.t;
 }
 
 class ApiTokenRepository {
@@ -532,7 +545,7 @@ class ApiTokenRepository {
   /// Finds a single [ApiToken] by its [id] or null if no such row exists.
   Future<ApiToken?> findById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -620,7 +633,7 @@ class ApiTokenRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<ApiToken?> updateById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<ApiTokenUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {

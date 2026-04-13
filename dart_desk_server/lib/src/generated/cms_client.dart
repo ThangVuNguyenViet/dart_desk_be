@@ -13,9 +13,9 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class CmsClient
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   CmsClient._({
-    this.id,
+    _i1.UuidValue? id,
     required this.name,
     required this.slug,
     this.description,
@@ -23,12 +23,13 @@ abstract class CmsClient
     this.settings,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : isActive = isActive ?? true,
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
   factory CmsClient({
-    int? id,
+    _i1.UuidValue? id,
     required String name,
     required String slug,
     String? description,
@@ -40,7 +41,9 @@ abstract class CmsClient
 
   factory CmsClient.fromJson(Map<String, dynamic> jsonSerialization) {
     return CmsClient(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       slug: jsonSerialization['slug'] as String,
       description: jsonSerialization['description'] as String?,
@@ -62,7 +65,7 @@ abstract class CmsClient
   static const db = CmsClientRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue id;
 
   String name;
 
@@ -79,13 +82,13 @@ abstract class CmsClient
   DateTime? updatedAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [CmsClient]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   CmsClient copyWith({
-    int? id,
+    _i1.UuidValue? id,
     String? name,
     String? slug,
     String? description,
@@ -98,7 +101,7 @@ abstract class CmsClient
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'CmsClient',
-      if (id != null) 'id': id,
+      'id': id.toJson(),
       'name': name,
       'slug': slug,
       if (description != null) 'description': description,
@@ -113,7 +116,7 @@ abstract class CmsClient
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'CmsClient',
-      if (id != null) 'id': id,
+      'id': id.toJson(),
       'name': name,
       'slug': slug,
       if (description != null) 'description': description,
@@ -158,7 +161,7 @@ class _Undefined {}
 
 class _CmsClientImpl extends CmsClient {
   _CmsClientImpl({
-    int? id,
+    _i1.UuidValue? id,
     required String name,
     required String slug,
     String? description,
@@ -182,7 +185,7 @@ class _CmsClientImpl extends CmsClient {
   @_i1.useResult
   @override
   CmsClient copyWith({
-    Object? id = _Undefined,
+    _i1.UuidValue? id,
     String? name,
     String? slug,
     Object? description = _Undefined,
@@ -192,7 +195,7 @@ class _CmsClientImpl extends CmsClient {
     Object? updatedAt = _Undefined,
   }) {
     return CmsClient(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       name: name ?? this.name,
       slug: slug ?? this.slug,
       description: description is String? ? description : this.description,
@@ -245,7 +248,7 @@ class CmsClientUpdateTable extends _i1.UpdateTable<CmsClientTable> {
       );
 }
 
-class CmsClientTable extends _i1.Table<int?> {
+class CmsClientTable extends _i1.Table<_i1.UuidValue> {
   CmsClientTable({super.tableRelation}) : super(tableName: 'clients') {
     updateTable = CmsClientUpdateTable(this);
     name = _i1.ColumnString(
@@ -317,7 +320,7 @@ class CmsClientInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => CmsClient.t;
+  _i1.Table<_i1.UuidValue> get table => CmsClient.t;
 }
 
 class CmsClientIncludeList extends _i1.IncludeList {
@@ -337,7 +340,7 @@ class CmsClientIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => CmsClient.t;
+  _i1.Table<_i1.UuidValue> get table => CmsClient.t;
 }
 
 class CmsClientRepository {
@@ -433,7 +436,7 @@ class CmsClientRepository {
   /// Finds a single [CmsClient] by its [id] or null if no such row exists.
   Future<CmsClient?> findById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -521,7 +524,7 @@ class CmsClientRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<CmsClient?> updateById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<CmsClientUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {

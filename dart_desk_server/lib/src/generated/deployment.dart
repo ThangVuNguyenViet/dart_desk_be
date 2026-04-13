@@ -14,9 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'deployment_status.dart' as _i2;
 
 abstract class Deployment
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
   Deployment._({
-    this.id,
+    _i1.UuidValue? id,
     required this.projectId,
     required this.version,
     required this.status,
@@ -27,17 +27,18 @@ abstract class Deployment
     this.metadata,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : createdAt = createdAt ?? DateTime.now(),
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
   factory Deployment({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required int version,
     required _i2.DeploymentStatus status,
     required String filePath,
     int? fileSize,
-    int? uploadedByUserId,
+    _i1.UuidValue? uploadedByUserId,
     String? commitHash,
     String? metadata,
     DateTime? createdAt,
@@ -46,15 +47,23 @@ abstract class Deployment
 
   factory Deployment.fromJson(Map<String, dynamic> jsonSerialization) {
     return Deployment(
-      id: jsonSerialization['id'] as int?,
-      projectId: jsonSerialization['projectId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      projectId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['projectId'],
+      ),
       version: jsonSerialization['version'] as int,
       status: _i2.DeploymentStatus.fromJson(
         (jsonSerialization['status'] as String),
       ),
       filePath: jsonSerialization['filePath'] as String,
       fileSize: jsonSerialization['fileSize'] as int?,
-      uploadedByUserId: jsonSerialization['uploadedByUserId'] as int?,
+      uploadedByUserId: jsonSerialization['uploadedByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uploadedByUserId'],
+            ),
       commitHash: jsonSerialization['commitHash'] as String?,
       metadata: jsonSerialization['metadata'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
@@ -71,9 +80,9 @@ abstract class Deployment
   static const db = DeploymentRepository._();
 
   @override
-  int? id;
+  _i1.UuidValue id;
 
-  int projectId;
+  _i1.UuidValue projectId;
 
   int version;
 
@@ -83,7 +92,7 @@ abstract class Deployment
 
   int? fileSize;
 
-  int? uploadedByUserId;
+  _i1.UuidValue? uploadedByUserId;
 
   String? commitHash;
 
@@ -94,19 +103,19 @@ abstract class Deployment
   DateTime? updatedAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _i1.Table<_i1.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [Deployment]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   Deployment copyWith({
-    int? id,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     int? version,
     _i2.DeploymentStatus? status,
     String? filePath,
     int? fileSize,
-    int? uploadedByUserId,
+    _i1.UuidValue? uploadedByUserId,
     String? commitHash,
     String? metadata,
     DateTime? createdAt,
@@ -116,13 +125,14 @@ abstract class Deployment
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'Deployment',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'version': version,
       'status': status.toJson(),
       'filePath': filePath,
       if (fileSize != null) 'fileSize': fileSize,
-      if (uploadedByUserId != null) 'uploadedByUserId': uploadedByUserId,
+      if (uploadedByUserId != null)
+        'uploadedByUserId': uploadedByUserId?.toJson(),
       if (commitHash != null) 'commitHash': commitHash,
       if (metadata != null) 'metadata': metadata,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
@@ -134,13 +144,14 @@ abstract class Deployment
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'Deployment',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'version': version,
       'status': status.toJson(),
       'filePath': filePath,
       if (fileSize != null) 'fileSize': fileSize,
-      if (uploadedByUserId != null) 'uploadedByUserId': uploadedByUserId,
+      if (uploadedByUserId != null)
+        'uploadedByUserId': uploadedByUserId?.toJson(),
       if (commitHash != null) 'commitHash': commitHash,
       if (metadata != null) 'metadata': metadata,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
@@ -182,13 +193,13 @@ class _Undefined {}
 
 class _DeploymentImpl extends Deployment {
   _DeploymentImpl({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required int version,
     required _i2.DeploymentStatus status,
     required String filePath,
     int? fileSize,
-    int? uploadedByUserId,
+    _i1.UuidValue? uploadedByUserId,
     String? commitHash,
     String? metadata,
     DateTime? createdAt,
@@ -212,8 +223,8 @@ class _DeploymentImpl extends Deployment {
   @_i1.useResult
   @override
   Deployment copyWith({
-    Object? id = _Undefined,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     int? version,
     _i2.DeploymentStatus? status,
     String? filePath,
@@ -225,13 +236,13 @@ class _DeploymentImpl extends Deployment {
     Object? updatedAt = _Undefined,
   }) {
     return Deployment(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       version: version ?? this.version,
       status: status ?? this.status,
       filePath: filePath ?? this.filePath,
       fileSize: fileSize is int? ? fileSize : this.fileSize,
-      uploadedByUserId: uploadedByUserId is int?
+      uploadedByUserId: uploadedByUserId is _i1.UuidValue?
           ? uploadedByUserId
           : this.uploadedByUserId,
       commitHash: commitHash is String? ? commitHash : this.commitHash,
@@ -245,7 +256,9 @@ class _DeploymentImpl extends Deployment {
 class DeploymentUpdateTable extends _i1.UpdateTable<DeploymentTable> {
   DeploymentUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> projectId(int value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> projectId(
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
     table.projectId,
     value,
   );
@@ -272,7 +285,9 @@ class DeploymentUpdateTable extends _i1.UpdateTable<DeploymentTable> {
     value,
   );
 
-  _i1.ColumnValue<int, int> uploadedByUserId(int? value) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uploadedByUserId(
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
     table.uploadedByUserId,
     value,
   );
@@ -300,10 +315,10 @@ class DeploymentUpdateTable extends _i1.UpdateTable<DeploymentTable> {
       );
 }
 
-class DeploymentTable extends _i1.Table<int?> {
+class DeploymentTable extends _i1.Table<_i1.UuidValue> {
   DeploymentTable({super.tableRelation}) : super(tableName: 'deployments') {
     updateTable = DeploymentUpdateTable(this);
-    projectId = _i1.ColumnInt(
+    projectId = _i1.ColumnUuid(
       'projectId',
       this,
     );
@@ -324,7 +339,7 @@ class DeploymentTable extends _i1.Table<int?> {
       'fileSize',
       this,
     );
-    uploadedByUserId = _i1.ColumnInt(
+    uploadedByUserId = _i1.ColumnUuid(
       'uploadedByUserId',
       this,
     );
@@ -350,7 +365,7 @@ class DeploymentTable extends _i1.Table<int?> {
 
   late final DeploymentUpdateTable updateTable;
 
-  late final _i1.ColumnInt projectId;
+  late final _i1.ColumnUuid projectId;
 
   late final _i1.ColumnInt version;
 
@@ -360,7 +375,7 @@ class DeploymentTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt fileSize;
 
-  late final _i1.ColumnInt uploadedByUserId;
+  late final _i1.ColumnUuid uploadedByUserId;
 
   late final _i1.ColumnString commitHash;
 
@@ -393,7 +408,7 @@ class DeploymentInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => Deployment.t;
+  _i1.Table<_i1.UuidValue> get table => Deployment.t;
 }
 
 class DeploymentIncludeList extends _i1.IncludeList {
@@ -413,7 +428,7 @@ class DeploymentIncludeList extends _i1.IncludeList {
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Deployment.t;
+  _i1.Table<_i1.UuidValue> get table => Deployment.t;
 }
 
 class DeploymentRepository {
@@ -509,7 +524,7 @@ class DeploymentRepository {
   /// Finds a single [Deployment] by its [id] or null if no such row exists.
   Future<Deployment?> findById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -597,7 +612,7 @@ class DeploymentRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<Deployment?> updateById(
     _i1.DatabaseSession session,
-    int id, {
+    _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<DeploymentUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
