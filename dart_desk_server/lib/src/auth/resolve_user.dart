@@ -17,7 +17,7 @@ Future<User> resolveUser(Session session, {int? clientId}) async {
   final user = await User.db.findFirstRow(
     session,
     where: (t) {
-      var expr = t.serverpodUserId.equals(serverpodUserId);
+      var expr = t.serverpodUserId.equals(serverpodUserId) & t.deletedAt.equals(null);
       if (clientId != null) {
         expr = expr & t.clientId.equals(clientId);
       }
