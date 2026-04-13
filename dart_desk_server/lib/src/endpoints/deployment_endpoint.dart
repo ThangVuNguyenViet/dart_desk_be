@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../auth/require_role.dart';
 import '../generated/protocol.dart';
 
 /// Endpoint for managing deployments.
@@ -43,7 +44,7 @@ class DeploymentEndpoint extends Endpoint {
     String projectSlug,
     int version,
   ) async {
-    await _requireAdminUser(session, projectSlug);
+    await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles);
 
     final project = await _getProject(session, projectSlug);
 
@@ -88,7 +89,7 @@ class DeploymentEndpoint extends Endpoint {
     String projectSlug,
     int version,
   ) async {
-    await _requireAdminUser(session, projectSlug);
+    await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles);
 
     final project = await _getProject(session, projectSlug);
 
