@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:serverpod/serverpod.dart';
 
 import '../auth/dart_desk_session.dart';
+import '../auth/require_role.dart';
 import '../auth/resolve_user.dart';
 import '../plugin/dart_desk_session.dart';
 import '../generated/protocol.dart';
@@ -27,7 +28,8 @@ class DocumentEndpoint extends Endpoint {
       session,
       where: (t) =>
           t.documentType.equals(documentType) &
-          t.projectId.equals(auth.projectId),
+          t.projectId.equals(auth.projectId) &
+          t.deletedAt.equals(null),
     );
 
     // Get paginated documents filtered by projectId
@@ -35,7 +37,8 @@ class DocumentEndpoint extends Endpoint {
       session,
       where: (t) {
         var expr = t.documentType.equals(documentType) &
-            t.projectId.equals(auth.projectId);
+            t.projectId.equals(auth.projectId) &
+            t.deletedAt.equals(null);
         if (search != null && search.isNotEmpty) {
           // Search in title and data (cached latest version)
           expr = expr & (t.title.like('%$search%') | t.data.like('%$search%'));
@@ -62,7 +65,12 @@ class DocumentEndpoint extends Endpoint {
     Session session,
     int documentId,
   ) async {
-    return await Document.db.findById(session, documentId);
+    final doc = await Document.db.findById(session, documentId);
+    if (doc == null) return null;
+    if (doc.deletedAt != null) {
+      throw ApiException(message: 'Document has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
+    }
+    return doc;
   }
 
   /// Get a document by slug
@@ -72,7 +80,7 @@ class DocumentEndpoint extends Endpoint {
   ) async {
     final documents = await Document.db.find(
       session,
-      where: (t) => t.slug.equals(slug),
+      where: (t) => t.slug.equals(slug) & t.deletedAt.equals(null),
       limit: 1,
     );
     return documents.isNotEmpty ? documents.first : null;
@@ -86,7 +94,9 @@ class DocumentEndpoint extends Endpoint {
     final documents = await Document.db.find(
       session,
       where: (t) =>
-          t.documentType.equals(documentType) & t.isDefault.equals(true),
+          t.documentType.equals(documentType) &
+          t.isDefault.equals(true) &
+          t.deletedAt.equals(null),
       limit: 1,
     );
     return documents.isNotEmpty ? documents.first : null;
@@ -257,7 +267,8 @@ class DocumentEndpoint extends Endpoint {
       where: (t) =>
           t.documentType.equals(documentTypeSlug) &
           t.projectId.equals(doc.projectId) &
-          t.isDefault.equals(true),
+          t.isDefault.equals(true) &
+          t.deletedAt.equals(null),
     );
 
     return await session.db.transaction<Document>((transaction) async {
@@ -277,25 +288,38 @@ class DocumentEndpoint extends Endpoint {
     });
   }
 
-  /// Delete a document
+  /// Delete a document (soft delete)
   Future<bool> deleteDocument(
     Session session,
     int documentId,
   ) async {
-    final auth = await _requireAuth(session);
+    final auth = await _requireUser(session);
+    await RoleGuard.requireRole(
+      session,
+      allowed: RoleGuard.destructiveRoles,
+      clientId: auth.clientId,
+    );
 
     final existing = await Document.db.findById(session, documentId);
-
-    if (existing == null) {
-      return false;
-    }
-
-    // Verify the document belongs to the user's client
+    if (existing == null) return false;
     if (existing.projectId != auth.projectId) {
       throw ApiException(message: 'Access denied: document belongs to a different project', code: 403);
     }
+    if (existing.deletedAt != null) return false;
 
-    await Document.db.deleteRow(session, existing);
+    final now = DateTime.now();
+    existing.deletedAt = now;
+    await Document.db.updateRow(session, existing);
+
+    // Soft-delete all versions
+    final versions = await DocumentVersion.db.find(
+      session,
+      where: (t) => t.documentId.equals(documentId) & t.deletedAt.equals(null),
+    );
+    for (final v in versions) {
+      v.deletedAt = now;
+      await DocumentVersion.db.updateRow(session, v);
+    }
     return true;
   }
 
@@ -327,7 +351,9 @@ class DocumentEndpoint extends Endpoint {
     final existing = await Document.db.findFirstRow(
       session,
       where: (t) =>
-          t.slug.equals(baseSlug) & t.documentType.equals(documentType),
+          t.slug.equals(baseSlug) &
+          t.documentType.equals(documentType) &
+          t.deletedAt.equals(null),
     );
 
     if (existing == null) {
@@ -339,7 +365,9 @@ class DocumentEndpoint extends Endpoint {
     final similarDocs = await Document.db.find(
       session,
       where: (t) =>
-          t.slug.like('$baseSlug%') & t.documentType.equals(documentType),
+          t.slug.like('$baseSlug%') &
+          t.documentType.equals(documentType) &
+          t.deletedAt.equals(null),
     );
 
     final existingSlugs = similarDocs.map((d) => d.slug).toSet();
@@ -389,14 +417,14 @@ class DocumentEndpoint extends Endpoint {
     // Get total count
     final total = await DocumentVersion.db.count(
       session,
-      where: (t) => t.documentId.equals(documentId),
+      where: (t) => t.documentId.equals(documentId) & t.deletedAt.equals(null),
     );
 
     // Get paginated versions, ordered by version number ascending
     // (to properly pair adjacent versions for operations)
     final versions = await DocumentVersion.db.find(
       session,
-      where: (t) => t.documentId.equals(documentId),
+      where: (t) => t.documentId.equals(documentId) & t.deletedAt.equals(null),
       orderBy: (t) => t.versionNumber,
       orderDescending: false,
       limit: limit,
@@ -408,7 +436,7 @@ class DocumentEndpoint extends Endpoint {
     if (includeOperations && offset > 0 && versions.isNotEmpty) {
       final prevVersions = await DocumentVersion.db.find(
         session,
-        where: (t) => t.documentId.equals(documentId),
+        where: (t) => t.documentId.equals(documentId) & t.deletedAt.equals(null),
         orderBy: (t) => t.versionNumber,
         orderDescending: false,
         limit: 1,
@@ -480,7 +508,12 @@ class DocumentEndpoint extends Endpoint {
     Session session,
     int versionId,
   ) async {
-    return await DocumentVersion.db.findById(session, versionId);
+    final version = await DocumentVersion.db.findById(session, versionId);
+    if (version == null) return null;
+    if (version.deletedAt != null) {
+      throw ApiException(message: 'Document version has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
+    }
+    return version;
   }
 
   /// Get the document data for a specific version.
@@ -630,21 +663,14 @@ class DocumentEndpoint extends Endpoint {
     return updated;
   }
 
-  /// Delete a version
-  Future<bool> deleteDocumentVersion(
-    Session session,
-    int versionId,
-  ) async {
-    await _requireAuth(session);
-
+  /// Delete a version (soft delete)
+  Future<bool> deleteDocumentVersion(Session session, int versionId) async {
+    final auth = await _requireUser(session);
+    await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles, clientId: auth.clientId);
     final existing = await DocumentVersion.db.findById(session, versionId);
-
-    if (existing == null) {
-      return false;
-    }
-
-    await DocumentVersion.db.deleteRow(session, existing);
-
+    if (existing == null || existing.deletedAt != null) return false;
+    existing.deletedAt = DateTime.now();
+    await DocumentVersion.db.updateRow(session, existing);
     return true;
   }
 
