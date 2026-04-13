@@ -1,4 +1,5 @@
 import 'package:dart_desk_server/src/generated/api_exception.dart';
+import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';
 import 'helpers/test_data_factory.dart';
@@ -12,7 +13,7 @@ void main() {
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      await factory.ensureTestUser();
+      await factory.ensureTestUser(role: ClientRole.admin);
     });
 
     group('createToken', () {

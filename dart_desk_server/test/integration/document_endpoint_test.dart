@@ -13,7 +13,7 @@ void main() {
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      await factory.ensureTestUser();
+      await factory.ensureTestUser(role: ClientRole.admin);
     });
 
     group('createDocument', () {

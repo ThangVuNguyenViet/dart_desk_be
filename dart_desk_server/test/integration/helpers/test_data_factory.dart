@@ -112,7 +112,15 @@ class TestDataFactory {
           t.serverpodUserId.equals(userIdentifier) &
           t.clientId.equals(clientId),
     );
-    if (existing != null) return existing;
+    if (existing != null) {
+      // Update role if it doesn't match the requested role
+      if (existing.role != role) {
+        final updated = existing.copyWith(role: role);
+        await User.db.updateRow(session, updated);
+        return updated;
+      }
+      return existing;
+    }
 
     // Insert directly for testing
     final user = await User.db.insertRow(

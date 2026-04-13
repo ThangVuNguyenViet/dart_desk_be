@@ -1,4 +1,5 @@
 import 'package:dart_desk_server/src/auth/api_key_validator.dart';
+import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 import 'helpers/test_data_factory.dart';
@@ -13,7 +14,7 @@ void main() {
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      await factory.ensureTestUser();
+      await factory.ensureTestUser(role: ClientRole.admin);
     });
 
     test('validates a created write token', () async {

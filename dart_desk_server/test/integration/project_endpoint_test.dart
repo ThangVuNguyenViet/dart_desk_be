@@ -29,6 +29,7 @@ void main() {
       await factory.ensureTestUser(
         userIdentifier: 'owner-1',
         clientId: TestDataFactory.testClientId,
+        role: ClientRole.owner,
       );
     });
 
