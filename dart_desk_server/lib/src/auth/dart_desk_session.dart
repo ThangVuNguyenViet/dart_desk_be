@@ -1,24 +1,33 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 /// Typed extension on [Session] for accessing auth scopes.
 extension DartDeskSessionExt on Session {
-  int? get clientId {
+  UuidValue? get clientId {
     final activeScopes = authenticated?.scopes ?? {};
     for (final scope in activeScopes) {
       final name = scope.name;
       if (name != null && name.startsWith('client:')) {
-        return int.tryParse(name.substring(7));
+        try {
+          return UuidValue.fromString(name.substring(7));
+        } catch (_) {
+          return null;
+        }
       }
     }
     return null;
   }
 
-  int? get projectId {
+  UuidValue? get projectId {
     final activeScopes = authenticated?.scopes ?? {};
     for (final scope in activeScopes) {
       final name = scope.name;
       if (name != null && name.startsWith('project:')) {
-        return int.tryParse(name.substring(8));
+        try {
+          return UuidValue.fromString(name.substring(8));
+        } catch (_) {
+          return null;
+        }
       }
     }
     return null;

@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../generated/protocol.dart';
 
@@ -7,7 +8,7 @@ import '../generated/protocol.dart';
 /// Requires [session.authenticated] to be non-null (caller must be logged in).
 /// Throws if no matching User record exists — users must be created explicitly
 /// (e.g., via [ProjectEndpoint.createClientWithOwner]).
-Future<User> resolveUser(Session session, {int? clientId}) async {
+Future<User> resolveUser(Session session, {UuidValue? clientId}) async {
   final auth = session.authenticated;
   if (auth == null) {
     throw ApiException(message: 'User must be authenticated', code: 401);
