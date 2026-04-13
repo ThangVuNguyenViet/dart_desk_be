@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dart_desk_server/src/services/email_service.dart';
 import 'package:dart_desk_server/src/web/routes/root.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     hide Protocol, Endpoints;
 import 'package:serverpod_auth_idp_server/core.dart';
@@ -45,6 +46,22 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   // Initialize CRDT service with node ID from passwords.yaml
   final nodeId = pod.getPassword('crdtNodeId') ?? 'postgres-main';
   registry.documentCrdtService = DocumentCrdtService(nodeId);
+
+  // Register S3 cloud storage for production/staging (skipped in development
+  // where the passwords entry is absent — falls back to database storage).
+  final s3Bucket = pod.getPassword('s3Bucket');
+  final awsRegion = pod.getPassword('awsRegion');
+  final s3PublicHost = pod.getPassword('s3PublicHost');
+  if (s3Bucket != null && awsRegion != null) {
+    pod.addCloudStorage(S3CloudStorage(
+      serverpod: pod,
+      storageId: 'public',
+      public: true,
+      region: awsRegion,
+      bucket: s3Bucket,
+      publicHost: s3PublicHost,
+    ));
+  }
 
   // Setup a default page at the web root.
   pod.webServer.addRoute(RouteRoot(), '/');
