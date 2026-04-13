@@ -34,7 +34,10 @@ class MemberEndpoint extends Endpoint {
 
     return User.db.find(
       session,
-      where: (t) => t.clientId.equals(clientId) & t.isActive.equals(true),
+      where: (t) =>
+          t.clientId.equals(clientId) &
+          t.isActive.equals(true) &
+          t.deletedAt.equals(null),
       orderBy: (t) => t.createdAt,
       orderDescending: true,
     );
@@ -121,16 +124,32 @@ class MemberEndpoint extends Endpoint {
       final ownerCount = await User.db.count(
         session,
         where: (t) =>
-            t.clientId.equals(clientId) & t.role.equals(ClientRole.owner),
+            t.clientId.equals(clientId) &
+            t.role.equals(ClientRole.owner) &
+            t.isActive.equals(true) &
+            t.deletedAt.equals(null),
       );
       if (ownerCount <= 1) {
         throw ApiException(
-          message: 'Cannot remove the last owner',
+          message: 'Cannot remove the last owner. Transfer ownership first.',
           code: 400,
+          errorCode: 'LAST_OWNER',
         );
       }
     }
 
-    await User.db.deleteRow(session, target);
+    // Soft-delete user
+    target.isActive = false;
+    target.deletedAt = DateTime.now();
+    await User.db.updateRow(session, target);
+
+    // Hard-delete all project memberships
+    final memberships = await ProjectMember.db.find(
+      session,
+      where: (t) => t.userId.equals(userId),
+    );
+    for (final m in memberships) {
+      await ProjectMember.db.deleteRow(session, m);
+    }
   }
 }
