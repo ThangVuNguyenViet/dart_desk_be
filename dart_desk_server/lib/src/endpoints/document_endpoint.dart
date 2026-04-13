@@ -5,8 +5,8 @@ import 'package:serverpod/serverpod.dart';
 import '../auth/dart_desk_session.dart';
 import '../auth/require_role.dart';
 import '../auth/resolve_user.dart';
-import '../plugin/dart_desk_session.dart';
 import '../generated/protocol.dart';
+import '../plugin/dart_desk_session.dart';
 
 typedef AuthResult = ({UuidValue? clientId, UuidValue? projectId, User? user});
 
@@ -68,7 +68,10 @@ class DocumentEndpoint extends Endpoint {
     final doc = await Document.db.findById(session, documentId);
     if (doc == null) return null;
     if (doc.deletedAt != null) {
-      throw ApiException(message: 'Document has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
+      throw ApiException(
+          message: 'Document has been deleted',
+          code: 410,
+          errorCode: 'RESOURCE_DELETED');
     }
     return doc;
   }
@@ -113,11 +116,17 @@ class DocumentEndpoint extends Endpoint {
     bool isDefault = false,
   }) async {
     final auth = await _requireUser(session);
-    final userId = auth.user!.id!;
+    final userId = auth.user!.id;
     final data = jsonDecode(dataJson) as Map<String, dynamic>;
 
     // Create the document — encode data as JSON for storage
-    final effectiveSlug = slug ?? title.toLowerCase().replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(RegExp(r'\s+'), '-').replaceAll(RegExp(r'-+'), '-').trim();
+    final effectiveSlug = slug ??
+        title
+            .toLowerCase()
+            .replaceAll(RegExp(r'[^\w\s-]'), '')
+            .replaceAll(RegExp(r'\s+'), '-')
+            .replaceAll(RegExp(r'-+'), '-')
+            .trim();
     final document = Document(
       projectId: auth.projectId!,
       documentType: documentType,
@@ -142,47 +151,47 @@ class DocumentEndpoint extends Endpoint {
           t.slug.equals(effectiveSlug),
     );
     if (existing != null) {
-      throw ApiException(message: 'A document with slug "$effectiveSlug" already exists for type "$documentType".', code: 409);
+      throw ApiException(
+          message:
+              'A document with slug "$effectiveSlug" already exists for type "$documentType".',
+          code: 409);
     }
 
     final created = await Document.db.insertRow(session, document);
-    session.log('Created Document id=${created.id} type=$documentType', level: LogLevel.info);
+    session.log('Created Document id=${created.id} type=$documentType',
+        level: LogLevel.info);
 
     // Initialize CRDT for this document
-    if (created.id != null) {
-      await session.crdtService.initializeCrdt(
-        session,
-        created.id!,
-        data,
-        cmsUserId: userId,
-      );
+    await session.crdtService.initializeCrdt(
+      session,
+      created.id,
+      data,
+      cmsUserId: userId,
+    );
 
-      // Get the HLC that was set during initialization
-      final updatedDoc = await Document.db.findById(session, created.id!);
-      final currentHlc = updatedDoc?.crdtHlc;
+    // Get the HLC that was set during initialization
+    final updatedDoc = await Document.db.findById(session, created.id);
+    final currentHlc = updatedDoc?.crdtHlc;
 
-      // Create initial version pointing to initial HLC
-      final opCount = await session.crdtService.getOperationCount(
-        session,
-        created.id!,
-      );
+    // Create initial version pointing to initial HLC
+    final opCount = await session.crdtService.getOperationCount(
+      session,
+      created.id,
+    );
 
-      final version = DocumentVersion(
-        documentId: created.id!,
-        versionNumber: 1,
-        status: DocumentVersionStatus.draft,
-        snapshotHlc: currentHlc,
-        operationCount: opCount,
-        changeLog: 'Initial version',
-        createdAt: DateTime.now(),
-        createdByUserId: userId,
-      );
-      await DocumentVersion.db.insertRow(session, version);
+    final version = DocumentVersion(
+      documentId: created.id,
+      versionNumber: 1,
+      status: DocumentVersionStatus.draft,
+      snapshotHlc: currentHlc,
+      operationCount: opCount,
+      changeLog: 'Initial version',
+      createdAt: DateTime.now(),
+      createdByUserId: userId,
+    );
+    await DocumentVersion.db.insertRow(session, version);
 
-      return updatedDoc ?? created;
-    }
-
-    return created;
+    return updatedDoc ?? created;
   }
 
   /// Update document data using CRDT operations (partial updates)
@@ -221,7 +230,7 @@ class DocumentEndpoint extends Endpoint {
     bool? isDefault,
   }) async {
     final auth = await _requireUser(session);
-    final userId = auth.user!.id!;
+    final userId = auth.user!.id;
 
     final existing = await Document.db.findById(session, documentId);
 
@@ -231,7 +240,9 @@ class DocumentEndpoint extends Endpoint {
 
     // Verify the document belongs to the user's client
     if (existing.projectId != auth.projectId) {
-      throw ApiException(message: 'Access denied: document belongs to a different project', code: 403);
+      throw ApiException(
+          message: 'Access denied: document belongs to a different project',
+          code: 403);
     }
 
     final updated = existing.copyWith(
@@ -262,7 +273,9 @@ class DocumentEndpoint extends Endpoint {
       throw ApiException(message: 'Document not found: $documentId', code: 404);
     }
     if (doc.projectId != auth.projectId) {
-      throw ApiException(message: 'Access denied: document belongs to a different project', code: 403);
+      throw ApiException(
+          message: 'Access denied: document belongs to a different project',
+          code: 403);
     }
 
     // Find the current default for this type (may be null or already this doc)
@@ -290,7 +303,8 @@ class DocumentEndpoint extends Endpoint {
       await Document.db.updateRow(session, updated, transaction: transaction);
       return updated;
     });
-    session.log('Set default Document id=$documentId type=$documentTypeSlug', level: LogLevel.info);
+    session.log('Set default Document id=$documentId type=$documentTypeSlug',
+        level: LogLevel.info);
     return result;
   }
 
@@ -309,7 +323,9 @@ class DocumentEndpoint extends Endpoint {
     final existing = await Document.db.findById(session, documentId);
     if (existing == null) return false;
     if (existing.projectId != auth.projectId) {
-      throw ApiException(message: 'Access denied: document belongs to a different project', code: 403);
+      throw ApiException(
+          message: 'Access denied: document belongs to a different project',
+          code: 403);
     }
     if (existing.deletedAt != null) return false;
 
@@ -397,7 +413,7 @@ class DocumentEndpoint extends Endpoint {
             'SELECT DISTINCT "documentType" FROM documents '
             'WHERE "projectId" = \$1 '
             'ORDER BY "documentType"',
-            parameters: QueryParameters.positional([projectId]),
+            parameters: QueryParameters.positional([projectId.toString()]),
           )
         : await session.db.unsafeQuery(
             'SELECT DISTINCT "documentType" FROM documents '
@@ -443,7 +459,8 @@ class DocumentEndpoint extends Endpoint {
     if (includeOperations && offset > 0 && versions.isNotEmpty) {
       final prevVersions = await DocumentVersion.db.find(
         session,
-        where: (t) => t.documentId.equals(documentId) & t.deletedAt.equals(null),
+        where: (t) =>
+            t.documentId.equals(documentId) & t.deletedAt.equals(null),
         orderBy: (t) => t.versionNumber,
         orderDescending: false,
         limit: 1,
@@ -518,7 +535,10 @@ class DocumentEndpoint extends Endpoint {
     final version = await DocumentVersion.db.findById(session, versionId);
     if (version == null) return null;
     if (version.deletedAt != null) {
-      throw ApiException(message: 'Document version has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
+      throw ApiException(
+          message: 'Document version has been deleted',
+          code: 410,
+          errorCode: 'RESOURCE_DELETED');
     }
     return version;
   }
@@ -555,7 +575,7 @@ class DocumentEndpoint extends Endpoint {
     String? changeLog,
   }) async {
     final auth = await _requireUser(session);
-    final userId = auth.user!.id!;
+    final userId = auth.user!.id;
 
     // Get the next version number for this document
     final existingVersions = await DocumentVersion.db.find(
@@ -615,7 +635,9 @@ class DocumentEndpoint extends Endpoint {
     );
 
     await DocumentVersion.db.updateRow(session, updated);
-    session.log('Published DocumentVersion id=$versionId documentId=${existing.documentId}', level: LogLevel.info);
+    session.log(
+        'Published DocumentVersion id=$versionId documentId=${existing.documentId}',
+        level: LogLevel.info);
 
     // Sync publishedAt to the parent document for fast public reads
     final document = await Document.db.findById(session, existing.documentId);
@@ -648,7 +670,9 @@ class DocumentEndpoint extends Endpoint {
     );
 
     await DocumentVersion.db.updateRow(session, updated);
-    session.log('Archived DocumentVersion id=$versionId documentId=${existing.documentId}', level: LogLevel.info);
+    session.log(
+        'Archived DocumentVersion id=$versionId documentId=${existing.documentId}',
+        level: LogLevel.info);
 
     // Check if any published versions remain for this document
     final publishedCount = await DocumentVersion.db.count(
@@ -659,8 +683,7 @@ class DocumentEndpoint extends Endpoint {
     );
 
     if (publishedCount == 0) {
-      final document =
-          await Document.db.findById(session, existing.documentId);
+      final document = await Document.db.findById(session, existing.documentId);
       if (document != null) {
         await Document.db.updateRow(
           session,
@@ -678,17 +701,20 @@ class DocumentEndpoint extends Endpoint {
     UuidValue versionId,
   ) async {
     final auth = await _requireUser(session);
-    await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles, clientId: auth.clientId);
+    await RoleGuard.requireRole(session,
+        allowed: RoleGuard.destructiveRoles, clientId: auth.clientId);
     final existing = await DocumentVersion.db.findById(session, versionId);
     if (existing == null || existing.deletedAt != null) return false;
     existing.deletedAt = DateTime.now();
     await DocumentVersion.db.updateRow(session, existing);
-    session.log('Soft-deleted DocumentVersion id=$versionId', level: LogLevel.info);
+    session.log('Soft-deleted DocumentVersion id=$versionId',
+        level: LogLevel.info);
     return true;
   }
 
   /// Get total document count for the specified project.
-  Future<int> getDocumentCount(Session session, {required UuidValue projectId}) async {
+  Future<int> getDocumentCount(Session session,
+      {required UuidValue projectId}) async {
     final project = await Project.db.findById(session, projectId);
     if (project == null) {
       throw ApiException(message: 'Project not found', code: 404);

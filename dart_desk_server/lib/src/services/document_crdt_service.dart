@@ -225,7 +225,7 @@ class DocumentCrdtService {
     // Use raw SQL for string comparison since hlc is lexicographically sortable
     final operations = await session.db.unsafeQuery(
       r'SELECT * FROM document_crdt_operations WHERE "documentId" = $1 AND hlc > $2 ORDER BY hlc ASC',
-      parameters: QueryParameters.positional([documentId, sinceHlc]),
+      parameters: QueryParameters.positional([documentId.toString(), sinceHlc]),
     );
 
     final operationsList = <DocumentCrdtOperation>[];
@@ -263,7 +263,7 @@ class DocumentCrdtService {
     // Find nearest snapshot BEFORE target HLC using raw SQL
     final snapshotResults = await session.db.unsafeQuery(
       r'SELECT * FROM document_crdt_snapshots WHERE "documentId" = $1 AND "snapshotHlc" <= $2 ORDER BY "snapshotHlc" DESC LIMIT 1',
-      parameters: QueryParameters.positional([documentId, targetHlc]),
+      parameters: QueryParameters.positional([documentId.toString(), targetHlc]),
     );
 
     Map<String, dynamic> flatState = {};
@@ -281,7 +281,7 @@ class DocumentCrdtService {
     // Replay operations from snapshot to target HLC
     final operations = await session.db.unsafeQuery(
       r'SELECT * FROM document_crdt_operations WHERE "documentId" = $1 AND hlc > $2 AND hlc <= $3 ORDER BY hlc ASC',
-      parameters: QueryParameters.positional([documentId, sinceHlc, targetHlc]),
+      parameters: QueryParameters.positional([documentId.toString(), sinceHlc, targetHlc]),
     );
 
     for (var row in operations) {
@@ -333,7 +333,7 @@ class DocumentCrdtService {
       // Keep operations at and after this HLC for safety
       await session.db.unsafeExecute(
         r'DELETE FROM document_crdt_operations WHERE "documentId" = $1 AND hlc < $2',
-        parameters: QueryParameters.positional([documentId, currentHlc]),
+        parameters: QueryParameters.positional([documentId.toString(), currentHlc]),
       );
 
       session.log('Compacted $opCount operations for document $documentId');
@@ -401,7 +401,7 @@ class DocumentCrdtService {
 
     final results = await session.db.unsafeQuery(
       r'SELECT * FROM document_crdt_operations WHERE "documentId" = $1 AND hlc > $2 AND hlc <= $3 ORDER BY hlc ASC',
-      parameters: QueryParameters.positional([documentId, fromHlc, toHlc]),
+      parameters: QueryParameters.positional([documentId.toString(), fromHlc, toHlc]),
     );
 
     return results

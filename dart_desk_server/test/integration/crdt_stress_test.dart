@@ -93,19 +93,19 @@ void main() {
 
         await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode(updates),
         );
 
         // Capture HLC at midpoint
         if (batch == 50) {
-          midpointHlc = await crdtService.getCurrentHlc(session, doc.id!);
+          midpointHlc = await crdtService.getCurrentHlc(session, doc.id);
         }
       }
 
       // 3. Verify getCurrentState returns valid data
       final stopwatch = Stopwatch()..start();
-      final currentState = await crdtService.getCurrentState(session, doc.id!);
+      final currentState = await crdtService.getCurrentState(session, doc.id);
       stopwatch.stop();
 
       expect(currentState, isNotEmpty);
@@ -122,7 +122,7 @@ void main() {
       if (midpointHlc != null) {
         final historicalState = await crdtService.getStateAtHlc(
           session,
-          doc.id!,
+          doc.id,
           midpointHlc,
         );
         expect(historicalState, isNotEmpty);
@@ -134,7 +134,7 @@ void main() {
       // Get all operations
       final allOpsResult = await session.db.unsafeQuery(
         r'SELECT * FROM document_crdt_operations WHERE "documentId" = $1 ORDER BY hlc ASC',
-        parameters: QueryParameters.positional([doc.id!]),
+        parameters: QueryParameters.positional([doc.id.toString()]),
       );
       final allOps = allOpsResult
           .map((row) => DocumentCrdtOperation.fromJson(row.toColumnMap()))
@@ -147,16 +147,16 @@ void main() {
       expect(jsonEncode(reconstructed), equals(jsonEncode(currentState)));
 
       // 6. Test compaction
-      final opCountBefore = await crdtService.getOperationCount(session, doc.id!);
+      final opCountBefore = await crdtService.getOperationCount(session, doc.id);
       expect(opCountBefore, greaterThan(1000));
 
-      await crdtService.compactOperations(session, doc.id!, threshold: 100);
+      await crdtService.compactOperations(session, doc.id, threshold: 100);
 
-      final opCountAfter = await crdtService.getOperationCount(session, doc.id!);
+      final opCountAfter = await crdtService.getOperationCount(session, doc.id);
       expect(opCountAfter, lessThan(opCountBefore));
 
       // State should still be correct after compaction
-      final stateAfterCompaction = await crdtService.getCurrentState(session, doc.id!);
+      final stateAfterCompaction = await crdtService.getCurrentState(session, doc.id);
       expect(jsonEncode(stateAfterCompaction), equals(jsonEncode(currentState)));
     });
   });

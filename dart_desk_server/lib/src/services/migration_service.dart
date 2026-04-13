@@ -56,7 +56,7 @@ class DocumentMigrationResult {
   });
 
   Map<String, dynamic> toJson() => {
-        'documentId': documentId,
+        'documentId': documentId.toString(),
         'title': title,
         'status': status,
         'changes': changes,

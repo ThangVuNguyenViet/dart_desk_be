@@ -26,7 +26,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
     // Use raw SQL for efficient HLC string comparison
     final operations = await session.db.unsafeQuery(
       r'SELECT * FROM document_crdt_operations WHERE "documentId" = $1 AND hlc > $2 ORDER BY hlc ASC LIMIT $3',
-      parameters: QueryParameters.positional([documentId, sinceHlc, limit]),
+      parameters: QueryParameters.positional([documentId.toString(), sinceHlc, limit]),
     );
 
     final result = <DocumentCrdtOperation>[];
