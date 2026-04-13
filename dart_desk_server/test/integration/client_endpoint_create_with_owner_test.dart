@@ -1,5 +1,6 @@
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 
 import 'test_tools/serverpod_test_tools.dart';
 
@@ -19,7 +20,7 @@ void main() {
   withServerpod(
     'ProjectEndpoint createClientWithOwner',
     (sessionBuilder, endpoints) {
-      final insertedClientIds = <int>[];
+      final insertedClientIds = <UuidValue>[];
 
       tearDown(() async {
         final session = sessionBuilder.build();
@@ -43,7 +44,7 @@ void main() {
           clientName: 'Owner Workspace',
           clientSlug: 'owner-workspace',
         );
-        insertedClientIds.add(client.id!);
+        insertedClientIds.add(client.id);
 
         expect(client.id, isNotNull);
         expect(client.slug, equals('owner-workspace'));
@@ -52,7 +53,7 @@ void main() {
 
         final user = await User.db.findFirstRow(
           sessionBuilder.build(),
-          where: (t) => t.clientId.equals(client.id!),
+          where: (t) => t.clientId.equals(client.id),
         );
         expect(user, isNotNull);
         expect(user!.role, equals('admin'));
@@ -68,11 +69,11 @@ void main() {
           clientName: 'Fallback Workspace',
           clientSlug: 'fallback-workspace',
         );
-        insertedClientIds.add(client.id!);
+        insertedClientIds.add(client.id);
 
         final user = await User.db.findFirstRow(
           sessionBuilder.build(),
-          where: (t) => t.clientId.equals(client.id!),
+          where: (t) => t.clientId.equals(client.id),
         );
         expect(user!.email, equals(userIdentifier));
       });
@@ -84,7 +85,7 @@ void main() {
           clientName: 'First Workspace',
           clientSlug: 'first-workspace',
         );
-        insertedClientIds.add(client.id!);
+        insertedClientIds.add(client.id);
 
         await expectLater(
           endpoints.project.createClientWithOwner(
@@ -169,7 +170,7 @@ void main() {
               isActive: true,
             ),
           );
-          insertedClientIds.add(existing.id!);
+          insertedClientIds.add(existing.id);
 
           await expectLater(
             endpoints.project.createClientWithOwner(

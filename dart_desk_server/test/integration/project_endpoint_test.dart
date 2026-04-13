@@ -1,5 +1,6 @@
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 
 import 'helpers/test_data_factory.dart';
 import 'test_tools/serverpod_test_tools.dart';
@@ -144,14 +145,14 @@ void main() {
         final seeded = await seedProject();
         final p = await endpoints.project.getProject(
           sessionBuilder,
-          seeded.id!,
+          seeded.id,
         );
         expect(p, isNotNull);
         expect(p!.id, equals(seeded.id));
       });
 
       test('returns null for unknown id', () async {
-        final p = await endpoints.project.getProject(sessionBuilder, 999999);
+        final p = await endpoints.project.getProject(sessionBuilder, UuidValue.fromString('00000000-0000-0000-0000-000000000000'));
         expect(p, isNull);
       });
     });
@@ -184,14 +185,14 @@ void main() {
         final seeded = await seedProject();
         final updated = await endpoints.project.updateProject(
           authedSession(sessionBuilder),
-          seeded.id!,
+          seeded.id,
           name: 'Updated Name',
         );
         expect(updated, isNotNull);
         expect(updated!.name, equals('Updated Name'));
         final fromDb = await Project.db.findById(
           sessionBuilder.build(),
-          seeded.id!,
+          seeded.id,
         );
         expect(fromDb!.name, equals('Updated Name'));
       });
@@ -200,13 +201,13 @@ void main() {
         final seeded = await seedProject();
         final updated = await endpoints.project.updateProject(
           authedSession(sessionBuilder),
-          seeded.id!,
+          seeded.id,
           isActive: false,
         );
         expect(updated!.isActive, isFalse);
         final fromDb = await Project.db.findById(
           sessionBuilder.build(),
-          seeded.id!,
+          seeded.id,
         );
         expect(fromDb!.isActive, isFalse);
       });
@@ -214,7 +215,7 @@ void main() {
       test('returns null for nonexistent id', () async {
         final result = await endpoints.project.updateProject(
           authedSession(sessionBuilder),
-          999999,
+          UuidValue.fromString('00000000-0000-0000-0000-000000000000'),
         );
         expect(result, isNull);
       });
@@ -222,7 +223,7 @@ void main() {
       test('throws when not authenticated', () async {
         final seeded = await seedProject();
         await expectLater(
-          () => endpoints.project.updateProject(sessionBuilder, seeded.id!),
+          () => endpoints.project.updateProject(sessionBuilder, seeded.id),
           throwsA(isA<ApiException>()),
         );
       });
@@ -233,12 +234,12 @@ void main() {
         final seeded = await seedProject();
         final result = await endpoints.project.deleteProject(
           authedSession(sessionBuilder),
-          seeded.id!,
+          seeded.id,
         );
         expect(result, isTrue);
         final gone = await Project.db.findById(
           sessionBuilder.build(),
-          seeded.id!,
+          seeded.id,
         );
         expect(gone, isNull);
       });
@@ -246,7 +247,7 @@ void main() {
       test('returns false for nonexistent id', () async {
         final result = await endpoints.project.deleteProject(
           authedSession(sessionBuilder),
-          999999,
+          UuidValue.fromString('00000000-0000-0000-0000-000000000000'),
         );
         expect(result, isFalse);
       });
@@ -254,7 +255,7 @@ void main() {
       test('throws when not authenticated', () async {
         final seeded = await seedProject();
         await expectLater(
-          () => endpoints.project.deleteProject(sessionBuilder, seeded.id!),
+          () => endpoints.project.deleteProject(sessionBuilder, seeded.id),
           throwsA(isA<ApiException>()),
         );
       });

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 import 'test_tools/serverpod_test_tools.dart';
 import 'helpers/test_data_factory.dart';
 
@@ -128,7 +129,7 @@ void main() {
       test('returns empty list for nonexistent document', () async {
         final editors = await endpoints.documentCollaboration.getActiveEditors(
           sessionBuilder,
-          999999,
+          UuidValue.fromString('00000000-0000-0000-0000-000000000000'),
         );
 
         expect(editors, isEmpty);

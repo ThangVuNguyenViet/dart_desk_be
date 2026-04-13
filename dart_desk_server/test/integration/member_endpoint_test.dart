@@ -1,5 +1,6 @@
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 
 import 'helpers/test_data_factory.dart';
 import 'test_tools/serverpod_test_tools.dart';
@@ -39,7 +40,7 @@ void main() {
 
       test('throws 401 when not authenticated', () async {
         expect(
-          () => endpoints.member.listMembers(sessionBuilder, clientId: 1),
+          () => endpoints.member.listMembers(sessionBuilder, clientId: UuidValue.fromString('00000000-0000-0000-0000-000000000000')),
           throwsA(isA<Exception>()),
         );
       });

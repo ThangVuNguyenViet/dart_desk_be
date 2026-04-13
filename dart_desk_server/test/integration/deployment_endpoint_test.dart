@@ -1,5 +1,6 @@
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 
 import 'helpers/test_data_factory.dart';
 import 'test_tools/serverpod_test_tools.dart';
@@ -52,7 +53,7 @@ void main() {
     }
 
     Future<Deployment> seedDeployment(
-      int projectId, {
+      UuidValue projectId, {
       required int version,
       DeploymentStatus status = DeploymentStatus.inactive,
     }) async {
@@ -124,8 +125,8 @@ void main() {
 
       test('returns all deployments for project', () async {
         final project = await seedProjectAndAdmin();
-        await seedDeployment(project.id!, version: 1);
-        await seedDeployment(project.id!, version: 2);
+        await seedDeployment(project.id, version: 1);
+        await seedDeployment(project.id, version: 2);
         final result = await endpoints.deployment.list(authed(), projectSlug);
         expect(result.length, equals(2));
       });
@@ -134,7 +135,7 @@ void main() {
     group('getActive', () {
       test('returns null when no active deployment', () async {
         final project = await seedProjectAndAdmin();
-        await seedDeployment(project.id!,
+        await seedDeployment(project.id,
             version: 1, status: DeploymentStatus.inactive);
         final result =
             await endpoints.deployment.getActive(authed(), projectSlug);
@@ -143,7 +144,7 @@ void main() {
 
       test('returns the active deployment', () async {
         final project = await seedProjectAndAdmin();
-        final active = await seedDeployment(project.id!,
+        final active = await seedDeployment(project.id,
             version: 1, status: DeploymentStatus.active);
         final result =
             await endpoints.deployment.getActive(authed(), projectSlug);
@@ -156,7 +157,7 @@ void main() {
     group('activate', () {
       test('sets target deployment to active', () async {
         final project = await seedProjectAndAdmin();
-        await seedDeployment(project.id!, version: 1);
+        await seedDeployment(project.id, version: 1);
         final result =
             await endpoints.deployment.activate(authed(), projectSlug, 1);
         expect(result.status, equals(DeploymentStatus.active));
@@ -164,13 +165,13 @@ void main() {
 
       test('deactivates previously active deployment', () async {
         final project = await seedProjectAndAdmin();
-        final wasActive = await seedDeployment(project.id!,
+        final wasActive = await seedDeployment(project.id,
             version: 1, status: DeploymentStatus.active);
-        await seedDeployment(project.id!, version: 2);
+        await seedDeployment(project.id, version: 2);
         await endpoints.deployment.activate(authed(), projectSlug, 2);
         final session = sessionBuilder.build();
         final nowInactive =
-            await Deployment.db.findById(session, wasActive.id!);
+            await Deployment.db.findById(session, wasActive.id);
         expect(nowInactive!.status, equals(DeploymentStatus.inactive));
       });
 
@@ -186,14 +187,14 @@ void main() {
     group('delete', () {
       test('returns true and removes the row', () async {
         final project = await seedProjectAndAdmin();
-        await seedDeployment(project.id!, version: 1);
+        await seedDeployment(project.id, version: 1);
         final result =
             await endpoints.deployment.delete(authed(), projectSlug, 1);
         expect(result, isTrue);
         final session = sessionBuilder.build();
         final gone = await Deployment.db.findFirstRow(
           session,
-          where: (t) => t.projectId.equals(project.id!) & t.version.equals(1),
+          where: (t) => t.projectId.equals(project.id) & t.version.equals(1),
         );
         expect(gone, isNull);
       });
@@ -207,7 +208,7 @@ void main() {
 
       test('throws when attempting to delete active deployment', () async {
         final project = await seedProjectAndAdmin();
-        await seedDeployment(project.id!,
+        await seedDeployment(project.id,
             version: 1, status: DeploymentStatus.active);
         await expectLater(
           () => endpoints.deployment.delete(authed(), projectSlug, 1),

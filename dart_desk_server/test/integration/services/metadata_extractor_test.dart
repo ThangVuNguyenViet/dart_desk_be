@@ -4,6 +4,7 @@ import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:dart_desk_server/src/services/metadata_extractor.dart';
 import 'package:image/image.dart' as img;
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 
 import '../helpers/test_data_factory.dart';
 import '../test_tools/serverpod_test_tools.dart';
@@ -28,7 +29,7 @@ String _uniqueId(String prefix) =>
 MediaAsset _buildPendingAsset({
   required String assetId,
   required String fileName,
-  required int projectId,
+  required UuidValue projectId,
   String mimeType = 'image/png',
   int fileSize = 0,
 }) {
@@ -53,7 +54,7 @@ void main() {
     'MetadataExtractor',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, endpoints) {
-      late int projectId;
+      late UuidValue projectId;
 
       setUpAll(() async {
         final factory = TestDataFactory(
@@ -61,7 +62,7 @@ void main() {
           endpoints: endpoints,
         );
         final project = await factory.ensureTestProject();
-        projectId = project.id!;
+        projectId = project.id;
       });
 
       tearDownAll(() async {
@@ -101,7 +102,7 @@ void main() {
           await MetadataExtractor.extractAndUpdate(session, asset);
 
           // Re-fetch the asset to see updated fields
-          final updated = await MediaAsset.db.findById(session, asset.id!);
+          final updated = await MediaAsset.db.findById(session, asset.id);
 
           expect(updated, isNotNull);
           expect(updated!.metadataStatus,
@@ -132,7 +133,7 @@ void main() {
 
           await MetadataExtractor.extractAndUpdate(session, asset);
 
-          final updated = await MediaAsset.db.findById(session, asset.id!);
+          final updated = await MediaAsset.db.findById(session, asset.id);
 
           expect(updated, isNotNull);
           expect(updated!.metadataStatus,
@@ -157,7 +158,7 @@ void main() {
 
           await MetadataExtractor.extractAndUpdate(session, asset);
 
-          final updated = await MediaAsset.db.findById(session, asset.id!);
+          final updated = await MediaAsset.db.findById(session, asset.id);
           expect(
               updated!.metadataStatus, equals(MediaAssetMetadataStatus.failed));
         });
@@ -187,7 +188,7 @@ void main() {
 
           await MetadataExtractor.extractAndUpdate(session, asset);
 
-          final updated = await MediaAsset.db.findById(session, asset.id!);
+          final updated = await MediaAsset.db.findById(session, asset.id);
           expect(
               updated!.metadataStatus, equals(MediaAssetMetadataStatus.failed));
         });
