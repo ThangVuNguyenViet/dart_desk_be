@@ -206,7 +206,7 @@ Future<void> _sendRegistrationCode(
   required String verificationCode,
   required Transaction? transaction,
 }) async {
-  session.log('[EmailIdp] Sending registration code to $email', level: LogLevel.info);
+  session.log('Registration code ($email): $verificationCode', level: LogLevel.info);
   await _sendEmail(
     session: session,
     to: email,
@@ -224,7 +224,7 @@ Future<void> _sendPasswordResetCode(
   required String verificationCode,
   required Transaction? transaction,
 }) async {
-  session.log('[EmailIdp] Sending password reset code to $email', level: LogLevel.info);
+  session.log('Password reset code ($email): $verificationCode', level: LogLevel.info);
   await _sendEmail(
     session: session,
     to: email,
