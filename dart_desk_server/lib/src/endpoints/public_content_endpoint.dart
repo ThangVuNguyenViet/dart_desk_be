@@ -90,7 +90,7 @@ class PublicContentEndpoint extends Endpoint {
     );
 
     if (document == null) {
-      throw ApiException(message: 'No default published document found for type "$documentType".', code: 400);
+      throw ApiException(message: 'No default published document found for type "$documentType".', code: 404);
     }
 
     return _toPublicDocument(session, document);
@@ -115,7 +115,7 @@ class PublicContentEndpoint extends Endpoint {
     );
 
     if (document == null) {
-      throw ApiException(message: 'No published document found for type "$documentType" with slug "$slug".', code: 400);
+      throw ApiException(message: 'No published document found for type "$documentType" with slug "$slug".', code: 404);
     }
 
     return _toPublicDocument(session, document);
