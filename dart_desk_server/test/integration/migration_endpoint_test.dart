@@ -83,7 +83,7 @@ void main() {
         // Verify original data is unchanged
         final unchanged = await endpoints.document.getDocument(
           authed,
-          doc.id!,
+          doc.id,
         );
         expect(unchanged, isNotNull);
         final data = jsonDecode(unchanged!.data!) as Map<String, dynamic>;
@@ -239,7 +239,7 @@ void main() {
           false,
         );
 
-        final updated = await endpoints.document.getDocument(authed, doc.id!);
+        final updated = await endpoints.document.getDocument(authed, doc.id);
         expect(updated, isNotNull);
         final data = jsonDecode(updated!.data!) as Map<String, dynamic>;
         expect(data.containsKey('dropField'), isFalse);
@@ -267,7 +267,7 @@ void main() {
           false,
         );
 
-        final updated = await endpoints.document.getDocument(authed, doc.id!);
+        final updated = await endpoints.document.getDocument(authed, doc.id);
         expect(updated, isNotNull);
         final data = jsonDecode(updated!.data!) as Map<String, dynamic>;
         expect(data['newField'], equals('added'));

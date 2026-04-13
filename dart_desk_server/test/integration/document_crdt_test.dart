@@ -27,7 +27,7 @@ void main() {
         // First update
         final updated1 = await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({'field1': 'updated', 'field2': 'new_value'}),
         );
 
@@ -39,7 +39,7 @@ void main() {
         // Second update
         final updated2 = await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({'field3': 'another_value'}),
         );
 
@@ -58,12 +58,12 @@ void main() {
 
         await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({'a': 'updated_a'}),
         );
         final result = await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({'b': 'updated_b'}),
         );
 
@@ -83,7 +83,7 @@ void main() {
         );
         final authed = factory.authenticatedSession();
 
-        final fetched = await endpoints.document.getDocument(authed, doc.id!);
+        final fetched = await endpoints.document.getDocument(authed, doc.id);
         expect(fetched, isNotNull);
 
         final data = jsonDecode(fetched!.data!) as Map<String, dynamic>;
@@ -125,7 +125,7 @@ void main() {
 
         await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({
             'nested': {
               'deep': {'value': true}
@@ -134,7 +134,7 @@ void main() {
           }),
         );
 
-        final fetched = await endpoints.document.getDocument(authed, doc.id!);
+        final fetched = await endpoints.document.getDocument(authed, doc.id);
         final data = jsonDecode(fetched!.data!) as Map<String, dynamic>;
 
         expect(data['nested'], isA<Map>());
@@ -169,7 +169,7 @@ void main() {
         );
         final authed = factory.authenticatedSession();
 
-        final fetched = await endpoints.document.getDocument(authed, doc.id!);
+        final fetched = await endpoints.document.getDocument(authed, doc.id);
         final data = jsonDecode(fetched!.data!) as Map<String, dynamic>;
 
         // List
@@ -198,11 +198,11 @@ void main() {
           data: complexData,
         );
 
-        final version = await factory.createTestVersion(doc.id!);
+        final version = await factory.createTestVersion(doc.id);
 
         final versionData = await endpoints.document.getDocumentVersionData(
           sessionBuilder,
-          version.id!,
+          version.id,
         );
         final versionJson = jsonDecode(versionData!) as Map<String, dynamic>;
 
@@ -234,7 +234,7 @@ void main() {
         // Clear the image field
         final result = await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({'image': null}),
         );
 
@@ -254,7 +254,7 @@ void main() {
 
         final result = await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({
             'image': {'url': 'https://example.com/new.jpg', 'alt': 'New photo'},
           }),
@@ -279,13 +279,13 @@ void main() {
         // Clear image
         await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({'image': null}),
         );
 
         // Verify cleared
         final afterClear =
-            await endpoints.document.getDocument(authed, doc.id!);
+            await endpoints.document.getDocument(authed, doc.id);
         final clearedData =
             jsonDecode(afterClear!.data!) as Map<String, dynamic>;
         expect(clearedData['image'], isNull);
@@ -294,7 +294,7 @@ void main() {
         // Restore with new image
         final result = await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({
             'image': {'url': 'https://example.com/v2.jpg', 'alt': 'V2'},
           }),
@@ -318,18 +318,18 @@ void main() {
 
         await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({'x': '2'}),
         );
         await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({'y': '3'}),
         );
 
         final count = await endpoints.documentCollaboration.getOperationCount(
           sessionBuilder,
-          doc.id!,
+          doc.id,
         );
 
         // At least 2 operations from our updates (may be more from create)
@@ -345,13 +345,13 @@ void main() {
 
         await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({'z': '2'}),
         );
 
         final hlc = await endpoints.documentCollaboration.getCurrentHlc(
           sessionBuilder,
-          doc.id!,
+          doc.id,
         );
 
         expect(hlc, isNotNull);

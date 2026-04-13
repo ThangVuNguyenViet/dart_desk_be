@@ -49,13 +49,13 @@ void main() {
         isDefault: isDefault,
         data: data,
       );
-      final version = await factory.createTestVersion(doc.id!);
+      final version = await factory.createTestVersion(doc.id);
       await endpoints.document.publishDocumentVersion(
         factory.authenticatedSession(),
-        version.id!,
+        version.id,
       );
       // Re-fetch to get updated publishedAt
-      return (await endpoints.document.getDocument(sessionBuilder, doc.id!))!;
+      return (await endpoints.document.getDocument(sessionBuilder, doc.id))!;
     }
 
     group('getAllContents', () {
@@ -274,15 +274,15 @@ void main() {
           isDefault: isDefault,
           data: data,
         );
-        final version = await factory.createTestVersion(doc.id!);
+        final version = await factory.createTestVersion(doc.id);
         await endpoints.document.publishDocumentVersion(
           factory.authenticatedSession(),
-          version.id!,
+          version.id,
         );
         // Re-fetch to get updated publishedAt
         return (await endpoints.document.getDocument(
           sessionBuilder,
-          doc.id!,
+          doc.id,
         ))!;
       }
 

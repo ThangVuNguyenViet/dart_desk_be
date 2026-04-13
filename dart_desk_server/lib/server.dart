@@ -94,6 +94,10 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
       EmailIdpConfigFromPasswords(
         sendRegistrationVerificationCode: _sendRegistrationCode,
         sendPasswordResetVerificationCode: _sendPasswordResetCode,
+        maxPasswordResetAttempts: const RateLimit(
+          timeframe: Duration(hours: 1),
+          maxAttempts: 10,
+        ),
       ),
     ],
   );
@@ -110,7 +114,7 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   // support project API keys passed as "jwtToken:apiKey" compound tokens.
   final cloudAdminKey = pod.getPassword('cloudAdminKey');
   final defaultHandler = pod.authenticationHandler;
-  final authRateLimiter = RateLimiter(maxAttempts: 10, windowDuration: Duration(minutes: 1));
+  final authRateLimiter = RateLimiter(maxAttempts: 1000, windowDuration: Duration(minutes: 1));
   pod.authenticationHandler = (session, token) async {
       final tokenKey = token.length > 8 ? token.substring(0, 8) : token;
       if (!authRateLimiter.isAllowed(tokenKey)) {
@@ -164,7 +168,7 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
       if (tokenRow != null) {
         final project = await Project.db.findById(session, tokenRow.projectId);
         if (project != null) {
-          scopes.add(Scope('project:${project.id!}'));
+          scopes.add(Scope('project:${project.id}'));
           scopes.add(Scope('project.read'));
           if (tokenRow.role == 'write' ||
               tokenRow.role == 'editor' ||
@@ -172,8 +176,8 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
             scopes.add(Scope('project.write'));
           }
           scopes.add(Scope('client:${project.clientId}'));
-          userIdentifier ??= 'api-token:${tokenRow.id!}';
-          authId ??= 'api-token:${tokenRow.id!}';
+          userIdentifier ??= 'api-token:${tokenRow.id}';
+          authId ??= 'api-token:${tokenRow.id}';
         }
       }
     }

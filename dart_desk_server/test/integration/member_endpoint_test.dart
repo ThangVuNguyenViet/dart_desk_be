@@ -32,7 +32,7 @@ void main() {
         final authed = factory.authenticatedSession(userIdentifier: 'user-1');
         final members = await endpoints.member.listMembers(
           authed,
-          clientId: client.id!,
+          clientId: client.id,
         );
 
         expect(members.length, greaterThanOrEqualTo(2));
@@ -58,7 +58,7 @@ void main() {
             factory.authenticatedSession(userIdentifier: 'admin-user');
         final newUser = await endpoints.member.inviteMember(
           authed,
-          clientId: client.id!,
+          clientId: client.id,
           email: 'newmember@example.com',
           role: ClientRole.member,
         );
@@ -80,7 +80,7 @@ void main() {
         expect(
           () => endpoints.member.inviteMember(
             authed,
-            clientId: client.id!,
+            clientId: client.id,
             email: 'new@example.com',
             role: ClientRole.member,
           ),
@@ -106,8 +106,8 @@ void main() {
             factory.authenticatedSession(userIdentifier: 'admin-user');
         final updated = await endpoints.member.updateMemberRole(
           authed,
-          clientId: client.id!,
-          userId: target.id!,
+          clientId: client.id,
+          userId: target.id,
           role: ClientRole.member,
         );
 
@@ -127,19 +127,19 @@ void main() {
           email: 'target@example.com',
           role: ClientRole.viewer,
         );
-        await factory.ensureTestProjectMember(userId: target.id!);
+        await factory.ensureTestProjectMember(userId: target.id);
 
         final authed =
             factory.authenticatedSession(userIdentifier: 'admin-user');
         await endpoints.member.removeMember(
           authed,
-          clientId: client.id!,
-          userId: target.id!,
+          clientId: client.id,
+          userId: target.id,
         );
 
         // User should still exist but be soft-deleted
         final session = sessionBuilder.build();
-        final found = await User.db.findById(session, target.id!);
+        final found = await User.db.findById(session, target.id);
         expect(found, isNotNull);
         expect(found!.isActive, isFalse);
         expect(found.deletedAt, isNotNull);
@@ -147,7 +147,7 @@ void main() {
         // Project memberships should be hard-deleted
         final memberships = await ProjectMember.db.find(
           session,
-          where: (t) => t.userId.equals(target.id!),
+          where: (t) => t.userId.equals(target.id),
         );
         expect(memberships, isEmpty);
       });
@@ -168,13 +168,13 @@ void main() {
             factory.authenticatedSession(userIdentifier: 'admin-user');
         await endpoints.member.removeMember(
           authed,
-          clientId: client.id!,
-          userId: target.id!,
+          clientId: client.id,
+          userId: target.id,
         );
 
         final members = await endpoints.member.listMembers(
           authed,
-          clientId: client.id!,
+          clientId: client.id,
         );
         final removedIds = members.map((m) => m.id).toList();
         expect(removedIds, isNot(contains(target.id)));

@@ -90,7 +90,7 @@ class MediaEndpoint extends Endpoint {
       height: height,
       hasAlpha: hasAlpha,
       blurHash: blurHash,
-      uploadedByUserId: auth.user!.id!,
+      uploadedByUserId: auth.user!.id,
       metadataStatus: MediaAssetMetadataStatus.pending,
     );
 
@@ -166,7 +166,7 @@ class MediaEndpoint extends Endpoint {
       height: 0,
       hasAlpha: false,
       blurHash: '',
-      uploadedByUserId: auth.user!.id!,
+      uploadedByUserId: auth.user!.id,
       metadataStatus: MediaAssetMetadataStatus.pending,
     );
 

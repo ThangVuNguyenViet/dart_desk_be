@@ -6,7 +6,6 @@ import 'package:dart_desk_server/src/plugin/dart_desk_registry.dart';
 import 'package:dart_desk_server/src/plugin/dart_desk_session.dart';
 import 'package:dart_desk_server/src/services/document_crdt_service.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:uuid/uuid.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
 

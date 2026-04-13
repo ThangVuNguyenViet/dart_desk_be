@@ -29,7 +29,7 @@ void main() {
           role: ClientRole.member,
         );
         await factory.ensureTestProjectMember(
-          userId: user2.id!,
+          userId: user2.id,
           role: ProjectRole.editor,
         );
 
@@ -69,7 +69,7 @@ void main() {
         final pm = await endpoints.projectMember.addProjectMember(
           authed,
           projectId: TestDataFactory.testProjectId,
-          userId: user2.id!,
+          userId: user2.id,
           role: ProjectRole.editor,
         );
 
@@ -92,7 +92,7 @@ void main() {
           role: ClientRole.member,
         );
         final pm = await factory.ensureTestProjectMember(
-          userId: user2.id!,
+          userId: user2.id,
           role: ProjectRole.editor,
         );
 
@@ -102,11 +102,11 @@ void main() {
         await endpoints.projectMember.removeProjectMember(
           authed,
           projectId: TestDataFactory.testProjectId,
-          userId: user2.id!,
+          userId: user2.id,
         );
 
         final session = sessionBuilder.build();
-        final found = await ProjectMember.db.findById(session, pm.id!);
+        final found = await ProjectMember.db.findById(session, pm.id);
         expect(found, isNull);
       });
     });

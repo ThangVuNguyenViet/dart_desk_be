@@ -48,7 +48,7 @@ void main() {
 
       await endpoints.apiToken.updateToken(
         authed,
-        result.token.id!,
+        result.token.id,
         null,
         false,
         null,
@@ -77,7 +77,7 @@ void main() {
 
       final regenerated = await endpoints.apiToken.regenerateToken(
         authed,
-        original.token.id!,
+        original.token.id,
         projectId: TestDataFactory.testProjectId,
       );
 
@@ -111,7 +111,7 @@ void main() {
 
       await endpoints.apiToken.deleteToken(
         authed,
-        result.token.id!,
+        result.token.id,
         projectId: TestDataFactory.testProjectId,
       );
 

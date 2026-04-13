@@ -1,4 +1,3 @@
-import 'package:dart_desk_server/src/generated/api_exception.dart';
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';
@@ -104,7 +103,7 @@ void main() {
 
         final updated = await endpoints.apiToken.updateToken(
           authed,
-          created.token.id!,
+          created.token.id,
           'Updated Name',
           null,
           null,
@@ -126,7 +125,7 @@ void main() {
 
         final updated = await endpoints.apiToken.updateToken(
           authed,
-          created.token.id!,
+          created.token.id,
           null,
           false,
           null,
@@ -151,7 +150,7 @@ void main() {
 
         final regenerated = await endpoints.apiToken.regenerateToken(
           authed,
-          created.token.id!,
+          created.token.id,
           projectId: TestDataFactory.testProjectId,
         );
 
@@ -175,7 +174,7 @@ void main() {
 
         final deleted = await endpoints.apiToken.deleteToken(
           authed,
-          tokenResult.token.id!,
+          tokenResult.token.id,
           projectId: TestDataFactory.testProjectId,
         );
         expect(deleted, isTrue);

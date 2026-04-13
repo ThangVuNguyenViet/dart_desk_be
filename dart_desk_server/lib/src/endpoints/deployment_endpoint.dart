@@ -16,7 +16,7 @@ class DeploymentEndpoint extends Endpoint {
     final project = await _getProject(session, projectSlug);
     return await Deployment.db.find(
       session,
-      where: (t) => t.projectId.equals(project.id!),
+      where: (t) => t.projectId.equals(project.id),
       orderBy: (t) => t.version,
       orderDescending: true,
     );
@@ -33,7 +33,7 @@ class DeploymentEndpoint extends Endpoint {
     return await Deployment.db.findFirstRow(
       session,
       where: (t) =>
-          t.projectId.equals(project.id!) &
+          t.projectId.equals(project.id) &
           t.status.equals(DeploymentStatus.active),
     );
   }
@@ -52,7 +52,7 @@ class DeploymentEndpoint extends Endpoint {
     final target = await Deployment.db.findFirstRow(
       session,
       where: (t) =>
-          t.projectId.equals(project.id!) & t.version.equals(version),
+          t.projectId.equals(project.id) & t.version.equals(version),
     );
     if (target == null) {
       throw ApiException(message: 'Deployment version $version not found', code: 404);
@@ -62,7 +62,7 @@ class DeploymentEndpoint extends Endpoint {
     final currentActive = await Deployment.db.findFirstRow(
       session,
       where: (t) =>
-          t.projectId.equals(project.id!) &
+          t.projectId.equals(project.id) &
           t.status.equals(DeploymentStatus.active),
     );
     if (currentActive != null) {
@@ -98,7 +98,7 @@ class DeploymentEndpoint extends Endpoint {
     final deployment = await Deployment.db.findFirstRow(
       session,
       where: (t) =>
-          t.projectId.equals(project.id!) & t.version.equals(version),
+          t.projectId.equals(project.id) & t.version.equals(version),
     );
     if (deployment == null) return false;
 

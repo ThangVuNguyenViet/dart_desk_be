@@ -76,7 +76,7 @@ class RestoreEndpoint extends Endpoint {
       final versions = await DocumentVersion.db.find(
         session,
         where: (t) =>
-            t.documentId.equals(doc.id!) & t.deletedAt.notEquals(null),
+            t.documentId.equals(doc.id) & t.deletedAt.notEquals(null),
       );
       for (final v in versions) {
         v.deletedAt = null;

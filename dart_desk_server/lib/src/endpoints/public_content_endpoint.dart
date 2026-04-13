@@ -140,7 +140,7 @@ class PublicContentEndpoint extends Endpoint {
   Future<PublicDocument> _toPublicDocument(Session session, Document doc) async {
     final data = await _resolveImageReferences(session, doc.data ?? '{}');
     return PublicDocument(
-      id: doc.id!,
+      id: doc.id,
       documentType: doc.documentType,
       title: doc.title,
       slug: doc.slug,

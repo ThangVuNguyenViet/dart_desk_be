@@ -54,7 +54,7 @@ void main() {
         final created = await factory.createTestDocument(title: 'Fetch Me');
         final fetched = await endpoints.document.getDocument(
           sessionBuilder,
-          created.id!,
+          created.id,
         );
 
         expect(fetched, isNotNull);
@@ -173,7 +173,7 @@ void main() {
         final authed = factory.authenticatedSession();
         final updated = await endpoints.document.updateDocument(
           authed,
-          doc.id!,
+          doc.id,
           title: 'New Title',
         );
 
@@ -186,7 +186,7 @@ void main() {
         final authed = factory.authenticatedSession();
         final updated = await endpoints.document.updateDocument(
           authed,
-          doc.id!,
+          doc.id,
           slug: 'new-slug',
         );
 
@@ -200,14 +200,14 @@ void main() {
         final authed = factory.authenticatedSession();
         final result = await endpoints.document.deleteDocument(
           authed,
-          doc.id!,
+          doc.id,
         );
 
         expect(result, isTrue);
 
         // Soft delete: getDocument throws 410 for deleted documents
         await expectLater(
-          () => endpoints.document.getDocument(sessionBuilder, doc.id!),
+          () => endpoints.document.getDocument(sessionBuilder, doc.id),
           throwsA(isA<ApiException>()),
         );
       });
@@ -326,7 +326,7 @@ void main() {
         final result = await endpoints.document.setDefaultDocument(
           authed,
           'article',
-          docB.id!,
+          docB.id,
         );
 
         expect(result.id, docB.id);
@@ -334,7 +334,7 @@ void main() {
 
         final fetchedA = await endpoints.document.getDocument(
           sessionBuilder,
-          docA.id!,
+          docA.id,
         );
         expect(fetchedA?.isDefault, isFalse);
       });
@@ -349,7 +349,7 @@ void main() {
         final result = await endpoints.document.setDefaultDocument(
           authed,
           'article',
-          doc.id!,
+          doc.id,
         );
 
         expect(result.id, doc.id);
@@ -371,12 +371,12 @@ void main() {
         await endpoints.document.setDefaultDocument(
           authed,
           'article',
-          article.id!,
+          article.id,
         );
 
         final fetchedBlog = await endpoints.document.getDocument(
           sessionBuilder,
-          blog.id!,
+          blog.id,
         );
         expect(fetchedBlog?.isDefault, isTrue);
       });

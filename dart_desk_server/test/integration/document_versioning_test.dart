@@ -22,7 +22,7 @@ void main() {
     group('createDocumentVersion', () {
       test('creates draft version', () async {
         final doc = await factory.createTestDocument(title: 'Versioned Doc');
-        final version = await factory.createTestVersion(doc.id!);
+        final version = await factory.createTestVersion(doc.id);
 
         expect(version.id, isNotNull);
         expect(version.documentId, equals(doc.id));
@@ -32,8 +32,8 @@ void main() {
 
       test('increments version number', () async {
         final doc = await factory.createTestDocument(title: 'Multi Version');
-        final v1 = await factory.createTestVersion(doc.id!);
-        final v2 = await factory.createTestVersion(doc.id!);
+        final v1 = await factory.createTestVersion(doc.id);
+        final v2 = await factory.createTestVersion(doc.id);
 
         expect(v1.versionNumber, equals(2));
         expect(v2.versionNumber, equals(3));
@@ -42,7 +42,7 @@ void main() {
       test('stores changeLog', () async {
         final doc = await factory.createTestDocument(title: 'Changelog Doc');
         final version = await factory.createTestVersion(
-          doc.id!,
+          doc.id,
           changeLog: 'Initial draft with hero section',
         );
 
@@ -53,12 +53,12 @@ void main() {
     group('publishDocumentVersion', () {
       test('changes status to published and sets publishedAt', () async {
         final doc = await factory.createTestDocument(title: 'Publish Test');
-        final draft = await factory.createTestVersion(doc.id!);
+        final draft = await factory.createTestVersion(doc.id);
         final authed = factory.authenticatedSession();
 
         final published = await endpoints.document.publishDocumentVersion(
           authed,
-          draft.id!,
+          draft.id,
         );
 
         expect(published, isNotNull);
@@ -70,14 +70,14 @@ void main() {
     group('archiveDocumentVersion', () {
       test('changes status to archived and sets archivedAt', () async {
         final doc = await factory.createTestDocument(title: 'Archive Test');
-        final draft = await factory.createTestVersion(doc.id!);
+        final draft = await factory.createTestVersion(doc.id);
         final authed = factory.authenticatedSession();
 
         // Publish first, then archive
-        await endpoints.document.publishDocumentVersion(authed, draft.id!);
+        await endpoints.document.publishDocumentVersion(authed, draft.id);
         final archived = await endpoints.document.archiveDocumentVersion(
           authed,
-          draft.id!,
+          draft.id,
         );
 
         expect(archived, isNotNull);
@@ -89,13 +89,13 @@ void main() {
     group('getDocumentVersions', () {
       test('returns versions ordered by versionNumber ascending', () async {
         final doc = await factory.createTestDocument(title: 'History Doc');
-        await factory.createTestVersion(doc.id!);
-        await factory.createTestVersion(doc.id!);
-        await factory.createTestVersion(doc.id!);
+        await factory.createTestVersion(doc.id);
+        await factory.createTestVersion(doc.id);
+        await factory.createTestVersion(doc.id);
 
         final result = await endpoints.document.getDocumentVersions(
           sessionBuilder,
-          doc.id!,
+          doc.id,
           limit: 100,
           offset: 0,
           includeOperations: false,
@@ -112,12 +112,12 @@ void main() {
       test('paginates version list', () async {
         final doc = await factory.createTestDocument(title: 'Paginated Doc');
         for (var i = 0; i < 5; i++) {
-          await factory.createTestVersion(doc.id!);
+          await factory.createTestVersion(doc.id);
         }
 
         final page1 = await endpoints.document.getDocumentVersions(
           sessionBuilder,
-          doc.id!,
+          doc.id,
           limit: 2,
           offset: 0,
           includeOperations: false,
@@ -131,18 +131,18 @@ void main() {
     group('publishDocumentVersion edge cases', () {
       test('publish already-published version succeeds idempotently', () async {
         final doc = await factory.createTestDocument(title: 'Double Publish');
-        final draft = await factory.createTestVersion(doc.id!);
+        final draft = await factory.createTestVersion(doc.id);
         final authed = factory.authenticatedSession();
 
         // Publish first time — should succeed
         final first =
-            await endpoints.document.publishDocumentVersion(authed, draft.id!);
+            await endpoints.document.publishDocumentVersion(authed, draft.id);
         expect(first, isNotNull);
         expect(first!.status, equals(DocumentVersionStatus.published));
 
         // Publish again — endpoint updates the same version (idempotent)
         final second =
-            await endpoints.document.publishDocumentVersion(authed, draft.id!);
+            await endpoints.document.publishDocumentVersion(authed, draft.id);
         expect(second, isNotNull);
         expect(second!.status, equals(DocumentVersionStatus.published));
         expect(second.id, equals(first.id));
@@ -158,19 +158,19 @@ void main() {
         final authed = factory.authenticatedSession();
 
         // Create version at v1
-        final v1 = await factory.createTestVersion(doc.id!);
+        final v1 = await factory.createTestVersion(doc.id);
 
         // Update data to v2
         await endpoints.document.updateDocumentData(
           authed,
-          doc.id!,
+          doc.id,
           jsonEncode({'content': 'v2'}),
         );
 
         // Retrieve v1 snapshot data — should still be v1
         final v1Data = await endpoints.document.getDocumentVersionData(
           sessionBuilder,
-          v1.id!,
+          v1.id,
         );
         final v1Json = jsonDecode(v1Data!) as Map<String, dynamic>;
 
@@ -182,16 +182,16 @@ void main() {
     group('publishedAt sync', () {
       test('publishDocumentVersion sets document.publishedAt', () async {
         final doc = await factory.createTestDocument(title: 'Publish Test');
-        final version = await factory.createTestVersion(doc.id!);
+        final version = await factory.createTestVersion(doc.id);
 
         await endpoints.document.publishDocumentVersion(
           factory.authenticatedSession(),
-          version.id!,
+          version.id,
         );
 
         final updated = await endpoints.document.getDocument(
           sessionBuilder,
-          doc.id!,
+          doc.id,
         );
         expect(updated!.publishedAt, isNotNull);
       });
@@ -200,21 +200,21 @@ void main() {
           'archiveDocumentVersion nulls publishedAt when no published versions remain',
           () async {
         final doc = await factory.createTestDocument(title: 'Archive Test');
-        final version = await factory.createTestVersion(doc.id!);
+        final version = await factory.createTestVersion(doc.id);
 
         // Publish then archive
         await endpoints.document.publishDocumentVersion(
           factory.authenticatedSession(),
-          version.id!,
+          version.id,
         );
         await endpoints.document.archiveDocumentVersion(
           factory.authenticatedSession(),
-          version.id!,
+          version.id,
         );
 
         final updated = await endpoints.document.getDocument(
           sessionBuilder,
-          doc.id!,
+          doc.id,
         );
         expect(updated!.publishedAt, isNull);
       });
@@ -223,28 +223,28 @@ void main() {
           'archiveDocumentVersion keeps publishedAt when other published versions exist',
           () async {
         final doc = await factory.createTestDocument(title: 'Multi Version');
-        final v1 = await factory.createTestVersion(doc.id!);
-        final v2 = await factory.createTestVersion(doc.id!);
+        final v1 = await factory.createTestVersion(doc.id);
+        final v2 = await factory.createTestVersion(doc.id);
 
         // Publish both
         await endpoints.document.publishDocumentVersion(
           factory.authenticatedSession(),
-          v1.id!,
+          v1.id,
         );
         await endpoints.document.publishDocumentVersion(
           factory.authenticatedSession(),
-          v2.id!,
+          v2.id,
         );
 
         // Archive only v1
         await endpoints.document.archiveDocumentVersion(
           factory.authenticatedSession(),
-          v1.id!,
+          v1.id,
         );
 
         final updated = await endpoints.document.getDocument(
           sessionBuilder,
-          doc.id!,
+          doc.id,
         );
         expect(updated!.publishedAt, isNotNull);
       });
@@ -253,18 +253,18 @@ void main() {
     group('deleteDocumentVersion', () {
       test('deletes a draft version', () async {
         final doc = await factory.createTestDocument(title: 'Delete Ver');
-        final version = await factory.createTestVersion(doc.id!);
+        final version = await factory.createTestVersion(doc.id);
         final authed = factory.authenticatedSession();
 
         final result = await endpoints.document.deleteDocumentVersion(
           authed,
-          version.id!,
+          version.id,
         );
         expect(result, isTrue);
 
         // Soft delete: getDocumentVersion throws 410 for deleted versions
         await expectLater(
-          () => endpoints.document.getDocumentVersion(sessionBuilder, version.id!),
+          () => endpoints.document.getDocumentVersion(sessionBuilder, version.id),
           throwsA(isA<ApiException>()),
         );
       });

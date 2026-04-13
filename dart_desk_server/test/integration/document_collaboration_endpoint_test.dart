@@ -30,7 +30,7 @@ void main() {
 
         final updated = await endpoints.documentCollaboration.submitEdit(
           authed,
-          doc.id!,
+          doc.id,
           'session-1',
           jsonEncode({'body': 'edited', 'newField': 'value'}),
         );
@@ -51,19 +51,19 @@ void main() {
         final initialHlc =
             await endpoints.documentCollaboration.getCurrentHlc(
           sessionBuilder,
-          doc.id!,
+          doc.id,
         );
 
         // Make some updates to generate operations
         await endpoints.documentCollaboration.submitEdit(
           authed,
-          doc.id!,
+          doc.id,
           'session-1',
           jsonEncode({'field': 'v2'}),
         );
         await endpoints.documentCollaboration.submitEdit(
           authed,
-          doc.id!,
+          doc.id,
           'session-1',
           jsonEncode({'field': 'v3'}),
         );
@@ -72,7 +72,7 @@ void main() {
         final sinceHlc = initialHlc ?? '';
         final ops = await endpoints.documentCollaboration.getOperationsSince(
           sessionBuilder,
-          doc.id!,
+          doc.id,
           sinceHlc,
           limit: 100,
         );
@@ -89,7 +89,7 @@ void main() {
         // Use a far-future HLC so nothing is "since" it
         final ops = await endpoints.documentCollaboration.getOperationsSince(
           sessionBuilder,
-          doc.id!,
+          doc.id,
           '9999-01-01T00:00:00.000Z-0000-0000000000000000',
           limit: 100,
         );
@@ -109,14 +109,14 @@ void main() {
         // Submit an edit to register activity
         await endpoints.documentCollaboration.submitEdit(
           authed,
-          doc.id!,
+          doc.id,
           'session-active',
           jsonEncode({'content': 'updated'}),
         );
 
         final editors = await endpoints.documentCollaboration.getActiveEditors(
           sessionBuilder,
-          doc.id!,
+          doc.id,
         );
 
         // Should include the test user who just edited
@@ -150,7 +150,7 @@ void main() {
         for (var i = 0; i < 5; i++) {
           await endpoints.documentCollaboration.submitEdit(
             authed,
-            doc.id!,
+            doc.id,
             'session-compact',
             jsonEncode({'field': 'v${i + 2}'}),
           );
@@ -159,21 +159,21 @@ void main() {
         final countBefore =
             await endpoints.documentCollaboration.getOperationCount(
           sessionBuilder,
-          doc.id!,
+          doc.id,
         );
         expect(countBefore, greaterThan(0));
 
         // Compact should not throw
         await endpoints.documentCollaboration.compactOperations(
           authed,
-          doc.id!,
+          doc.id,
         );
 
         // After compaction, operation count should be reduced
         final countAfter =
             await endpoints.documentCollaboration.getOperationCount(
           sessionBuilder,
-          doc.id!,
+          doc.id,
         );
         expect(countAfter, lessThanOrEqualTo(countBefore));
       });

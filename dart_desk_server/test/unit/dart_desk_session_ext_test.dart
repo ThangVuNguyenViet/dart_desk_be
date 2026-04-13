@@ -2,7 +2,6 @@ import 'package:dart_desk_server/src/auth/dart_desk_session.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
-import 'package:uuid/uuid.dart';
 
 class _MockSession extends Mock implements Session {}
 

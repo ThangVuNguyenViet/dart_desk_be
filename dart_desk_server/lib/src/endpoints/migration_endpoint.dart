@@ -71,7 +71,7 @@ class MigrationEndpoint extends Endpoint {
         data = jsonDecode(doc.data!) as Map<String, dynamic>;
       }
       final result = _migrationService.applyOperations(
-        documentId: doc.id!,
+        documentId: doc.id,
         title: doc.title,
         data: data,
         operations: operations,
@@ -82,7 +82,7 @@ class MigrationEndpoint extends Endpoint {
       if (!dryRun && result.status == 'modified' && result.newData != null) {
         await session.crdtService.applyMigrationResult(
           session,
-          doc.id!,
+          doc.id,
           data,
           result.newData!,
           'migration',

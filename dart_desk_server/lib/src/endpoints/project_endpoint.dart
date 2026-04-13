@@ -189,7 +189,7 @@ class ProjectEndpoint extends Endpoint {
       await Document.db.updateRow(session, doc);
       final versions = await DocumentVersion.db.find(
         session,
-        where: (t) => t.documentId.equals(doc.id!) & t.deletedAt.equals(null),
+        where: (t) => t.documentId.equals(doc.id) & t.deletedAt.equals(null),
       );
       for (final v in versions) {
         v.deletedAt = now;
@@ -272,7 +272,7 @@ class ProjectEndpoint extends Endpoint {
       await User.db.insertRow(
         session,
         User(
-          clientId: client.id!,
+          clientId: client.id,
           email: email ?? authInfo.userIdentifier,
           name: userName,
           role: ClientRole.owner,

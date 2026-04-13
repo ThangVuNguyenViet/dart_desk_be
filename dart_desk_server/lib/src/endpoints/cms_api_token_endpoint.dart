@@ -70,7 +70,7 @@ class ApiTokenEndpoint extends Endpoint {
         tokenPrefix: prefix,
         tokenSuffix: suffix,
         role: role,
-        createdByUserId: auth.user.id!,
+        createdByUserId: auth.user.id,
         isActive: true,
         createdAt: DateTime.now(),
       );

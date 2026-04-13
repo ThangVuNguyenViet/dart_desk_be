@@ -84,7 +84,7 @@ void main() {
 
       await endpoints.apiToken.updateToken(
         authed,
-        tokenResult.token.id!,
+        tokenResult.token.id,
         null,
         false,
         null,
