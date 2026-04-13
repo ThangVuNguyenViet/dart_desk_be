@@ -17,6 +17,8 @@ import 'src/plugin/dart_desk_plugin.dart';
 import 'src/plugin/dart_desk_registry.dart';
 import 'src/plugin/dart_desk_session.dart';
 import 'src/services/document_crdt_service.dart';
+import 'src/services/purge_service.dart'; // ignore: unused_import — used by PurgeFutureCall (see TODO below)
+import 'src/services/rate_limiter.dart';
 
 /// This is the starting point of your Serverpod server. In most cases, you will
 /// only need to make additions to this file if you add future calls, routes, or
@@ -79,12 +81,25 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
     ],
   );
 
+  // TODO(purge): Schedule daily purge of soft-deleted records using a
+  // FutureCall. Requires defining a PurgeFutureCall class and running
+  // `serverpod generate`. Retention period is configured via
+  // `softDeleteRetentionDays` in passwords.yaml (default: 30 days).
+  // Example: pod.futureCalls.callWithDelay(Duration(hours: 24)).purge.doWork()
+  // See PurgeService for the purge logic.
+
   // Override the authentication handler to chain JWT auth + API key auth.
   // initializeAuthServices sets the default JWT handler; we wrap it to also
   // support project API keys passed as "jwtToken:apiKey" compound tokens.
   final cloudAdminKey = pod.getPassword('cloudAdminKey');
   final defaultHandler = pod.authenticationHandler;
+  final authRateLimiter = RateLimiter(maxAttempts: 10, windowDuration: Duration(minutes: 1));
   pod.authenticationHandler = (session, token) async {
+      final tokenKey = token.length > 8 ? token.substring(0, 8) : token;
+      if (!authRateLimiter.isAllowed(tokenKey)) {
+        session.log('Rate limited auth attempt', level: LogLevel.warning);
+        return null;
+      }
     // Cloud admin: a single privileged key stored in passwords.yaml / env.
     if (cloudAdminKey != null &&
         cloudAdminKey.isNotEmpty &&
