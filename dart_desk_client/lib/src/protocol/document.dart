@@ -14,7 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class Document implements _i1.SerializableModel {
   Document._({
-    this.id,
+    _i1.UuidValue? id,
     required this.projectId,
     required this.documentType,
     required this.title,
@@ -28,13 +28,14 @@ abstract class Document implements _i1.SerializableModel {
     DateTime? updatedAt,
     this.createdByUserId,
     this.updatedByUserId,
-  }) : isDefault = isDefault ?? false,
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       isDefault = isDefault ?? false,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
   factory Document({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String documentType,
     required String title,
     required String slug,
@@ -45,14 +46,18 @@ abstract class Document implements _i1.SerializableModel {
     DateTime? publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
-    int? updatedByUserId,
+    _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
   }) = _DocumentImpl;
 
   factory Document.fromJson(Map<String, dynamic> jsonSerialization) {
     return Document(
-      id: jsonSerialization['id'] as int?,
-      projectId: jsonSerialization['projectId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      projectId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['projectId'],
+      ),
       documentType: jsonSerialization['documentType'] as String,
       title: jsonSerialization['title'] as String,
       slug: jsonSerialization['slug'] as String,
@@ -73,17 +78,23 @@ abstract class Document implements _i1.SerializableModel {
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
-      createdByUserId: jsonSerialization['createdByUserId'] as int?,
-      updatedByUserId: jsonSerialization['updatedByUserId'] as int?,
+      createdByUserId: jsonSerialization['createdByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['createdByUserId'],
+            ),
+      updatedByUserId: jsonSerialization['updatedByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['updatedByUserId'],
+            ),
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  int? id;
+  /// The id of the object.
+  _i1.UuidValue id;
 
-  int projectId;
+  _i1.UuidValue projectId;
 
   String documentType;
 
@@ -105,16 +116,16 @@ abstract class Document implements _i1.SerializableModel {
 
   DateTime? updatedAt;
 
-  int? createdByUserId;
+  _i1.UuidValue? createdByUserId;
 
-  int? updatedByUserId;
+  _i1.UuidValue? updatedByUserId;
 
   /// Returns a shallow copy of this [Document]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   Document copyWith({
-    int? id,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? documentType,
     String? title,
     String? slug,
@@ -125,15 +136,15 @@ abstract class Document implements _i1.SerializableModel {
     DateTime? publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
-    int? updatedByUserId,
+    _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'Document',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'documentType': documentType,
       'title': title,
       'slug': slug,
@@ -144,8 +155,8 @@ abstract class Document implements _i1.SerializableModel {
       if (publishedAt != null) 'publishedAt': publishedAt?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
-      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
     };
   }
 
@@ -159,8 +170,8 @@ class _Undefined {}
 
 class _DocumentImpl extends Document {
   _DocumentImpl({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String documentType,
     required String title,
     required String slug,
@@ -171,8 +182,8 @@ class _DocumentImpl extends Document {
     DateTime? publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
-    int? updatedByUserId,
+    _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
   }) : super._(
          id: id,
          projectId: projectId,
@@ -195,8 +206,8 @@ class _DocumentImpl extends Document {
   @_i1.useResult
   @override
   Document copyWith({
-    Object? id = _Undefined,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? documentType,
     String? title,
     String? slug,
@@ -211,7 +222,7 @@ class _DocumentImpl extends Document {
     Object? updatedByUserId = _Undefined,
   }) {
     return Document(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       documentType: documentType ?? this.documentType,
       title: title ?? this.title,
@@ -223,10 +234,10 @@ class _DocumentImpl extends Document {
       publishedAt: publishedAt is DateTime? ? publishedAt : this.publishedAt,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
-      createdByUserId: createdByUserId is int?
+      createdByUserId: createdByUserId is _i1.UuidValue?
           ? createdByUserId
           : this.createdByUserId,
-      updatedByUserId: updatedByUserId is int?
+      updatedByUserId: updatedByUserId is _i1.UuidValue?
           ? updatedByUserId
           : this.updatedByUserId,
     );

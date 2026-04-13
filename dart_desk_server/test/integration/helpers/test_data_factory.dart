@@ -6,12 +6,15 @@ import 'package:dart_desk_server/src/plugin/dart_desk_registry.dart';
 import 'package:dart_desk_server/src/plugin/dart_desk_session.dart';
 import 'package:dart_desk_server/src/services/document_crdt_service.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
 
 class TestDataFactory {
-  static const testClientId = 1;
-  static const testProjectId = 1;
+  static final testClientId =
+      UuidValue.fromString('00000000-0000-4000-8000-000000000001');
+  static final testProjectId =
+      UuidValue.fromString('00000000-0000-4000-8000-000000000002');
 
   final TestSessionBuilder sessionBuilder;
   final TestEndpoints endpoints;
@@ -29,9 +32,11 @@ class TestDataFactory {
 
   TestSessionBuilder authenticatedSession({
     String userIdentifier = 'test-user-1',
-    int clientId = testClientId,
-    int projectId = testProjectId,
+    UuidValue? clientId,
+    UuidValue? projectId,
   }) {
+    clientId ??= testClientId;
+    projectId ??= testProjectId;
     return sessionBuilder.copyWith(
       authentication: AuthenticationOverride.authenticationInfo(
         userIdentifier,
@@ -46,10 +51,11 @@ class TestDataFactory {
   }
 
   Future<CmsClient> ensureTestClient({
-    int clientId = testClientId,
+    UuidValue? clientId,
     String name = 'Test Client',
     String slug = 'test-client',
   }) async {
+    clientId ??= testClientId;
     final session = sessionBuilder.build();
     final existing = await CmsClient.db.findById(session, clientId);
     if (existing != null) return existing;
@@ -66,11 +72,13 @@ class TestDataFactory {
   }
 
   Future<Project> ensureTestProject({
-    int projectId = testProjectId,
-    int clientId = testClientId,
+    UuidValue? projectId,
+    UuidValue? clientId,
     String name = 'Test Project',
     String slug = 'test-project',
   }) async {
+    projectId ??= testProjectId;
+    clientId ??= testClientId;
     final session = sessionBuilder.build();
     await ensureTestClient(clientId: clientId);
 
@@ -97,20 +105,19 @@ class TestDataFactory {
     String? email,
     String name = 'Test User',
     ClientRole role = ClientRole.viewer,
-    int? clientId = testClientId,
+    UuidValue? clientId,
   }) async {
+    final resolvedClientId = clientId ?? testClientId;
     final session = sessionBuilder.build();
-    if (clientId != null) {
-      await ensureTestClient(clientId: clientId);
-      await ensureTestProject(clientId: clientId);
-    }
+    await ensureTestClient(clientId: resolvedClientId);
+    await ensureTestProject(clientId: resolvedClientId);
 
     // Check if user already exists
     final existing = await User.db.findFirstRow(
       session,
       where: (t) =>
           t.serverpodUserId.equals(userIdentifier) &
-          t.clientId.equals(clientId),
+          t.clientId.equals(resolvedClientId),
     );
     if (existing != null) return existing;
 
@@ -118,7 +125,7 @@ class TestDataFactory {
     final user = await User.db.insertRow(
       session,
       User(
-        clientId: clientId,
+        clientId: resolvedClientId,
         email: email ?? '$userIdentifier@example.com',
         name: name,
         role: role,
@@ -130,10 +137,11 @@ class TestDataFactory {
   }
 
   Future<ProjectMember> ensureTestProjectMember({
-    required int userId,
-    int projectId = testProjectId,
+    required UuidValue userId,
+    UuidValue? projectId,
     ProjectRole role = ProjectRole.editor,
   }) async {
+    projectId ??= testProjectId;
     final session = sessionBuilder.build();
     final existing = await ProjectMember.db.findFirstRow(
       session,
@@ -170,7 +178,7 @@ class TestDataFactory {
   }
 
   Future<DocumentVersion> createTestVersion(
-    int documentId, {
+    UuidValue documentId, {
     DocumentVersionStatus status = DocumentVersionStatus.draft,
     String? changeLog,
   }) async {

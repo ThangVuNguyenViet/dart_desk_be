@@ -1,5 +1,6 @@
 import 'package:dart_desk_server/src/services/migration_service.dart';
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   late MigrationService service;
@@ -11,7 +12,7 @@ void main() {
   group('renameField', () {
     test('renames a top-level field', () {
       final result = service.applyOperations(
-        documentId: 1,
+        documentId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
         title: 'Test Doc',
         data: {'primaryColor': '#FF0000', 'other': 'value'},
         operations: [
@@ -25,7 +26,7 @@ void main() {
 
     test('renames a nested field', () {
       final result = service.applyOperations(
-        documentId: 1,
+        documentId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
         title: 'Test Doc',
         data: {'metadata': {'author': 'Jane', 'version': 3}},
         operations: [
@@ -38,7 +39,7 @@ void main() {
 
     test('renames a nested object with all sub-keys', () {
       final result = service.applyOperations(
-        documentId: 1,
+        documentId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
         title: 'Test Doc',
         data: {'old': {'a': 1, 'b': 2}},
         operations: [
@@ -51,7 +52,7 @@ void main() {
 
     test('skips when field not found', () {
       final result = service.applyOperations(
-        documentId: 1,
+        documentId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
         title: 'Test Doc',
         data: {'other': 'value'},
         operations: [
@@ -66,7 +67,7 @@ void main() {
   group('deleteField', () {
     test('deletes a top-level field', () {
       final result = service.applyOperations(
-        documentId: 1,
+        documentId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
         title: 'Test Doc',
         data: {'keep': 'yes', 'remove': 'me'},
         operations: [
@@ -79,7 +80,7 @@ void main() {
 
     test('deletes a nested field and its sub-keys', () {
       final result = service.applyOperations(
-        documentId: 1,
+        documentId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
         title: 'Test Doc',
         data: {'metadata': {'author': 'Jane', 'version': 3}, 'title': 'Hello'},
         operations: [
@@ -92,7 +93,7 @@ void main() {
 
     test('skips when field not found', () {
       final result = service.applyOperations(
-        documentId: 1,
+        documentId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
         title: 'Test Doc',
         data: {'keep': 'yes'},
         operations: [
@@ -106,7 +107,7 @@ void main() {
   group('setField', () {
     test('sets a new field', () {
       final result = service.applyOperations(
-        documentId: 1,
+        documentId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
         title: 'Test Doc',
         data: {'existing': 'value'},
         operations: [
@@ -119,7 +120,7 @@ void main() {
 
     test('overwrites an existing field', () {
       final result = service.applyOperations(
-        documentId: 1,
+        documentId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
         title: 'Test Doc',
         data: {'version': 1},
         operations: [
@@ -134,7 +135,7 @@ void main() {
   group('multiple operations', () {
     test('applies multiple operations in order', () {
       final result = service.applyOperations(
-        documentId: 1,
+        documentId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
         title: 'Test Doc',
         data: {'oldName': 'hello', 'legacy': true},
         operations: [
@@ -152,7 +153,7 @@ void main() {
   group('empty document', () {
     test('setField works on empty document', () {
       final result = service.applyOperations(
-        documentId: 1,
+        documentId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
         title: 'Test Doc',
         data: {},
         operations: [
@@ -165,7 +166,7 @@ void main() {
 
     test('rename on empty document is skipped', () {
       final result = service.applyOperations(
-        documentId: 1,
+        documentId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
         title: 'Test Doc',
         data: {},
         operations: [

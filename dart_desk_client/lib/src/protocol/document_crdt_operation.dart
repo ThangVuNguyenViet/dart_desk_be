@@ -15,7 +15,7 @@ import 'crdt_operation_type.dart' as _i2;
 
 abstract class DocumentCrdtOperation implements _i1.SerializableModel {
   DocumentCrdtOperation._({
-    this.id,
+    _i1.UuidValue? id,
     required this.documentId,
     required this.hlc,
     required this.nodeId,
@@ -24,26 +24,31 @@ abstract class DocumentCrdtOperation implements _i1.SerializableModel {
     this.fieldValue,
     DateTime? createdAt,
     this.createdByUserId,
-  }) : createdAt = createdAt ?? DateTime.now();
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       createdAt = createdAt ?? DateTime.now();
 
   factory DocumentCrdtOperation({
-    int? id,
-    required int documentId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue documentId,
     required String hlc,
     required String nodeId,
     required _i2.CrdtOperationType operationType,
     required String fieldPath,
     String? fieldValue,
     DateTime? createdAt,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
   }) = _DocumentCrdtOperationImpl;
 
   factory DocumentCrdtOperation.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return DocumentCrdtOperation(
-      id: jsonSerialization['id'] as int?,
-      documentId: jsonSerialization['documentId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      documentId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['documentId'],
+      ),
       hlc: jsonSerialization['hlc'] as String,
       nodeId: jsonSerialization['nodeId'] as String,
       operationType: _i2.CrdtOperationType.fromJson(
@@ -54,16 +59,18 @@ abstract class DocumentCrdtOperation implements _i1.SerializableModel {
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      createdByUserId: jsonSerialization['createdByUserId'] as int?,
+      createdByUserId: jsonSerialization['createdByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['createdByUserId'],
+            ),
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  int? id;
+  /// The id of the object.
+  _i1.UuidValue id;
 
-  int documentId;
+  _i1.UuidValue documentId;
 
   String hlc;
 
@@ -77,35 +84,35 @@ abstract class DocumentCrdtOperation implements _i1.SerializableModel {
 
   DateTime? createdAt;
 
-  int? createdByUserId;
+  _i1.UuidValue? createdByUserId;
 
   /// Returns a shallow copy of this [DocumentCrdtOperation]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   DocumentCrdtOperation copyWith({
-    int? id,
-    int? documentId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? documentId,
     String? hlc,
     String? nodeId,
     _i2.CrdtOperationType? operationType,
     String? fieldPath,
     String? fieldValue,
     DateTime? createdAt,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'DocumentCrdtOperation',
-      if (id != null) 'id': id,
-      'documentId': documentId,
+      'id': id.toJson(),
+      'documentId': documentId.toJson(),
       'hlc': hlc,
       'nodeId': nodeId,
       'operationType': operationType.toJson(),
       'fieldPath': fieldPath,
       if (fieldValue != null) 'fieldValue': fieldValue,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
     };
   }
 
@@ -119,15 +126,15 @@ class _Undefined {}
 
 class _DocumentCrdtOperationImpl extends DocumentCrdtOperation {
   _DocumentCrdtOperationImpl({
-    int? id,
-    required int documentId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue documentId,
     required String hlc,
     required String nodeId,
     required _i2.CrdtOperationType operationType,
     required String fieldPath,
     String? fieldValue,
     DateTime? createdAt,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
   }) : super._(
          id: id,
          documentId: documentId,
@@ -145,8 +152,8 @@ class _DocumentCrdtOperationImpl extends DocumentCrdtOperation {
   @_i1.useResult
   @override
   DocumentCrdtOperation copyWith({
-    Object? id = _Undefined,
-    int? documentId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? documentId,
     String? hlc,
     String? nodeId,
     _i2.CrdtOperationType? operationType,
@@ -156,7 +163,7 @@ class _DocumentCrdtOperationImpl extends DocumentCrdtOperation {
     Object? createdByUserId = _Undefined,
   }) {
     return DocumentCrdtOperation(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       documentId: documentId ?? this.documentId,
       hlc: hlc ?? this.hlc,
       nodeId: nodeId ?? this.nodeId,
@@ -164,7 +171,7 @@ class _DocumentCrdtOperationImpl extends DocumentCrdtOperation {
       fieldPath: fieldPath ?? this.fieldPath,
       fieldValue: fieldValue is String? ? fieldValue : this.fieldValue,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
-      createdByUserId: createdByUserId is int?
+      createdByUserId: createdByUserId is _i1.UuidValue?
           ? createdByUserId
           : this.createdByUserId,
     );

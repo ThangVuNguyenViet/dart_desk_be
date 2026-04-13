@@ -15,7 +15,7 @@ import 'deployment_status.dart' as _i2;
 
 abstract class Deployment implements _i1.SerializableModel {
   Deployment._({
-    this.id,
+    _i1.UuidValue? id,
     required this.projectId,
     required this.version,
     required this.status,
@@ -26,17 +26,18 @@ abstract class Deployment implements _i1.SerializableModel {
     this.metadata,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : createdAt = createdAt ?? DateTime.now(),
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
   factory Deployment({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required int version,
     required _i2.DeploymentStatus status,
     required String filePath,
     int? fileSize,
-    int? uploadedByUserId,
+    _i1.UuidValue? uploadedByUserId,
     String? commitHash,
     String? metadata,
     DateTime? createdAt,
@@ -45,15 +46,23 @@ abstract class Deployment implements _i1.SerializableModel {
 
   factory Deployment.fromJson(Map<String, dynamic> jsonSerialization) {
     return Deployment(
-      id: jsonSerialization['id'] as int?,
-      projectId: jsonSerialization['projectId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      projectId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['projectId'],
+      ),
       version: jsonSerialization['version'] as int,
       status: _i2.DeploymentStatus.fromJson(
         (jsonSerialization['status'] as String),
       ),
       filePath: jsonSerialization['filePath'] as String,
       fileSize: jsonSerialization['fileSize'] as int?,
-      uploadedByUserId: jsonSerialization['uploadedByUserId'] as int?,
+      uploadedByUserId: jsonSerialization['uploadedByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uploadedByUserId'],
+            ),
       commitHash: jsonSerialization['commitHash'] as String?,
       metadata: jsonSerialization['metadata'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
@@ -65,12 +74,10 @@ abstract class Deployment implements _i1.SerializableModel {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  int? id;
+  /// The id of the object.
+  _i1.UuidValue id;
 
-  int projectId;
+  _i1.UuidValue projectId;
 
   int version;
 
@@ -80,7 +87,7 @@ abstract class Deployment implements _i1.SerializableModel {
 
   int? fileSize;
 
-  int? uploadedByUserId;
+  _i1.UuidValue? uploadedByUserId;
 
   String? commitHash;
 
@@ -94,13 +101,13 @@ abstract class Deployment implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   Deployment copyWith({
-    int? id,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     int? version,
     _i2.DeploymentStatus? status,
     String? filePath,
     int? fileSize,
-    int? uploadedByUserId,
+    _i1.UuidValue? uploadedByUserId,
     String? commitHash,
     String? metadata,
     DateTime? createdAt,
@@ -110,13 +117,14 @@ abstract class Deployment implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'Deployment',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'version': version,
       'status': status.toJson(),
       'filePath': filePath,
       if (fileSize != null) 'fileSize': fileSize,
-      if (uploadedByUserId != null) 'uploadedByUserId': uploadedByUserId,
+      if (uploadedByUserId != null)
+        'uploadedByUserId': uploadedByUserId?.toJson(),
       if (commitHash != null) 'commitHash': commitHash,
       if (metadata != null) 'metadata': metadata,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
@@ -134,13 +142,13 @@ class _Undefined {}
 
 class _DeploymentImpl extends Deployment {
   _DeploymentImpl({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required int version,
     required _i2.DeploymentStatus status,
     required String filePath,
     int? fileSize,
-    int? uploadedByUserId,
+    _i1.UuidValue? uploadedByUserId,
     String? commitHash,
     String? metadata,
     DateTime? createdAt,
@@ -164,8 +172,8 @@ class _DeploymentImpl extends Deployment {
   @_i1.useResult
   @override
   Deployment copyWith({
-    Object? id = _Undefined,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     int? version,
     _i2.DeploymentStatus? status,
     String? filePath,
@@ -177,13 +185,13 @@ class _DeploymentImpl extends Deployment {
     Object? updatedAt = _Undefined,
   }) {
     return Deployment(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       version: version ?? this.version,
       status: status ?? this.status,
       filePath: filePath ?? this.filePath,
       fileSize: fileSize is int? ? fileSize : this.fileSize,
-      uploadedByUserId: uploadedByUserId is int?
+      uploadedByUserId: uploadedByUserId is _i1.UuidValue?
           ? uploadedByUserId
           : this.uploadedByUserId,
       commitHash: commitHash is String? ? commitHash : this.commitHash,

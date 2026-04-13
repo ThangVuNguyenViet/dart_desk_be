@@ -2,11 +2,14 @@ import 'dart:convert';
 import 'package:test/test.dart';
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:dart_desk_server/src/services/document_crdt_service.dart';
+import 'package:uuid/uuid.dart';
+
+final _testDocumentId = UuidValue.fromString('00000000-0000-4000-8000-000000000001');
 
 /// Helper to build a DocumentCrdtOperation for testing.
 DocumentCrdtOperation putOp(String fieldPath, dynamic value, {String hlc = '2026-01-01T00:00:00.000Z-0000-test'}) {
   return DocumentCrdtOperation(
-    documentId: 1,
+    documentId: _testDocumentId,
     hlc: hlc,
     nodeId: 'test-node',
     operationType: CrdtOperationType.put,
@@ -17,7 +20,7 @@ DocumentCrdtOperation putOp(String fieldPath, dynamic value, {String hlc = '2026
 
 DocumentCrdtOperation deleteOp(String fieldPath, {String hlc = '2026-01-01T00:00:00.000Z-0000-test'}) {
   return DocumentCrdtOperation(
-    documentId: 1,
+    documentId: _testDocumentId,
     hlc: hlc,
     nodeId: 'test-node',
     operationType: CrdtOperationType.delete,

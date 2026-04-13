@@ -14,7 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class ApiToken implements _i1.SerializableModel {
   ApiToken._({
-    this.id,
+    _i1.UuidValue? id,
     required this.projectId,
     required this.name,
     required this.tokenHash,
@@ -26,18 +26,19 @@ abstract class ApiToken implements _i1.SerializableModel {
     this.expiresAt,
     bool? isActive,
     DateTime? createdAt,
-  }) : isActive = isActive ?? true,
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now();
 
   factory ApiToken({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String name,
     required String tokenHash,
     required String tokenPrefix,
     required String tokenSuffix,
     required String role,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
     DateTime? lastUsedAt,
     DateTime? expiresAt,
     bool? isActive,
@@ -46,14 +47,22 @@ abstract class ApiToken implements _i1.SerializableModel {
 
   factory ApiToken.fromJson(Map<String, dynamic> jsonSerialization) {
     return ApiToken(
-      id: jsonSerialization['id'] as int?,
-      projectId: jsonSerialization['projectId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      projectId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['projectId'],
+      ),
       name: jsonSerialization['name'] as String,
       tokenHash: jsonSerialization['tokenHash'] as String,
       tokenPrefix: jsonSerialization['tokenPrefix'] as String,
       tokenSuffix: jsonSerialization['tokenSuffix'] as String,
       role: jsonSerialization['role'] as String,
-      createdByUserId: jsonSerialization['createdByUserId'] as int?,
+      createdByUserId: jsonSerialization['createdByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['createdByUserId'],
+            ),
       lastUsedAt: jsonSerialization['lastUsedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUsedAt']),
@@ -69,12 +78,10 @@ abstract class ApiToken implements _i1.SerializableModel {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  int? id;
+  /// The id of the object.
+  _i1.UuidValue id;
 
-  int projectId;
+  _i1.UuidValue projectId;
 
   String name;
 
@@ -86,7 +93,7 @@ abstract class ApiToken implements _i1.SerializableModel {
 
   String role;
 
-  int? createdByUserId;
+  _i1.UuidValue? createdByUserId;
 
   DateTime? lastUsedAt;
 
@@ -100,14 +107,14 @@ abstract class ApiToken implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   ApiToken copyWith({
-    int? id,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? name,
     String? tokenHash,
     String? tokenPrefix,
     String? tokenSuffix,
     String? role,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
     DateTime? lastUsedAt,
     DateTime? expiresAt,
     bool? isActive,
@@ -117,14 +124,14 @@ abstract class ApiToken implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ApiToken',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'name': name,
       'tokenHash': tokenHash,
       'tokenPrefix': tokenPrefix,
       'tokenSuffix': tokenSuffix,
       'role': role,
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
       if (lastUsedAt != null) 'lastUsedAt': lastUsedAt?.toJson(),
       if (expiresAt != null) 'expiresAt': expiresAt?.toJson(),
       'isActive': isActive,
@@ -142,14 +149,14 @@ class _Undefined {}
 
 class _ApiTokenImpl extends ApiToken {
   _ApiTokenImpl({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String name,
     required String tokenHash,
     required String tokenPrefix,
     required String tokenSuffix,
     required String role,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
     DateTime? lastUsedAt,
     DateTime? expiresAt,
     bool? isActive,
@@ -174,8 +181,8 @@ class _ApiTokenImpl extends ApiToken {
   @_i1.useResult
   @override
   ApiToken copyWith({
-    Object? id = _Undefined,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? name,
     String? tokenHash,
     String? tokenPrefix,
@@ -188,14 +195,14 @@ class _ApiTokenImpl extends ApiToken {
     Object? createdAt = _Undefined,
   }) {
     return ApiToken(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       name: name ?? this.name,
       tokenHash: tokenHash ?? this.tokenHash,
       tokenPrefix: tokenPrefix ?? this.tokenPrefix,
       tokenSuffix: tokenSuffix ?? this.tokenSuffix,
       role: role ?? this.role,
-      createdByUserId: createdByUserId is int?
+      createdByUserId: createdByUserId is _i1.UuidValue?
           ? createdByUserId
           : this.createdByUserId,
       lastUsedAt: lastUsedAt is DateTime? ? lastUsedAt : this.lastUsedAt,

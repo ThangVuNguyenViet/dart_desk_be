@@ -15,7 +15,7 @@ import 'client_role.dart' as _i2;
 
 abstract class User implements _i1.SerializableModel {
   User._({
-    this.id,
+    _i1.UuidValue? id,
     this.clientId,
     required this.email,
     this.name,
@@ -24,14 +24,15 @@ abstract class User implements _i1.SerializableModel {
     this.serverpodUserId,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : role = role ?? _i2.ClientRole.viewer,
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       role = role ?? _i2.ClientRole.viewer,
        isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
   factory User({
-    int? id,
-    int? clientId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? clientId,
     required String email,
     String? name,
     _i2.ClientRole? role,
@@ -43,8 +44,12 @@ abstract class User implements _i1.SerializableModel {
 
   factory User.fromJson(Map<String, dynamic> jsonSerialization) {
     return User(
-      id: jsonSerialization['id'] as int?,
-      clientId: jsonSerialization['clientId'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      clientId: jsonSerialization['clientId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['clientId']),
       email: jsonSerialization['email'] as String,
       name: jsonSerialization['name'] as String?,
       role: jsonSerialization['role'] == null
@@ -63,12 +68,10 @@ abstract class User implements _i1.SerializableModel {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  int? id;
+  /// The id of the object.
+  _i1.UuidValue id;
 
-  int? clientId;
+  _i1.UuidValue? clientId;
 
   String email;
 
@@ -88,8 +91,8 @@ abstract class User implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   User copyWith({
-    int? id,
-    int? clientId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? clientId,
     String? email,
     String? name,
     _i2.ClientRole? role,
@@ -102,8 +105,8 @@ abstract class User implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'User',
-      if (id != null) 'id': id,
-      if (clientId != null) 'clientId': clientId,
+      'id': id.toJson(),
+      if (clientId != null) 'clientId': clientId?.toJson(),
       'email': email,
       if (name != null) 'name': name,
       'role': role.toJson(),
@@ -124,8 +127,8 @@ class _Undefined {}
 
 class _UserImpl extends User {
   _UserImpl({
-    int? id,
-    int? clientId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? clientId,
     required String email,
     String? name,
     _i2.ClientRole? role,
@@ -150,7 +153,7 @@ class _UserImpl extends User {
   @_i1.useResult
   @override
   User copyWith({
-    Object? id = _Undefined,
+    _i1.UuidValue? id,
     Object? clientId = _Undefined,
     String? email,
     Object? name = _Undefined,
@@ -161,8 +164,8 @@ class _UserImpl extends User {
     Object? updatedAt = _Undefined,
   }) {
     return User(
-      id: id is int? ? id : this.id,
-      clientId: clientId is int? ? clientId : this.clientId,
+      id: id ?? this.id,
+      clientId: clientId is _i1.UuidValue? ? clientId : this.clientId,
       email: email ?? this.email,
       name: name is String? ? name : this.name,
       role: role ?? this.role,

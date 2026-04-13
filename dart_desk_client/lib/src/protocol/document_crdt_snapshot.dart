@@ -14,17 +14,18 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class DocumentCrdtSnapshot implements _i1.SerializableModel {
   DocumentCrdtSnapshot._({
-    this.id,
+    _i1.UuidValue? id,
     required this.documentId,
     required this.snapshotHlc,
     required this.snapshotData,
     required this.operationCountAtSnapshot,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       createdAt = createdAt ?? DateTime.now();
 
   factory DocumentCrdtSnapshot({
-    int? id,
-    required int documentId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue documentId,
     required String snapshotHlc,
     required String snapshotData,
     required int operationCountAtSnapshot,
@@ -35,8 +36,12 @@ abstract class DocumentCrdtSnapshot implements _i1.SerializableModel {
     Map<String, dynamic> jsonSerialization,
   ) {
     return DocumentCrdtSnapshot(
-      id: jsonSerialization['id'] as int?,
-      documentId: jsonSerialization['documentId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      documentId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['documentId'],
+      ),
       snapshotHlc: jsonSerialization['snapshotHlc'] as String,
       snapshotData: jsonSerialization['snapshotData'] as String,
       operationCountAtSnapshot:
@@ -47,12 +52,10 @@ abstract class DocumentCrdtSnapshot implements _i1.SerializableModel {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  int? id;
+  /// The id of the object.
+  _i1.UuidValue id;
 
-  int documentId;
+  _i1.UuidValue documentId;
 
   String snapshotHlc;
 
@@ -66,8 +69,8 @@ abstract class DocumentCrdtSnapshot implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   DocumentCrdtSnapshot copyWith({
-    int? id,
-    int? documentId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? documentId,
     String? snapshotHlc,
     String? snapshotData,
     int? operationCountAtSnapshot,
@@ -77,8 +80,8 @@ abstract class DocumentCrdtSnapshot implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'DocumentCrdtSnapshot',
-      if (id != null) 'id': id,
-      'documentId': documentId,
+      'id': id.toJson(),
+      'documentId': documentId.toJson(),
       'snapshotHlc': snapshotHlc,
       'snapshotData': snapshotData,
       'operationCountAtSnapshot': operationCountAtSnapshot,
@@ -96,8 +99,8 @@ class _Undefined {}
 
 class _DocumentCrdtSnapshotImpl extends DocumentCrdtSnapshot {
   _DocumentCrdtSnapshotImpl({
-    int? id,
-    required int documentId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue documentId,
     required String snapshotHlc,
     required String snapshotData,
     required int operationCountAtSnapshot,
@@ -116,15 +119,15 @@ class _DocumentCrdtSnapshotImpl extends DocumentCrdtSnapshot {
   @_i1.useResult
   @override
   DocumentCrdtSnapshot copyWith({
-    Object? id = _Undefined,
-    int? documentId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? documentId,
     String? snapshotHlc,
     String? snapshotData,
     int? operationCountAtSnapshot,
     Object? createdAt = _Undefined,
   }) {
     return DocumentCrdtSnapshot(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       documentId: documentId ?? this.documentId,
       snapshotHlc: snapshotHlc ?? this.snapshotHlc,
       snapshotData: snapshotData ?? this.snapshotData,

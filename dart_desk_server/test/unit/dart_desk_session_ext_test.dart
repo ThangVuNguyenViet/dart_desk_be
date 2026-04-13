@@ -2,6 +2,7 @@ import 'package:dart_desk_server/src/auth/dart_desk_session.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 
 class _MockSession extends Mock implements Session {}
 
@@ -19,8 +20,8 @@ void main() {
       authInfo = AuthenticationInfo(
         'user-1',
         {
-          Scope('client:7'),
-          Scope('project:12'),
+          Scope('client:00000000-0000-4000-8000-000000000007'),
+          Scope('project:00000000-0000-4000-8000-000000000012'),
           Scope('project.read'),
           Scope('project.write'),
         },
@@ -31,18 +32,18 @@ void main() {
     test('clientId getter reads tenant scope', () {
       when(() => session.authenticated).thenReturn(authInfo);
 
-      expect(session.clientId, 7);
+      expect(session.clientId, equals(UuidValue.fromString('00000000-0000-4000-8000-000000000007')));
     });
 
     test('projectId getter reads project scope', () {
       when(() => session.authenticated).thenReturn(authInfo);
 
-      expect(session.projectId, 12);
+      expect(session.projectId, equals(UuidValue.fromString('00000000-0000-4000-8000-000000000012')));
     });
 
     test('clientId getter returns null when client scope is missing', () {
       when(() => session.authenticated).thenReturn(
-        AuthenticationInfo('user-1', {Scope('project:12')}, authId: 'auth-1'),
+        AuthenticationInfo('user-1', {Scope('project:00000000-0000-4000-8000-000000000012')}, authId: 'auth-1'),
       );
 
       expect(session.clientId, isNull);

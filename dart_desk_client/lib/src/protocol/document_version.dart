@@ -15,7 +15,7 @@ import 'document_version_status.dart' as _i2;
 
 abstract class DocumentVersion implements _i1.SerializableModel {
   DocumentVersion._({
-    this.id,
+    _i1.UuidValue? id,
     required this.documentId,
     required this.versionNumber,
     required this.status,
@@ -27,12 +27,13 @@ abstract class DocumentVersion implements _i1.SerializableModel {
     this.archivedAt,
     DateTime? createdAt,
     this.createdByUserId,
-  }) : operationCount = operationCount ?? 0,
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       operationCount = operationCount ?? 0,
        createdAt = createdAt ?? DateTime.now();
 
   factory DocumentVersion({
-    int? id,
-    required int documentId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue documentId,
     required int versionNumber,
     required _i2.DocumentVersionStatus status,
     String? snapshotHlc,
@@ -42,13 +43,17 @@ abstract class DocumentVersion implements _i1.SerializableModel {
     DateTime? scheduledAt,
     DateTime? archivedAt,
     DateTime? createdAt,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
   }) = _DocumentVersionImpl;
 
   factory DocumentVersion.fromJson(Map<String, dynamic> jsonSerialization) {
     return DocumentVersion(
-      id: jsonSerialization['id'] as int?,
-      documentId: jsonSerialization['documentId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      documentId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['documentId'],
+      ),
       versionNumber: jsonSerialization['versionNumber'] as int,
       status: _i2.DocumentVersionStatus.fromJson(
         (jsonSerialization['status'] as String),
@@ -72,16 +77,18 @@ abstract class DocumentVersion implements _i1.SerializableModel {
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      createdByUserId: jsonSerialization['createdByUserId'] as int?,
+      createdByUserId: jsonSerialization['createdByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['createdByUserId'],
+            ),
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  int? id;
+  /// The id of the object.
+  _i1.UuidValue id;
 
-  int documentId;
+  _i1.UuidValue documentId;
 
   int versionNumber;
 
@@ -101,14 +108,14 @@ abstract class DocumentVersion implements _i1.SerializableModel {
 
   DateTime? createdAt;
 
-  int? createdByUserId;
+  _i1.UuidValue? createdByUserId;
 
   /// Returns a shallow copy of this [DocumentVersion]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   DocumentVersion copyWith({
-    int? id,
-    int? documentId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? documentId,
     int? versionNumber,
     _i2.DocumentVersionStatus? status,
     String? snapshotHlc,
@@ -118,14 +125,14 @@ abstract class DocumentVersion implements _i1.SerializableModel {
     DateTime? scheduledAt,
     DateTime? archivedAt,
     DateTime? createdAt,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'DocumentVersion',
-      if (id != null) 'id': id,
-      'documentId': documentId,
+      'id': id.toJson(),
+      'documentId': documentId.toJson(),
       'versionNumber': versionNumber,
       'status': status.toJson(),
       if (snapshotHlc != null) 'snapshotHlc': snapshotHlc,
@@ -135,7 +142,7 @@ abstract class DocumentVersion implements _i1.SerializableModel {
       if (scheduledAt != null) 'scheduledAt': scheduledAt?.toJson(),
       if (archivedAt != null) 'archivedAt': archivedAt?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
     };
   }
 
@@ -149,8 +156,8 @@ class _Undefined {}
 
 class _DocumentVersionImpl extends DocumentVersion {
   _DocumentVersionImpl({
-    int? id,
-    required int documentId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue documentId,
     required int versionNumber,
     required _i2.DocumentVersionStatus status,
     String? snapshotHlc,
@@ -160,7 +167,7 @@ class _DocumentVersionImpl extends DocumentVersion {
     DateTime? scheduledAt,
     DateTime? archivedAt,
     DateTime? createdAt,
-    int? createdByUserId,
+    _i1.UuidValue? createdByUserId,
   }) : super._(
          id: id,
          documentId: documentId,
@@ -181,8 +188,8 @@ class _DocumentVersionImpl extends DocumentVersion {
   @_i1.useResult
   @override
   DocumentVersion copyWith({
-    Object? id = _Undefined,
-    int? documentId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? documentId,
     int? versionNumber,
     _i2.DocumentVersionStatus? status,
     Object? snapshotHlc = _Undefined,
@@ -195,7 +202,7 @@ class _DocumentVersionImpl extends DocumentVersion {
     Object? createdByUserId = _Undefined,
   }) {
     return DocumentVersion(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       documentId: documentId ?? this.documentId,
       versionNumber: versionNumber ?? this.versionNumber,
       status: status ?? this.status,
@@ -206,7 +213,7 @@ class _DocumentVersionImpl extends DocumentVersion {
       scheduledAt: scheduledAt is DateTime? ? scheduledAt : this.scheduledAt,
       archivedAt: archivedAt is DateTime? ? archivedAt : this.archivedAt,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
-      createdByUserId: createdByUserId is int?
+      createdByUserId: createdByUserId is _i1.UuidValue?
           ? createdByUserId
           : this.createdByUserId,
     );

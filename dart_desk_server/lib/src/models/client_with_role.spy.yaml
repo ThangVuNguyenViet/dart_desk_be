@@ -1,0 +1,5 @@
+class: ClientWithRole
+fields:
+  client: protocol:CmsClient
+  role: protocol:ClientRole
+  projectCount: int

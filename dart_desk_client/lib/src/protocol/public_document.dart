@@ -25,7 +25,7 @@ abstract class PublicDocument implements _i1.SerializableModel {
   });
 
   factory PublicDocument({
-    required int id,
+    required _i1.UuidValue id,
     required String documentType,
     required String title,
     required String slug,
@@ -37,7 +37,7 @@ abstract class PublicDocument implements _i1.SerializableModel {
 
   factory PublicDocument.fromJson(Map<String, dynamic> jsonSerialization) {
     return PublicDocument(
-      id: jsonSerialization['id'] as int,
+      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       documentType: jsonSerialization['documentType'] as String,
       title: jsonSerialization['title'] as String,
       slug: jsonSerialization['slug'] as String,
@@ -52,7 +52,7 @@ abstract class PublicDocument implements _i1.SerializableModel {
     );
   }
 
-  int id;
+  _i1.UuidValue id;
 
   String documentType;
 
@@ -72,7 +72,7 @@ abstract class PublicDocument implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   PublicDocument copyWith({
-    int? id,
+    _i1.UuidValue? id,
     String? documentType,
     String? title,
     String? slug,
@@ -85,7 +85,7 @@ abstract class PublicDocument implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'PublicDocument',
-      'id': id,
+      'id': id.toJson(),
       'documentType': documentType,
       'title': title,
       'slug': slug,
@@ -104,7 +104,7 @@ abstract class PublicDocument implements _i1.SerializableModel {
 
 class _PublicDocumentImpl extends PublicDocument {
   _PublicDocumentImpl({
-    required int id,
+    required _i1.UuidValue id,
     required String documentType,
     required String title,
     required String slug,
@@ -128,7 +128,7 @@ class _PublicDocumentImpl extends PublicDocument {
   @_i1.useResult
   @override
   PublicDocument copyWith({
-    int? id,
+    _i1.UuidValue? id,
     String? documentType,
     String? title,
     String? slug,

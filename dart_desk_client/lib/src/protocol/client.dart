@@ -52,19 +52,20 @@ class EndpointApiToken extends _i1.EndpointRef {
   String get name => 'apiToken';
 
   /// List all tokens for a project (metadata only, never the hash).
-  _i2.Future<List<_i3.ApiToken>> getTokens({required int projectId}) =>
-      caller.callServerEndpoint<List<_i3.ApiToken>>(
-        'apiToken',
-        'getTokens',
-        {'projectId': projectId},
-      );
+  _i2.Future<List<_i3.ApiToken>> getTokens({
+    required _i1.UuidValue projectId,
+  }) => caller.callServerEndpoint<List<_i3.ApiToken>>(
+    'apiToken',
+    'getTokens',
+    {'projectId': projectId},
+  );
 
   /// Create a new named token. Returns plaintext token (shown once).
   _i2.Future<_i4.ApiTokenWithValue> createToken(
     String name,
     String role,
     DateTime? expiresAt, {
-    required int projectId,
+    required _i1.UuidValue projectId,
   }) => caller.callServerEndpoint<_i4.ApiTokenWithValue>(
     'apiToken',
     'createToken',
@@ -78,11 +79,11 @@ class EndpointApiToken extends _i1.EndpointRef {
 
   /// Update token metadata (name, isActive, expiresAt).
   _i2.Future<_i3.ApiToken> updateToken(
-    int tokenId,
+    _i1.UuidValue tokenId,
     String? name,
     bool? isActive,
     DateTime? expiresAt, {
-    required int projectId,
+    required _i1.UuidValue projectId,
   }) => caller.callServerEndpoint<_i3.ApiToken>(
     'apiToken',
     'updateToken',
@@ -97,8 +98,8 @@ class EndpointApiToken extends _i1.EndpointRef {
 
   /// Regenerate token value. Returns new plaintext token (shown once).
   _i2.Future<_i4.ApiTokenWithValue> regenerateToken(
-    int tokenId, {
-    required int projectId,
+    _i1.UuidValue tokenId, {
+    required _i1.UuidValue projectId,
   }) => caller.callServerEndpoint<_i4.ApiTokenWithValue>(
     'apiToken',
     'regenerateToken',
@@ -110,8 +111,8 @@ class EndpointApiToken extends _i1.EndpointRef {
 
   /// Delete a token permanently.
   _i2.Future<bool> deleteToken(
-    int tokenId, {
-    required int projectId,
+    _i1.UuidValue tokenId, {
+    required _i1.UuidValue projectId,
   }) => caller.callServerEndpoint<bool>(
     'apiToken',
     'deleteToken',
@@ -186,7 +187,7 @@ class EndpointDocumentCollaboration extends _i1.EndpointRef {
   /// Get CRDT operations since a specific HLC timestamp
   /// Used for polling updates from other users
   _i2.Future<List<_i6.DocumentCrdtOperation>> getOperationsSince(
-    int documentId,
+    _i1.UuidValue documentId,
     String sinceHlc, {
     required int limit,
   }) => caller.callServerEndpoint<List<_i6.DocumentCrdtOperation>>(
@@ -201,7 +202,7 @@ class EndpointDocumentCollaboration extends _i1.EndpointRef {
 
   /// Submit an edit (partial field updates) for collaborative editing
   _i2.Future<_i7.Document> submitEdit(
-    int documentId,
+    _i1.UuidValue documentId,
     String sessionId,
     String fieldUpdatesJson,
   ) => caller.callServerEndpoint<_i7.Document>(
@@ -216,7 +217,7 @@ class EndpointDocumentCollaboration extends _i1.EndpointRef {
 
   /// Get list of users currently editing this document
   /// Based on recent operation activity (last 5 minutes)
-  _i2.Future<List<String>> getActiveEditors(int documentId) =>
+  _i2.Future<List<String>> getActiveEditors(_i1.UuidValue documentId) =>
       caller.callServerEndpoint<List<String>>(
         'documentCollaboration',
         'getActiveEditors',
@@ -225,7 +226,7 @@ class EndpointDocumentCollaboration extends _i1.EndpointRef {
 
   /// Get the current HLC for a document
   /// Useful for clients to know where they are in the operation log
-  _i2.Future<String?> getCurrentHlc(int documentId) =>
+  _i2.Future<String?> getCurrentHlc(_i1.UuidValue documentId) =>
       caller.callServerEndpoint<String?>(
         'documentCollaboration',
         'getCurrentHlc',
@@ -234,7 +235,7 @@ class EndpointDocumentCollaboration extends _i1.EndpointRef {
 
   /// Get operation count for a document
   /// Useful for monitoring and deciding when to compact
-  _i2.Future<int> getOperationCount(int documentId) =>
+  _i2.Future<int> getOperationCount(_i1.UuidValue documentId) =>
       caller.callServerEndpoint<int>(
         'documentCollaboration',
         'getOperationCount',
@@ -243,7 +244,7 @@ class EndpointDocumentCollaboration extends _i1.EndpointRef {
 
   /// Manually trigger operation compaction
   /// Creates a snapshot and cleans up old operations
-  _i2.Future<void> compactOperations(int documentId) =>
+  _i2.Future<void> compactOperations(_i1.UuidValue documentId) =>
       caller.callServerEndpoint<void>(
         'documentCollaboration',
         'compactOperations',
@@ -278,7 +279,7 @@ class EndpointDocument extends _i1.EndpointRef {
   );
 
   /// Get a single document by ID
-  _i2.Future<_i7.Document?> getDocument(int documentId) =>
+  _i2.Future<_i7.Document?> getDocument(_i1.UuidValue documentId) =>
       caller.callServerEndpoint<_i7.Document?>(
         'document',
         'getDocument',
@@ -324,7 +325,7 @@ class EndpointDocument extends _i1.EndpointRef {
   /// Update document data using CRDT operations (partial updates)
   /// Only changed fields need to be provided - they will be merged automatically
   _i2.Future<_i7.Document> updateDocumentData(
-    int documentId,
+    _i1.UuidValue documentId,
     String updatesJson, {
     String? sessionId,
   }) => caller.callServerEndpoint<_i7.Document>(
@@ -340,7 +341,7 @@ class EndpointDocument extends _i1.EndpointRef {
   /// Update document metadata (title, slug, isDefault)
   /// To update document data, use updateDocumentData instead
   _i2.Future<_i7.Document?> updateDocument(
-    int documentId, {
+    _i1.UuidValue documentId, {
     String? title,
     String? slug,
     bool? isDefault,
@@ -360,7 +361,7 @@ class EndpointDocument extends _i1.EndpointRef {
   /// document.
   _i2.Future<_i7.Document> setDefaultDocument(
     String documentTypeSlug,
-    int documentId,
+    _i1.UuidValue documentId,
   ) => caller.callServerEndpoint<_i7.Document>(
     'document',
     'setDefaultDocument',
@@ -371,7 +372,7 @@ class EndpointDocument extends _i1.EndpointRef {
   );
 
   /// Delete a document
-  _i2.Future<bool> deleteDocument(int documentId) =>
+  _i2.Future<bool> deleteDocument(_i1.UuidValue documentId) =>
       caller.callServerEndpoint<bool>(
         'document',
         'deleteDocument',
@@ -405,7 +406,7 @@ class EndpointDocument extends _i1.EndpointRef {
   /// Get all versions for a document with pagination
   /// Optionally includes CRDT operations between adjacent versions
   _i2.Future<_i9.DocumentVersionListWithOperations> getDocumentVersions(
-    int documentId, {
+    _i1.UuidValue documentId, {
     required int limit,
     required int offset,
     required bool includeOperations,
@@ -421,16 +422,17 @@ class EndpointDocument extends _i1.EndpointRef {
   );
 
   /// Get a single version by ID
-  _i2.Future<_i10.DocumentVersion?> getDocumentVersion(int versionId) =>
-      caller.callServerEndpoint<_i10.DocumentVersion?>(
-        'document',
-        'getDocumentVersion',
-        {'versionId': versionId},
-      );
+  _i2.Future<_i10.DocumentVersion?> getDocumentVersion(
+    _i1.UuidValue versionId,
+  ) => caller.callServerEndpoint<_i10.DocumentVersion?>(
+    'document',
+    'getDocumentVersion',
+    {'versionId': versionId},
+  );
 
   /// Get the document data for a specific version.
   /// Reconstructs the data from CRDT operations at the version's HLC snapshot.
-  _i2.Future<String?> getDocumentVersionData(int versionId) =>
+  _i2.Future<String?> getDocumentVersionData(_i1.UuidValue versionId) =>
       caller.callServerEndpoint<String?>(
         'document',
         'getDocumentVersionData',
@@ -440,7 +442,7 @@ class EndpointDocument extends _i1.EndpointRef {
   /// Create a new version for a document
   /// Captures the current CRDT state as a version snapshot
   _i2.Future<_i10.DocumentVersion> createDocumentVersion(
-    int documentId, {
+    _i1.UuidValue documentId, {
     required _i11.DocumentVersionStatus status,
     String? changeLog,
   }) => caller.callServerEndpoint<_i10.DocumentVersion>(
@@ -454,23 +456,25 @@ class EndpointDocument extends _i1.EndpointRef {
   );
 
   /// Publish a version (set status to 'published' and set publishedAt timestamp)
-  _i2.Future<_i10.DocumentVersion?> publishDocumentVersion(int versionId) =>
-      caller.callServerEndpoint<_i10.DocumentVersion?>(
-        'document',
-        'publishDocumentVersion',
-        {'versionId': versionId},
-      );
+  _i2.Future<_i10.DocumentVersion?> publishDocumentVersion(
+    _i1.UuidValue versionId,
+  ) => caller.callServerEndpoint<_i10.DocumentVersion?>(
+    'document',
+    'publishDocumentVersion',
+    {'versionId': versionId},
+  );
 
   /// Archive a version (set status to 'archived' and set archivedAt timestamp)
-  _i2.Future<_i10.DocumentVersion?> archiveDocumentVersion(int versionId) =>
-      caller.callServerEndpoint<_i10.DocumentVersion?>(
-        'document',
-        'archiveDocumentVersion',
-        {'versionId': versionId},
-      );
+  _i2.Future<_i10.DocumentVersion?> archiveDocumentVersion(
+    _i1.UuidValue versionId,
+  ) => caller.callServerEndpoint<_i10.DocumentVersion?>(
+    'document',
+    'archiveDocumentVersion',
+    {'versionId': versionId},
+  );
 
   /// Delete a version
-  _i2.Future<bool> deleteDocumentVersion(int versionId) =>
+  _i2.Future<bool> deleteDocumentVersion(_i1.UuidValue versionId) =>
       caller.callServerEndpoint<bool>(
         'document',
         'deleteDocumentVersion',
@@ -478,7 +482,7 @@ class EndpointDocument extends _i1.EndpointRef {
       );
 
   /// Get total document count for the specified project.
-  _i2.Future<int> getDocumentCount({required int projectId}) =>
+  _i2.Future<int> getDocumentCount({required _i1.UuidValue projectId}) =>
       caller.callServerEndpoint<int>(
         'document',
         'getDocumentCount',
@@ -823,7 +827,7 @@ class EndpointMember extends _i1.EndpointRef {
   @override
   String get name => 'member';
 
-  _i2.Future<List<_i16.User>> listMembers({required int clientId}) =>
+  _i2.Future<List<_i16.User>> listMembers({required _i1.UuidValue clientId}) =>
       caller.callServerEndpoint<List<_i16.User>>(
         'member',
         'listMembers',
@@ -831,7 +835,7 @@ class EndpointMember extends _i1.EndpointRef {
       );
 
   _i2.Future<_i16.User> inviteMember({
-    required int clientId,
+    required _i1.UuidValue clientId,
     required String email,
     required _i17.ClientRole role,
   }) => caller.callServerEndpoint<_i16.User>(
@@ -845,8 +849,8 @@ class EndpointMember extends _i1.EndpointRef {
   );
 
   _i2.Future<_i16.User> updateMemberRole({
-    required int clientId,
-    required int userId,
+    required _i1.UuidValue clientId,
+    required _i1.UuidValue userId,
     required _i17.ClientRole role,
   }) => caller.callServerEndpoint<_i16.User>(
     'member',
@@ -859,8 +863,8 @@ class EndpointMember extends _i1.EndpointRef {
   );
 
   _i2.Future<void> removeMember({
-    required int clientId,
-    required int userId,
+    required _i1.UuidValue clientId,
+    required _i1.UuidValue userId,
   }) => caller.callServerEndpoint<void>(
     'member',
     'removeMember',
@@ -945,7 +949,7 @@ class EndpointProject extends _i1.EndpointRef {
       );
 
   /// Get a project by ID.
-  _i2.Future<_i20.Project?> getProject(int projectId) =>
+  _i2.Future<_i20.Project?> getProject(_i1.UuidValue projectId) =>
       caller.callServerEndpoint<_i20.Project?>(
         'project',
         'getProject',
@@ -971,7 +975,7 @@ class EndpointProject extends _i1.EndpointRef {
 
   /// Update an existing project (requires authentication).
   _i2.Future<_i20.Project?> updateProject(
-    int projectId, {
+    _i1.UuidValue projectId, {
     String? name,
     String? description,
     bool? isActive,
@@ -989,7 +993,7 @@ class EndpointProject extends _i1.EndpointRef {
   );
 
   /// Delete a project (requires authentication).
-  _i2.Future<bool> deleteProject(int projectId) =>
+  _i2.Future<bool> deleteProject(_i1.UuidValue projectId) =>
       caller.callServerEndpoint<bool>(
         'project',
         'deleteProject',
@@ -1019,7 +1023,7 @@ class EndpointProjectMember extends _i1.EndpointRef {
   String get name => 'projectMember';
 
   _i2.Future<List<_i22.ProjectMember>> listProjectMembers({
-    required int projectId,
+    required _i1.UuidValue projectId,
   }) => caller.callServerEndpoint<List<_i22.ProjectMember>>(
     'projectMember',
     'listProjectMembers',
@@ -1027,8 +1031,8 @@ class EndpointProjectMember extends _i1.EndpointRef {
   );
 
   _i2.Future<_i22.ProjectMember> addProjectMember({
-    required int projectId,
-    required int userId,
+    required _i1.UuidValue projectId,
+    required _i1.UuidValue userId,
     required _i23.ProjectRole role,
   }) => caller.callServerEndpoint<_i22.ProjectMember>(
     'projectMember',
@@ -1041,8 +1045,8 @@ class EndpointProjectMember extends _i1.EndpointRef {
   );
 
   _i2.Future<_i22.ProjectMember> updateProjectMemberRole({
-    required int projectId,
-    required int userId,
+    required _i1.UuidValue projectId,
+    required _i1.UuidValue userId,
     required _i23.ProjectRole role,
   }) => caller.callServerEndpoint<_i22.ProjectMember>(
     'projectMember',
@@ -1055,8 +1059,8 @@ class EndpointProjectMember extends _i1.EndpointRef {
   );
 
   _i2.Future<void> removeProjectMember({
-    required int projectId,
-    required int userId,
+    required _i1.UuidValue projectId,
+    required _i1.UuidValue userId,
   }) => caller.callServerEndpoint<void>(
     'projectMember',
     'removeProjectMember',
@@ -1190,7 +1194,7 @@ class EndpointUser extends _i1.EndpointRef {
   /// Get the current authenticated user.
   /// [clientId] is optional — if omitted, falls back to session.clientId.
   /// The _manage app passes clientId explicitly; consumer apps rely on API key in Authorization header.
-  _i2.Future<_i16.User?> getCurrentUser({int? clientId}) =>
+  _i2.Future<_i16.User?> getCurrentUser({_i1.UuidValue? clientId}) =>
       caller.callServerEndpoint<_i16.User?>(
         'user',
         'getCurrentUser',
@@ -1198,7 +1202,7 @@ class EndpointUser extends _i1.EndpointRef {
       );
 
   /// Get count of active users in the current tenant.
-  _i2.Future<int> getUserCount({required int clientId}) =>
+  _i2.Future<int> getUserCount({required _i1.UuidValue clientId}) =>
       caller.callServerEndpoint<int>(
         'user',
         'getUserCount',

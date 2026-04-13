@@ -14,29 +14,32 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class DocumentData implements _i1.SerializableModel {
   DocumentData._({
-    this.id,
+    _i1.UuidValue? id,
     required this.documentType,
     required this.data,
     DateTime? createdAt,
     DateTime? updatedAt,
     this.createdByUserId,
     this.updatedByUserId,
-  }) : createdAt = createdAt ?? DateTime.now(),
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
   factory DocumentData({
-    int? id,
+    _i1.UuidValue? id,
     required String documentType,
     required String data,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
-    int? updatedByUserId,
+    _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
   }) = _DocumentDataImpl;
 
   factory DocumentData.fromJson(Map<String, dynamic> jsonSerialization) {
     return DocumentData(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       documentType: jsonSerialization['documentType'] as String,
       data: jsonSerialization['data'] as String,
       createdAt: jsonSerialization['createdAt'] == null
@@ -45,15 +48,21 @@ abstract class DocumentData implements _i1.SerializableModel {
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
-      createdByUserId: jsonSerialization['createdByUserId'] as int?,
-      updatedByUserId: jsonSerialization['updatedByUserId'] as int?,
+      createdByUserId: jsonSerialization['createdByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['createdByUserId'],
+            ),
+      updatedByUserId: jsonSerialization['updatedByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['updatedByUserId'],
+            ),
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  int? id;
+  /// The id of the object.
+  _i1.UuidValue id;
 
   String documentType;
 
@@ -63,33 +72,33 @@ abstract class DocumentData implements _i1.SerializableModel {
 
   DateTime? updatedAt;
 
-  int? createdByUserId;
+  _i1.UuidValue? createdByUserId;
 
-  int? updatedByUserId;
+  _i1.UuidValue? updatedByUserId;
 
   /// Returns a shallow copy of this [DocumentData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   DocumentData copyWith({
-    int? id,
+    _i1.UuidValue? id,
     String? documentType,
     String? data,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
-    int? updatedByUserId,
+    _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'DocumentData',
-      if (id != null) 'id': id,
+      'id': id.toJson(),
       'documentType': documentType,
       'data': data,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
-      if (createdByUserId != null) 'createdByUserId': createdByUserId,
-      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
     };
   }
 
@@ -103,13 +112,13 @@ class _Undefined {}
 
 class _DocumentDataImpl extends DocumentData {
   _DocumentDataImpl({
-    int? id,
+    _i1.UuidValue? id,
     required String documentType,
     required String data,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
-    int? updatedByUserId,
+    _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
   }) : super._(
          id: id,
          documentType: documentType,
@@ -125,7 +134,7 @@ class _DocumentDataImpl extends DocumentData {
   @_i1.useResult
   @override
   DocumentData copyWith({
-    Object? id = _Undefined,
+    _i1.UuidValue? id,
     String? documentType,
     String? data,
     Object? createdAt = _Undefined,
@@ -134,15 +143,15 @@ class _DocumentDataImpl extends DocumentData {
     Object? updatedByUserId = _Undefined,
   }) {
     return DocumentData(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       documentType: documentType ?? this.documentType,
       data: data ?? this.data,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
-      createdByUserId: createdByUserId is int?
+      createdByUserId: createdByUserId is _i1.UuidValue?
           ? createdByUserId
           : this.createdByUserId,
-      updatedByUserId: updatedByUserId is int?
+      updatedByUserId: updatedByUserId is _i1.UuidValue?
           ? updatedByUserId
           : this.updatedByUserId,
     );

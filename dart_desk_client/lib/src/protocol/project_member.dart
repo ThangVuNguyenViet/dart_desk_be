@@ -15,26 +15,31 @@ import 'project_role.dart' as _i2;
 
 abstract class ProjectMember implements _i1.SerializableModel {
   ProjectMember._({
-    this.id,
+    _i1.UuidValue? id,
     required this.userId,
     required this.projectId,
     required this.role,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       createdAt = createdAt ?? DateTime.now();
 
   factory ProjectMember({
-    int? id,
-    required int userId,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue userId,
+    required _i1.UuidValue projectId,
     required _i2.ProjectRole role,
     DateTime? createdAt,
   }) = _ProjectMemberImpl;
 
   factory ProjectMember.fromJson(Map<String, dynamic> jsonSerialization) {
     return ProjectMember(
-      id: jsonSerialization['id'] as int?,
-      userId: jsonSerialization['userId'] as int,
-      projectId: jsonSerialization['projectId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      userId: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['userId']),
+      projectId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['projectId'],
+      ),
       role: _i2.ProjectRole.fromJson((jsonSerialization['role'] as String)),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
@@ -42,14 +47,12 @@ abstract class ProjectMember implements _i1.SerializableModel {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  int? id;
+  /// The id of the object.
+  _i1.UuidValue id;
 
-  int userId;
+  _i1.UuidValue userId;
 
-  int projectId;
+  _i1.UuidValue projectId;
 
   _i2.ProjectRole role;
 
@@ -59,9 +62,9 @@ abstract class ProjectMember implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   ProjectMember copyWith({
-    int? id,
-    int? userId,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? userId,
+    _i1.UuidValue? projectId,
     _i2.ProjectRole? role,
     DateTime? createdAt,
   });
@@ -69,9 +72,9 @@ abstract class ProjectMember implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectMember',
-      if (id != null) 'id': id,
-      'userId': userId,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'userId': userId.toJson(),
+      'projectId': projectId.toJson(),
       'role': role.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
     };
@@ -87,9 +90,9 @@ class _Undefined {}
 
 class _ProjectMemberImpl extends ProjectMember {
   _ProjectMemberImpl({
-    int? id,
-    required int userId,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue userId,
+    required _i1.UuidValue projectId,
     required _i2.ProjectRole role,
     DateTime? createdAt,
   }) : super._(
@@ -105,14 +108,14 @@ class _ProjectMemberImpl extends ProjectMember {
   @_i1.useResult
   @override
   ProjectMember copyWith({
-    Object? id = _Undefined,
-    int? userId,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? userId,
+    _i1.UuidValue? projectId,
     _i2.ProjectRole? role,
     Object? createdAt = _Undefined,
   }) {
     return ProjectMember(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       userId: userId ?? this.userId,
       projectId: projectId ?? this.projectId,
       role: role ?? this.role,

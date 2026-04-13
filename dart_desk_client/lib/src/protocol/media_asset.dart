@@ -15,7 +15,7 @@ import 'media_asset_metadata_status.dart' as _i2;
 
 abstract class MediaAsset implements _i1.SerializableModel {
   MediaAsset._({
-    this.id,
+    _i1.UuidValue? id,
     required this.projectId,
     required this.assetId,
     required this.fileName,
@@ -35,11 +35,12 @@ abstract class MediaAsset implements _i1.SerializableModel {
     this.uploadedByUserId,
     DateTime? createdAt,
     required this.metadataStatus,
-  }) : createdAt = createdAt ?? DateTime.now();
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       createdAt = createdAt ?? DateTime.now();
 
   factory MediaAsset({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String assetId,
     required String fileName,
     required String mimeType,
@@ -55,15 +56,19 @@ abstract class MediaAsset implements _i1.SerializableModel {
     String? exifJson,
     double? locationLat,
     double? locationLng,
-    int? uploadedByUserId,
+    _i1.UuidValue? uploadedByUserId,
     DateTime? createdAt,
     required _i2.MediaAssetMetadataStatus metadataStatus,
   }) = _MediaAssetImpl;
 
   factory MediaAsset.fromJson(Map<String, dynamic> jsonSerialization) {
     return MediaAsset(
-      id: jsonSerialization['id'] as int?,
-      projectId: jsonSerialization['projectId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      projectId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['projectId'],
+      ),
       assetId: jsonSerialization['assetId'] as String,
       fileName: jsonSerialization['fileName'] as String,
       mimeType: jsonSerialization['mimeType'] as String,
@@ -79,7 +84,11 @@ abstract class MediaAsset implements _i1.SerializableModel {
       exifJson: jsonSerialization['exifJson'] as String?,
       locationLat: (jsonSerialization['locationLat'] as num?)?.toDouble(),
       locationLng: (jsonSerialization['locationLng'] as num?)?.toDouble(),
-      uploadedByUserId: jsonSerialization['uploadedByUserId'] as int?,
+      uploadedByUserId: jsonSerialization['uploadedByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uploadedByUserId'],
+            ),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -89,12 +98,10 @@ abstract class MediaAsset implements _i1.SerializableModel {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  int? id;
+  /// The id of the object.
+  _i1.UuidValue id;
 
-  int projectId;
+  _i1.UuidValue projectId;
 
   String assetId;
 
@@ -126,7 +133,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
 
   double? locationLng;
 
-  int? uploadedByUserId;
+  _i1.UuidValue? uploadedByUserId;
 
   DateTime? createdAt;
 
@@ -136,8 +143,8 @@ abstract class MediaAsset implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   MediaAsset copyWith({
-    int? id,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? assetId,
     String? fileName,
     String? mimeType,
@@ -153,7 +160,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
     String? exifJson,
     double? locationLat,
     double? locationLng,
-    int? uploadedByUserId,
+    _i1.UuidValue? uploadedByUserId,
     DateTime? createdAt,
     _i2.MediaAssetMetadataStatus? metadataStatus,
   });
@@ -161,8 +168,8 @@ abstract class MediaAsset implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'MediaAsset',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'assetId': assetId,
       'fileName': fileName,
       'mimeType': mimeType,
@@ -178,7 +185,8 @@ abstract class MediaAsset implements _i1.SerializableModel {
       if (exifJson != null) 'exifJson': exifJson,
       if (locationLat != null) 'locationLat': locationLat,
       if (locationLng != null) 'locationLng': locationLng,
-      if (uploadedByUserId != null) 'uploadedByUserId': uploadedByUserId,
+      if (uploadedByUserId != null)
+        'uploadedByUserId': uploadedByUserId?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       'metadataStatus': metadataStatus.toJson(),
     };
@@ -194,8 +202,8 @@ class _Undefined {}
 
 class _MediaAssetImpl extends MediaAsset {
   _MediaAssetImpl({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String assetId,
     required String fileName,
     required String mimeType,
@@ -211,7 +219,7 @@ class _MediaAssetImpl extends MediaAsset {
     String? exifJson,
     double? locationLat,
     double? locationLng,
-    int? uploadedByUserId,
+    _i1.UuidValue? uploadedByUserId,
     DateTime? createdAt,
     required _i2.MediaAssetMetadataStatus metadataStatus,
   }) : super._(
@@ -242,8 +250,8 @@ class _MediaAssetImpl extends MediaAsset {
   @_i1.useResult
   @override
   MediaAsset copyWith({
-    Object? id = _Undefined,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? assetId,
     String? fileName,
     String? mimeType,
@@ -264,7 +272,7 @@ class _MediaAssetImpl extends MediaAsset {
     _i2.MediaAssetMetadataStatus? metadataStatus,
   }) {
     return MediaAsset(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       assetId: assetId ?? this.assetId,
       fileName: fileName ?? this.fileName,
@@ -281,7 +289,7 @@ class _MediaAssetImpl extends MediaAsset {
       exifJson: exifJson is String? ? exifJson : this.exifJson,
       locationLat: locationLat is double? ? locationLat : this.locationLat,
       locationLng: locationLng is double? ? locationLng : this.locationLng,
-      uploadedByUserId: uploadedByUserId is int?
+      uploadedByUserId: uploadedByUserId is _i1.UuidValue?
           ? uploadedByUserId
           : this.uploadedByUserId,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,

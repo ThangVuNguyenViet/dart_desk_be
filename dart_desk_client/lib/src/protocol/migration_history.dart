@@ -14,18 +14,19 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class MigrationHistory implements _i1.SerializableModel {
   MigrationHistory._({
-    this.id,
+    _i1.UuidValue? id,
     required this.projectId,
     required this.name,
     required this.documentType,
     DateTime? appliedAt,
     required this.operationsJson,
     required this.report,
-  }) : appliedAt = appliedAt ?? DateTime.now();
+  }) : id = id ?? const _i1.Uuid().v4obj(),
+       appliedAt = appliedAt ?? DateTime.now();
 
   factory MigrationHistory({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String name,
     required String documentType,
     DateTime? appliedAt,
@@ -35,8 +36,12 @@ abstract class MigrationHistory implements _i1.SerializableModel {
 
   factory MigrationHistory.fromJson(Map<String, dynamic> jsonSerialization) {
     return MigrationHistory(
-      id: jsonSerialization['id'] as int?,
-      projectId: jsonSerialization['projectId'] as int,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      projectId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['projectId'],
+      ),
       name: jsonSerialization['name'] as String,
       documentType: jsonSerialization['documentType'] as String,
       appliedAt: jsonSerialization['appliedAt'] == null
@@ -47,12 +52,10 @@ abstract class MigrationHistory implements _i1.SerializableModel {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  int? id;
+  /// The id of the object.
+  _i1.UuidValue id;
 
-  int projectId;
+  _i1.UuidValue projectId;
 
   String name;
 
@@ -68,8 +71,8 @@ abstract class MigrationHistory implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   MigrationHistory copyWith({
-    int? id,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? name,
     String? documentType,
     DateTime? appliedAt,
@@ -80,8 +83,8 @@ abstract class MigrationHistory implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'MigrationHistory',
-      if (id != null) 'id': id,
-      'projectId': projectId,
+      'id': id.toJson(),
+      'projectId': projectId.toJson(),
       'name': name,
       'documentType': documentType,
       'appliedAt': appliedAt.toJson(),
@@ -96,12 +99,10 @@ abstract class MigrationHistory implements _i1.SerializableModel {
   }
 }
 
-class _Undefined {}
-
 class _MigrationHistoryImpl extends MigrationHistory {
   _MigrationHistoryImpl({
-    int? id,
-    required int projectId,
+    _i1.UuidValue? id,
+    required _i1.UuidValue projectId,
     required String name,
     required String documentType,
     DateTime? appliedAt,
@@ -122,8 +123,8 @@ class _MigrationHistoryImpl extends MigrationHistory {
   @_i1.useResult
   @override
   MigrationHistory copyWith({
-    Object? id = _Undefined,
-    int? projectId,
+    _i1.UuidValue? id,
+    _i1.UuidValue? projectId,
     String? name,
     String? documentType,
     DateTime? appliedAt,
@@ -131,7 +132,7 @@ class _MigrationHistoryImpl extends MigrationHistory {
     String? report,
   }) {
     return MigrationHistory(
-      id: id is int? ? id : this.id,
+      id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       name: name ?? this.name,
       documentType: documentType ?? this.documentType,

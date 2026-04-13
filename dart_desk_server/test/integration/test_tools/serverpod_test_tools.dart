@@ -260,7 +260,7 @@ class _ApiTokenEndpoint {
 
   _i3.Future<List<_i4.ApiToken>> getTokens(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int projectId,
+    required _i2.UuidValue projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -294,7 +294,7 @@ class _ApiTokenEndpoint {
     String name,
     String role,
     DateTime? expiresAt, {
-    required int projectId,
+    required _i2.UuidValue projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -330,11 +330,11 @@ class _ApiTokenEndpoint {
 
   _i3.Future<_i4.ApiToken> updateToken(
     _i1.TestSessionBuilder sessionBuilder,
-    int tokenId,
+    _i2.UuidValue tokenId,
     String? name,
     bool? isActive,
     DateTime? expiresAt, {
-    required int projectId,
+    required _i2.UuidValue projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -371,8 +371,8 @@ class _ApiTokenEndpoint {
 
   _i3.Future<_i5.ApiTokenWithValue> regenerateToken(
     _i1.TestSessionBuilder sessionBuilder,
-    int tokenId, {
-    required int projectId,
+    _i2.UuidValue tokenId, {
+    required _i2.UuidValue projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -406,8 +406,8 @@ class _ApiTokenEndpoint {
 
   _i3.Future<bool> deleteToken(
     _i1.TestSessionBuilder sessionBuilder,
-    int tokenId, {
-    required int projectId,
+    _i2.UuidValue tokenId, {
+    required _i2.UuidValue projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -595,7 +595,7 @@ class _DocumentCollaborationEndpoint {
 
   _i3.Future<List<_i7.DocumentCrdtOperation>> getOperationsSince(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId,
+    _i2.UuidValue documentId,
     String sinceHlc, {
     required int limit,
   }) async {
@@ -632,7 +632,7 @@ class _DocumentCollaborationEndpoint {
 
   _i3.Future<_i8.Document> submitEdit(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId,
+    _i2.UuidValue documentId,
     String sessionId,
     String fieldUpdatesJson,
   ) async {
@@ -669,7 +669,7 @@ class _DocumentCollaborationEndpoint {
 
   _i3.Future<List<String>> getActiveEditors(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId,
+    _i2.UuidValue documentId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -700,7 +700,7 @@ class _DocumentCollaborationEndpoint {
 
   _i3.Future<String?> getCurrentHlc(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId,
+    _i2.UuidValue documentId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -731,7 +731,7 @@ class _DocumentCollaborationEndpoint {
 
   _i3.Future<int> getOperationCount(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId,
+    _i2.UuidValue documentId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -762,7 +762,7 @@ class _DocumentCollaborationEndpoint {
 
   _i3.Future<void> compactOperations(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId,
+    _i2.UuidValue documentId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -843,7 +843,7 @@ class _DocumentEndpoint {
 
   _i3.Future<_i8.Document?> getDocument(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId,
+    _i2.UuidValue documentId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -977,7 +977,7 @@ class _DocumentEndpoint {
 
   _i3.Future<_i8.Document> updateDocumentData(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId,
+    _i2.UuidValue documentId,
     String updatesJson, {
     String? sessionId,
   }) async {
@@ -1014,7 +1014,7 @@ class _DocumentEndpoint {
 
   _i3.Future<_i8.Document?> updateDocument(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId, {
+    _i2.UuidValue documentId, {
     String? title,
     String? slug,
     bool? isDefault,
@@ -1054,7 +1054,7 @@ class _DocumentEndpoint {
   _i3.Future<_i8.Document> setDefaultDocument(
     _i1.TestSessionBuilder sessionBuilder,
     String documentTypeSlug,
-    int documentId,
+    _i2.UuidValue documentId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1088,7 +1088,7 @@ class _DocumentEndpoint {
 
   _i3.Future<bool> deleteDocument(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId,
+    _i2.UuidValue documentId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1184,7 +1184,7 @@ class _DocumentEndpoint {
 
   _i3.Future<_i10.DocumentVersionListWithOperations> getDocumentVersions(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId, {
+    _i2.UuidValue documentId, {
     required int limit,
     required int offset,
     required bool includeOperations,
@@ -1223,7 +1223,7 @@ class _DocumentEndpoint {
 
   _i3.Future<_i11.DocumentVersion?> getDocumentVersion(
     _i1.TestSessionBuilder sessionBuilder,
-    int versionId,
+    _i2.UuidValue versionId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1254,7 +1254,7 @@ class _DocumentEndpoint {
 
   _i3.Future<String?> getDocumentVersionData(
     _i1.TestSessionBuilder sessionBuilder,
-    int versionId,
+    _i2.UuidValue versionId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1285,7 +1285,7 @@ class _DocumentEndpoint {
 
   _i3.Future<_i11.DocumentVersion> createDocumentVersion(
     _i1.TestSessionBuilder sessionBuilder,
-    int documentId, {
+    _i2.UuidValue documentId, {
     required _i12.DocumentVersionStatus status,
     String? changeLog,
   }) async {
@@ -1322,7 +1322,7 @@ class _DocumentEndpoint {
 
   _i3.Future<_i11.DocumentVersion?> publishDocumentVersion(
     _i1.TestSessionBuilder sessionBuilder,
-    int versionId,
+    _i2.UuidValue versionId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1353,7 +1353,7 @@ class _DocumentEndpoint {
 
   _i3.Future<_i11.DocumentVersion?> archiveDocumentVersion(
     _i1.TestSessionBuilder sessionBuilder,
-    int versionId,
+    _i2.UuidValue versionId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1384,7 +1384,7 @@ class _DocumentEndpoint {
 
   _i3.Future<bool> deleteDocumentVersion(
     _i1.TestSessionBuilder sessionBuilder,
-    int versionId,
+    _i2.UuidValue versionId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1415,7 +1415,7 @@ class _DocumentEndpoint {
 
   _i3.Future<int> getDocumentCount(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int projectId,
+    required _i2.UuidValue projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2102,7 +2102,7 @@ class _MemberEndpoint {
 
   _i3.Future<List<_i16.User>> listMembers(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int clientId,
+    required _i2.UuidValue clientId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2133,7 +2133,7 @@ class _MemberEndpoint {
 
   _i3.Future<_i16.User> inviteMember(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int clientId,
+    required _i2.UuidValue clientId,
     required String email,
     required _i17.ClientRole role,
   }) async {
@@ -2170,8 +2170,8 @@ class _MemberEndpoint {
 
   _i3.Future<_i16.User> updateMemberRole(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int clientId,
-    required int userId,
+    required _i2.UuidValue clientId,
+    required _i2.UuidValue userId,
     required _i17.ClientRole role,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2207,8 +2207,8 @@ class _MemberEndpoint {
 
   _i3.Future<void> removeMember(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int clientId,
-    required int userId,
+    required _i2.UuidValue clientId,
+    required _i2.UuidValue userId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2401,7 +2401,7 @@ class _ProjectEndpoint {
 
   _i3.Future<_i20.Project?> getProject(
     _i1.TestSessionBuilder sessionBuilder,
-    int projectId,
+    _i2.UuidValue projectId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2471,7 +2471,7 @@ class _ProjectEndpoint {
 
   _i3.Future<_i20.Project?> updateProject(
     _i1.TestSessionBuilder sessionBuilder,
-    int projectId, {
+    _i2.UuidValue projectId, {
     String? name,
     String? description,
     bool? isActive,
@@ -2512,7 +2512,7 @@ class _ProjectEndpoint {
 
   _i3.Future<bool> deleteProject(
     _i1.TestSessionBuilder sessionBuilder,
-    int projectId,
+    _i2.UuidValue projectId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2589,7 +2589,7 @@ class _ProjectMemberEndpoint {
 
   _i3.Future<List<_i22.ProjectMember>> listProjectMembers(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int projectId,
+    required _i2.UuidValue projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2620,8 +2620,8 @@ class _ProjectMemberEndpoint {
 
   _i3.Future<_i22.ProjectMember> addProjectMember(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int projectId,
-    required int userId,
+    required _i2.UuidValue projectId,
+    required _i2.UuidValue userId,
     required _i23.ProjectRole role,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2657,8 +2657,8 @@ class _ProjectMemberEndpoint {
 
   _i3.Future<_i22.ProjectMember> updateProjectMemberRole(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int projectId,
-    required int userId,
+    required _i2.UuidValue projectId,
+    required _i2.UuidValue userId,
     required _i23.ProjectRole role,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2694,8 +2694,8 @@ class _ProjectMemberEndpoint {
 
   _i3.Future<void> removeProjectMember(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int projectId,
-    required int userId,
+    required _i2.UuidValue projectId,
+    required _i2.UuidValue userId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2991,7 +2991,7 @@ class _UserEndpoint {
 
   _i3.Future<_i16.User?> getCurrentUser(
     _i1.TestSessionBuilder sessionBuilder, {
-    int? clientId,
+    _i2.UuidValue? clientId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -3022,7 +3022,7 @@ class _UserEndpoint {
 
   _i3.Future<int> getUserCount(
     _i1.TestSessionBuilder sessionBuilder, {
-    required int clientId,
+    required _i2.UuidValue clientId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
