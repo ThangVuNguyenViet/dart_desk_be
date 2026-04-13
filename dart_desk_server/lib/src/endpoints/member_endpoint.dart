@@ -63,7 +63,7 @@ class MemberEndpoint extends Endpoint {
       );
     }
 
-    return User.db.insertRow(
+    final invited = await User.db.insertRow(
       session,
       User(
         clientId: clientId,
@@ -72,6 +72,8 @@ class MemberEndpoint extends Endpoint {
         isActive: true,
       ),
     );
+    session.log('Invited Member id=${invited.id} clientId=$clientId role=$role', level: LogLevel.info);
+    return invited;
   }
 
   Future<User> updateMemberRole(
@@ -104,6 +106,7 @@ class MemberEndpoint extends Endpoint {
 
     final updated = target.copyWith(role: role, updatedAt: DateTime.now());
     await User.db.updateRow(session, updated);
+    session.log('Updated Member id=$userId clientId=$clientId role=$role', level: LogLevel.info);
     return updated;
   }
 
@@ -151,5 +154,6 @@ class MemberEndpoint extends Endpoint {
     for (final m in memberships) {
       await ProjectMember.db.deleteRow(session, m);
     }
+    session.log('Removed Member id=$userId clientId=$clientId', level: LogLevel.info);
   }
 }

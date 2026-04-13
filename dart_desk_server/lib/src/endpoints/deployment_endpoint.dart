@@ -80,7 +80,9 @@ class DeploymentEndpoint extends Endpoint {
       status: DeploymentStatus.active,
       updatedAt: DateTime.now(),
     );
-    return await Deployment.db.updateRow(session, activated);
+    final result = await Deployment.db.updateRow(session, activated);
+    session.log('Activated Deployment projectSlug=$projectSlug version=$version', level: LogLevel.info);
+    return result;
   }
 
   /// Delete a deployment version.
@@ -105,6 +107,7 @@ class DeploymentEndpoint extends Endpoint {
     }
 
     await Deployment.db.deleteRow(session, deployment);
+    session.log('Deleted Deployment projectSlug=$projectSlug version=$version', level: LogLevel.info);
     return true;
   }
 

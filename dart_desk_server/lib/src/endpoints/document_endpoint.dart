@@ -146,6 +146,7 @@ class DocumentEndpoint extends Endpoint {
     }
 
     final created = await Document.db.insertRow(session, document);
+    session.log('Created Document id=${created.id} type=$documentType', level: LogLevel.info);
 
     // Initialize CRDT for this document
     if (created.id != null) {
@@ -199,13 +200,15 @@ class DocumentEndpoint extends Endpoint {
     final editSessionId = sessionId ?? 'user-${auth.user?.id}';
 
     // Apply CRDT operations
-    return await session.crdtService.applyOperations(
+    final doc = await session.crdtService.applyOperations(
       session,
       documentId,
       updates,
       editSessionId,
       cmsUserId: auth.user?.id,
     );
+    session.log('Updated DocumentData id=$documentId', level: LogLevel.info);
+    return doc;
   }
 
   /// Update document metadata (title, slug, isDefault)
@@ -240,6 +243,7 @@ class DocumentEndpoint extends Endpoint {
     );
 
     await Document.db.updateRow(session, updated);
+    session.log('Updated Document id=$documentId', level: LogLevel.info);
     return updated;
   }
 
@@ -271,7 +275,7 @@ class DocumentEndpoint extends Endpoint {
           t.deletedAt.equals(null),
     );
 
-    return await session.db.transaction<Document>((transaction) async {
+    final result = await session.db.transaction<Document>((transaction) async {
       // Unset old default (skip if it's already the target document)
       if (currentDefault != null && currentDefault.id != documentId) {
         await Document.db.updateRow(
@@ -286,6 +290,8 @@ class DocumentEndpoint extends Endpoint {
       await Document.db.updateRow(session, updated, transaction: transaction);
       return updated;
     });
+    session.log('Set default Document id=$documentId type=$documentTypeSlug', level: LogLevel.info);
+    return result;
   }
 
   /// Delete a document (soft delete)
@@ -320,6 +326,7 @@ class DocumentEndpoint extends Endpoint {
       v.deletedAt = now;
       await DocumentVersion.db.updateRow(session, v);
     }
+    session.log('Soft-deleted Document id=$documentId', level: LogLevel.info);
     return true;
   }
 
@@ -608,6 +615,7 @@ class DocumentEndpoint extends Endpoint {
     );
 
     await DocumentVersion.db.updateRow(session, updated);
+    session.log('Published DocumentVersion id=$versionId documentId=${existing.documentId}', level: LogLevel.info);
 
     // Sync publishedAt to the parent document for fast public reads
     final document = await Document.db.findById(session, existing.documentId);
@@ -640,6 +648,7 @@ class DocumentEndpoint extends Endpoint {
     );
 
     await DocumentVersion.db.updateRow(session, updated);
+    session.log('Archived DocumentVersion id=$versionId documentId=${existing.documentId}', level: LogLevel.info);
 
     // Check if any published versions remain for this document
     final publishedCount = await DocumentVersion.db.count(
@@ -671,6 +680,7 @@ class DocumentEndpoint extends Endpoint {
     if (existing == null || existing.deletedAt != null) return false;
     existing.deletedAt = DateTime.now();
     await DocumentVersion.db.updateRow(session, existing);
+    session.log('Soft-deleted DocumentVersion id=$versionId', level: LogLevel.info);
     return true;
   }
 

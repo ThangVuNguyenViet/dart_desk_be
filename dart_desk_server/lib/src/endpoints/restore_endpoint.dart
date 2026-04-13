@@ -38,6 +38,7 @@ class RestoreEndpoint extends Endpoint {
       v.deletedAt = null;
       await DocumentVersion.db.updateRow(session, v);
     }
+    session.log('Restored Document id=$documentId', level: LogLevel.info);
 
     return doc;
   }
@@ -82,6 +83,7 @@ class RestoreEndpoint extends Endpoint {
         await DocumentVersion.db.updateRow(session, v);
       }
     }
+    session.log('Restored Project id=$projectId', level: LogLevel.info);
 
     return project;
   }
@@ -106,6 +108,7 @@ class RestoreEndpoint extends Endpoint {
     user.isActive = true;
     user.deletedAt = null;
     await User.db.updateRow(session, user);
+    session.log('Restored User id=$userId', level: LogLevel.info);
 
     return user;
   }

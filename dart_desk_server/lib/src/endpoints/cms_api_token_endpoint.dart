@@ -80,6 +80,7 @@ class ApiTokenEndpoint extends Endpoint {
       }
 
       final inserted = await ApiToken.db.insertRow(session, token);
+      session.log('Created ApiToken id=${inserted.id} projectId=$projectId role=$role', level: LogLevel.info);
       return ApiTokenWithValue(token: inserted, plaintextToken: rawToken);
     }
 
@@ -151,6 +152,7 @@ class ApiTokenEndpoint extends Endpoint {
       );
 
       final result = await ApiToken.db.updateRow(session, updated);
+      session.log('Regenerated ApiToken id=$tokenId projectId=$projectId', level: LogLevel.info);
       return ApiTokenWithValue(token: result, plaintextToken: rawToken);
     }
 
@@ -173,6 +175,7 @@ class ApiTokenEndpoint extends Endpoint {
     }
 
     await ApiToken.db.deleteRow(session, token);
+    session.log('Deleted ApiToken id=$tokenId projectId=$projectId', level: LogLevel.info);
     return true;
   }
 

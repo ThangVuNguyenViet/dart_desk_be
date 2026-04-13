@@ -117,6 +117,7 @@ class ProjectEndpoint extends Endpoint {
     );
 
     final inserted = await Project.db.insertRow(session, project);
+    session.log('Created Project id=${inserted.id} slug=$slug', level: LogLevel.info);
     return inserted;
   }
 
@@ -153,6 +154,7 @@ class ProjectEndpoint extends Endpoint {
     );
 
     await Project.db.updateRow(session, updated);
+    session.log('Updated Project id=$projectId', level: LogLevel.info);
     return updated;
   }
 
@@ -194,6 +196,7 @@ class ProjectEndpoint extends Endpoint {
         await DocumentVersion.db.updateRow(session, v);
       }
     }
+    session.log('Soft-deleted Project id=$projectId', level: LogLevel.info);
     return true;
   }
 
@@ -253,7 +256,7 @@ class ProjectEndpoint extends Endpoint {
       // Profile lookup failed; use identifier as fallback
     }
 
-    return session.db.transaction((transaction) async {
+    final client = await session.db.transaction((transaction) async {
       final client = await CmsClient.db.insertRow(
         session,
         CmsClient(
@@ -283,6 +286,8 @@ class ProjectEndpoint extends Endpoint {
 
       return client;
     });
+    session.log('Created CmsClient id=${client.id} slug=$clientSlug with owner', level: LogLevel.info);
+    return client;
   }
 
   /// Reserved slugs that cannot be used as project slugs.
