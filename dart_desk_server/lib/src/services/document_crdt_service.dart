@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:crdt/crdt.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../generated/protocol.dart';
 
@@ -15,9 +16,9 @@ class DocumentCrdtService {
   /// Initialize CRDT operations for a new document from initial data
   Future<void> initializeCrdt(
     Session session,
-    int documentId,
+    UuidValue documentId,
     Map<String, dynamic> initialData, {
-    int? cmsUserId,
+    UuidValue? cmsUserId,
   }) async {
     final userId = cmsUserId;
 
@@ -57,10 +58,10 @@ class DocumentCrdtService {
   /// Apply partial updates (only changed fields) and merge with existing state
   Future<Document> applyOperations(
     Session session,
-    int documentId,
+    UuidValue documentId,
     Map<String, dynamic> updates,
     String sessionId, {
-    int? cmsUserId,
+    UuidValue? cmsUserId,
   }) async {
     final userId = cmsUserId;
 
@@ -129,11 +130,11 @@ class DocumentCrdtService {
   /// addition to put operations for new/changed values.
   Future<Document> applyMigrationResult(
     Session session,
-    int documentId,
+    UuidValue documentId,
     Map<String, dynamic> oldData,
     Map<String, dynamic> newData,
     String sessionId, {
-    int? cmsUserId,
+    UuidValue? cmsUserId,
   }) async {
     final doc = await Document.db.findById(session, documentId);
     if (doc == null) {
@@ -199,7 +200,7 @@ class DocumentCrdtService {
   /// Get current merged state from all CRDT operations
   Future<Map<String, dynamic>> getCurrentState(
     Session session,
-    int documentId,
+    UuidValue documentId,
   ) async {
     // Check for recent snapshot to optimize reconstruction
     final snapshots = await DocumentCrdtSnapshot.db.find(
@@ -251,7 +252,7 @@ class DocumentCrdtService {
   /// Reconstruct document state at a specific HLC timestamp (for version history)
   Future<Map<String, dynamic>> getStateAtHlc(
     Session session,
-    int documentId,
+    UuidValue documentId,
     String targetHlc,
   ) async {
     // Optimization: if targetHlc matches current document HLC, return cached data
@@ -301,7 +302,7 @@ class DocumentCrdtService {
   /// Compact operations into a snapshot when log grows too large
   Future<void> compactOperations(
     Session session,
-    int documentId, {
+    UuidValue documentId, {
     int threshold = 1000,
   }) async {
     final opCount = await getOperationCount(session, documentId);
@@ -368,13 +369,13 @@ class DocumentCrdtService {
   }
 
   /// Get current HLC timestamp for document
-  Future<String?> getCurrentHlc(Session session, int documentId) async {
+  Future<String?> getCurrentHlc(Session session, UuidValue documentId) async {
     final doc = await Document.db.findById(session, documentId);
     return doc?.crdtHlc;
   }
 
   /// Get total operation count for document
-  Future<int> getOperationCount(Session session, int documentId) async {
+  Future<int> getOperationCount(Session session, UuidValue documentId) async {
     final result = await DocumentCrdtOperation.db.count(
       session,
       where: (t) => t.documentId.equals(documentId),
@@ -390,7 +391,7 @@ class DocumentCrdtService {
   /// Returns operations where: fromHlc < hlc <= toHlc
   Future<List<DocumentCrdtOperation>> getOperationsBetweenHlc(
     Session session,
-    int documentId,
+    UuidValue documentId,
     String? fromHlc,
     String toHlc,
   ) async {

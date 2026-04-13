@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 /// Represents a single migration operation.
 class MigrationOperation {
   final String type; // 'renameField', 'deleteField', 'setField'
@@ -37,7 +39,7 @@ class MigrationOperation {
 
 /// Result of applying operations to a single document.
 class DocumentMigrationResult {
-  final int documentId;
+  final UuidValue documentId;
   final String title;
   final String status; // 'modified' or 'skipped'
   final List<String> changes;
@@ -67,7 +69,7 @@ class DocumentMigrationResult {
 class MigrationService {
   /// Apply a list of operations to a document's data.
   DocumentMigrationResult applyOperations({
-    required int documentId,
+    required UuidValue documentId,
     required String title,
     required Map<String, dynamic> data,
     required List<MigrationOperation> operations,
