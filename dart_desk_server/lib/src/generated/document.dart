@@ -29,6 +29,7 @@ abstract class Document
     DateTime? updatedAt,
     this.createdByUserId,
     this.updatedByUserId,
+    this.deletedAt,
   }) : id = id ?? const _i1.Uuid().v4obj(),
        isDefault = isDefault ?? false,
        createdAt = createdAt ?? DateTime.now(),
@@ -49,6 +50,7 @@ abstract class Document
     DateTime? updatedAt,
     _i1.UuidValue? createdByUserId,
     _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   }) = _DocumentImpl;
 
   factory Document.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -89,6 +91,9 @@ abstract class Document
           : _i1.UuidValueJsonExtension.fromJson(
               jsonSerialization['updatedByUserId'],
             ),
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
     );
   }
 
@@ -125,6 +130,8 @@ abstract class Document
 
   _i1.UuidValue? updatedByUserId;
 
+  DateTime? deletedAt;
+
   @override
   _i1.Table<_i1.UuidValue> get table => t;
 
@@ -146,6 +153,7 @@ abstract class Document
     DateTime? updatedAt,
     _i1.UuidValue? createdByUserId,
     _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -165,6 +173,7 @@ abstract class Document
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
       if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
       if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -186,6 +195,7 @@ abstract class Document
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
       if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
       if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -237,6 +247,7 @@ class _DocumentImpl extends Document {
     DateTime? updatedAt,
     _i1.UuidValue? createdByUserId,
     _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   }) : super._(
          id: id,
          projectId: projectId,
@@ -252,6 +263,7 @@ class _DocumentImpl extends Document {
          updatedAt: updatedAt,
          createdByUserId: createdByUserId,
          updatedByUserId: updatedByUserId,
+         deletedAt: deletedAt,
        );
 
   /// Returns a shallow copy of this [Document]
@@ -273,6 +285,7 @@ class _DocumentImpl extends Document {
     Object? updatedAt = _Undefined,
     Object? createdByUserId = _Undefined,
     Object? updatedByUserId = _Undefined,
+    Object? deletedAt = _Undefined,
   }) {
     return Document(
       id: id ?? this.id,
@@ -293,6 +306,7 @@ class _DocumentImpl extends Document {
       updatedByUserId: updatedByUserId is _i1.UuidValue?
           ? updatedByUserId
           : this.updatedByUserId,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
     );
   }
 }
@@ -373,6 +387,12 @@ class DocumentUpdateTable extends _i1.UpdateTable<DocumentTable> {
     table.updatedByUserId,
     value,
   );
+
+  _i1.ColumnValue<DateTime, DateTime> deletedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.deletedAt,
+        value,
+      );
 }
 
 class DocumentTable extends _i1.Table<_i1.UuidValue> {
@@ -433,6 +453,10 @@ class DocumentTable extends _i1.Table<_i1.UuidValue> {
       'updatedByUserId',
       this,
     );
+    deletedAt = _i1.ColumnDateTime(
+      'deletedAt',
+      this,
+    );
   }
 
   late final DocumentUpdateTable updateTable;
@@ -463,6 +487,8 @@ class DocumentTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnUuid updatedByUserId;
 
+  late final _i1.ColumnDateTime deletedAt;
+
   @override
   List<_i1.Column> get columns => [
     id,
@@ -479,6 +505,7 @@ class DocumentTable extends _i1.Table<_i1.UuidValue> {
     updatedAt,
     createdByUserId,
     updatedByUserId,
+    deletedAt,
   ];
 }
 

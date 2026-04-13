@@ -56,7 +56,9 @@ class MigrationEndpoint extends Endpoint {
     final documents = await Document.db.find(
       session,
       where: (t) =>
-          t.documentType.equals(documentType) & t.projectId.equals(projectId),
+          t.documentType.equals(documentType) &
+          t.projectId.equals(projectId) &
+          t.deletedAt.equals(null),
     );
 
     // Apply migration operations to each document

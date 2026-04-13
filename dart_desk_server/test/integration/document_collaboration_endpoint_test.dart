@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 import 'test_tools/serverpod_test_tools.dart';
@@ -16,7 +17,7 @@ void main() {
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      await factory.ensureTestUser();
+      await factory.ensureTestUser(role: ClientRole.admin);
     });
 
     group('submitEdit', () {
@@ -126,13 +127,14 @@ void main() {
         expect(firstEditor, contains('lastEdit'));
       });
 
-      test('returns empty list for nonexistent document', () async {
-        final editors = await endpoints.documentCollaboration.getActiveEditors(
-          sessionBuilder,
-          UuidValue.fromString('00000000-0000-0000-0000-000000000000'),
+      test('throws 410 for nonexistent document', () async {
+        await expectLater(
+          () => endpoints.documentCollaboration.getActiveEditors(
+            sessionBuilder,
+            UuidValue.fromString('00000000-0000-0000-0000-000000000000'),
+          ),
+          throwsA(isA<ApiException>()),
         );
-
-        expect(editors, isEmpty);
       });
     });
 

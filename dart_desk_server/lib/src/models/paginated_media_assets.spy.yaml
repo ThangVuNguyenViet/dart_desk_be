@@ -1,0 +1,7 @@
+class: PaginatedMediaAssets
+fields:
+  items: List<MediaAsset>
+  total: int
+  limit: int
+  offset: int
+  hasMore: bool

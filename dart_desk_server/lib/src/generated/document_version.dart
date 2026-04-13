@@ -28,6 +28,8 @@ abstract class DocumentVersion
     this.archivedAt,
     DateTime? createdAt,
     this.createdByUserId,
+    this.updatedByUserId,
+    this.deletedAt,
   }) : id = id ?? const _i1.Uuid().v4obj(),
        operationCount = operationCount ?? 0,
        createdAt = createdAt ?? DateTime.now();
@@ -45,6 +47,8 @@ abstract class DocumentVersion
     DateTime? archivedAt,
     DateTime? createdAt,
     _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   }) = _DocumentVersionImpl;
 
   factory DocumentVersion.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -83,6 +87,14 @@ abstract class DocumentVersion
           : _i1.UuidValueJsonExtension.fromJson(
               jsonSerialization['createdByUserId'],
             ),
+      updatedByUserId: jsonSerialization['updatedByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['updatedByUserId'],
+            ),
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
     );
   }
 
@@ -115,6 +127,10 @@ abstract class DocumentVersion
 
   _i1.UuidValue? createdByUserId;
 
+  _i1.UuidValue? updatedByUserId;
+
+  DateTime? deletedAt;
+
   @override
   _i1.Table<_i1.UuidValue> get table => t;
 
@@ -134,6 +150,8 @@ abstract class DocumentVersion
     DateTime? archivedAt,
     DateTime? createdAt,
     _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -151,6 +169,8 @@ abstract class DocumentVersion
       if (archivedAt != null) 'archivedAt': archivedAt?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -170,6 +190,8 @@ abstract class DocumentVersion
       if (archivedAt != null) 'archivedAt': archivedAt?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -219,6 +241,8 @@ class _DocumentVersionImpl extends DocumentVersion {
     DateTime? archivedAt,
     DateTime? createdAt,
     _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   }) : super._(
          id: id,
          documentId: documentId,
@@ -232,6 +256,8 @@ class _DocumentVersionImpl extends DocumentVersion {
          archivedAt: archivedAt,
          createdAt: createdAt,
          createdByUserId: createdByUserId,
+         updatedByUserId: updatedByUserId,
+         deletedAt: deletedAt,
        );
 
   /// Returns a shallow copy of this [DocumentVersion]
@@ -251,6 +277,8 @@ class _DocumentVersionImpl extends DocumentVersion {
     Object? archivedAt = _Undefined,
     Object? createdAt = _Undefined,
     Object? createdByUserId = _Undefined,
+    Object? updatedByUserId = _Undefined,
+    Object? deletedAt = _Undefined,
   }) {
     return DocumentVersion(
       id: id ?? this.id,
@@ -267,6 +295,10 @@ class _DocumentVersionImpl extends DocumentVersion {
       createdByUserId: createdByUserId is _i1.UuidValue?
           ? createdByUserId
           : this.createdByUserId,
+      updatedByUserId: updatedByUserId is _i1.UuidValue?
+          ? updatedByUserId
+          : this.updatedByUserId,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
     );
   }
 }
@@ -338,6 +370,19 @@ class DocumentVersionUpdateTable extends _i1.UpdateTable<DocumentVersionTable> {
     table.createdByUserId,
     value,
   );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> updatedByUserId(
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
+    table.updatedByUserId,
+    value,
+  );
+
+  _i1.ColumnValue<DateTime, DateTime> deletedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.deletedAt,
+        value,
+      );
 }
 
 class DocumentVersionTable extends _i1.Table<_i1.UuidValue> {
@@ -391,6 +436,14 @@ class DocumentVersionTable extends _i1.Table<_i1.UuidValue> {
       'createdByUserId',
       this,
     );
+    updatedByUserId = _i1.ColumnUuid(
+      'updatedByUserId',
+      this,
+    );
+    deletedAt = _i1.ColumnDateTime(
+      'deletedAt',
+      this,
+    );
   }
 
   late final DocumentVersionUpdateTable updateTable;
@@ -417,6 +470,10 @@ class DocumentVersionTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnUuid createdByUserId;
 
+  late final _i1.ColumnUuid updatedByUserId;
+
+  late final _i1.ColumnDateTime deletedAt;
+
   @override
   List<_i1.Column> get columns => [
     id,
@@ -431,6 +488,8 @@ class DocumentVersionTable extends _i1.Table<_i1.UuidValue> {
     archivedAt,
     createdAt,
     createdByUserId,
+    updatedByUserId,
+    deletedAt,
   ];
 }
 

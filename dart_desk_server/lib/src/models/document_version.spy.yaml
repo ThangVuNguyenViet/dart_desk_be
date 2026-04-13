@@ -13,6 +13,8 @@ fields:
   archivedAt: DateTime?
   createdAt: DateTime?, default=now
   createdByUserId: UuidValue?, relation(parent=users, onDelete=SetNull)
+  updatedByUserId: UuidValue?, relation(parent=users, onDelete=SetNull)
+  deletedAt: DateTime?
 indexes:
   document_versions_document_id_idx:
     fields: documentId

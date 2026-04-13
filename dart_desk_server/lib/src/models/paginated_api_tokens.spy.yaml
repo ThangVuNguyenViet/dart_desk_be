@@ -1,0 +1,7 @@
+class: PaginatedApiTokens
+fields:
+  items: List<ApiToken>
+  total: int
+  limit: int
+  offset: int
+  hasMore: bool

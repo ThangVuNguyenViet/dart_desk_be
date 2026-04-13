@@ -1,0 +1,7 @@
+class: PaginatedProjects
+fields:
+  items: List<Project>
+  total: int
+  limit: int
+  offset: int
+  hasMore: bool

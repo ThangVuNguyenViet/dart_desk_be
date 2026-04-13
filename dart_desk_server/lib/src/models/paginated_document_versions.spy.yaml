@@ -1,0 +1,7 @@
+class: PaginatedDocumentVersions
+fields:
+  items: List<DocumentVersion>
+  total: int
+  limit: int
+  offset: int
+  hasMore: bool

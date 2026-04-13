@@ -19,6 +19,7 @@ fields:
   locationLat: double?
   locationLng: double?
   uploadedByUserId: UuidValue?
+  updatedByUserId: UuidValue?
   createdAt: DateTime?, default=now
   metadataStatus: MediaAssetMetadataStatus
 indexes:

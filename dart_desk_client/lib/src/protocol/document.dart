@@ -28,6 +28,7 @@ abstract class Document implements _i1.SerializableModel {
     DateTime? updatedAt,
     this.createdByUserId,
     this.updatedByUserId,
+    this.deletedAt,
   }) : id = id ?? const _i1.Uuid().v4obj(),
        isDefault = isDefault ?? false,
        createdAt = createdAt ?? DateTime.now(),
@@ -48,6 +49,7 @@ abstract class Document implements _i1.SerializableModel {
     DateTime? updatedAt,
     _i1.UuidValue? createdByUserId,
     _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   }) = _DocumentImpl;
 
   factory Document.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -88,6 +90,9 @@ abstract class Document implements _i1.SerializableModel {
           : _i1.UuidValueJsonExtension.fromJson(
               jsonSerialization['updatedByUserId'],
             ),
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
     );
   }
 
@@ -120,6 +125,8 @@ abstract class Document implements _i1.SerializableModel {
 
   _i1.UuidValue? updatedByUserId;
 
+  DateTime? deletedAt;
+
   /// Returns a shallow copy of this [Document]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -138,6 +145,7 @@ abstract class Document implements _i1.SerializableModel {
     DateTime? updatedAt,
     _i1.UuidValue? createdByUserId,
     _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -157,6 +165,7 @@ abstract class Document implements _i1.SerializableModel {
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
       if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
       if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -184,6 +193,7 @@ class _DocumentImpl extends Document {
     DateTime? updatedAt,
     _i1.UuidValue? createdByUserId,
     _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   }) : super._(
          id: id,
          projectId: projectId,
@@ -199,6 +209,7 @@ class _DocumentImpl extends Document {
          updatedAt: updatedAt,
          createdByUserId: createdByUserId,
          updatedByUserId: updatedByUserId,
+         deletedAt: deletedAt,
        );
 
   /// Returns a shallow copy of this [Document]
@@ -220,6 +231,7 @@ class _DocumentImpl extends Document {
     Object? updatedAt = _Undefined,
     Object? createdByUserId = _Undefined,
     Object? updatedByUserId = _Undefined,
+    Object? deletedAt = _Undefined,
   }) {
     return Document(
       id: id ?? this.id,
@@ -240,6 +252,7 @@ class _DocumentImpl extends Document {
       updatedByUserId: updatedByUserId is _i1.UuidValue?
           ? updatedByUserId
           : this.updatedByUserId,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
     );
   }
 }

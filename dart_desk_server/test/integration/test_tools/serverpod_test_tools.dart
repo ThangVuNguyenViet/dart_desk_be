@@ -22,7 +22,8 @@ import 'package:dart_desk_server/src/generated/deployment.dart' as _i7;
 import 'package:dart_desk_server/src/generated/document_crdt_operation.dart'
     as _i8;
 import 'package:dart_desk_server/src/generated/document.dart' as _i9;
-import 'package:dart_desk_server/src/generated/document_list.dart' as _i10;
+import 'package:dart_desk_server/src/generated/paginated_documents.dart'
+    as _i10;
 import 'package:dart_desk_server/src/generated/document_version_list_with_operations.dart'
     as _i11;
 import 'package:dart_desk_server/src/generated/document_version.dart' as _i12;
@@ -35,7 +36,7 @@ import 'dart:typed_data' as _i16;
 import 'package:dart_desk_server/src/generated/user.dart' as _i17;
 import 'package:dart_desk_server/src/generated/client_role.dart' as _i18;
 import 'package:dart_desk_server/src/generated/migration_history.dart' as _i19;
-import 'package:dart_desk_server/src/generated/project_list.dart' as _i20;
+import 'package:dart_desk_server/src/generated/paginated_projects.dart' as _i20;
 import 'package:dart_desk_server/src/generated/project.dart' as _i21;
 import 'package:dart_desk_server/src/generated/cms_client.dart' as _i22;
 import 'package:dart_desk_server/src/generated/project_member.dart' as _i23;
@@ -162,6 +163,8 @@ class TestEndpoints {
 
   late final _GoogleIdpEndpoint googleIdp;
 
+  late final _HealthEndpoint health;
+
   late final _MediaEndpoint media;
 
   late final _MemberEndpoint member;
@@ -175,6 +178,8 @@ class TestEndpoints {
   late final _PublicContentEndpoint publicContent;
 
   late final _RefreshJwtTokensEndpoint refreshJwtTokens;
+
+  late final _RestoreEndpoint restore;
 
   late final _StudioConfigEndpoint studioConfig;
 
@@ -216,6 +221,10 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
+    health = _HealthEndpoint(
+      endpoints,
+      serializationManager,
+    );
     media = _MediaEndpoint(
       endpoints,
       serializationManager,
@@ -241,6 +250,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     refreshJwtTokens = _RefreshJwtTokensEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    restore = _RestoreEndpoint(
       endpoints,
       serializationManager,
     );
@@ -850,7 +863,7 @@ class _DocumentEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i10.DocumentList> getDocuments(
+  _i3.Future<_i10.PaginatedDocuments> getDocuments(
     _i1.TestSessionBuilder sessionBuilder,
     String documentType, {
     String? search,
@@ -881,7 +894,7 @@ class _DocumentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i10.DocumentList>);
+                as _i3.Future<_i10.PaginatedDocuments>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1843,6 +1856,45 @@ class _GoogleIdpEndpoint {
   }
 }
 
+class _HealthEndpoint {
+  _HealthEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> check(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'health',
+            method: 'check',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'health',
+          methodName: 'check',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _MediaEndpoint {
   _MediaEndpoint(
     this._endpointDispatch,
@@ -2379,7 +2431,7 @@ class _ProjectEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i20.ProjectList> getProjects(
+  _i3.Future<_i20.PaginatedProjects> getProjects(
     _i1.TestSessionBuilder sessionBuilder, {
     String? search,
     required int limit,
@@ -2408,7 +2460,7 @@ class _ProjectEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i20.ProjectList>);
+                as _i3.Future<_i20.PaginatedProjects>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2978,6 +3030,110 @@ class _RefreshJwtTokensEndpoint {
                   _localCallContext.arguments,
                 )
                 as _i3.Future<_i14.AuthSuccess>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _RestoreEndpoint {
+  _RestoreEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i9.Document> restoreDocument(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue documentId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'restore',
+            method: 'restoreDocument',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'restore',
+          methodName: 'restoreDocument',
+          parameters: _i1.testObjectToJson({'documentId': documentId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i9.Document>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i21.Project> restoreProject(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue projectId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'restore',
+            method: 'restoreProject',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'restore',
+          methodName: 'restoreProject',
+          parameters: _i1.testObjectToJson({'projectId': projectId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i21.Project>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i17.User> restoreUser(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue userId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'restore',
+            method: 'restoreUser',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'restore',
+          methodName: 'restoreUser',
+          parameters: _i1.testObjectToJson({'userId': userId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i17.User>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

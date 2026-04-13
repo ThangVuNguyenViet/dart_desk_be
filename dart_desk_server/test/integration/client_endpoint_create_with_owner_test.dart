@@ -56,7 +56,7 @@ void main() {
           where: (t) => t.clientId.equals(client.id),
         );
         expect(user, isNotNull);
-        expect(user!.role, equals('admin'));
+        expect(user!.role, equals(ClientRole.owner));
         expect(user.serverpodUserId, equals(userIdentifier));
         expect(user.isActive, isTrue);
       });

@@ -2,3 +2,4 @@ exception: ApiException
 fields:
   message: String
   code: int
+  errorCode: String?

@@ -1,0 +1,7 @@
+class: PaginatedDocuments
+fields:
+  items: List<Document>
+  total: int
+  limit: int
+  offset: int
+  hasMore: bool

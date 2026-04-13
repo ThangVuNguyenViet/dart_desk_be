@@ -1,6 +1,0 @@
-class: DocumentVersionList
-fields:
-  versions: List<protocol:DocumentVersion>
-  total: int
-  page: int
-  pageSize: int

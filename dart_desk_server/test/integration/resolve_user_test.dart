@@ -2,7 +2,7 @@ import 'package:dart_desk_server/src/auth/resolve_user.dart';
 import 'package:dart_desk_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
-import '../integration/test_tools/serverpod_test_tools.dart';
+import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod('resolveUser', (sessionBuilder, endpoints) {
@@ -31,7 +31,7 @@ void main() {
 
       final user = await resolveUser(authed);
       expect(user.email, equals('test@example.com'));
-      expect(user.role, equals('admin'));
+      expect(user.role, equals(ClientRole.admin));
     });
 
     test('throws when user record does not exist', () async {

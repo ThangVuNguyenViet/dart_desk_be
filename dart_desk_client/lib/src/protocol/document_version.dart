@@ -27,6 +27,8 @@ abstract class DocumentVersion implements _i1.SerializableModel {
     this.archivedAt,
     DateTime? createdAt,
     this.createdByUserId,
+    this.updatedByUserId,
+    this.deletedAt,
   }) : id = id ?? const _i1.Uuid().v4obj(),
        operationCount = operationCount ?? 0,
        createdAt = createdAt ?? DateTime.now();
@@ -44,6 +46,8 @@ abstract class DocumentVersion implements _i1.SerializableModel {
     DateTime? archivedAt,
     DateTime? createdAt,
     _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   }) = _DocumentVersionImpl;
 
   factory DocumentVersion.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -82,6 +86,14 @@ abstract class DocumentVersion implements _i1.SerializableModel {
           : _i1.UuidValueJsonExtension.fromJson(
               jsonSerialization['createdByUserId'],
             ),
+      updatedByUserId: jsonSerialization['updatedByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['updatedByUserId'],
+            ),
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
     );
   }
 
@@ -110,6 +122,10 @@ abstract class DocumentVersion implements _i1.SerializableModel {
 
   _i1.UuidValue? createdByUserId;
 
+  _i1.UuidValue? updatedByUserId;
+
+  DateTime? deletedAt;
+
   /// Returns a shallow copy of this [DocumentVersion]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -126,6 +142,8 @@ abstract class DocumentVersion implements _i1.SerializableModel {
     DateTime? archivedAt,
     DateTime? createdAt,
     _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -143,6 +161,8 @@ abstract class DocumentVersion implements _i1.SerializableModel {
       if (archivedAt != null) 'archivedAt': archivedAt?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -168,6 +188,8 @@ class _DocumentVersionImpl extends DocumentVersion {
     DateTime? archivedAt,
     DateTime? createdAt,
     _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   }) : super._(
          id: id,
          documentId: documentId,
@@ -181,6 +203,8 @@ class _DocumentVersionImpl extends DocumentVersion {
          archivedAt: archivedAt,
          createdAt: createdAt,
          createdByUserId: createdByUserId,
+         updatedByUserId: updatedByUserId,
+         deletedAt: deletedAt,
        );
 
   /// Returns a shallow copy of this [DocumentVersion]
@@ -200,6 +224,8 @@ class _DocumentVersionImpl extends DocumentVersion {
     Object? archivedAt = _Undefined,
     Object? createdAt = _Undefined,
     Object? createdByUserId = _Undefined,
+    Object? updatedByUserId = _Undefined,
+    Object? deletedAt = _Undefined,
   }) {
     return DocumentVersion(
       id: id ?? this.id,
@@ -216,6 +242,10 @@ class _DocumentVersionImpl extends DocumentVersion {
       createdByUserId: createdByUserId is _i1.UuidValue?
           ? createdByUserId
           : this.createdByUserId,
+      updatedByUserId: updatedByUserId is _i1.UuidValue?
+          ? updatedByUserId
+          : this.updatedByUserId,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
     );
   }
 }

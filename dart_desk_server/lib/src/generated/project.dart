@@ -24,6 +24,9 @@ abstract class Project
     this.settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    this.createdByUserId,
+    this.updatedByUserId,
+    this.deletedAt,
   }) : id = id ?? const _i1.Uuid().v4obj(),
        isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now(),
@@ -39,6 +42,9 @@ abstract class Project
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   }) = _ProjectImpl;
 
   factory Project.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -62,6 +68,19 @@ abstract class Project
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
+      createdByUserId: jsonSerialization['createdByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['createdByUserId'],
+            ),
+      updatedByUserId: jsonSerialization['updatedByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['updatedByUserId'],
+            ),
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
     );
   }
 
@@ -88,6 +107,12 @@ abstract class Project
 
   DateTime? updatedAt;
 
+  _i1.UuidValue? createdByUserId;
+
+  _i1.UuidValue? updatedByUserId;
+
+  DateTime? deletedAt;
+
   @override
   _i1.Table<_i1.UuidValue> get table => t;
 
@@ -104,6 +129,9 @@ abstract class Project
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -118,6 +146,9 @@ abstract class Project
       if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -134,6 +165,9 @@ abstract class Project
       if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
+      if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -180,6 +214,9 @@ class _ProjectImpl extends Project {
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    _i1.UuidValue? createdByUserId,
+    _i1.UuidValue? updatedByUserId,
+    DateTime? deletedAt,
   }) : super._(
          id: id,
          clientId: clientId,
@@ -190,6 +227,9 @@ class _ProjectImpl extends Project {
          settings: settings,
          createdAt: createdAt,
          updatedAt: updatedAt,
+         createdByUserId: createdByUserId,
+         updatedByUserId: updatedByUserId,
+         deletedAt: deletedAt,
        );
 
   /// Returns a shallow copy of this [Project]
@@ -206,6 +246,9 @@ class _ProjectImpl extends Project {
     Object? settings = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
+    Object? createdByUserId = _Undefined,
+    Object? updatedByUserId = _Undefined,
+    Object? deletedAt = _Undefined,
   }) {
     return Project(
       id: id ?? this.id,
@@ -217,6 +260,13 @@ class _ProjectImpl extends Project {
       settings: settings is String? ? settings : this.settings,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
+      createdByUserId: createdByUserId is _i1.UuidValue?
+          ? createdByUserId
+          : this.createdByUserId,
+      updatedByUserId: updatedByUserId is _i1.UuidValue?
+          ? updatedByUserId
+          : this.updatedByUserId,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
     );
   }
 }
@@ -266,6 +316,26 @@ class ProjectUpdateTable extends _i1.UpdateTable<ProjectTable> {
         table.updatedAt,
         value,
       );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> createdByUserId(
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
+    table.createdByUserId,
+    value,
+  );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> updatedByUserId(
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
+    table.updatedByUserId,
+    value,
+  );
+
+  _i1.ColumnValue<DateTime, DateTime> deletedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.deletedAt,
+        value,
+      );
 }
 
 class ProjectTable extends _i1.Table<_i1.UuidValue> {
@@ -306,6 +376,18 @@ class ProjectTable extends _i1.Table<_i1.UuidValue> {
       this,
       hasDefault: true,
     );
+    createdByUserId = _i1.ColumnUuid(
+      'createdByUserId',
+      this,
+    );
+    updatedByUserId = _i1.ColumnUuid(
+      'updatedByUserId',
+      this,
+    );
+    deletedAt = _i1.ColumnDateTime(
+      'deletedAt',
+      this,
+    );
   }
 
   late final ProjectUpdateTable updateTable;
@@ -326,6 +408,12 @@ class ProjectTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnDateTime updatedAt;
 
+  late final _i1.ColumnUuid createdByUserId;
+
+  late final _i1.ColumnUuid updatedByUserId;
+
+  late final _i1.ColumnDateTime deletedAt;
+
   @override
   List<_i1.Column> get columns => [
     id,
@@ -337,6 +425,9 @@ class ProjectTable extends _i1.Table<_i1.UuidValue> {
     settings,
     createdAt,
     updatedAt,
+    createdByUserId,
+    updatedByUserId,
+    deletedAt,
   ];
 }
 

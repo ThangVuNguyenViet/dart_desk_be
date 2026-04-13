@@ -30,6 +30,7 @@ void main() {
       await factory.ensureTestUser(
         userIdentifier: 'owner-1',
         clientId: TestDataFactory.testClientId,
+        role: ClientRole.owner,
       );
     });
 
@@ -60,7 +61,7 @@ void main() {
           limit: 20,
           offset: 0,
         );
-        expect(result.projects, isEmpty);
+        expect(result.items, isEmpty);
         expect(result.total, equals(0));
       });
 
@@ -74,7 +75,7 @@ void main() {
           offset: 0,
         );
         expect(result.total, equals(2));
-        expect(result.projects.length, equals(2));
+        expect(result.items.length, equals(2));
       });
 
       test('paginates correctly', () async {
@@ -87,10 +88,10 @@ void main() {
           limit: 2,
           offset: 0,
         );
-        expect(result.projects.length, equals(2));
+        expect(result.items.length, equals(2));
         expect(result.total, equals(5));
-        expect(result.page, equals(1));
-        expect(result.pageSize, equals(2));
+        expect(result.limit, equals(2));
+        expect(result.offset, equals(0));
       });
 
       test('filters by search term on name', () async {
@@ -102,8 +103,8 @@ void main() {
           limit: 20,
           offset: 0,
         );
-        expect(result.projects.length, equals(1));
-        expect(result.projects.first.name, startsWith('Alpha Unique App'));
+        expect(result.items.length, equals(1));
+        expect(result.items.first.name, startsWith('Alpha Unique App'));
       });
 
       test('filters by search term on slug', () async {
@@ -115,8 +116,8 @@ void main() {
           limit: 20,
           offset: 0,
         );
-        expect(result.projects.length, equals(1));
-        expect(result.projects.first.slug, startsWith('my-xuniquex-slug'));
+        expect(result.items.length, equals(1));
+        expect(result.items.first.slug, startsWith('my-xuniquex-slug'));
       });
     });
 
@@ -230,18 +231,20 @@ void main() {
     });
 
     group('deleteProject', () {
-      test('returns true and removes row', () async {
+      test('returns true and soft-deletes row', () async {
         final seeded = await seedProject();
         final result = await endpoints.project.deleteProject(
           authedSession(sessionBuilder),
           seeded.id,
         );
         expect(result, isTrue);
-        final gone = await Project.db.findById(
+        // Soft delete: row still exists in DB with deletedAt set
+        final row = await Project.db.findById(
           sessionBuilder.build(),
           seeded.id,
         );
-        expect(gone, isNull);
+        expect(row, isNotNull);
+        expect(row!.deletedAt, isNotNull);
       });
 
       test('returns false for nonexistent id', () async {

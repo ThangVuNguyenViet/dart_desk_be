@@ -18,6 +18,11 @@ class DocumentCollaborationEndpoint extends Endpoint {
     String sinceHlc, {
     int limit = 100,
   }) async {
+    final doc = await Document.db.findById(session, documentId);
+    if (doc == null || doc.deletedAt != null) {
+      throw ApiException(message: 'Document has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
+    }
+
     // Use raw SQL for efficient HLC string comparison
     final operations = await session.db.unsafeQuery(
       r'SELECT * FROM document_crdt_operations WHERE "documentId" = $1 AND hlc > $2 ORDER BY hlc ASC LIMIT $3',
@@ -41,6 +46,12 @@ class DocumentCollaborationEndpoint extends Endpoint {
   ) async {
     if (!session.canWrite) throw ApiException(message: 'Missing write permission', code: 403);
     final user = await resolveUser(session, clientId: session.clientId);
+
+    final doc = await Document.db.findById(session, documentId);
+    if (doc == null || doc.deletedAt != null) {
+      throw ApiException(message: 'Document has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
+    }
+
     final fieldUpdates = jsonDecode(fieldUpdatesJson) as Map<String, dynamic>;
 
     // Apply CRDT operations
@@ -59,6 +70,11 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     UuidValue documentId,
   ) async {
+    final doc = await Document.db.findById(session, documentId);
+    if (doc == null || doc.deletedAt != null) {
+      throw ApiException(message: 'Document has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
+    }
+
     final fiveMinutesAgo = DateTime.now().subtract(const Duration(minutes: 5));
 
     // Get recent operations for this document
@@ -109,6 +125,11 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     UuidValue documentId,
   ) async {
+    final doc = await Document.db.findById(session, documentId);
+    if (doc == null || doc.deletedAt != null) {
+      throw ApiException(message: 'Document has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
+    }
+
     return await session.crdtService.getCurrentHlc(session, documentId);
   }
 
@@ -118,6 +139,11 @@ class DocumentCollaborationEndpoint extends Endpoint {
     Session session,
     UuidValue documentId,
   ) async {
+    final doc = await Document.db.findById(session, documentId);
+    if (doc == null || doc.deletedAt != null) {
+      throw ApiException(message: 'Document has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
+    }
+
     return await session.crdtService.getOperationCount(
       session,
       documentId,
@@ -132,6 +158,11 @@ class DocumentCollaborationEndpoint extends Endpoint {
   ) async {
     if (!session.canWrite) throw ApiException(message: 'Missing write permission', code: 403);
     await resolveUser(session, clientId: session.clientId);
+
+    final doc = await Document.db.findById(session, documentId);
+    if (doc == null || doc.deletedAt != null) {
+      throw ApiException(message: 'Document has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
+    }
 
     await session.crdtService.compactOperations(session, documentId);
   }

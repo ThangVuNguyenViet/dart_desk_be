@@ -10,6 +10,9 @@ fields:
   settings: String?
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
+  createdByUserId: UuidValue?, relation(parent=users, onDelete=SetNull)
+  updatedByUserId: UuidValue?, relation(parent=users, onDelete=SetNull)
+  deletedAt: DateTime?
 indexes:
   projects_client_idx:
     fields: clientId

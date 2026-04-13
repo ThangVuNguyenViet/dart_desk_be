@@ -33,6 +33,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
     this.locationLat,
     this.locationLng,
     this.uploadedByUserId,
+    this.updatedByUserId,
     DateTime? createdAt,
     required this.metadataStatus,
   }) : id = id ?? const _i1.Uuid().v4obj(),
@@ -57,6 +58,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
     double? locationLat,
     double? locationLng,
     _i1.UuidValue? uploadedByUserId,
+    _i1.UuidValue? updatedByUserId,
     DateTime? createdAt,
     required _i2.MediaAssetMetadataStatus metadataStatus,
   }) = _MediaAssetImpl;
@@ -88,6 +90,11 @@ abstract class MediaAsset implements _i1.SerializableModel {
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
               jsonSerialization['uploadedByUserId'],
+            ),
+      updatedByUserId: jsonSerialization['updatedByUserId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['updatedByUserId'],
             ),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
@@ -135,6 +142,8 @@ abstract class MediaAsset implements _i1.SerializableModel {
 
   _i1.UuidValue? uploadedByUserId;
 
+  _i1.UuidValue? updatedByUserId;
+
   DateTime? createdAt;
 
   _i2.MediaAssetMetadataStatus metadataStatus;
@@ -161,6 +170,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
     double? locationLat,
     double? locationLng,
     _i1.UuidValue? uploadedByUserId,
+    _i1.UuidValue? updatedByUserId,
     DateTime? createdAt,
     _i2.MediaAssetMetadataStatus? metadataStatus,
   });
@@ -187,6 +197,7 @@ abstract class MediaAsset implements _i1.SerializableModel {
       if (locationLng != null) 'locationLng': locationLng,
       if (uploadedByUserId != null)
         'uploadedByUserId': uploadedByUserId?.toJson(),
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       'metadataStatus': metadataStatus.toJson(),
     };
@@ -220,6 +231,7 @@ class _MediaAssetImpl extends MediaAsset {
     double? locationLat,
     double? locationLng,
     _i1.UuidValue? uploadedByUserId,
+    _i1.UuidValue? updatedByUserId,
     DateTime? createdAt,
     required _i2.MediaAssetMetadataStatus metadataStatus,
   }) : super._(
@@ -241,6 +253,7 @@ class _MediaAssetImpl extends MediaAsset {
          locationLat: locationLat,
          locationLng: locationLng,
          uploadedByUserId: uploadedByUserId,
+         updatedByUserId: updatedByUserId,
          createdAt: createdAt,
          metadataStatus: metadataStatus,
        );
@@ -268,6 +281,7 @@ class _MediaAssetImpl extends MediaAsset {
     Object? locationLat = _Undefined,
     Object? locationLng = _Undefined,
     Object? uploadedByUserId = _Undefined,
+    Object? updatedByUserId = _Undefined,
     Object? createdAt = _Undefined,
     _i2.MediaAssetMetadataStatus? metadataStatus,
   }) {
@@ -292,6 +306,9 @@ class _MediaAssetImpl extends MediaAsset {
       uploadedByUserId: uploadedByUserId is _i1.UuidValue?
           ? uploadedByUserId
           : this.uploadedByUserId,
+      updatedByUserId: updatedByUserId is _i1.UuidValue?
+          ? updatedByUserId
+          : this.updatedByUserId,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       metadataStatus: metadataStatus ?? this.metadataStatus,
     );

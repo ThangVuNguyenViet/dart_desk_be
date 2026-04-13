@@ -29,31 +29,35 @@ import 'document.dart' as _i14;
 import 'document_crdt_operation.dart' as _i15;
 import 'document_crdt_snapshot.dart' as _i16;
 import 'document_data.dart' as _i17;
-import 'document_list.dart' as _i18;
-import 'document_version.dart' as _i19;
-import 'document_version_list.dart' as _i20;
-import 'document_version_list_with_operations.dart' as _i21;
-import 'document_version_status.dart' as _i22;
-import 'document_version_with_operations.dart' as _i23;
-import 'media_asset.dart' as _i24;
-import 'media_asset_metadata_status.dart' as _i25;
-import 'migration_history.dart' as _i26;
-import 'project.dart' as _i27;
-import 'project_list.dart' as _i28;
-import 'project_member.dart' as _i29;
-import 'project_role.dart' as _i30;
-import 'public_document.dart' as _i31;
-import 'user.dart' as _i32;
-import 'package:dart_desk_server/src/generated/client_with_role.dart' as _i33;
-import 'package:dart_desk_server/src/generated/api_token.dart' as _i34;
-import 'package:dart_desk_server/src/generated/deployment.dart' as _i35;
+import 'document_version.dart' as _i18;
+import 'document_version_list_with_operations.dart' as _i19;
+import 'document_version_status.dart' as _i20;
+import 'document_version_with_operations.dart' as _i21;
+import 'media_asset.dart' as _i22;
+import 'media_asset_metadata_status.dart' as _i23;
+import 'migration_history.dart' as _i24;
+import 'paginated_api_tokens.dart' as _i25;
+import 'paginated_document_versions.dart' as _i26;
+import 'paginated_documents.dart' as _i27;
+import 'paginated_media_assets.dart' as _i28;
+import 'paginated_migration_histories.dart' as _i29;
+import 'paginated_projects.dart' as _i30;
+import 'paginated_users.dart' as _i31;
+import 'project.dart' as _i32;
+import 'project_member.dart' as _i33;
+import 'project_role.dart' as _i34;
+import 'public_document.dart' as _i35;
+import 'user.dart' as _i36;
+import 'package:dart_desk_server/src/generated/client_with_role.dart' as _i37;
+import 'package:dart_desk_server/src/generated/api_token.dart' as _i38;
+import 'package:dart_desk_server/src/generated/deployment.dart' as _i39;
 import 'package:dart_desk_server/src/generated/document_crdt_operation.dart'
-    as _i36;
-import 'package:dart_desk_server/src/generated/media_asset.dart' as _i37;
-import 'package:dart_desk_server/src/generated/user.dart' as _i38;
-import 'package:dart_desk_server/src/generated/migration_history.dart' as _i39;
-import 'package:dart_desk_server/src/generated/project_member.dart' as _i40;
-import 'package:dart_desk_server/src/generated/public_document.dart' as _i41;
+    as _i40;
+import 'package:dart_desk_server/src/generated/media_asset.dart' as _i41;
+import 'package:dart_desk_server/src/generated/user.dart' as _i42;
+import 'package:dart_desk_server/src/generated/migration_history.dart' as _i43;
+import 'package:dart_desk_server/src/generated/project_member.dart' as _i44;
+import 'package:dart_desk_server/src/generated/public_document.dart' as _i45;
 export 'api_exception.dart';
 export 'api_token.dart';
 export 'api_token_with_value.dart';
@@ -67,17 +71,21 @@ export 'document.dart';
 export 'document_crdt_operation.dart';
 export 'document_crdt_snapshot.dart';
 export 'document_data.dart';
-export 'document_list.dart';
 export 'document_version.dart';
-export 'document_version_list.dart';
 export 'document_version_list_with_operations.dart';
 export 'document_version_status.dart';
 export 'document_version_with_operations.dart';
 export 'media_asset.dart';
 export 'media_asset_metadata_status.dart';
 export 'migration_history.dart';
+export 'paginated_api_tokens.dart';
+export 'paginated_document_versions.dart';
+export 'paginated_documents.dart';
+export 'paginated_media_assets.dart';
+export 'paginated_migration_histories.dart';
+export 'paginated_projects.dart';
+export 'paginated_users.dart';
 export 'project.dart';
-export 'project_list.dart';
 export 'project_member.dart';
 export 'project_role.dart';
 export 'public_document.dart';
@@ -858,6 +866,18 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: true,
           dartType: 'UuidValue?',
         ),
+        _i2.ColumnDefinition(
+          name: 'updatedByUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: true,
+          dartType: 'UuidValue?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
@@ -873,6 +893,16 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'document_versions_fk_1',
           columns: ['createdByUserId'],
+          referenceTable: 'users',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.setNull,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'document_versions_fk_2',
+          columns: ['updatedByUserId'],
           referenceTable: 'users',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
@@ -1090,6 +1120,12 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: true,
           dartType: 'UuidValue?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
         ),
       ],
       foreignKeys: [
@@ -1446,6 +1482,12 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.ColumnDefinition(
           name: 'uploadedByUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: true,
+          dartType: 'UuidValue?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedByUserId',
           columnType: _i2.ColumnType.uuid,
           isNullable: true,
           dartType: 'UuidValue?',
@@ -1814,6 +1856,24 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'DateTime?',
           columnDefault: 'CURRENT_TIMESTAMP',
         ),
+        _i2.ColumnDefinition(
+          name: 'createdByUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: true,
+          dartType: 'UuidValue?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedByUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: true,
+          dartType: 'UuidValue?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
@@ -1824,6 +1884,26 @@ class Protocol extends _i1.SerializationManagerServer {
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'projects_fk_1',
+          columns: ['createdByUserId'],
+          referenceTable: 'users',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.setNull,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'projects_fk_2',
+          columns: ['updatedByUserId'],
+          referenceTable: 'users',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.setNull,
           matchType: null,
         ),
       ],
@@ -1947,6 +2027,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: true,
           dartType: 'DateTime?',
           columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
         ),
       ],
       foreignKeys: [],
@@ -2094,50 +2180,62 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i17.DocumentData) {
       return _i17.DocumentData.fromJson(data) as T;
     }
-    if (t == _i18.DocumentList) {
-      return _i18.DocumentList.fromJson(data) as T;
+    if (t == _i18.DocumentVersion) {
+      return _i18.DocumentVersion.fromJson(data) as T;
     }
-    if (t == _i19.DocumentVersion) {
-      return _i19.DocumentVersion.fromJson(data) as T;
+    if (t == _i19.DocumentVersionListWithOperations) {
+      return _i19.DocumentVersionListWithOperations.fromJson(data) as T;
     }
-    if (t == _i20.DocumentVersionList) {
-      return _i20.DocumentVersionList.fromJson(data) as T;
+    if (t == _i20.DocumentVersionStatus) {
+      return _i20.DocumentVersionStatus.fromJson(data) as T;
     }
-    if (t == _i21.DocumentVersionListWithOperations) {
-      return _i21.DocumentVersionListWithOperations.fromJson(data) as T;
+    if (t == _i21.DocumentVersionWithOperations) {
+      return _i21.DocumentVersionWithOperations.fromJson(data) as T;
     }
-    if (t == _i22.DocumentVersionStatus) {
-      return _i22.DocumentVersionStatus.fromJson(data) as T;
+    if (t == _i22.MediaAsset) {
+      return _i22.MediaAsset.fromJson(data) as T;
     }
-    if (t == _i23.DocumentVersionWithOperations) {
-      return _i23.DocumentVersionWithOperations.fromJson(data) as T;
+    if (t == _i23.MediaAssetMetadataStatus) {
+      return _i23.MediaAssetMetadataStatus.fromJson(data) as T;
     }
-    if (t == _i24.MediaAsset) {
-      return _i24.MediaAsset.fromJson(data) as T;
+    if (t == _i24.MigrationHistory) {
+      return _i24.MigrationHistory.fromJson(data) as T;
     }
-    if (t == _i25.MediaAssetMetadataStatus) {
-      return _i25.MediaAssetMetadataStatus.fromJson(data) as T;
+    if (t == _i25.PaginatedApiTokens) {
+      return _i25.PaginatedApiTokens.fromJson(data) as T;
     }
-    if (t == _i26.MigrationHistory) {
-      return _i26.MigrationHistory.fromJson(data) as T;
+    if (t == _i26.PaginatedDocumentVersions) {
+      return _i26.PaginatedDocumentVersions.fromJson(data) as T;
     }
-    if (t == _i27.Project) {
-      return _i27.Project.fromJson(data) as T;
+    if (t == _i27.PaginatedDocuments) {
+      return _i27.PaginatedDocuments.fromJson(data) as T;
     }
-    if (t == _i28.ProjectList) {
-      return _i28.ProjectList.fromJson(data) as T;
+    if (t == _i28.PaginatedMediaAssets) {
+      return _i28.PaginatedMediaAssets.fromJson(data) as T;
     }
-    if (t == _i29.ProjectMember) {
-      return _i29.ProjectMember.fromJson(data) as T;
+    if (t == _i29.PaginatedMigrationHistories) {
+      return _i29.PaginatedMigrationHistories.fromJson(data) as T;
     }
-    if (t == _i30.ProjectRole) {
-      return _i30.ProjectRole.fromJson(data) as T;
+    if (t == _i30.PaginatedProjects) {
+      return _i30.PaginatedProjects.fromJson(data) as T;
     }
-    if (t == _i31.PublicDocument) {
-      return _i31.PublicDocument.fromJson(data) as T;
+    if (t == _i31.PaginatedUsers) {
+      return _i31.PaginatedUsers.fromJson(data) as T;
     }
-    if (t == _i32.User) {
-      return _i32.User.fromJson(data) as T;
+    if (t == _i32.Project) {
+      return _i32.Project.fromJson(data) as T;
+    }
+    if (t == _i33.ProjectMember) {
+      return _i33.ProjectMember.fromJson(data) as T;
+    }
+    if (t == _i34.ProjectRole) {
+      return _i34.ProjectRole.fromJson(data) as T;
+    }
+    if (t == _i35.PublicDocument) {
+      return _i35.PublicDocument.fromJson(data) as T;
+    }
+    if (t == _i36.User) {
+      return _i36.User.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.ApiException?>()) {
       return (data != null ? _i5.ApiException.fromJson(data) : null) as T;
@@ -2180,75 +2278,85 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i17.DocumentData?>()) {
       return (data != null ? _i17.DocumentData.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i18.DocumentList?>()) {
-      return (data != null ? _i18.DocumentList.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i18.DocumentVersion?>()) {
+      return (data != null ? _i18.DocumentVersion.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.DocumentVersion?>()) {
-      return (data != null ? _i19.DocumentVersion.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.DocumentVersionList?>()) {
-      return (data != null ? _i20.DocumentVersionList.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i21.DocumentVersionListWithOperations?>()) {
+    if (t == _i1.getType<_i19.DocumentVersionListWithOperations?>()) {
       return (data != null
-              ? _i21.DocumentVersionListWithOperations.fromJson(data)
+              ? _i19.DocumentVersionListWithOperations.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i22.DocumentVersionStatus?>()) {
-      return (data != null ? _i22.DocumentVersionStatus.fromJson(data) : null)
+    if (t == _i1.getType<_i20.DocumentVersionStatus?>()) {
+      return (data != null ? _i20.DocumentVersionStatus.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i23.DocumentVersionWithOperations?>()) {
+    if (t == _i1.getType<_i21.DocumentVersionWithOperations?>()) {
       return (data != null
-              ? _i23.DocumentVersionWithOperations.fromJson(data)
+              ? _i21.DocumentVersionWithOperations.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i24.MediaAsset?>()) {
-      return (data != null ? _i24.MediaAsset.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i22.MediaAsset?>()) {
+      return (data != null ? _i22.MediaAsset.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i25.MediaAssetMetadataStatus?>()) {
+    if (t == _i1.getType<_i23.MediaAssetMetadataStatus?>()) {
       return (data != null
-              ? _i25.MediaAssetMetadataStatus.fromJson(data)
+              ? _i23.MediaAssetMetadataStatus.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i26.MigrationHistory?>()) {
-      return (data != null ? _i26.MigrationHistory.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i24.MigrationHistory?>()) {
+      return (data != null ? _i24.MigrationHistory.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i27.Project?>()) {
-      return (data != null ? _i27.Project.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i28.ProjectList?>()) {
-      return (data != null ? _i28.ProjectList.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i29.ProjectMember?>()) {
-      return (data != null ? _i29.ProjectMember.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i30.ProjectRole?>()) {
-      return (data != null ? _i30.ProjectRole.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i31.PublicDocument?>()) {
-      return (data != null ? _i31.PublicDocument.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i32.User?>()) {
-      return (data != null ? _i32.User.fromJson(data) : null) as T;
-    }
-    if (t == List<_i14.Document>) {
-      return (data as List).map((e) => deserialize<_i14.Document>(e)).toList()
+    if (t == _i1.getType<_i25.PaginatedApiTokens?>()) {
+      return (data != null ? _i25.PaginatedApiTokens.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i19.DocumentVersion>) {
+    if (t == _i1.getType<_i26.PaginatedDocumentVersions?>()) {
+      return (data != null
+              ? _i26.PaginatedDocumentVersions.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i27.PaginatedDocuments?>()) {
+      return (data != null ? _i27.PaginatedDocuments.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i28.PaginatedMediaAssets?>()) {
+      return (data != null ? _i28.PaginatedMediaAssets.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i29.PaginatedMigrationHistories?>()) {
+      return (data != null
+              ? _i29.PaginatedMigrationHistories.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i30.PaginatedProjects?>()) {
+      return (data != null ? _i30.PaginatedProjects.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i31.PaginatedUsers?>()) {
+      return (data != null ? _i31.PaginatedUsers.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i32.Project?>()) {
+      return (data != null ? _i32.Project.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i33.ProjectMember?>()) {
+      return (data != null ? _i33.ProjectMember.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i34.ProjectRole?>()) {
+      return (data != null ? _i34.ProjectRole.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i35.PublicDocument?>()) {
+      return (data != null ? _i35.PublicDocument.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i36.User?>()) {
+      return (data != null ? _i36.User.fromJson(data) : null) as T;
+    }
+    if (t == List<_i21.DocumentVersionWithOperations>) {
       return (data as List)
-              .map((e) => deserialize<_i19.DocumentVersion>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i23.DocumentVersionWithOperations>) {
-      return (data as List)
-              .map((e) => deserialize<_i23.DocumentVersionWithOperations>(e))
+              .map((e) => deserialize<_i21.DocumentVersionWithOperations>(e))
               .toList()
           as T;
     }
@@ -2258,72 +2366,99 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
-    if (t == List<_i27.Project>) {
-      return (data as List).map((e) => deserialize<_i27.Project>(e)).toList()
+    if (t == List<_i6.ApiToken>) {
+      return (data as List).map((e) => deserialize<_i6.ApiToken>(e)).toList()
           as T;
     }
-    if (t == List<_i33.ClientWithRole>) {
+    if (t == List<_i18.DocumentVersion>) {
       return (data as List)
-              .map((e) => deserialize<_i33.ClientWithRole>(e))
+              .map((e) => deserialize<_i18.DocumentVersion>(e))
               .toList()
           as T;
     }
-    if (t == List<_i34.ApiToken>) {
-      return (data as List).map((e) => deserialize<_i34.ApiToken>(e)).toList()
+    if (t == List<_i14.Document>) {
+      return (data as List).map((e) => deserialize<_i14.Document>(e)).toList()
           as T;
     }
-    if (t == List<_i35.Deployment>) {
-      return (data as List).map((e) => deserialize<_i35.Deployment>(e)).toList()
+    if (t == List<_i22.MediaAsset>) {
+      return (data as List).map((e) => deserialize<_i22.MediaAsset>(e)).toList()
           as T;
     }
-    if (t == List<_i36.DocumentCrdtOperation>) {
+    if (t == List<_i24.MigrationHistory>) {
       return (data as List)
-              .map((e) => deserialize<_i36.DocumentCrdtOperation>(e))
+              .map((e) => deserialize<_i24.MigrationHistory>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i32.Project>) {
+      return (data as List).map((e) => deserialize<_i32.Project>(e)).toList()
+          as T;
+    }
+    if (t == List<_i36.User>) {
+      return (data as List).map((e) => deserialize<_i36.User>(e)).toList() as T;
+    }
+    if (t == List<_i37.ClientWithRole>) {
+      return (data as List)
+              .map((e) => deserialize<_i37.ClientWithRole>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i38.ApiToken>) {
+      return (data as List).map((e) => deserialize<_i38.ApiToken>(e)).toList()
+          as T;
+    }
+    if (t == List<_i39.Deployment>) {
+      return (data as List).map((e) => deserialize<_i39.Deployment>(e)).toList()
+          as T;
+    }
+    if (t == List<_i40.DocumentCrdtOperation>) {
+      return (data as List)
+              .map((e) => deserialize<_i40.DocumentCrdtOperation>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i37.MediaAsset>) {
-      return (data as List).map((e) => deserialize<_i37.MediaAsset>(e)).toList()
+    if (t == List<_i41.MediaAsset>) {
+      return (data as List).map((e) => deserialize<_i41.MediaAsset>(e)).toList()
           as T;
     }
-    if (t == List<_i38.User>) {
-      return (data as List).map((e) => deserialize<_i38.User>(e)).toList() as T;
+    if (t == List<_i42.User>) {
+      return (data as List).map((e) => deserialize<_i42.User>(e)).toList() as T;
     }
-    if (t == List<_i39.MigrationHistory>) {
+    if (t == List<_i43.MigrationHistory>) {
       return (data as List)
-              .map((e) => deserialize<_i39.MigrationHistory>(e))
+              .map((e) => deserialize<_i43.MigrationHistory>(e))
               .toList()
           as T;
     }
-    if (t == List<_i40.ProjectMember>) {
+    if (t == List<_i44.ProjectMember>) {
       return (data as List)
-              .map((e) => deserialize<_i40.ProjectMember>(e))
+              .map((e) => deserialize<_i44.ProjectMember>(e))
               .toList()
           as T;
     }
-    if (t == Map<String, List<_i41.PublicDocument>>) {
+    if (t == Map<String, List<_i45.PublicDocument>>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<List<_i41.PublicDocument>>(v),
+              deserialize<List<_i45.PublicDocument>>(v),
             ),
           )
           as T;
     }
-    if (t == List<_i41.PublicDocument>) {
+    if (t == List<_i45.PublicDocument>) {
       return (data as List)
-              .map((e) => deserialize<_i41.PublicDocument>(e))
+              .map((e) => deserialize<_i45.PublicDocument>(e))
               .toList()
           as T;
     }
-    if (t == Map<String, _i41.PublicDocument>) {
+    if (t == Map<String, _i45.PublicDocument>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i41.PublicDocument>(v),
+              deserialize<_i45.PublicDocument>(v),
             ),
           )
           as T;
@@ -2355,22 +2490,26 @@ class Protocol extends _i1.SerializationManagerServer {
       _i15.DocumentCrdtOperation => 'DocumentCrdtOperation',
       _i16.DocumentCrdtSnapshot => 'DocumentCrdtSnapshot',
       _i17.DocumentData => 'DocumentData',
-      _i18.DocumentList => 'DocumentList',
-      _i19.DocumentVersion => 'DocumentVersion',
-      _i20.DocumentVersionList => 'DocumentVersionList',
-      _i21.DocumentVersionListWithOperations =>
+      _i18.DocumentVersion => 'DocumentVersion',
+      _i19.DocumentVersionListWithOperations =>
         'DocumentVersionListWithOperations',
-      _i22.DocumentVersionStatus => 'DocumentVersionStatus',
-      _i23.DocumentVersionWithOperations => 'DocumentVersionWithOperations',
-      _i24.MediaAsset => 'MediaAsset',
-      _i25.MediaAssetMetadataStatus => 'MediaAssetMetadataStatus',
-      _i26.MigrationHistory => 'MigrationHistory',
-      _i27.Project => 'Project',
-      _i28.ProjectList => 'ProjectList',
-      _i29.ProjectMember => 'ProjectMember',
-      _i30.ProjectRole => 'ProjectRole',
-      _i31.PublicDocument => 'PublicDocument',
-      _i32.User => 'User',
+      _i20.DocumentVersionStatus => 'DocumentVersionStatus',
+      _i21.DocumentVersionWithOperations => 'DocumentVersionWithOperations',
+      _i22.MediaAsset => 'MediaAsset',
+      _i23.MediaAssetMetadataStatus => 'MediaAssetMetadataStatus',
+      _i24.MigrationHistory => 'MigrationHistory',
+      _i25.PaginatedApiTokens => 'PaginatedApiTokens',
+      _i26.PaginatedDocumentVersions => 'PaginatedDocumentVersions',
+      _i27.PaginatedDocuments => 'PaginatedDocuments',
+      _i28.PaginatedMediaAssets => 'PaginatedMediaAssets',
+      _i29.PaginatedMigrationHistories => 'PaginatedMigrationHistories',
+      _i30.PaginatedProjects => 'PaginatedProjects',
+      _i31.PaginatedUsers => 'PaginatedUsers',
+      _i32.Project => 'Project',
+      _i33.ProjectMember => 'ProjectMember',
+      _i34.ProjectRole => 'ProjectRole',
+      _i35.PublicDocument => 'PublicDocument',
+      _i36.User => 'User',
       _ => null,
     };
   }
@@ -2411,35 +2550,43 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'DocumentCrdtSnapshot';
       case _i17.DocumentData():
         return 'DocumentData';
-      case _i18.DocumentList():
-        return 'DocumentList';
-      case _i19.DocumentVersion():
+      case _i18.DocumentVersion():
         return 'DocumentVersion';
-      case _i20.DocumentVersionList():
-        return 'DocumentVersionList';
-      case _i21.DocumentVersionListWithOperations():
+      case _i19.DocumentVersionListWithOperations():
         return 'DocumentVersionListWithOperations';
-      case _i22.DocumentVersionStatus():
+      case _i20.DocumentVersionStatus():
         return 'DocumentVersionStatus';
-      case _i23.DocumentVersionWithOperations():
+      case _i21.DocumentVersionWithOperations():
         return 'DocumentVersionWithOperations';
-      case _i24.MediaAsset():
+      case _i22.MediaAsset():
         return 'MediaAsset';
-      case _i25.MediaAssetMetadataStatus():
+      case _i23.MediaAssetMetadataStatus():
         return 'MediaAssetMetadataStatus';
-      case _i26.MigrationHistory():
+      case _i24.MigrationHistory():
         return 'MigrationHistory';
-      case _i27.Project():
+      case _i25.PaginatedApiTokens():
+        return 'PaginatedApiTokens';
+      case _i26.PaginatedDocumentVersions():
+        return 'PaginatedDocumentVersions';
+      case _i27.PaginatedDocuments():
+        return 'PaginatedDocuments';
+      case _i28.PaginatedMediaAssets():
+        return 'PaginatedMediaAssets';
+      case _i29.PaginatedMigrationHistories():
+        return 'PaginatedMigrationHistories';
+      case _i30.PaginatedProjects():
+        return 'PaginatedProjects';
+      case _i31.PaginatedUsers():
+        return 'PaginatedUsers';
+      case _i32.Project():
         return 'Project';
-      case _i28.ProjectList():
-        return 'ProjectList';
-      case _i29.ProjectMember():
+      case _i33.ProjectMember():
         return 'ProjectMember';
-      case _i30.ProjectRole():
+      case _i34.ProjectRole():
         return 'ProjectRole';
-      case _i31.PublicDocument():
+      case _i35.PublicDocument():
         return 'PublicDocument';
-      case _i32.User():
+      case _i36.User():
         return 'User';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -2502,50 +2649,62 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'DocumentData') {
       return deserialize<_i17.DocumentData>(data['data']);
     }
-    if (dataClassName == 'DocumentList') {
-      return deserialize<_i18.DocumentList>(data['data']);
-    }
     if (dataClassName == 'DocumentVersion') {
-      return deserialize<_i19.DocumentVersion>(data['data']);
-    }
-    if (dataClassName == 'DocumentVersionList') {
-      return deserialize<_i20.DocumentVersionList>(data['data']);
+      return deserialize<_i18.DocumentVersion>(data['data']);
     }
     if (dataClassName == 'DocumentVersionListWithOperations') {
-      return deserialize<_i21.DocumentVersionListWithOperations>(data['data']);
+      return deserialize<_i19.DocumentVersionListWithOperations>(data['data']);
     }
     if (dataClassName == 'DocumentVersionStatus') {
-      return deserialize<_i22.DocumentVersionStatus>(data['data']);
+      return deserialize<_i20.DocumentVersionStatus>(data['data']);
     }
     if (dataClassName == 'DocumentVersionWithOperations') {
-      return deserialize<_i23.DocumentVersionWithOperations>(data['data']);
+      return deserialize<_i21.DocumentVersionWithOperations>(data['data']);
     }
     if (dataClassName == 'MediaAsset') {
-      return deserialize<_i24.MediaAsset>(data['data']);
+      return deserialize<_i22.MediaAsset>(data['data']);
     }
     if (dataClassName == 'MediaAssetMetadataStatus') {
-      return deserialize<_i25.MediaAssetMetadataStatus>(data['data']);
+      return deserialize<_i23.MediaAssetMetadataStatus>(data['data']);
     }
     if (dataClassName == 'MigrationHistory') {
-      return deserialize<_i26.MigrationHistory>(data['data']);
+      return deserialize<_i24.MigrationHistory>(data['data']);
+    }
+    if (dataClassName == 'PaginatedApiTokens') {
+      return deserialize<_i25.PaginatedApiTokens>(data['data']);
+    }
+    if (dataClassName == 'PaginatedDocumentVersions') {
+      return deserialize<_i26.PaginatedDocumentVersions>(data['data']);
+    }
+    if (dataClassName == 'PaginatedDocuments') {
+      return deserialize<_i27.PaginatedDocuments>(data['data']);
+    }
+    if (dataClassName == 'PaginatedMediaAssets') {
+      return deserialize<_i28.PaginatedMediaAssets>(data['data']);
+    }
+    if (dataClassName == 'PaginatedMigrationHistories') {
+      return deserialize<_i29.PaginatedMigrationHistories>(data['data']);
+    }
+    if (dataClassName == 'PaginatedProjects') {
+      return deserialize<_i30.PaginatedProjects>(data['data']);
+    }
+    if (dataClassName == 'PaginatedUsers') {
+      return deserialize<_i31.PaginatedUsers>(data['data']);
     }
     if (dataClassName == 'Project') {
-      return deserialize<_i27.Project>(data['data']);
-    }
-    if (dataClassName == 'ProjectList') {
-      return deserialize<_i28.ProjectList>(data['data']);
+      return deserialize<_i32.Project>(data['data']);
     }
     if (dataClassName == 'ProjectMember') {
-      return deserialize<_i29.ProjectMember>(data['data']);
+      return deserialize<_i33.ProjectMember>(data['data']);
     }
     if (dataClassName == 'ProjectRole') {
-      return deserialize<_i30.ProjectRole>(data['data']);
+      return deserialize<_i34.ProjectRole>(data['data']);
     }
     if (dataClassName == 'PublicDocument') {
-      return deserialize<_i31.PublicDocument>(data['data']);
+      return deserialize<_i35.PublicDocument>(data['data']);
     }
     if (dataClassName == 'User') {
-      return deserialize<_i32.User>(data['data']);
+      return deserialize<_i36.User>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -2597,18 +2756,18 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i16.DocumentCrdtSnapshot.t;
       case _i17.DocumentData:
         return _i17.DocumentData.t;
-      case _i19.DocumentVersion:
-        return _i19.DocumentVersion.t;
-      case _i24.MediaAsset:
-        return _i24.MediaAsset.t;
-      case _i26.MigrationHistory:
-        return _i26.MigrationHistory.t;
-      case _i27.Project:
-        return _i27.Project.t;
-      case _i29.ProjectMember:
-        return _i29.ProjectMember.t;
-      case _i32.User:
-        return _i32.User.t;
+      case _i18.DocumentVersion:
+        return _i18.DocumentVersion.t;
+      case _i22.MediaAsset:
+        return _i22.MediaAsset.t;
+      case _i24.MigrationHistory:
+        return _i24.MigrationHistory.t;
+      case _i32.Project:
+        return _i32.Project.t;
+      case _i33.ProjectMember:
+        return _i33.ProjectMember.t;
+      case _i36.User:
+        return _i36.User.t;
     }
     return null;
   }
