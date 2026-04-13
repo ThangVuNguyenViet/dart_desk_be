@@ -26,13 +26,11 @@ import '../endpoints/public_content_endpoint.dart' as _i13;
 import '../endpoints/refresh_jwt_tokens_endpoint.dart' as _i14;
 import '../endpoints/studio_config_endpoint.dart' as _i15;
 import '../endpoints/user_endpoint.dart' as _i16;
-import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/document_version_status.dart'
+import 'package:dart_desk_server/src/generated/document_version_status.dart'
     as _i17;
 import 'dart:typed_data' as _i18;
-import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/client_role.dart'
-    as _i19;
-import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/project_role.dart'
-    as _i20;
+import 'package:dart_desk_server/src/generated/client_role.dart' as _i19;
+import 'package:dart_desk_server/src/generated/project_role.dart' as _i20;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i21;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'

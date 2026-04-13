@@ -1,6 +1,0 @@
-class: DocumentList
-fields:
-  documents: List<protocol:Document>
-  total: int
-  page: int
-  pageSize: int

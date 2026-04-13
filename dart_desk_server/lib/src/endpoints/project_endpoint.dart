@@ -6,7 +6,7 @@ import '../generated/protocol.dart';
 /// Endpoint for managing projects.
 class ProjectEndpoint extends Endpoint {
   /// Get all projects with pagination and optional search.
-  Future<ProjectList> getProjects(
+  Future<PaginatedProjects> getProjects(
     Session session, {
     String? search,
     int limit = 20,
@@ -22,7 +22,7 @@ class ProjectEndpoint extends Endpoint {
       where: (t) => t.serverpodUserId.equals(authInfo.userIdentifier),
     );
     if (user == null) {
-      return ProjectList(projects: [], total: 0, page: 1, pageSize: limit);
+      return PaginatedProjects(items: [], total: 0, limit: limit, offset: offset, hasMore: false);
     }
     final clientId = user.clientId;
 
@@ -52,11 +52,12 @@ class ProjectEndpoint extends Endpoint {
       offset: offset,
     );
 
-    return ProjectList(
-      projects: projects,
+    return PaginatedProjects(
+      items: projects,
       total: total,
-      page: (offset ~/ limit) + 1,
-      pageSize: limit,
+      limit: limit,
+      offset: offset,
+      hasMore: offset + projects.length < total,
     );
   }
 

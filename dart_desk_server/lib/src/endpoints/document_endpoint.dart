@@ -13,7 +13,7 @@ typedef AuthResult = ({int? clientId, int? projectId, User? user});
 /// All write operations require authentication
 class DocumentEndpoint extends Endpoint {
   /// Get all documents for a specific document type with pagination
-  Future<DocumentList> getDocuments(
+  Future<PaginatedDocuments> getDocuments(
     Session session,
     String documentType, {
     String? search,
@@ -48,11 +48,12 @@ class DocumentEndpoint extends Endpoint {
       offset: offset,
     );
 
-    return DocumentList(
-      documents: documents,
+    return PaginatedDocuments(
+      items: documents,
       total: total,
-      page: (offset ~/ limit) + 1,
-      pageSize: limit,
+      limit: limit,
+      offset: offset,
+      hasMore: offset + documents.length < total,
     );
   }
 

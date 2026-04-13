@@ -21,7 +21,7 @@ import 'package:dart_desk_server/src/generated/deployment.dart' as _i6;
 import 'package:dart_desk_server/src/generated/document_crdt_operation.dart'
     as _i7;
 import 'package:dart_desk_server/src/generated/document.dart' as _i8;
-import 'package:dart_desk_server/src/generated/document_list.dart' as _i9;
+import 'package:dart_desk_server/src/generated/paginated_documents.dart' as _i9;
 import 'package:dart_desk_server/src/generated/document_version_list_with_operations.dart'
     as _i10;
 import 'package:dart_desk_server/src/generated/document_version.dart' as _i11;
@@ -34,7 +34,7 @@ import 'dart:typed_data' as _i15;
 import 'package:dart_desk_server/src/generated/user.dart' as _i16;
 import 'package:dart_desk_server/src/generated/client_role.dart' as _i17;
 import 'package:dart_desk_server/src/generated/migration_history.dart' as _i18;
-import 'package:dart_desk_server/src/generated/project_list.dart' as _i19;
+import 'package:dart_desk_server/src/generated/paginated_projects.dart' as _i19;
 import 'package:dart_desk_server/src/generated/project.dart' as _i20;
 import 'package:dart_desk_server/src/generated/cms_client.dart' as _i21;
 import 'package:dart_desk_server/src/generated/project_member.dart' as _i22;
@@ -802,7 +802,7 @@ class _DocumentEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i9.DocumentList> getDocuments(
+  _i3.Future<_i9.PaginatedDocuments> getDocuments(
     _i1.TestSessionBuilder sessionBuilder,
     String documentType, {
     String? search,
@@ -833,7 +833,7 @@ class _DocumentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i9.DocumentList>);
+                as _i3.Future<_i9.PaginatedDocuments>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2331,7 +2331,7 @@ class _ProjectEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i19.ProjectList> getProjects(
+  _i3.Future<_i19.PaginatedProjects> getProjects(
     _i1.TestSessionBuilder sessionBuilder, {
     String? search,
     required int limit,
@@ -2360,7 +2360,7 @@ class _ProjectEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i19.ProjectList>);
+                as _i3.Future<_i19.PaginatedProjects>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
