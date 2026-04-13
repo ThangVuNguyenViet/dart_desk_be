@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../auth/api_key_validator.dart';
 import '../auth/resolve_user.dart';
@@ -19,7 +20,7 @@ class ApiTokenEndpoint extends Endpoint {
 
   /// List all tokens for a project (metadata only, never the hash).
   Future<List<ApiToken>> getTokens(Session session,
-      {required int projectId}) async {
+      {required UuidValue projectId}) async {
     await _requireAuth(session, projectId: projectId);
 
     return await ApiToken.db.find(
@@ -36,7 +37,7 @@ class ApiTokenEndpoint extends Endpoint {
     String name,
     String role,
     DateTime? expiresAt, {
-    required int projectId,
+    required UuidValue projectId,
   }) async {
     final auth = await _requireAuth(session, projectId: projectId);
 
@@ -87,11 +88,11 @@ class ApiTokenEndpoint extends Endpoint {
   /// Update token metadata (name, isActive, expiresAt).
   Future<ApiToken> updateToken(
     Session session,
-    int tokenId,
+    UuidValue tokenId,
     String? name,
     bool? isActive,
     DateTime? expiresAt, {
-    required int projectId,
+    required UuidValue projectId,
   }) async {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) throw ApiException(message: 'Token not found: $tokenId', code: 404);
@@ -113,8 +114,8 @@ class ApiTokenEndpoint extends Endpoint {
   /// Regenerate token value. Returns new plaintext token (shown once).
   Future<ApiTokenWithValue> regenerateToken(
     Session session,
-    int tokenId, {
-    required int projectId,
+    UuidValue tokenId, {
+    required UuidValue projectId,
   }) async {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) throw ApiException(message: 'Token not found: $tokenId', code: 404);
@@ -157,8 +158,8 @@ class ApiTokenEndpoint extends Endpoint {
   /// Delete a token permanently.
   Future<bool> deleteToken(
     Session session,
-    int tokenId, {
-    required int projectId,
+    UuidValue tokenId, {
+    required UuidValue projectId,
   }) async {
     final token = await ApiToken.db.findById(session, tokenId);
     if (token == null) return false;
@@ -173,9 +174,9 @@ class ApiTokenEndpoint extends Endpoint {
   }
 
   /// Verify the caller is an authenticated User and resolve the owning tenant.
-  Future<({User user, int clientId, int projectId})> _requireAuth(
+  Future<({User user, UuidValue clientId, UuidValue projectId})> _requireAuth(
     Session session, {
-    required int projectId,
+    required UuidValue projectId,
   }) async {
     if (session.authenticated == null) {
       throw ApiException(message: 'Authentication required', code: 401);

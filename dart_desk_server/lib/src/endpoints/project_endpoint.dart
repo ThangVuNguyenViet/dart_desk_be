@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
@@ -74,7 +75,7 @@ class ProjectEndpoint extends Endpoint {
   /// Get a project by ID.
   Future<Project?> getProject(
     Session session,
-    int projectId,
+    UuidValue projectId,
   ) async {
     return await Project.db.findById(session, projectId);
   }
@@ -111,7 +112,7 @@ class ProjectEndpoint extends Endpoint {
   /// Update an existing project (requires authentication).
   Future<Project?> updateProject(
     Session session,
-    int projectId, {
+    UuidValue projectId, {
     String? name,
     String? description,
     bool? isActive,
@@ -146,7 +147,7 @@ class ProjectEndpoint extends Endpoint {
   /// Delete a project (requires authentication).
   Future<bool> deleteProject(
     Session session,
-    int projectId,
+    UuidValue projectId,
   ) async {
     final authInfo = session.authenticated;
     if (authInfo == null) {

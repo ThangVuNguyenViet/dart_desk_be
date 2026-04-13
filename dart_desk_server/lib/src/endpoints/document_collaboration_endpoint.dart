@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../auth/dart_desk_session.dart';
 import '../auth/resolve_user.dart';
@@ -14,7 +15,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
   /// Used for polling updates from other users
   Future<List<DocumentCrdtOperation>> getOperationsSince(
     Session session,
-    int documentId,
+    UuidValue documentId,
     String sinceHlc, {
     int limit = 100,
   }) async {
@@ -35,7 +36,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
   /// Submit an edit (partial field updates) for collaborative editing
   Future<Document> submitEdit(
     Session session,
-    int documentId,
+    UuidValue documentId,
     String sessionId,
     String fieldUpdatesJson,
   ) async {
@@ -57,7 +58,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
   /// Based on recent operation activity (last 5 minutes)
   Future<List<String>> getActiveEditors(
     Session session,
-    int documentId,
+    UuidValue documentId,
   ) async {
     final fiveMinutesAgo = DateTime.now().subtract(const Duration(minutes: 5));
 
@@ -71,7 +72,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
     );
 
     // Filter by time and group by user
-    final userEdits = <int, DateTime>{};
+    final userEdits = <UuidValue, DateTime>{};
     for (var op in recentOps) {
       if (op.createdAt != null &&
           op.createdAt!.isAfter(fiveMinutesAgo) &&
@@ -88,7 +89,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
     final editors = <String>[];
     userEdits.forEach((userId, lastEdit) {
       editors.add(jsonEncode({
-        'userId': userId,
+        'userId': userId.toString(),
         'lastEdit': lastEdit.toIso8601String(),
       }));
     });
@@ -107,7 +108,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
   /// Useful for clients to know where they are in the operation log
   Future<String?> getCurrentHlc(
     Session session,
-    int documentId,
+    UuidValue documentId,
   ) async {
     return await session.crdtService.getCurrentHlc(session, documentId);
   }
@@ -116,7 +117,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
   /// Useful for monitoring and deciding when to compact
   Future<int> getOperationCount(
     Session session,
-    int documentId,
+    UuidValue documentId,
   ) async {
     return await session.crdtService.getOperationCount(
       session,
@@ -128,7 +129,7 @@ class DocumentCollaborationEndpoint extends Endpoint {
   /// Creates a snapshot and cleans up old operations
   Future<void> compactOperations(
     Session session,
-    int documentId,
+    UuidValue documentId,
   ) async {
     if (!session.canWrite) throw ApiException(message: 'Missing write permission', code: 403);
     await resolveUser(session, clientId: session.clientId);

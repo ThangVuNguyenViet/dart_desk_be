@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../auth/dart_desk_session.dart';
 import '../generated/protocol.dart';
 import '../plugin/dart_desk_session.dart';
 import '../services/migration_service.dart';
 
-typedef _AuthResult = ({int? clientId, int? projectId});
+typedef _AuthResult = ({UuidValue? clientId, UuidValue? projectId});
 
 /// Endpoint for running and listing data migrations.
 /// Both methods require read AND write scopes.

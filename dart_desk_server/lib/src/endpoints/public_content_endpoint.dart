@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../auth/dart_desk_session.dart';
 import '../generated/protocol.dart';
@@ -120,7 +121,7 @@ class PublicContentEndpoint extends Endpoint {
   // ------------------------------------------------------------------
 
   /// Validates the API key has read access and returns the projectId.
-  int _requireReadAccess(Session session) {
+  UuidValue _requireReadAccess(Session session) {
     if (!session.canRead) {
       throw ApiException(message: 'Missing read permission', code: 403);
     }

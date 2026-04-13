@@ -1,10 +1,11 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
 
 class ProjectMemberEndpoint extends Endpoint {
-  Future<User> _requireProjectAdmin(Session session, int projectId) async {
+  Future<User> _requireProjectAdmin(Session session, UuidValue projectId) async {
     final auth = session.authenticated;
     if (auth == null) {
       throw ApiException(message: 'User must be authenticated', code: 401);
@@ -24,7 +25,7 @@ class ProjectMemberEndpoint extends Endpoint {
 
   Future<List<ProjectMember>> listProjectMembers(
     Session session, {
-    required int projectId,
+    required UuidValue projectId,
   }) async {
     final auth = session.authenticated;
     if (auth == null) {
@@ -39,8 +40,8 @@ class ProjectMemberEndpoint extends Endpoint {
 
   Future<ProjectMember> addProjectMember(
     Session session, {
-    required int projectId,
-    required int userId,
+    required UuidValue projectId,
+    required UuidValue userId,
     required ProjectRole role,
   }) async {
     await _requireProjectAdmin(session, projectId);
@@ -68,8 +69,8 @@ class ProjectMemberEndpoint extends Endpoint {
 
   Future<ProjectMember> updateProjectMemberRole(
     Session session, {
-    required int projectId,
-    required int userId,
+    required UuidValue projectId,
+    required UuidValue userId,
     required ProjectRole role,
   }) async {
     await _requireProjectAdmin(session, projectId);
@@ -92,8 +93,8 @@ class ProjectMemberEndpoint extends Endpoint {
 
   Future<void> removeProjectMember(
     Session session, {
-    required int projectId,
-    required int userId,
+    required UuidValue projectId,
+    required UuidValue userId,
   }) async {
     await _requireProjectAdmin(session, projectId);
 

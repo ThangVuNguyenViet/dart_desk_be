@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../auth/dart_desk_session.dart';
 import '../auth/resolve_user.dart';
 import '../plugin/dart_desk_session.dart';
 import '../generated/protocol.dart';
 
-typedef AuthResult = ({int? clientId, int? projectId, User? user});
+typedef AuthResult = ({UuidValue? clientId, UuidValue? projectId, User? user});
 
 /// Endpoint for managing CMS documents
 /// All write operations require authentication
@@ -59,7 +60,7 @@ class DocumentEndpoint extends Endpoint {
   /// Get a single document by ID
   Future<Document?> getDocument(
     Session session,
-    int documentId,
+    UuidValue documentId,
   ) async {
     return await Document.db.findById(session, documentId);
   }
@@ -177,7 +178,7 @@ class DocumentEndpoint extends Endpoint {
   /// Only changed fields need to be provided - they will be merged automatically
   Future<Document> updateDocumentData(
     Session session,
-    int documentId,
+    UuidValue documentId,
     String updatesJson, {
     String? sessionId,
   }) async {
@@ -201,7 +202,7 @@ class DocumentEndpoint extends Endpoint {
   /// To update document data, use updateDocumentData instead
   Future<Document?> updateDocument(
     Session session,
-    int documentId, {
+    UuidValue documentId, {
     String? title,
     String? slug,
     bool? isDefault,
@@ -238,7 +239,7 @@ class DocumentEndpoint extends Endpoint {
   Future<Document> setDefaultDocument(
     Session session,
     String documentTypeSlug,
-    int documentId,
+    UuidValue documentId,
   ) async {
     final auth = await _requireUser(session);
 
@@ -279,7 +280,7 @@ class DocumentEndpoint extends Endpoint {
   /// Delete a document
   Future<bool> deleteDocument(
     Session session,
-    int documentId,
+    UuidValue documentId,
   ) async {
     final auth = await _requireAuth(session);
 
@@ -380,7 +381,7 @@ class DocumentEndpoint extends Endpoint {
   /// Optionally includes CRDT operations between adjacent versions
   Future<DocumentVersionListWithOperations> getDocumentVersions(
     Session session,
-    int documentId, {
+    UuidValue documentId, {
     int limit = 20,
     int offset = 0,
     bool includeOperations = false,
@@ -477,7 +478,7 @@ class DocumentEndpoint extends Endpoint {
   /// Get a single version by ID
   Future<DocumentVersion?> getDocumentVersion(
     Session session,
-    int versionId,
+    UuidValue versionId,
   ) async {
     return await DocumentVersion.db.findById(session, versionId);
   }
@@ -486,7 +487,7 @@ class DocumentEndpoint extends Endpoint {
   /// Reconstructs the data from CRDT operations at the version's HLC snapshot.
   Future<String?> getDocumentVersionData(
     Session session,
-    int versionId,
+    UuidValue versionId,
   ) async {
     final version = await DocumentVersion.db.findById(session, versionId);
     if (version == null) return null;
@@ -509,7 +510,7 @@ class DocumentEndpoint extends Endpoint {
   /// Captures the current CRDT state as a version snapshot
   Future<DocumentVersion> createDocumentVersion(
     Session session,
-    int documentId, {
+    UuidValue documentId, {
     DocumentVersionStatus status = DocumentVersionStatus.draft,
     String? changeLog,
   }) async {
@@ -557,7 +558,7 @@ class DocumentEndpoint extends Endpoint {
   /// Publish a version (set status to 'published' and set publishedAt timestamp)
   Future<DocumentVersion?> publishDocumentVersion(
     Session session,
-    int versionId,
+    UuidValue versionId,
   ) async {
     await _requireAuth(session);
 
@@ -590,7 +591,7 @@ class DocumentEndpoint extends Endpoint {
   /// Archive a version (set status to 'archived' and set archivedAt timestamp)
   Future<DocumentVersion?> archiveDocumentVersion(
     Session session,
-    int versionId,
+    UuidValue versionId,
   ) async {
     await _requireAuth(session);
 
@@ -632,7 +633,7 @@ class DocumentEndpoint extends Endpoint {
   /// Delete a version
   Future<bool> deleteDocumentVersion(
     Session session,
-    int versionId,
+    UuidValue versionId,
   ) async {
     await _requireAuth(session);
 
@@ -648,7 +649,7 @@ class DocumentEndpoint extends Endpoint {
   }
 
   /// Get total document count for the specified project.
-  Future<int> getDocumentCount(Session session, {required int projectId}) async {
+  Future<int> getDocumentCount(Session session, {required UuidValue projectId}) async {
     final project = await Project.db.findById(session, projectId);
     if (project == null) {
       throw ApiException(message: 'Project not found', code: 404);

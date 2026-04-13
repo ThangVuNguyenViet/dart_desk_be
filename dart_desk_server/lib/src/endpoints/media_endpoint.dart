@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:mime/mime.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../auth/dart_desk_session.dart';
 import '../auth/resolve_user.dart';
@@ -304,7 +305,7 @@ class MediaEndpoint extends Endpoint {
   // Private helpers
   // ------------------------------------------------------------------
 
-  Future<({User? user, int? clientId, int? projectId})> _authenticateAndResolve(
+  Future<({User? user, UuidValue? clientId, UuidValue? projectId})> _authenticateAndResolve(
     Session session,
   ) async {
     if (!session.canRead) throw ApiException(message: 'Missing read permission', code: 403);
@@ -319,7 +320,7 @@ class MediaEndpoint extends Endpoint {
   /// Build a WHERE expression from search and mimeTypePrefix filters.
   Expression _buildWhereClause(
     MediaAssetTable t, {
-    required int projectId,
+    required UuidValue projectId,
     String? search,
     String? mimeTypePrefix,
   }) {

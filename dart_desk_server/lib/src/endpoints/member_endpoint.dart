@@ -1,11 +1,12 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
 
 class MemberEndpoint extends Endpoint {
   /// Helper to verify caller is admin+ for the client.
-  Future<User> _requireClientAdmin(Session session, int clientId) async {
+  Future<User> _requireClientAdmin(Session session, UuidValue clientId) async {
     final auth = session.authenticated;
     if (auth == null) {
       throw ApiException(message: 'User must be authenticated', code: 401);
@@ -18,7 +19,7 @@ class MemberEndpoint extends Endpoint {
   }
 
   /// Require caller is at least a member of the given client.
-  Future<User> _requireClientMember(Session session, int clientId) async {
+  Future<User> _requireClientMember(Session session, UuidValue clientId) async {
     final auth = session.authenticated;
     if (auth == null) {
       throw ApiException(message: 'User must be authenticated', code: 401);
@@ -28,7 +29,7 @@ class MemberEndpoint extends Endpoint {
 
   Future<List<User>> listMembers(
     Session session, {
-    required int clientId,
+    required UuidValue clientId,
   }) async {
     await _requireClientMember(session, clientId);
 
@@ -42,7 +43,7 @@ class MemberEndpoint extends Endpoint {
 
   Future<User> inviteMember(
     Session session, {
-    required int clientId,
+    required UuidValue clientId,
     required String email,
     required ClientRole role,
   }) async {
@@ -73,8 +74,8 @@ class MemberEndpoint extends Endpoint {
 
   Future<User> updateMemberRole(
     Session session, {
-    required int clientId,
-    required int userId,
+    required UuidValue clientId,
+    required UuidValue userId,
     required ClientRole role,
   }) async {
     await _requireClientAdmin(session, clientId);
@@ -106,8 +107,8 @@ class MemberEndpoint extends Endpoint {
 
   Future<void> removeMember(
     Session session, {
-    required int clientId,
-    required int userId,
+    required UuidValue clientId,
+    required UuidValue userId,
   }) async {
     await _requireClientAdmin(session, clientId);
 
