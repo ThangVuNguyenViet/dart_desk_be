@@ -43,15 +43,22 @@ import 'project_member.dart' as _i28;
 import 'project_role.dart' as _i29;
 import 'public_document.dart' as _i30;
 import 'user.dart' as _i31;
-import 'package:dart_desk_server/src/generated/api_token.dart' as _i32;
-import 'package:dart_desk_server/src/generated/deployment.dart' as _i33;
-import 'package:dart_desk_server/src/generated/document_crdt_operation.dart'
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/api_token.dart'
+    as _i32;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/deployment.dart'
+    as _i33;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/document_crdt_operation.dart'
     as _i34;
-import 'package:dart_desk_server/src/generated/media_asset.dart' as _i35;
-import 'package:dart_desk_server/src/generated/user.dart' as _i36;
-import 'package:dart_desk_server/src/generated/migration_history.dart' as _i37;
-import 'package:dart_desk_server/src/generated/project_member.dart' as _i38;
-import 'package:dart_desk_server/src/generated/public_document.dart' as _i39;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/media_asset.dart'
+    as _i35;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/user.dart'
+    as _i36;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/migration_history.dart'
+    as _i37;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/project_member.dart'
+    as _i38;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/public_document.dart'
+    as _i39;
 export 'api_exception.dart';
 export 'api_token.dart';
 export 'api_token_with_value.dart';
@@ -857,6 +864,18 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: true,
           dartType: 'int?',
         ),
+        _i2.ColumnDefinition(
+          name: 'updatedByUserId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
@@ -872,6 +891,16 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'document_versions_fk_1',
           columns: ['createdByUserId'],
+          referenceTable: 'users',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.setNull,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'document_versions_fk_2',
+          columns: ['updatedByUserId'],
           referenceTable: 'users',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
@@ -1089,6 +1118,12 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
         ),
       ],
       foreignKeys: [
@@ -1445,6 +1480,12 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.ColumnDefinition(
           name: 'uploadedByUserId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedByUserId',
           columnType: _i2.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
@@ -1813,6 +1854,24 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'DateTime?',
           columnDefault: 'CURRENT_TIMESTAMP',
         ),
+        _i2.ColumnDefinition(
+          name: 'createdByUserId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedByUserId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
@@ -1823,6 +1882,26 @@ class Protocol extends _i1.SerializationManagerServer {
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'projects_fk_1',
+          columns: ['createdByUserId'],
+          referenceTable: 'users',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.setNull,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'projects_fk_2',
+          columns: ['updatedByUserId'],
+          referenceTable: 'users',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.setNull,
           matchType: null,
         ),
       ],
@@ -1946,6 +2025,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: true,
           dartType: 'DateTime?',
           columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
         ),
       ],
       foreignKeys: [],

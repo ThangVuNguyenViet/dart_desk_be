@@ -34,6 +34,7 @@ abstract class MediaAsset
     this.locationLat,
     this.locationLng,
     this.uploadedByUserId,
+    this.updatedByUserId,
     DateTime? createdAt,
     required this.metadataStatus,
   }) : createdAt = createdAt ?? DateTime.now();
@@ -57,6 +58,7 @@ abstract class MediaAsset
     double? locationLat,
     double? locationLng,
     int? uploadedByUserId,
+    int? updatedByUserId,
     DateTime? createdAt,
     required _i2.MediaAssetMetadataStatus metadataStatus,
   }) = _MediaAssetImpl;
@@ -81,6 +83,7 @@ abstract class MediaAsset
       locationLat: (jsonSerialization['locationLat'] as num?)?.toDouble(),
       locationLng: (jsonSerialization['locationLng'] as num?)?.toDouble(),
       uploadedByUserId: jsonSerialization['uploadedByUserId'] as int?,
+      updatedByUserId: jsonSerialization['updatedByUserId'] as int?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -131,6 +134,8 @@ abstract class MediaAsset
 
   int? uploadedByUserId;
 
+  int? updatedByUserId;
+
   DateTime? createdAt;
 
   _i2.MediaAssetMetadataStatus metadataStatus;
@@ -160,6 +165,7 @@ abstract class MediaAsset
     double? locationLat,
     double? locationLng,
     int? uploadedByUserId,
+    int? updatedByUserId,
     DateTime? createdAt,
     _i2.MediaAssetMetadataStatus? metadataStatus,
   });
@@ -185,6 +191,7 @@ abstract class MediaAsset
       if (locationLat != null) 'locationLat': locationLat,
       if (locationLng != null) 'locationLng': locationLng,
       if (uploadedByUserId != null) 'uploadedByUserId': uploadedByUserId,
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       'metadataStatus': metadataStatus.toJson(),
     };
@@ -212,6 +219,7 @@ abstract class MediaAsset
       if (locationLat != null) 'locationLat': locationLat,
       if (locationLng != null) 'locationLng': locationLng,
       if (uploadedByUserId != null) 'uploadedByUserId': uploadedByUserId,
+      if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       'metadataStatus': metadataStatus.toJson(),
     };
@@ -269,6 +277,7 @@ class _MediaAssetImpl extends MediaAsset {
     double? locationLat,
     double? locationLng,
     int? uploadedByUserId,
+    int? updatedByUserId,
     DateTime? createdAt,
     required _i2.MediaAssetMetadataStatus metadataStatus,
   }) : super._(
@@ -290,6 +299,7 @@ class _MediaAssetImpl extends MediaAsset {
          locationLat: locationLat,
          locationLng: locationLng,
          uploadedByUserId: uploadedByUserId,
+         updatedByUserId: updatedByUserId,
          createdAt: createdAt,
          metadataStatus: metadataStatus,
        );
@@ -317,6 +327,7 @@ class _MediaAssetImpl extends MediaAsset {
     Object? locationLat = _Undefined,
     Object? locationLng = _Undefined,
     Object? uploadedByUserId = _Undefined,
+    Object? updatedByUserId = _Undefined,
     Object? createdAt = _Undefined,
     _i2.MediaAssetMetadataStatus? metadataStatus,
   }) {
@@ -341,6 +352,9 @@ class _MediaAssetImpl extends MediaAsset {
       uploadedByUserId: uploadedByUserId is int?
           ? uploadedByUserId
           : this.uploadedByUserId,
+      updatedByUserId: updatedByUserId is int?
+          ? updatedByUserId
+          : this.updatedByUserId,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       metadataStatus: metadataStatus ?? this.metadataStatus,
     );
@@ -435,6 +449,11 @@ class MediaAssetUpdateTable extends _i1.UpdateTable<MediaAssetTable> {
     value,
   );
 
+  _i1.ColumnValue<int, int> updatedByUserId(int? value) => _i1.ColumnValue(
+    table.updatedByUserId,
+    value,
+  );
+
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime? value) =>
       _i1.ColumnValue(
         table.createdAt,
@@ -519,6 +538,10 @@ class MediaAssetTable extends _i1.Table<int?> {
       'uploadedByUserId',
       this,
     );
+    updatedByUserId = _i1.ColumnInt(
+      'updatedByUserId',
+      this,
+    );
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
@@ -567,6 +590,8 @@ class MediaAssetTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt uploadedByUserId;
 
+  late final _i1.ColumnInt updatedByUserId;
+
   late final _i1.ColumnDateTime createdAt;
 
   late final _i1.ColumnEnum<_i2.MediaAssetMetadataStatus> metadataStatus;
@@ -591,6 +616,7 @@ class MediaAssetTable extends _i1.Table<int?> {
     locationLat,
     locationLng,
     uploadedByUserId,
+    updatedByUserId,
     createdAt,
     metadataStatus,
   ];

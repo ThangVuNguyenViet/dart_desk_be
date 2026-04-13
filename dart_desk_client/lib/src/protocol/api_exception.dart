@@ -17,17 +17,20 @@ abstract class ApiException
   ApiException._({
     required this.message,
     required this.code,
+    this.errorCode,
   });
 
   factory ApiException({
     required String message,
     required int code,
+    String? errorCode,
   }) = _ApiExceptionImpl;
 
   factory ApiException.fromJson(Map<String, dynamic> jsonSerialization) {
     return ApiException(
       message: jsonSerialization['message'] as String,
       code: jsonSerialization['code'] as int,
+      errorCode: jsonSerialization['errorCode'] as String?,
     );
   }
 
@@ -35,12 +38,15 @@ abstract class ApiException
 
   int code;
 
+  String? errorCode;
+
   /// Returns a shallow copy of this [ApiException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   ApiException copyWith({
     String? message,
     int? code,
+    String? errorCode,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -48,22 +54,27 @@ abstract class ApiException
       '__className__': 'ApiException',
       'message': message,
       'code': code,
+      if (errorCode != null) 'errorCode': errorCode,
     };
   }
 
   @override
   String toString() {
-    return 'ApiException(message: $message, code: $code)';
+    return 'ApiException(message: $message, code: $code, errorCode: $errorCode)';
   }
 }
+
+class _Undefined {}
 
 class _ApiExceptionImpl extends ApiException {
   _ApiExceptionImpl({
     required String message,
     required int code,
+    String? errorCode,
   }) : super._(
          message: message,
          code: code,
+         errorCode: errorCode,
        );
 
   /// Returns a shallow copy of this [ApiException]
@@ -73,10 +84,12 @@ class _ApiExceptionImpl extends ApiException {
   ApiException copyWith({
     String? message,
     int? code,
+    Object? errorCode = _Undefined,
   }) {
     return ApiException(
       message: message ?? this.message,
       code: code ?? this.code,
+      errorCode: errorCode is String? ? errorCode : this.errorCode,
     );
   }
 }

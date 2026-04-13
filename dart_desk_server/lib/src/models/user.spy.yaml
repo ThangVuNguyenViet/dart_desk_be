@@ -9,6 +9,7 @@ fields:
   serverpodUserId: String?
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
+  deletedAt: DateTime?
 indexes:
   users_client_email_idx:
     fields: clientId, email

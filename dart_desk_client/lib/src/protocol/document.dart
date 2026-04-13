@@ -28,6 +28,7 @@ abstract class Document implements _i1.SerializableModel {
     DateTime? updatedAt,
     this.createdByUserId,
     this.updatedByUserId,
+    this.deletedAt,
   }) : isDefault = isDefault ?? false,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
@@ -47,6 +48,7 @@ abstract class Document implements _i1.SerializableModel {
     DateTime? updatedAt,
     int? createdByUserId,
     int? updatedByUserId,
+    DateTime? deletedAt,
   }) = _DocumentImpl;
 
   factory Document.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -75,6 +77,9 @@ abstract class Document implements _i1.SerializableModel {
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
       createdByUserId: jsonSerialization['createdByUserId'] as int?,
       updatedByUserId: jsonSerialization['updatedByUserId'] as int?,
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
     );
   }
 
@@ -109,6 +114,8 @@ abstract class Document implements _i1.SerializableModel {
 
   int? updatedByUserId;
 
+  DateTime? deletedAt;
+
   /// Returns a shallow copy of this [Document]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -127,6 +134,7 @@ abstract class Document implements _i1.SerializableModel {
     DateTime? updatedAt,
     int? createdByUserId,
     int? updatedByUserId,
+    DateTime? deletedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -146,6 +154,7 @@ abstract class Document implements _i1.SerializableModel {
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
       if (createdByUserId != null) 'createdByUserId': createdByUserId,
       if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -173,6 +182,7 @@ class _DocumentImpl extends Document {
     DateTime? updatedAt,
     int? createdByUserId,
     int? updatedByUserId,
+    DateTime? deletedAt,
   }) : super._(
          id: id,
          projectId: projectId,
@@ -188,6 +198,7 @@ class _DocumentImpl extends Document {
          updatedAt: updatedAt,
          createdByUserId: createdByUserId,
          updatedByUserId: updatedByUserId,
+         deletedAt: deletedAt,
        );
 
   /// Returns a shallow copy of this [Document]
@@ -209,6 +220,7 @@ class _DocumentImpl extends Document {
     Object? updatedAt = _Undefined,
     Object? createdByUserId = _Undefined,
     Object? updatedByUserId = _Undefined,
+    Object? deletedAt = _Undefined,
   }) {
     return Document(
       id: id is int? ? id : this.id,
@@ -229,6 +241,7 @@ class _DocumentImpl extends Document {
       updatedByUserId: updatedByUserId is int?
           ? updatedByUserId
           : this.updatedByUserId,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
     );
   }
 }

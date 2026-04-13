@@ -12,6 +12,8 @@ fields:
   archivedAt: DateTime?
   createdAt: DateTime?, default=now
   createdByUserId: int?, relation(parent=users, onDelete=SetNull)
+  updatedByUserId: int?, relation(parent=users, onDelete=SetNull)
+  deletedAt: DateTime?
 indexes:
   document_versions_document_id_idx:
     fields: documentId

@@ -38,15 +38,22 @@ import 'project_member.dart' as _i25;
 import 'project_role.dart' as _i26;
 import 'public_document.dart' as _i27;
 import 'user.dart' as _i28;
-import 'package:dart_desk_client/src/protocol/api_token.dart' as _i29;
-import 'package:dart_desk_client/src/protocol/deployment.dart' as _i30;
-import 'package:dart_desk_client/src/protocol/document_crdt_operation.dart'
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/api_token.dart'
+    as _i29;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/deployment.dart'
+    as _i30;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/document_crdt_operation.dart'
     as _i31;
-import 'package:dart_desk_client/src/protocol/media_asset.dart' as _i32;
-import 'package:dart_desk_client/src/protocol/user.dart' as _i33;
-import 'package:dart_desk_client/src/protocol/migration_history.dart' as _i34;
-import 'package:dart_desk_client/src/protocol/project_member.dart' as _i35;
-import 'package:dart_desk_client/src/protocol/public_document.dart' as _i36;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/media_asset.dart'
+    as _i32;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/user.dart'
+    as _i33;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/migration_history.dart'
+    as _i34;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/project_member.dart'
+    as _i35;
+import 'file:///Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/.worktrees/backend-improvements/dart_desk_server/lib/src/generated/public_document.dart'
+    as _i36;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i37;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'

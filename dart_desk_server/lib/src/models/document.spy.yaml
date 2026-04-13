@@ -14,6 +14,7 @@ fields:
   updatedAt: DateTime?, default=now
   createdByUserId: int?, relation(parent=users, onDelete=SetNull)
   updatedByUserId: int?, relation(parent=users, onDelete=SetNull)
+  deletedAt: DateTime?
 indexes:
   documents_project_type_idx:
     fields: projectId, documentType
