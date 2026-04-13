@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:uuid/uuid.dart';
 
 import '../auth/api_key_validator.dart';
 import '../auth/resolve_user.dart';

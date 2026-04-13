@@ -1,5 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:uuid/uuid.dart';
 
 import '../generated/protocol.dart';
 

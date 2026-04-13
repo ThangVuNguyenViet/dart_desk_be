@@ -1,5 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:uuid/uuid.dart';
 
 /// Typed extension on [Session] for accessing auth scopes.
 extension DartDeskSessionExt on Session {
