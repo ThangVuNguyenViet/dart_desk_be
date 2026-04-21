@@ -74,7 +74,7 @@ class MediaEndpoint extends Endpoint {
     // Store file
     final provider = session.imageStorage;
     final bytes = fileData.buffer.asUint8List();
-    final publicUrl = await provider.store(assetId, fileName, bytes);
+    final publicUrl = await provider.store(assetId, fileName, bytes, mimeType);
     final storagePath = 'media/$assetId/$fileName';
 
     // Create DB record
@@ -150,7 +150,7 @@ class MediaEndpoint extends Endpoint {
 
     // Store file
     final provider = session.imageStorage;
-    final publicUrl = await provider.store(assetId, fileName, bytes);
+    final publicUrl = await provider.store(assetId, fileName, bytes, mimeType);
     final storagePath = 'media/$assetId/$fileName';
 
     // Create DB record

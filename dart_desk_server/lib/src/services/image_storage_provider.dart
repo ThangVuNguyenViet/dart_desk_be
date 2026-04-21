@@ -45,7 +45,9 @@ class ImageTransformParams {
 /// Implementations: LocalImageStorageProvider (default), AwsImageStorageProvider (cloud).
 abstract class ImageStorageProvider {
   /// Store file, return public URL.
-  Future<String> store(String assetId, String fileName, Uint8List data);
+  ///
+  /// [contentType] is the MIME type to serve to clients (e.g. `image/jpeg`).
+  Future<String> store(String assetId, String fileName, Uint8List data, String contentType);
 
   /// Delete file by its storage path.
   Future<void> delete(String storagePath);

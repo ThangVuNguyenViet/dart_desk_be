@@ -10,7 +10,9 @@ class LocalImageStorageProvider implements ImageStorageProvider {
   LocalImageStorageProvider(this.session);
 
   @override
-  Future<String> store(String assetId, String fileName, Uint8List data) async {
+  // NOTE: Serverpod's built-in storage does NOT accept a Content-Type parameter.
+  // This is a known limitation for local/dev mode; production uses S3 (AwsImageStorageProvider).
+  Future<String> store(String assetId, String fileName, Uint8List data, String contentType) async {
     final storagePath = 'media/$assetId/$fileName';
     await session.storage.storeFile(
       storageId: 'public',
