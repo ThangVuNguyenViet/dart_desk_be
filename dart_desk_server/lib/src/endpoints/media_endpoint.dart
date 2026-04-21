@@ -1,7 +1,7 @@
-import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'package:image/image.dart' as img;
 import 'package:mime/mime.dart';
 import 'package:serverpod/serverpod.dart';
 
@@ -9,7 +9,7 @@ import '../auth/dart_desk_session.dart';
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
 import '../plugin/dart_desk_session.dart';
-import '../services/metadata_extractor.dart';
+import '../services/image_metadata.dart';
 
 /// Allowed image MIME types for upload validation.
 const _allowedImageMimeTypes = {
@@ -31,57 +31,94 @@ const _maxFileSize = 10 * 1024 * 1024;
 /// Endpoint for managing media assets (images and files).
 /// All operations require authentication.
 class MediaEndpoint extends Endpoint {
-  /// Upload an image file with client-provided quick metadata.
+  /// Upload an image. The server computes all derived metadata (hash,
+  /// dimensions, BlurHash, LQIP, palette, EXIF) in one synchronous pass.
   ///
-  /// Performs deduplication based on content hash + dimensions + extension.
-  /// If an identical asset already exists, returns the existing record.
+  /// Deduplication: same bytes produce the same assetId and return the
+  /// existing row.
   Future<MediaAsset> uploadImage(
     Session session,
     String fileName,
     ByteData fileData,
-    int width,
-    int height,
-    bool hasAlpha,
-    String blurHash,
-    String contentHash,
   ) async {
     final auth = await _authenticateAndResolve(session);
 
-    // Validate MIME type
     final mimeType = lookupMimeType(fileName);
     if (mimeType == null || !_allowedImageMimeTypes.contains(mimeType)) {
-      throw ApiException(message: 'Invalid image type. Allowed types: ${_allowedImageMimeTypes.join(", ")}', code: 400);
+      throw ApiException(
+        message: 'Invalid image type. Allowed types: '
+            '${_allowedImageMimeTypes.join(", ")}',
+        code: 400,
+      );
     }
 
-    // Validate file size
     if (fileData.lengthInBytes > _maxFileSize) {
-      throw ApiException(message: 'File size exceeds maximum allowed size of 10MB', code: 400);
+      throw ApiException(
+        message: 'File size exceeds maximum allowed size of 10MB',
+        code: 400,
+      );
     }
 
-    // Build asset ID for deduplication
+    final bytes = fileData.buffer.asUint8List();
+    final contentHash = sha256.convert(bytes).toString();
+
+    int width;
+    int height;
+    bool hasAlpha;
+    String blurHash;
+    String? lqip;
+    String? paletteJson;
+    String? exifJson;
+    double? locationLat;
+    double? locationLng;
+
+    if (mimeType == 'image/svg+xml') {
+      width = 0;
+      height = 0;
+      hasAlpha = true;
+      blurHash = '';
+      lqip = null;
+      paletteJson = null;
+    } else {
+      img.Image? decoded;
+      try {
+        decoded = img.decodeImage(bytes);
+      } catch (_) {
+        decoded = null;
+      }
+      if (decoded == null) {
+        throw ApiException(message: 'Failed to decode image', code: 400);
+      }
+      final meta = await extractFromDecodedImage(decoded, bytes);
+      width = meta.width;
+      height = meta.height;
+      hasAlpha = meta.hasAlpha;
+      blurHash = meta.blurHash;
+      lqip = meta.lqip;
+      paletteJson = meta.paletteJson;
+      exifJson = meta.exifJson;
+      locationLat = meta.locationLat;
+      locationLng = meta.locationLng;
+    }
+
     final ext = fileName.split('.').last.toLowerCase();
     final assetId = 'image-$contentHash-${width}x$height-$ext';
 
-    // Check for existing asset (deduplication)
     final existing = await MediaAsset.db.findFirstRow(
       session,
       where: (t) => t.assetId.equals(assetId),
     );
-    if (existing != null) {
-      return existing;
-    }
+    if (existing != null) return existing;
 
-    // Store file
+    final slugged = slugifyFilename(fileName);
     final provider = session.imageStorage;
-    final bytes = fileData.buffer.asUint8List();
-    final publicUrl = await provider.store(assetId, fileName, bytes, mimeType);
-    final storagePath = 'media/$assetId/$fileName';
+    final publicUrl = await provider.store(assetId, slugged, bytes, mimeType);
+    final storagePath = 'media/$assetId/$slugged';
 
-    // Create DB record
     final asset = MediaAsset(
       projectId: auth.projectId!,
       assetId: assetId,
-      fileName: fileName,
+      fileName: fileName, // original for display
       mimeType: mimeType,
       fileSize: fileData.lengthInBytes,
       storagePath: storagePath,
@@ -90,25 +127,26 @@ class MediaEndpoint extends Endpoint {
       height: height,
       hasAlpha: hasAlpha,
       blurHash: blurHash,
+      lqip: lqip,
+      paletteJson: paletteJson,
+      exifJson: exifJson,
+      locationLat: locationLat,
+      locationLng: locationLng,
       uploadedByUserId: auth.user!.id,
-      metadataStatus: MediaAssetMetadataStatus.pending,
+      metadataStatus: MediaAssetMetadataStatus.complete,
     );
 
     try {
       final inserted = await MediaAsset.db.insertRow(session, asset);
-      session.log('Uploaded image MediaAsset assetId=$assetId', level: LogLevel.info);
-      unawaited(MetadataExtractor.extractAndUpdate(session, inserted));
+      session.log('Uploaded image MediaAsset assetId=$assetId',
+          level: LogLevel.info);
       return inserted;
     } catch (e) {
-      // Race condition: another request may have inserted the same assetId.
-      // Re-fetch and return.
       final reFetched = await MediaAsset.db.findFirstRow(
         session,
         where: (t) => t.assetId.equals(assetId),
       );
-      if (reFetched != null) {
-        return reFetched;
-      }
+      if (reFetched != null) return reFetched;
       rethrow;
     }
   }

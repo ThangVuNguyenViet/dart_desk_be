@@ -1909,11 +1909,6 @@ class _MediaEndpoint {
     _i1.TestSessionBuilder sessionBuilder,
     String fileName,
     _i16.ByteData fileData,
-    int width,
-    int height,
-    bool hasAlpha,
-    String blurHash,
-    String contentHash,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1929,11 +1924,6 @@ class _MediaEndpoint {
           parameters: _i1.testObjectToJson({
             'fileName': fileName,
             'fileData': fileData,
-            'width': width,
-            'height': height,
-            'hasAlpha': hasAlpha,
-            'blurHash': blurHash,
-            'contentHash': contentHash,
           }),
           serializationManager: _serializationManager,
         );

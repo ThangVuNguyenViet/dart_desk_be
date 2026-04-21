@@ -730,29 +730,20 @@ class EndpointMedia extends _i1.EndpointRef {
   @override
   String get name => 'media';
 
-  /// Upload an image file with client-provided quick metadata.
+  /// Upload an image. The server computes all derived metadata (hash,
+  /// dimensions, BlurHash, LQIP, palette, EXIF) in one synchronous pass.
   ///
-  /// Performs deduplication based on content hash + dimensions + extension.
-  /// If an identical asset already exists, returns the existing record.
+  /// Deduplication: same bytes produce the same assetId and return the
+  /// existing row.
   _i2.Future<_i15.MediaAsset> uploadImage(
     String fileName,
     _i16.ByteData fileData,
-    int width,
-    int height,
-    bool hasAlpha,
-    String blurHash,
-    String contentHash,
   ) => caller.callServerEndpoint<_i15.MediaAsset>(
     'media',
     'uploadImage',
     {
       'fileName': fileName,
       'fileData': fileData,
-      'width': width,
-      'height': height,
-      'hasAlpha': hasAlpha,
-      'blurHash': blurHash,
-      'contentHash': contentHash,
     },
   );
 

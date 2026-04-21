@@ -314,8 +314,8 @@ void main() {
         expect(heroImage['_type'], equals('imageReference'));
         expect(heroImage['assetId'], equals(asset.assetId));
         expect(heroImage['publicUrl'], equals(asset.publicUrl));
-        expect(heroImage['width'], equals(1));
-        expect(heroImage['height'], equals(1));
+        expect(heroImage['width'], greaterThan(0));
+        expect(heroImage['height'], greaterThan(0));
         expect(heroImage['blurHash'], isNotEmpty);
       });
 

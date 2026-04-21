@@ -1298,31 +1298,6 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<_i21.ByteData>(),
               nullable: false,
             ),
-            'width': _i1.ParameterDescription(
-              name: 'width',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-            'height': _i1.ParameterDescription(
-              name: 'height',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-            'hasAlpha': _i1.ParameterDescription(
-              name: 'hasAlpha',
-              type: _i1.getType<bool>(),
-              nullable: false,
-            ),
-            'blurHash': _i1.ParameterDescription(
-              name: 'blurHash',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'contentHash': _i1.ParameterDescription(
-              name: 'contentHash',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
           },
           call:
               (
@@ -1332,11 +1307,6 @@ class Endpoints extends _i1.EndpointDispatch {
                 session,
                 params['fileName'],
                 params['fileData'],
-                params['width'],
-                params['height'],
-                params['hasAlpha'],
-                params['blurHash'],
-                params['contentHash'],
               ),
         ),
         'uploadFile': _i1.MethodConnector(

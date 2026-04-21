@@ -1,6 +1,9 @@
-import 'package:dart_desk_server/src/generated/api_exception.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+
+import 'package:dart_desk_server/src/generated/api_exception.dart';
+import 'package:dart_desk_server/src/generated/protocol.dart';
+import 'package:image/image.dart' as img;
 import 'package:test/test.dart';
 import 'test_tools/serverpod_test_tools.dart';
 import 'helpers/test_data_factory.dart';
@@ -34,11 +37,54 @@ void main() {
         final byteData = ByteData.sublistView(Uint8List.fromList(bytes));
 
         expect(
+          () => endpoints.media.uploadImage(authed, 'bad.xyz', byteData),
+          throwsA(isA<ApiException>()),
+        );
+      });
+
+      test('returns fully-populated MediaAsset synchronously', () async {
+        // Use a distinct green PNG so bytes differ from the red fixture used
+        // elsewhere — avoids dedup returning an earlier row.
+        final authed = factory.authenticatedSession();
+        final greenImage = img.fill(
+          img.Image(width: 4, height: 4),
+          color: img.ColorRgb8(0, 255, 0),
+        );
+        final pngBytes = img.encodePng(greenImage);
+        final byteData = ByteData.sublistView(Uint8List.fromList(pngBytes));
+        final result = await endpoints.media.uploadImage(
+          authed,
+          'Hero Photo.png',
+          byteData,
+        );
+        expect(result.width, greaterThan(0));
+        expect(result.height, greaterThan(0));
+        expect(result.blurHash, isNotEmpty);
+        expect(result.lqip, startsWith('data:image/jpeg;base64,'));
+        expect(result.paletteJson, contains('dominant'));
+        expect(result.metadataStatus, MediaAssetMetadataStatus.complete);
+        // fileName preserved; storagePath uses slugged form
+        expect(result.fileName, 'Hero Photo.png');
+        expect(result.storagePath, contains('hero-photo.png'));
+      });
+
+      test('rejects malformed bytes with 400', () async {
+        final authed = factory.authenticatedSession();
+        final bad = Uint8List.fromList([1, 2, 3, 4]);
+        expect(
           () => endpoints.media.uploadImage(
-            authed, 'bad.xyz', byteData, 1, 1, false, '', 'hash',
+            authed,
+            'bad.png',
+            ByteData.sublistView(bad),
           ),
           throwsA(isA<ApiException>()),
         );
+      });
+
+      test('dedup: same bytes return same assetId', () async {
+        final a = await factory.uploadTestImage(fileName: 'first.png');
+        final b = await factory.uploadTestImage(fileName: 'second.png');
+        expect(a.assetId, b.assetId);
       });
     });
 
@@ -171,9 +217,7 @@ void main() {
         final authed = factory.authenticatedSession();
         final oversized = ByteData(10 * 1024 * 1024 + 1);
         expect(
-          () => endpoints.media.uploadImage(
-            authed, 'huge.png', oversized, 1, 1, false, '', 'hash',
-          ),
+          () => endpoints.media.uploadImage(authed, 'huge.png', oversized),
           throwsA(isA<ApiException>()),
         );
       });
