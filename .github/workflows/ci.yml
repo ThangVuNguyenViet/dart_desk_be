@@ -65,6 +65,12 @@ jobs:
         working-directory: dart_desk_server
         run: dart pub get
 
+      - name: Provision passwords.yaml from example
+        working-directory: dart_desk_server
+        run: cp config/passwords.yaml.example config/passwords.yaml
+
       - name: Run integration tests (excludes stress)
         working-directory: dart_desk_server
-        run: dart test test/integration/ --exclude-tags=stress --reporter expanded
+        # --concurrency=1 serializes test files. Multiple withServerpod
+        # suites otherwise compete for ports 8080/8081 when run in parallel.
+        run: dart test test/integration/ --exclude-tags=stress --concurrency=1 --reporter expanded
