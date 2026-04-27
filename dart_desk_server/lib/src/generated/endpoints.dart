@@ -2054,6 +2054,32 @@ class Endpoints extends _i1.EndpointDispatch {
                         params['slug'],
                       ),
         ),
+        'getContentsByDataContains': _i1.MethodConnector(
+          name: 'getContentsByDataContains',
+          params: {
+            'documentType': _i1.ParameterDescription(
+              name: 'documentType',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'dataContainsJson': _i1.ParameterDescription(
+              name: 'dataContainsJson',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['publicContent'] as _i15.PublicContentEndpoint)
+                      .getContentsByDataContains(
+                        session,
+                        params['documentType'],
+                        params['dataContainsJson'],
+                      ),
+        ),
       },
     );
     connectors['refreshJwtTokens'] = _i1.EndpointConnector(

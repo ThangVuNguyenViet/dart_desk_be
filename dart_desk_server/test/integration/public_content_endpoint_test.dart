@@ -228,6 +228,32 @@ void main() {
         );
       });
     });
+
+    group('getContentsByDataContains', () {
+      test('returns docs whose data contains the fragment', () async {
+        await createPublishedDocument(
+          documentType: 'deviceGroup',
+          title: 'Group 1',
+          slug: 'group-1',
+          data: {'deviceIds': ['ABC-123', 'ABC-456']},
+        );
+        await createPublishedDocument(
+          documentType: 'deviceGroup',
+          title: 'Group 2',
+          slug: 'group-2',
+          data: {'deviceIds': ['XYZ-001']},
+        );
+
+        final result = await endpoints.publicContent.getContentsByDataContains(
+          factory.authenticatedSession(),
+          'deviceGroup',
+          '{"deviceIds":["ABC-123"]}',
+        );
+
+        expect(result, hasLength(1));
+        expect(result.first.title, equals('Group 1'));
+      });
+    });
   });
 
   withServerpod(

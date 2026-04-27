@@ -1140,6 +1140,23 @@ class EndpointPublicContent extends _i1.EndpointRef {
       'slug': slug,
     },
   );
+
+  /// Returns published documents of [documentType] whose JSON `data` contains
+  /// the [dataContainsJson] fragment. The fragment must parse to a JSON object;
+  /// scalars and arrays are rejected. Matching uses Postgres `jsonb` containment
+  /// (`@>`) against the `data_jsonb` generated column. Project scope is enforced
+  /// from the API key. Capped at 100 results.
+  _i2.Future<List<_i25.PublicDocument>> getContentsByDataContains(
+    String documentType,
+    String dataContainsJson,
+  ) => caller.callServerEndpoint<List<_i25.PublicDocument>>(
+    'publicContent',
+    'getContentsByDataContains',
+    {
+      'documentType': documentType,
+      'dataContainsJson': dataContainsJson,
+    },
+  );
 }
 
 /// {@category Endpoint}

@@ -121,6 +121,91 @@ class PublicContentEndpoint extends Endpoint {
     return _toPublicDocument(session, document);
   }
 
+  /// Returns published documents of [documentType] whose JSON `data` contains
+  /// the [dataContainsJson] fragment. The fragment must parse to a JSON object;
+  /// scalars and arrays are rejected. Matching uses Postgres `jsonb` containment
+  /// (`@>`) against the `data_jsonb` generated column. Project scope is enforced
+  /// from the API key. Capped at 100 results.
+  Future<List<PublicDocument>> getContentsByDataContains(
+    Session session,
+    String documentType,
+    String dataContainsJson,
+  ) async {
+    final projectId = _requireReadAccess(session);
+
+    final dynamic parsed;
+    try {
+      parsed = jsonDecode(dataContainsJson);
+    } catch (_) {
+      throw ApiException(
+        message: 'dataContainsJson must be valid JSON',
+        code: 400,
+      );
+    }
+    if (parsed is! Map<String, dynamic>) {
+      throw ApiException(
+        message: 'dataContainsJson must be a JSON object',
+        code: 400,
+      );
+    }
+
+    // Step 1: raw SQL filter using data_jsonb @> ... — only fetches matching IDs.
+    // Uses the data_jsonb generated column (not data) because Postgres can only
+    // GIN-index jsonb, and the typed ORM doesn't know about data_jsonb.
+    // Column names are quoted camelCase to match the documents table DDL.
+    final idRows = await session.db.unsafeQuery(
+      r'''
+      SELECT id FROM documents
+      WHERE "projectId" = @projectId
+        AND "documentType" = @docType
+        AND "publishedAt" IS NOT NULL
+        AND "deletedAt" IS NULL
+        AND data_jsonb @> @fragment::jsonb
+      LIMIT 100
+      ''',
+      parameters: QueryParameters.named({
+        'projectId': projectId.toString(),
+        'docType': documentType,
+        'fragment': dataContainsJson,
+      }),
+    );
+
+    final ids = idRows.map((r) => UuidValue.fromString(r[0].toString())).toSet();
+    if (ids.isEmpty) return [];
+
+    // Step 2: typed materialization via the normal ORM.
+    //
+    // Design decision: we use a two-step pattern (raw SQL filter, then typed
+    // load by ID) instead of a single SELECT * + hand-written row-to-Document
+    // mapper. The trade-offs:
+    //
+    //   Two-step (chosen):
+    //     - Document.db.find returns fully-typed Document objects automatically.
+    //     - No hand-rolled deserializer to maintain.
+    //     - Adding a new field to Document later: this endpoint adapts for free.
+    //     - Survives column reorders and schema evolution.
+    //     - Cost: one extra DB round-trip (negligible at LIMIT 100 on indexed
+    //       queries — sub-ms locally, single-digit ms across a managed DB).
+    //
+    //   One-step (rejected):
+    //     - SELECT * + DatabaseResultRow.toColumnMap() + hand-rolled mapper.
+    //     - One round-trip, but ~15 lines of brittle name-keyed deserialization.
+    //     - Silent-bug failure mode: adding a new field to Document leaves it
+    //       unset on every result from this endpoint until someone notices.
+    //     - Tight coupling between this endpoint and Document's column list.
+    //
+    // The typed `data_jsonb` column would also re-introduce the type-cast issue
+    // we hit during D5 (driver decodes jsonb to Map; can't cast to String?).
+    // Loading via Document.db.find sidesteps that — it reads the `data` text
+    // column normally, which is why this two-step pattern works at all.
+    final docs = await Document.db.find(
+      session,
+      where: (t) => t.id.inSet(ids),
+    );
+
+    return Future.wait(docs.map((d) => _toPublicDocument(session, d)));
+  }
+
   // ------------------------------------------------------------------
   // Private helpers
   // ------------------------------------------------------------------
