@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dart_desk_server/src/generated/protocol.dart';
+import 'package:serverpod/serverpod.dart' show Scope, UuidValue;
 import 'package:test/test.dart';
 
 import 'helpers/test_data_factory.dart';
@@ -252,6 +253,290 @@ void main() {
 
         expect(result, hasLength(1));
         expect(result.first.title, equals('Group 1'));
+      });
+
+      // ---- Task 5: coverage tests ----
+
+      test('returns empty list when no doc contains the fragment', () async {
+        await createPublishedDocument(
+          documentType: 'deviceGroup',
+          title: 'Group 1',
+          slug: 'group-1',
+          data: {'deviceIds': ['ABC-123']},
+        );
+
+        final result = await endpoints.publicContent.getContentsByDataContains(
+          factory.authenticatedSession(),
+          'deviceGroup',
+          '{"deviceIds":["NOT-PRESENT"]}',
+        );
+
+        expect(result, isEmpty);
+      });
+
+      test('document type filter excludes other types', () async {
+        await createPublishedDocument(
+          documentType: 'deviceGroup',
+          title: 'Group',
+          slug: 'group',
+          data: {'deviceIds': ['ABC']},
+        );
+        await createPublishedDocument(
+          documentType: 'productGroup',
+          title: 'Product',
+          slug: 'product',
+          data: {'deviceIds': ['ABC']},
+        );
+
+        final result = await endpoints.publicContent.getContentsByDataContains(
+          factory.authenticatedSession(),
+          'deviceGroup',
+          '{"deviceIds":["ABC"]}',
+        );
+
+        expect(result, hasLength(1));
+        expect(result.first.title, equals('Group'));
+      });
+
+      test('excludes unpublished and soft-deleted documents', () async {
+        // Published, matches
+        await createPublishedDocument(
+          documentType: 'deviceGroup',
+          title: 'Published',
+          slug: 'published',
+          data: {'deviceIds': ['ABC']},
+        );
+        // Unpublished draft, matches data but not published
+        await factory.createTestDocument(
+          documentType: 'deviceGroup',
+          title: 'Draft',
+          slug: 'draft',
+          data: {'deviceIds': ['ABC']},
+        );
+
+        final result = await endpoints.publicContent.getContentsByDataContains(
+          factory.authenticatedSession(),
+          'deviceGroup',
+          '{"deviceIds":["ABC"]}',
+        );
+
+        expect(result, hasLength(1));
+        expect(result.first.title, equals('Published'));
+      });
+
+      test('matches nested object fragments', () async {
+        await createPublishedDocument(
+          documentType: 'deviceGroup',
+          title: 'US Group',
+          slug: 'us-group',
+          data: {'region': {'code': 'US', 'tier': 1}, 'active': true},
+        );
+        await createPublishedDocument(
+          documentType: 'deviceGroup',
+          title: 'EU Group',
+          slug: 'eu-group',
+          data: {'region': {'code': 'EU', 'tier': 1}, 'active': true},
+        );
+
+        final result = await endpoints.publicContent.getContentsByDataContains(
+          factory.authenticatedSession(),
+          'deviceGroup',
+          '{"region":{"code":"US"}}',
+        );
+
+        expect(result, hasLength(1));
+        expect(result.first.title, equals('US Group'));
+      });
+
+      test('multi-key fragment requires all keys to match', () async {
+        await createPublishedDocument(
+          documentType: 'deviceGroup',
+          title: 'Both',
+          slug: 'both',
+          data: {'deviceIds': ['ABC'], 'active': true},
+        );
+        await createPublishedDocument(
+          documentType: 'deviceGroup',
+          title: 'Inactive',
+          slug: 'inactive',
+          data: {'deviceIds': ['ABC'], 'active': false},
+        );
+
+        final result = await endpoints.publicContent.getContentsByDataContains(
+          factory.authenticatedSession(),
+          'deviceGroup',
+          '{"deviceIds":["ABC"],"active":true}',
+        );
+
+        expect(result, hasLength(1));
+        expect(result.first.title, equals('Both'));
+      });
+
+      test('rejects non-JSON input with 400', () async {
+        expect(
+          () => endpoints.publicContent.getContentsByDataContains(
+            factory.authenticatedSession(),
+            'deviceGroup',
+            'not valid json',
+          ),
+          throwsA(isA<ApiException>().having((e) => e.code, 'code', 400)),
+        );
+      });
+
+      test('rejects JSON scalar with 400', () async {
+        expect(
+          () => endpoints.publicContent.getContentsByDataContains(
+            factory.authenticatedSession(),
+            'deviceGroup',
+            '"just a string"',
+          ),
+          throwsA(isA<ApiException>().having((e) => e.code, 'code', 400)),
+        );
+      });
+
+      test('rejects JSON array with 400', () async {
+        expect(
+          () => endpoints.publicContent.getContentsByDataContains(
+            factory.authenticatedSession(),
+            'deviceGroup',
+            '["a","b"]',
+          ),
+          throwsA(isA<ApiException>().having((e) => e.code, 'code', 400)),
+        );
+      });
+
+      test('caps results at 100', () async {
+        for (var i = 0; i < 105; i++) {
+          await createPublishedDocument(
+            documentType: 'deviceGroup',
+            title: 'Group $i',
+            slug: 'group-cap-$i',
+            data: {'shared': 'yes', 'idx': i},
+          );
+        }
+
+        final result = await endpoints.publicContent.getContentsByDataContains(
+          factory.authenticatedSession(),
+          'deviceGroup',
+          '{"shared":"yes"}',
+        );
+
+        expect(result, hasLength(100));
+      }, timeout: const Timeout(Duration(minutes: 2)));
+
+      test('returns only documents in the API key\'s project', () async {
+        // Seed an additional project with a matching document.
+        final otherProjectId = UuidValue.fromString(
+          'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+        );
+        await factory.ensureTestProject(
+          projectId: otherProjectId,
+          name: 'Other Project',
+          slug: 'other-project',
+        );
+        // Insert a document for the other project directly via DB (bypass
+        // endpoint project-scope checks). Use jsonEncode because Document.data
+        // is String? — the generated column data_jsonb is computed by Postgres.
+        final session = sessionBuilder.build();
+        final otherDoc = await Document.db.insertRow(
+          session,
+          Document(
+            projectId: otherProjectId,
+            documentType: 'deviceGroup',
+            title: 'Other Group',
+            slug: 'other-group',
+            isDefault: false,
+            data: jsonEncode({'deviceIds': ['SHARED']}),
+            publishedAt: DateTime.now(),
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+        );
+        expect(otherDoc.id, isNotNull);
+
+        // Same fragment also lives in the test project.
+        await createPublishedDocument(
+          documentType: 'deviceGroup',
+          title: 'My Group',
+          slug: 'my-group',
+          data: {'deviceIds': ['SHARED']},
+        );
+
+        final result = await endpoints.publicContent.getContentsByDataContains(
+          factory.authenticatedSession(),
+          'deviceGroup',
+          '{"deviceIds":["SHARED"]}',
+        );
+
+        expect(result, hasLength(1));
+        expect(result.first.title, equals('My Group'));
+      });
+
+      // Auth tests — Step 9
+      // AuthenticationOverride and Scope are available (used by TestDataFactory).
+      test('throws 403 when session lacks read permission', () async {
+        // Session with project scope but no project.read scope.
+        final unscoped = sessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(
+            'no-read-user',
+            {Scope('project:${TestDataFactory.testProjectId}')},
+          ),
+        );
+
+        expect(
+          () => endpoints.publicContent.getContentsByDataContains(
+            unscoped,
+            'deviceGroup',
+            '{"deviceIds":["ABC"]}',
+          ),
+          throwsA(isA<ApiException>().having((e) => e.code, 'code', 403)),
+        );
+      });
+
+      test('throws 400 when session has read permission but no project scope',
+          () async {
+        final noProject = sessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(
+            'no-project-user',
+            {Scope('project.read')},
+          ),
+        );
+
+        expect(
+          () => endpoints.publicContent.getContentsByDataContains(
+            noProject,
+            'deviceGroup',
+            '{"deviceIds":["ABC"]}',
+          ),
+          throwsA(isA<ApiException>().having((e) => e.code, 'code', 400)),
+        );
+      });
+
+      test('inlines imageReference fields in returned data', () async {
+        final asset = await factory.uploadTestImage(fileName: 'cover.png');
+
+        await createPublishedDocument(
+          documentType: 'deviceGroup',
+          title: 'With Image',
+          slug: 'with-image',
+          data: {
+            'deviceIds': ['ABC'],
+            'cover': {'_type': 'imageReference', 'assetId': asset.assetId},
+          },
+        );
+
+        final result = await endpoints.publicContent.getContentsByDataContains(
+          factory.authenticatedSession(),
+          'deviceGroup',
+          '{"deviceIds":["ABC"]}',
+        );
+
+        expect(result, hasLength(1));
+        final decoded = jsonDecode(result.first.data) as Map<String, dynamic>;
+        final cover = decoded['cover'] as Map<String, dynamic>;
+        expect(cover['publicUrl'], equals(asset.publicUrl));
+        expect(cover['width'], greaterThan(0));
+        expect(cover['height'], greaterThan(0));
       });
     });
   });
