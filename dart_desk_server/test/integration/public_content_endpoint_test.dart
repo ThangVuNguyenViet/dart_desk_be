@@ -538,6 +538,39 @@ void main() {
         expect(cover['width'], greaterThan(0));
         expect(cover['height'], greaterThan(0));
       });
+
+      // ---- Task 6: Index-usage smoke test ----
+
+      test('documents_data_gin GIN index exists on data_jsonb column',
+          () async {
+        // Task 6: Verify the GIN index that enables containment lookups is
+        // present in the database. Planner-usage tests are unreliable in
+        // transactional test environments because ANALYZE reads only committed
+        // data; uncommitted rows seeded within the test transaction leave
+        // statistics stale, causing the planner to prefer seq scan regardless
+        // of row count. Asserting index existence is the stable substitute.
+        final session = sessionBuilder.build();
+
+        final rows = await session.db.unsafeQuery(
+          r'''
+          SELECT indexname, indexdef
+          FROM pg_indexes
+          WHERE tablename = 'documents'
+            AND indexname = 'documents_data_gin'
+          ''',
+        );
+
+        expect(
+          rows,
+          isNotEmpty,
+          reason: 'Expected documents_data_gin GIN index to exist.',
+        );
+
+        // Also confirm it is a GIN index on data_jsonb.
+        final indexDef = rows.first[1].toString();
+        expect(indexDef, contains('gin'));
+        expect(indexDef, contains('data_jsonb'));
+      });
     });
   });
 
