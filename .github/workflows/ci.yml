@@ -65,6 +65,10 @@ jobs:
         working-directory: dart_desk_server
         run: dart pub get
 
+      - name: Provision passwords.yaml from example
+        working-directory: dart_desk_server
+        run: cp config/passwords.yaml.example config/passwords.yaml
+
       - name: Run integration tests (excludes stress)
         working-directory: dart_desk_server
         run: dart test test/integration/ --exclude-tags=stress --reporter expanded
