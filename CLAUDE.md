@@ -73,3 +73,17 @@ If `serverpod create-migration` ever needs to alter these tables,
 hand-edit the migration to preserve the `*_active_idx`. If you add a
 new table with the same shape, add a matching partial unique index via
 hand-edited migration.
+
+## ⚠️ `definition.sql` also drifts — required for CI
+
+`serverpod_test`'s `withServerpod(applyMigrations: true)` bootstraps a fresh
+test DB from the **latest migration's `definition.sql`** (declarative schema),
+not by running `migration.sql` files in sequence. This means hand-edited SQL
+that lives only in `migration.sql` is invisible to CI.
+
+After running `serverpod create-migration`, re-apply these to the new
+migration's `definition.sql`:
+- `documents.data_jsonb` generated column + `documents_data_gin` GIN index.
+- The four `*_active_idx` partial unique indexes
+  (`clients_slug_active_idx`, `documents_project_type_slug_active_idx`,
+  `projects_slug_active_idx`, `users_client_email_active_idx`).

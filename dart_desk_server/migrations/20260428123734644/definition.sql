@@ -69,6 +69,10 @@ CREATE TABLE "clients" (
 
 -- Indexes
 CREATE INDEX "clients_slug_idx" ON "clients" USING btree ("slug");
+-- Hand-edited partial unique index for soft-delete + slug uniqueness.
+CREATE UNIQUE INDEX "clients_slug_active_idx"
+  ON "clients" USING btree ("slug")
+  WHERE "deletedAt" IS NULL;
 CREATE INDEX "clients_is_active_idx" ON "clients" USING btree ("isActive");
 
 --
@@ -176,7 +180,10 @@ CREATE TABLE "documents" (
     "updatedAt" timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     "createdByUserId" uuid,
     "updatedByUserId" uuid,
-    "deletedAt" timestamp without time zone
+    "deletedAt" timestamp without time zone,
+    -- Generated jsonb mirror of "data" for GIN-indexed containment lookups.
+    -- Hand-edited (invisible to spy.yaml). See CLAUDE.md "Schema drift" section.
+    "data_jsonb" jsonb GENERATED ALWAYS AS (("data")::jsonb) STORED
 );
 
 -- Indexes
@@ -185,6 +192,12 @@ CREATE INDEX "documents_project_type_slug_idx" ON "documents" USING btree ("proj
 CREATE INDEX "documents_type_default_idx" ON "documents" USING btree ("documentType", "isDefault");
 CREATE INDEX "documents_created_at_idx" ON "documents" USING btree ("createdAt");
 CREATE INDEX "documents_project_published_idx" ON "documents" USING btree ("projectId", "publishedAt");
+-- Hand-edited partial unique index for soft-delete + slug uniqueness.
+CREATE UNIQUE INDEX "documents_project_type_slug_active_idx"
+  ON "documents" USING btree ("projectId", "documentType", "slug")
+  WHERE "deletedAt" IS NULL;
+-- Hand-edited GIN index on the generated data_jsonb column.
+CREATE INDEX "documents_data_gin" ON "documents" USING gin ("data_jsonb" jsonb_ops);
 
 --
 -- Class DocumentData as table documents_data
@@ -289,6 +302,10 @@ CREATE TABLE "projects" (
 -- Indexes
 CREATE INDEX "projects_client_idx" ON "projects" USING btree ("clientId");
 CREATE INDEX "projects_slug_idx" ON "projects" USING btree ("slug");
+-- Hand-edited partial unique index for soft-delete + slug uniqueness.
+CREATE UNIQUE INDEX "projects_slug_active_idx"
+  ON "projects" USING btree ("slug")
+  WHERE "deletedAt" IS NULL;
 CREATE INDEX "projects_is_active_idx" ON "projects" USING btree ("isActive");
 
 --
@@ -309,6 +326,10 @@ CREATE TABLE "users" (
 
 -- Indexes
 CREATE INDEX "users_client_email_idx" ON "users" USING btree ("clientId", "email");
+-- Hand-edited partial unique index for soft-delete + email uniqueness.
+CREATE UNIQUE INDEX "users_client_email_active_idx"
+  ON "users" USING btree ("clientId", "email")
+  WHERE "deletedAt" IS NULL;
 CREATE INDEX "users_client_id_idx" ON "users" USING btree ("clientId");
 CREATE INDEX "users_serverpod_user_id_idx" ON "users" USING btree ("serverpodUserId");
 CREATE INDEX "users_is_active_idx" ON "users" USING btree ("isActive");
