@@ -206,6 +206,63 @@ class PublicContentEndpoint extends Endpoint {
     return Future.wait(docs.map((d) => _toPublicDocument(session, d)));
   }
 
+  /// Cross-type variant of [getContentsByDataContains]: returns all published
+  /// documents in the project whose JSON `data` contains [dataContainsJson],
+  /// grouped by `documentType`. Same JSONB containment (`@>`) semantics and
+  /// 100-row cap as the typed variant.
+  Future<Map<String, List<PublicDocument>>> getAllContentsByDataContains(
+    Session session,
+    String dataContainsJson,
+  ) async {
+    final projectId = _requireReadAccess(session);
+
+    final dynamic parsed;
+    try {
+      parsed = jsonDecode(dataContainsJson);
+    } catch (_) {
+      throw ApiException(
+        message: 'dataContainsJson must be valid JSON',
+        code: 400,
+      );
+    }
+    if (parsed is! Map<String, dynamic>) {
+      throw ApiException(
+        message: 'dataContainsJson must be a JSON object',
+        code: 400,
+      );
+    }
+
+    final idRows = await session.db.unsafeQuery(
+      r'''
+      SELECT id FROM documents
+      WHERE "projectId" = @projectId
+        AND "publishedAt" IS NOT NULL
+        AND "deletedAt" IS NULL
+        AND data_jsonb @> @fragment::jsonb
+      LIMIT 100
+      ''',
+      parameters: QueryParameters.named({
+        'projectId': projectId.toString(),
+        'fragment': dataContainsJson,
+      }),
+    );
+
+    final ids = idRows.map((r) => UuidValue.fromString(r[0].toString())).toSet();
+    if (ids.isEmpty) return {};
+
+    final docs = await Document.db.find(
+      session,
+      where: (t) => t.id.inSet(ids),
+    );
+
+    final grouped = <String, List<PublicDocument>>{};
+    for (final doc in docs) {
+      grouped.putIfAbsent(doc.documentType, () => []);
+      grouped[doc.documentType]!.add(await _toPublicDocument(session, doc));
+    }
+    return grouped;
+  }
+
   // ------------------------------------------------------------------
   // Private helpers
   // ------------------------------------------------------------------

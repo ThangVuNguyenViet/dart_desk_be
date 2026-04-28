@@ -3026,6 +3026,40 @@ class _PublicContentEndpoint {
       }
     });
   }
+
+  _i3.Future<Map<String, List<_i25.PublicDocument>>>
+  getAllContentsByDataContains(
+    _i1.TestSessionBuilder sessionBuilder,
+    String dataContainsJson,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'publicContent',
+            method: 'getAllContentsByDataContains',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'publicContent',
+          methodName: 'getAllContentsByDataContains',
+          parameters: _i1.testObjectToJson({
+            'dataContainsJson': dataContainsJson,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<Map<String, List<_i25.PublicDocument>>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _RefreshJwtTokensEndpoint {

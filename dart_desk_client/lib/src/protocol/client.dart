@@ -1157,6 +1157,18 @@ class EndpointPublicContent extends _i1.EndpointRef {
       'dataContainsJson': dataContainsJson,
     },
   );
+
+  /// Cross-type variant of [getContentsByDataContains]: returns all published
+  /// documents in the project whose JSON `data` contains [dataContainsJson],
+  /// grouped by `documentType`. Same JSONB containment (`@>`) semantics and
+  /// 100-row cap as the typed variant.
+  _i2.Future<Map<String, List<_i25.PublicDocument>>>
+  getAllContentsByDataContains(String dataContainsJson) =>
+      caller.callServerEndpoint<Map<String, List<_i25.PublicDocument>>>(
+        'publicContent',
+        'getAllContentsByDataContains',
+        {'dataContainsJson': dataContainsJson},
+      );
 }
 
 /// {@category Endpoint}
