@@ -142,13 +142,15 @@ class DocumentEndpoint extends Endpoint {
       updatedByUserId: userId,
     );
 
-    // Check if a document with the same slug already exists for this type
+    // Check if a document with the same slug already exists for this type.
+    // Ignore soft-deleted rows so a slug can be reused after deletion.
     final existing = await Document.db.findFirstRow(
       session,
       where: (t) =>
           t.projectId.equals(document.projectId) &
           t.documentType.equals(documentType) &
-          t.slug.equals(effectiveSlug),
+          t.slug.equals(effectiveSlug) &
+          t.deletedAt.equals(null),
     );
     if (existing != null) {
       throw ApiException(
@@ -331,6 +333,10 @@ class DocumentEndpoint extends Endpoint {
 
     final now = DateTime.now();
     existing.deletedAt = now;
+    // Free the slug for reuse: the unique index on
+    // (projectId, documentType, slug) is not partial, so a soft-deleted row
+    // would otherwise block recreating a document with the same slug.
+    existing.slug = '${existing.slug}__deleted__${now.microsecondsSinceEpoch}';
     await Document.db.updateRow(session, existing);
 
     // Soft-delete all versions

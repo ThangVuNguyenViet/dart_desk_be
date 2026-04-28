@@ -211,6 +211,31 @@ void main() {
           throwsA(isA<ApiException>()),
         );
       });
+
+      test('allows recreating a document with the same slug after delete',
+          () async {
+        final original = await factory.createTestDocument(
+          documentType: 'page',
+          title: 'Original',
+          slug: 'main',
+        );
+
+        final authed = factory.authenticatedSession();
+        final deleted = await endpoints.document.deleteDocument(
+          authed,
+          original.id,
+        );
+        expect(deleted, isTrue);
+
+        final recreated = await factory.createTestDocument(
+          documentType: 'page',
+          title: 'Recreated',
+          slug: 'main',
+        );
+
+        expect(recreated.id, isNot(equals(original.id)));
+        expect(recreated.slug, equals('main'));
+      });
     });
 
     group('getDocumentTypes', () {
