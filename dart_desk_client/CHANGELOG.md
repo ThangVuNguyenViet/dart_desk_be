@@ -1,3 +1,7 @@
+## 0.2.1
+
+- feat: add `PublicContentEndpoint.getAllContentsByDataContains` — cross-type JSONB containment lookup; returns matching published documents grouped by `documentType` in a single call
+
 ## 0.2.0
 
 > **Breaking**: Primary keys migrated from `int` to `UuidValue` across all models and endpoints. Consumers must update any code that handled IDs as integers (e.g. cached IDs, route params, filter args).

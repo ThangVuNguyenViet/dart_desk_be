@@ -89,6 +89,7 @@ publicContent:
   - getDefaultContent:
   - getContentBySlug:
   - getContentsByDataContains:
+  - getAllContentsByDataContains:
 refreshJwtTokens:
   - refreshAccessToken:
 restore:

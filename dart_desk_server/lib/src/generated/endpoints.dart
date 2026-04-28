@@ -2080,6 +2080,26 @@ class Endpoints extends _i1.EndpointDispatch {
                         params['dataContainsJson'],
                       ),
         ),
+        'getAllContentsByDataContains': _i1.MethodConnector(
+          name: 'getAllContentsByDataContains',
+          params: {
+            'dataContainsJson': _i1.ParameterDescription(
+              name: 'dataContainsJson',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['publicContent'] as _i15.PublicContentEndpoint)
+                      .getAllContentsByDataContains(
+                        session,
+                        params['dataContainsJson'],
+                      ),
+        ),
       },
     );
     connectors['refreshJwtTokens'] = _i1.EndpointConnector(

@@ -1597,6 +1597,30 @@ void main() {
             .deleteWhere(session, where: (t) => t.id.notEquals(null));
       });
 
+      // tearDown rather than setUp catches the last test's writes too
+      // (no setUp runs after the final test). Required because this group
+      // is RollbackDatabase.disabled, so writes persist into other test
+      // files unless explicitly cleaned.
+      tearDown(() async {
+        final session = sessionBuilder.build();
+        await DocumentCrdtOperation.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentCrdtSnapshot.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentVersion.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentData.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await Document.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await MediaAsset.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await Project.db.deleteWhere(
+          session,
+          where: (t) => t.id.notEquals(TestDataFactory.testProjectId),
+        );
+      });
+
       /// Helper: create a document, create a version, publish it.
       Future<Document> createPublishedDocument({
         required String documentType,
@@ -1703,6 +1727,232 @@ void main() {
 
         final data = jsonDecode(result.data) as Map<String, dynamic>;
         expect(data['body'], equals('hello world'));
+      });
+
+      group('getAllContentsByDataContains', () {
+        test('returns matching docs grouped by document type', () async {
+          await createPublishedDocument(
+            documentType: 'deviceGroup',
+            title: 'Group',
+            slug: 'group',
+            data: {'deviceIds': ['ABC']},
+          );
+          await createPublishedDocument(
+            documentType: 'productGroup',
+            title: 'Product',
+            slug: 'product',
+            data: {'deviceIds': ['ABC']},
+          );
+          await createPublishedDocument(
+            documentType: 'banner',
+            title: 'Banner',
+            slug: 'banner',
+            data: {'deviceIds': ['XYZ']},
+          );
+
+          final result =
+              await endpoints.publicContent.getAllContentsByDataContains(
+            factory.authenticatedSession(),
+            '{"deviceIds":["ABC"]}',
+          );
+
+          expect(result.keys, unorderedEquals(['deviceGroup', 'productGroup']));
+          expect(result['deviceGroup'], hasLength(1));
+          expect(result['deviceGroup']!.first.title, equals('Group'));
+          expect(result['productGroup'], hasLength(1));
+          expect(result['productGroup']!.first.title, equals('Product'));
+        });
+
+        test('returns empty map when no doc contains the fragment', () async {
+          await createPublishedDocument(
+            documentType: 'deviceGroup',
+            title: 'Group',
+            slug: 'group',
+            data: {'deviceIds': ['ABC']},
+          );
+
+          final result =
+              await endpoints.publicContent.getAllContentsByDataContains(
+            factory.authenticatedSession(),
+            '{"deviceIds":["NOT-PRESENT"]}',
+          );
+
+          expect(result, isEmpty);
+        });
+
+        test('groups multiple matching docs of the same type', () async {
+          await createPublishedDocument(
+            documentType: 'deviceGroup',
+            title: 'Group A',
+            slug: 'group-a',
+            data: {'deviceIds': ['ABC']},
+          );
+          await createPublishedDocument(
+            documentType: 'deviceGroup',
+            title: 'Group B',
+            slug: 'group-b',
+            data: {'deviceIds': ['ABC', 'DEF']},
+          );
+
+          final result =
+              await endpoints.publicContent.getAllContentsByDataContains(
+            factory.authenticatedSession(),
+            '{"deviceIds":["ABC"]}',
+          );
+
+          expect(result.keys, equals(['deviceGroup']));
+          expect(result['deviceGroup'], hasLength(2));
+          expect(
+            result['deviceGroup']!.map((d) => d.title),
+            unorderedEquals(['Group A', 'Group B']),
+          );
+        });
+
+        test('excludes unpublished and soft-deleted documents', () async {
+          await createPublishedDocument(
+            documentType: 'deviceGroup',
+            title: 'Published',
+            slug: 'published',
+            data: {'deviceIds': ['ABC']},
+          );
+          await factory.createTestDocument(
+            documentType: 'productGroup',
+            title: 'Draft',
+            slug: 'draft',
+            data: {'deviceIds': ['ABC']},
+          );
+
+          final result =
+              await endpoints.publicContent.getAllContentsByDataContains(
+            factory.authenticatedSession(),
+            '{"deviceIds":["ABC"]}',
+          );
+
+          expect(result.keys, equals(['deviceGroup']));
+          expect(result['deviceGroup']!.first.title, equals('Published'));
+        });
+
+        test('returns only documents in the API key\'s project', () async {
+          final otherProjectId = UuidValue.fromString(
+            'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+          );
+          await factory.ensureTestProject(
+            projectId: otherProjectId,
+            name: 'Other Project',
+            slug: 'other-project',
+          );
+          final session = sessionBuilder.build();
+          await Document.db.insertRow(
+            session,
+            Document(
+              projectId: otherProjectId,
+              documentType: 'deviceGroup',
+              title: 'Other Group',
+              slug: 'other-group',
+              isDefault: false,
+              data: jsonEncode({'deviceIds': ['SHARED']}),
+              publishedAt: DateTime.now(),
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+            ),
+          );
+          await createPublishedDocument(
+            documentType: 'deviceGroup',
+            title: 'My Group',
+            slug: 'my-group',
+            data: {'deviceIds': ['SHARED']},
+          );
+
+          final result =
+              await endpoints.publicContent.getAllContentsByDataContains(
+            factory.authenticatedSession(),
+            '{"deviceIds":["SHARED"]}',
+          );
+
+          expect(result.keys, equals(['deviceGroup']));
+          expect(result['deviceGroup'], hasLength(1));
+          expect(result['deviceGroup']!.first.title, equals('My Group'));
+        });
+
+        test('rejects non-JSON input with 400', () async {
+          expect(
+            () => endpoints.publicContent.getAllContentsByDataContains(
+              factory.authenticatedSession(),
+              'not json',
+            ),
+            throwsA(isA<ApiException>().having((e) => e.code, 'code', 400)),
+          );
+        });
+
+        test('rejects JSON array with 400', () async {
+          expect(
+            () => endpoints.publicContent.getAllContentsByDataContains(
+              factory.authenticatedSession(),
+              '[1,2,3]',
+            ),
+            throwsA(isA<ApiException>().having((e) => e.code, 'code', 400)),
+          );
+        });
+
+        test('throws 403 when session lacks read permission', () async {
+          final unscoped = sessionBuilder.copyWith(
+            authentication: AuthenticationOverride.authenticationInfo(
+              'no-read-user',
+              {Scope('project:${TestDataFactory.testProjectId}')},
+            ),
+          );
+          expect(
+            () => endpoints.publicContent.getAllContentsByDataContains(
+              unscoped,
+              '{"deviceIds":["ABC"]}',
+            ),
+            throwsA(isA<ApiException>().having((e) => e.code, 'code', 403)),
+          );
+        });
+
+        test('throws 400 when session has read permission but no project scope',
+            () async {
+          final noProject = sessionBuilder.copyWith(
+            authentication: AuthenticationOverride.authenticationInfo(
+              'no-project-user',
+              {Scope('project.read')},
+            ),
+          );
+          expect(
+            () => endpoints.publicContent.getAllContentsByDataContains(
+              noProject,
+              '{"deviceIds":["ABC"]}',
+            ),
+            throwsA(isA<ApiException>().having((e) => e.code, 'code', 400)),
+          );
+        });
+
+        test('inlines imageReference fields in returned data', () async {
+          final asset = await factory.uploadTestImage(fileName: 'cover.png');
+          await createPublishedDocument(
+            documentType: 'deviceGroup',
+            title: 'With Image',
+            slug: 'with-image',
+            data: {
+              'deviceIds': ['ABC'],
+              'cover': {'_type': 'imageReference', 'assetId': asset.assetId},
+            },
+          );
+
+          final result =
+              await endpoints.publicContent.getAllContentsByDataContains(
+            factory.authenticatedSession(),
+            '{"deviceIds":["ABC"]}',
+          );
+
+          expect(result['deviceGroup'], hasLength(1));
+          final decoded = jsonDecode(result['deviceGroup']!.first.data)
+              as Map<String, dynamic>;
+          final cover = decoded['cover'] as Map<String, dynamic>;
+          expect(cover['publicUrl'], equals(asset.publicUrl));
+          expect(cover['width'], greaterThan(0));
+          expect(cover['height'], greaterThan(0));
+        });
       });
     },
     rollbackDatabase: RollbackDatabase.disabled,
