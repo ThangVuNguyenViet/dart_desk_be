@@ -33,14 +33,6 @@ void main() {
           .deleteWhere(session, where: (t) => t.id.notEquals(null));
       await MediaAsset.db
           .deleteWhere(session, where: (t) => t.id.notEquals(null));
-      // Drop "other project" rows that some tests create on testClientId for
-      // project-isolation checks. Without this they leak into later test
-      // files (e.g. client_endpoint_test) since this group runs with
-      // RollbackDatabase.disabled.
-      await Project.db.deleteWhere(
-        session,
-        where: (t) => t.id.notEquals(TestDataFactory.testProjectId),
-      );
     });
 
     /// Helper: create a document, create a version, publish it.
@@ -1603,6 +1595,30 @@ void main() {
             .deleteWhere(session, where: (t) => t.id.notEquals(null));
         await MediaAsset.db
             .deleteWhere(session, where: (t) => t.id.notEquals(null));
+      });
+
+      // tearDown rather than setUp catches the last test's writes too
+      // (no setUp runs after the final test). Required because this group
+      // is RollbackDatabase.disabled, so writes persist into other test
+      // files unless explicitly cleaned.
+      tearDown(() async {
+        final session = sessionBuilder.build();
+        await DocumentCrdtOperation.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentCrdtSnapshot.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentVersion.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await DocumentData.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await Document.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await MediaAsset.db
+            .deleteWhere(session, where: (t) => t.id.notEquals(null));
+        await Project.db.deleteWhere(
+          session,
+          where: (t) => t.id.notEquals(TestDataFactory.testProjectId),
+        );
       });
 
       /// Helper: create a document, create a version, publish it.
