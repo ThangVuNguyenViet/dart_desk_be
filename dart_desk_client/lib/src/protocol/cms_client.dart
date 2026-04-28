@@ -22,6 +22,7 @@ abstract class CmsClient implements _i1.SerializableModel {
     this.settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    this.deletedAt,
   }) : id = id ?? const _i1.Uuid().v4obj(),
        isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now(),
@@ -36,6 +37,7 @@ abstract class CmsClient implements _i1.SerializableModel {
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? deletedAt,
   }) = _CmsClientImpl;
 
   factory CmsClient.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -56,6 +58,9 @@ abstract class CmsClient implements _i1.SerializableModel {
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
     );
   }
 
@@ -76,6 +81,8 @@ abstract class CmsClient implements _i1.SerializableModel {
 
   DateTime? updatedAt;
 
+  DateTime? deletedAt;
+
   /// Returns a shallow copy of this [CmsClient]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -88,6 +95,7 @@ abstract class CmsClient implements _i1.SerializableModel {
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? deletedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -101,6 +109,7 @@ abstract class CmsClient implements _i1.SerializableModel {
       if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -122,6 +131,7 @@ class _CmsClientImpl extends CmsClient {
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? deletedAt,
   }) : super._(
          id: id,
          name: name,
@@ -131,6 +141,7 @@ class _CmsClientImpl extends CmsClient {
          settings: settings,
          createdAt: createdAt,
          updatedAt: updatedAt,
+         deletedAt: deletedAt,
        );
 
   /// Returns a shallow copy of this [CmsClient]
@@ -146,6 +157,7 @@ class _CmsClientImpl extends CmsClient {
     Object? settings = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
+    Object? deletedAt = _Undefined,
   }) {
     return CmsClient(
       id: id ?? this.id,
@@ -156,6 +168,7 @@ class _CmsClientImpl extends CmsClient {
       settings: settings is String? ? settings : this.settings,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
     );
   }
 }

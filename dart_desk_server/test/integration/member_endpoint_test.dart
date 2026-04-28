@@ -152,6 +152,37 @@ void main() {
         expect(memberships, isEmpty);
       });
 
+      test('allows reinviting a member with the same email after removal',
+          () async {
+        final client = await factory.ensureTestClient();
+        await factory.ensureTestUser(
+          userIdentifier: 'admin-user',
+          role: ClientRole.admin,
+        );
+        final original = await factory.ensureTestUser(
+          userIdentifier: 'reinvite-user',
+          email: 'reinvite@example.com',
+          role: ClientRole.viewer,
+        );
+
+        final authed =
+            factory.authenticatedSession(userIdentifier: 'admin-user');
+        await endpoints.member.removeMember(
+          authed,
+          clientId: client.id,
+          userId: original.id,
+        );
+
+        final reinvited = await endpoints.member.inviteMember(
+          authed,
+          clientId: client.id,
+          email: 'reinvite@example.com',
+          role: ClientRole.member,
+        );
+        expect(reinvited.id, isNot(equals(original.id)));
+        expect(reinvited.email, equals('reinvite@example.com'));
+      });
+
       test('does not show soft-deleted users in listMembers', () async {
         final client = await factory.ensureTestClient();
         await factory.ensureTestUser(

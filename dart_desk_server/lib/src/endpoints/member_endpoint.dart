@@ -51,10 +51,14 @@ class MemberEndpoint extends Endpoint {
   }) async {
     await _requireClientAdmin(session, clientId);
 
-    // Check for duplicate
+    // Check for duplicate (ignore soft-deleted users so removed members
+    // can be re-invited with the same email).
     final existing = await User.db.findFirstRow(
       session,
-      where: (t) => t.clientId.equals(clientId) & t.email.equals(email),
+      where: (t) =>
+          t.clientId.equals(clientId) &
+          t.email.equals(email) &
+          t.deletedAt.equals(null),
     );
     if (existing != null) {
       throw ApiException(

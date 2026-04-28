@@ -18,6 +18,5 @@ indexes:
     fields: clientId
   projects_slug_idx:
     fields: slug
-    unique: true
   projects_is_active_idx:
     fields: isActive

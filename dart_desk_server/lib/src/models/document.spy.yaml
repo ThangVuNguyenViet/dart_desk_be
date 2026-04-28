@@ -21,7 +21,6 @@ indexes:
     fields: projectId, documentType
   documents_project_type_slug_idx:
     fields: projectId, documentType, slug
-    unique: true
   documents_type_default_idx:
     fields: documentType, isDefault
   documents_created_at_idx:

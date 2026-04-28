@@ -262,6 +262,24 @@ void main() {
           throwsA(isA<ApiException>()),
         );
       });
+
+      test('allows recreating a project with the same slug after delete',
+          () async {
+        final original = await seedProject(slug: 'reuse-after-delete');
+        final deleteResult = await endpoints.project.deleteProject(
+          authedSession(sessionBuilder),
+          original.id,
+        );
+        expect(deleteResult, isTrue);
+
+        final recreated = await endpoints.project.createProject(
+          authedSession(sessionBuilder),
+          'Recreated',
+          original.slug,
+        );
+        expect(recreated.id, isNot(equals(original.id)));
+        expect(recreated.slug, equals(original.slug));
+      });
     });
   });
 }

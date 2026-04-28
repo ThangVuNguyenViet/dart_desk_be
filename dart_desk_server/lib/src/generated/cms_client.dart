@@ -23,6 +23,7 @@ abstract class CmsClient
     this.settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    this.deletedAt,
   }) : id = id ?? const _i1.Uuid().v4obj(),
        isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now(),
@@ -37,6 +38,7 @@ abstract class CmsClient
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? deletedAt,
   }) = _CmsClientImpl;
 
   factory CmsClient.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -57,6 +59,9 @@ abstract class CmsClient
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
     );
   }
 
@@ -81,6 +86,8 @@ abstract class CmsClient
 
   DateTime? updatedAt;
 
+  DateTime? deletedAt;
+
   @override
   _i1.Table<_i1.UuidValue> get table => t;
 
@@ -96,6 +103,7 @@ abstract class CmsClient
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? deletedAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -109,6 +117,7 @@ abstract class CmsClient
       if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -124,6 +133,7 @@ abstract class CmsClient
       if (settings != null) 'settings': settings,
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
     };
   }
 
@@ -169,6 +179,7 @@ class _CmsClientImpl extends CmsClient {
     String? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? deletedAt,
   }) : super._(
          id: id,
          name: name,
@@ -178,6 +189,7 @@ class _CmsClientImpl extends CmsClient {
          settings: settings,
          createdAt: createdAt,
          updatedAt: updatedAt,
+         deletedAt: deletedAt,
        );
 
   /// Returns a shallow copy of this [CmsClient]
@@ -193,6 +205,7 @@ class _CmsClientImpl extends CmsClient {
     Object? settings = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
+    Object? deletedAt = _Undefined,
   }) {
     return CmsClient(
       id: id ?? this.id,
@@ -203,6 +216,7 @@ class _CmsClientImpl extends CmsClient {
       settings: settings is String? ? settings : this.settings,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
     );
   }
 }
@@ -246,6 +260,12 @@ class CmsClientUpdateTable extends _i1.UpdateTable<CmsClientTable> {
         table.updatedAt,
         value,
       );
+
+  _i1.ColumnValue<DateTime, DateTime> deletedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.deletedAt,
+        value,
+      );
 }
 
 class CmsClientTable extends _i1.Table<_i1.UuidValue> {
@@ -282,6 +302,10 @@ class CmsClientTable extends _i1.Table<_i1.UuidValue> {
       this,
       hasDefault: true,
     );
+    deletedAt = _i1.ColumnDateTime(
+      'deletedAt',
+      this,
+    );
   }
 
   late final CmsClientUpdateTable updateTable;
@@ -300,6 +324,8 @@ class CmsClientTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnDateTime updatedAt;
 
+  late final _i1.ColumnDateTime deletedAt;
+
   @override
   List<_i1.Column> get columns => [
     id,
@@ -310,6 +336,7 @@ class CmsClientTable extends _i1.Table<_i1.UuidValue> {
     settings,
     createdAt,
     updatedAt,
+    deletedAt,
   ];
 }
 
