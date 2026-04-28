@@ -329,6 +329,12 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'DateTime?',
           columnDefault: 'CURRENT_TIMESTAMP',
         ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
       ],
       foreignKeys: [],
       indexes: [
@@ -355,7 +361,7 @@ class Protocol extends _i1.SerializationManagerServer {
             ),
           ],
           type: 'btree',
-          isUnique: true,
+          isUnique: false,
           isPrimary: false,
         ),
         _i2.IndexDefinition(
@@ -1209,7 +1215,7 @@ class Protocol extends _i1.SerializationManagerServer {
             ),
           ],
           type: 'btree',
-          isUnique: true,
+          isUnique: false,
           isPrimary: false,
         ),
         _i2.IndexDefinition(
@@ -1944,7 +1950,7 @@ class Protocol extends _i1.SerializationManagerServer {
             ),
           ],
           type: 'btree',
-          isUnique: true,
+          isUnique: false,
           isPrimary: false,
         ),
         _i2.IndexDefinition(
@@ -2064,7 +2070,7 @@ class Protocol extends _i1.SerializationManagerServer {
             ),
           ],
           type: 'btree',
-          isUnique: true,
+          isUnique: false,
           isPrimary: false,
         ),
         _i2.IndexDefinition(

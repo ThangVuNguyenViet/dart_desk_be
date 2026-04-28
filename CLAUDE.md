@@ -56,3 +56,20 @@ values would need to be `'null'` (the four-character string), `'{}'`,
 pub.dev `^3.4.5`. Forking was tried (commits `fcce25d`, `8c55074`,
 `1e9c5ea`, `56997a4` in reflog) and rejected for various reasons (pub.dev
 incompatibility, runtime serialization failure, driver type mismatch).
+
+## ⚠️ Schema drift: `*_active_idx` partial unique indexes
+
+Tables with soft-delete and a unique user-facing identifier carry a
+hand-rolled **partial** unique index (`WHERE "deletedAt" IS NULL`) so
+soft-deleted rows don't block recreation. Serverpod's index syntax has
+no `where` clause, so the partial unique is invisible to Serverpod
+tooling.
+
+Indexes: `clients_slug_active_idx`,
+`documents_project_type_slug_active_idx`, `projects_slug_active_idx`,
+`users_client_email_active_idx`.
+
+If `serverpod create-migration` ever needs to alter these tables,
+hand-edit the migration to preserve the `*_active_idx`. If you add a
+new table with the same shape, add a matching partial unique index via
+hand-edited migration.

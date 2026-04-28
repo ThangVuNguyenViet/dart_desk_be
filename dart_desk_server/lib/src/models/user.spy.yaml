@@ -14,7 +14,6 @@ fields:
 indexes:
   users_client_email_idx:
     fields: clientId, email
-    unique: true
   users_client_id_idx:
     fields: clientId
   users_serverpod_user_id_idx:

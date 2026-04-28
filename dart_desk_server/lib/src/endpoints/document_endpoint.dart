@@ -333,10 +333,6 @@ class DocumentEndpoint extends Endpoint {
 
     final now = DateTime.now();
     existing.deletedAt = now;
-    // Free the slug for reuse: the unique index on
-    // (projectId, documentType, slug) is not partial, so a soft-deleted row
-    // would otherwise block recreating a document with the same slug.
-    existing.slug = '${existing.slug}__deleted__${now.microsecondsSinceEpoch}';
     await Document.db.updateRow(session, existing);
 
     // Soft-delete all versions

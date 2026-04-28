@@ -9,9 +9,9 @@ fields:
   settings: String?
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
+  deletedAt: DateTime?
 indexes:
   clients_slug_idx:
     fields: slug
-    unique: true
   clients_is_active_idx:
     fields: isActive
