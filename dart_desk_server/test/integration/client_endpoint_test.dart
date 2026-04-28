@@ -9,10 +9,20 @@ void main() {
   withServerpod('ClientEndpoint', (sessionBuilder, endpoints) {
     late TestDataFactory factory;
 
-    setUp(() {
+    setUp(() async {
       factory = TestDataFactory(
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
+      );
+      // Drop project rows that may have leaked from earlier test files run
+      // with RollbackDatabase.disabled (e.g. public_content_endpoint_test).
+      // Without this, projectCount assertions are inflated by stale rows.
+      final session = sessionBuilder.build();
+      await Document.db
+          .deleteWhere(session, where: (t) => t.id.notEquals(null));
+      await Project.db.deleteWhere(
+        session,
+        where: (t) => t.id.notEquals(TestDataFactory.testProjectId),
       );
     });
 
