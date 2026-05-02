@@ -25,7 +25,7 @@ spy.yaml-driven code path.
 - The GIN index `published_docs_data_gin` is invisible to Serverpod tooling.
 
 **Do NOT** add `dependency_overrides` for Serverpod packages. Stay on stock
-pub.dev `^3.4.5`.
+pub.dev `^3.5.0-beta.5` or later.
 
 ## ⚠️ Schema drift: `*_active_idx` partial unique indexes
 
@@ -36,8 +36,9 @@ no `where` clause, so the partial unique is invisible to Serverpod
 tooling.
 
 Indexes: `clients_slug_active_idx`,
-`documents_project_type_slug_active_idx`, `projects_slug_active_idx`,
-`users_client_email_active_idx`.
+`documents_project_type_slug_active_idx`,
+`published_docs_project_type_slug_active_idx`,
+`projects_slug_active_idx`, `users_client_email_active_idx`.
 
 If `serverpod create-migration` ever needs to alter these tables,
 hand-edit the migration to preserve the `*_active_idx`. If you add a
@@ -54,6 +55,7 @@ that lives only in `migration.sql` is invisible to CI.
 After running `serverpod create-migration`, re-apply these to the new
 migration's `definition.sql`:
 - `published_documents.data_jsonb` generated column + `published_docs_data_gin` GIN index.
-- The four `*_active_idx` partial unique indexes
+- The five `*_active_idx` partial unique indexes
   (`clients_slug_active_idx`, `documents_project_type_slug_active_idx`,
+  `published_docs_project_type_slug_active_idx`,
   `projects_slug_active_idx`, `users_client_email_active_idx`).
