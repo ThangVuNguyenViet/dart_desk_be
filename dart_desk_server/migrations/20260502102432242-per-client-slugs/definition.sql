@@ -327,6 +327,10 @@ CREATE TABLE "published_documents" (
 CREATE UNIQUE INDEX "published_docs_document_id_unique_idx" ON "published_documents" USING btree ("documentId");
 CREATE INDEX "published_docs_project_type_idx" ON "published_documents" USING btree ("projectId", "documentType");
 CREATE INDEX "published_docs_project_type_slug_idx" ON "published_documents" USING btree ("projectId", "documentType", "slug");
+-- Partial unique index: enforces (projectId, documentType, slug) uniqueness for non-deleted rows
+CREATE UNIQUE INDEX "published_docs_project_type_slug_active_idx"
+  ON "published_documents" ("projectId", "documentType", "slug")
+  WHERE "deletedAt" IS NULL;
 CREATE INDEX "published_docs_type_default_idx" ON "published_documents" USING btree ("documentType", "isDefault");
 -- GIN index on jsonb data for containment lookups (@>).
 -- Same pattern as documents.data_jsonb (see dart_desk_be/CLAUDE.md).

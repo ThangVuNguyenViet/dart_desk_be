@@ -28,9 +28,6 @@ CREATE TABLE "projects" (
 CREATE INDEX "projects_client_idx" ON "projects" USING btree ("clientId");
 CREATE INDEX "projects_is_active_idx" ON "projects" USING btree ("isActive");
 
--- Drop old global slug uniqueness; replaced by per-client constraint below.
-DROP INDEX IF EXISTS "projects_slug_active_idx";
-
 -- Per-client slug uniqueness (partial: ignores soft-deleted rows).
 CREATE UNIQUE INDEX "projects_client_slug_active_idx"
   ON "projects" ("clientId", "slug")
