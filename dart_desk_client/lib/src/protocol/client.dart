@@ -499,26 +499,6 @@ class EndpointDocument extends _i1.EndpointRef {
     {'documentId': documentId},
   );
 
-  /// Restore a previous version's data into the current draft.
-  ///
-  /// Reconstructs the target version's state via the CRDT service, then
-  /// applies the diff (as append-only ops) to bring the draft back to that
-  /// state. Does not modify the historical version row and does not
-  /// auto-publish.
-  ///
-  /// Authorization: same role check as deleteDocument (owner/admin).
-  _i2.Future<_i8.Document> restoreDocumentVersion(
-    _i1.UuidValue documentId,
-    _i1.UuidValue versionId,
-  ) => caller.callServerEndpoint<_i8.Document>(
-    'document',
-    'restoreDocumentVersion',
-    {
-      'documentId': documentId,
-      'versionId': versionId,
-    },
-  );
-
   /// Archive a version (set status to 'archived' and set archivedAt timestamp)
   _i2.Future<_i11.DocumentVersion?> archiveDocumentVersion(
     _i1.UuidValue versionId,
