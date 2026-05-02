@@ -1,6 +1,7 @@
 import 'dart:io' show Directory;
 
 import 'package:dart_desk_server/src/services/email_service.dart';
+import 'package:dart_desk_server/src/web/routes/deployment_upload_route.dart';
 import 'package:dart_desk_server/src/web/routes/root.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart';
@@ -68,6 +69,12 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   // Setup a default page at the web root.
   pod.webServer.addRoute(RouteRoot(), '/');
   pod.webServer.addRoute(RouteRoot(), '/index.html');
+
+  // Handle deployment bundle uploads from the CLI.
+  pod.webServer.addRoute(
+    DeploymentUploadRoute(),
+    '/deployment/upload',
+  );
 
   // Serve uploaded files from storage/public directory
   pod.webServer.addRoute(
