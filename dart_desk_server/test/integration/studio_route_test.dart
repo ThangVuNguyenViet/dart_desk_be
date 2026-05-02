@@ -178,7 +178,7 @@ void main() {
     // SPA fallback
     // -----------------------------------------------------------------------
 
-    test('GET /some-route falls back to index.html (SPA routing)', () async {
+    test('GET /some-route falls back to index.html (top-level SPA route)', () async {
       final session = sessionBuilder.build();
       const hostname = 'spa-test';
       const domain = 'app.dartdesk.dev';
@@ -222,6 +222,60 @@ void main() {
       final request = _buildRequest(
         host: '$hostname.$domain',
         path: '/some-route',
+      );
+      final result = await route.handleCall(session, request);
+      final response = result as Response;
+
+      expect(response.statusCode, equals(200));
+      final body = await _readBody(response);
+      expect(String.fromCharCodes(body), equals(indexContent));
+    });
+
+    test('GET /dashboard/settings falls back to index.html (deep SPA route)',
+        () async {
+      final session = sessionBuilder.build();
+      const hostname = 'deep-spa-test';
+      const domain = 'app.dartdesk.dev';
+
+      final project = await Project.db.insertRow(
+        session,
+        Project(
+          clientId: TestDataFactory.testClientId,
+          name: 'Deep SPA Test',
+          slug: 'deep-spa-test',
+          deployHostname: hostname,
+          isActive: true,
+        ),
+      );
+
+      final tmpDir = Directory.systemTemp.createTempSync('studio_deep_spa_');
+      addTearDown(() => tmpDir.deleteSync(recursive: true));
+
+      const indexContent = '<html>deep spa</html>';
+      File(p.join(tmpDir.path, 'index.html'))
+          .writeAsStringSync(indexContent);
+
+      final deployment = await Deployment.db.insertRow(
+        session,
+        Deployment(
+          projectId: project.id,
+          version: 1,
+          status: DeploymentStatus.active,
+          filePath: tmpDir.path,
+          fileSize: indexContent.length,
+          createdAt: DateTime.now().toUtc(),
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      );
+      addTearDown(() async {
+        await Deployment.db.deleteRow(session, deployment);
+        await Project.db.deleteRow(session, project);
+      });
+
+      final route = StudioRoute(domain: domain);
+      final request = _buildRequest(
+        host: '$hostname.$domain',
+        path: '/dashboard/settings',
       );
       final result = await route.handleCall(session, request);
       final response = result as Response;
@@ -285,10 +339,11 @@ void main() {
     });
 
     // -----------------------------------------------------------------------
-    // Path traversal rejected
+    // Path normalization and SPA fallback
     // -----------------------------------------------------------------------
 
-    test('Path traversal ../etc/passwd is rejected with 404', () async {
+    test('Path traversal /../etc/passwd is normalized and falls back to index.html',
+        () async {
       final session = sessionBuilder.build();
       const hostname = 'traversal-test';
       const domain = 'app.dartdesk.dev';
@@ -307,8 +362,9 @@ void main() {
       final tmpDir = Directory.systemTemp.createTempSync('studio_trav_');
       addTearDown(() => tmpDir.deleteSync(recursive: true));
 
+      const indexContent = '<html>spa</html>';
       File(p.join(tmpDir.path, 'index.html'))
-          .writeAsStringSync('<html>ok</html>');
+          .writeAsStringSync(indexContent);
 
       final deployment = await Deployment.db.insertRow(
         session,
@@ -317,7 +373,7 @@ void main() {
           version: 1,
           status: DeploymentStatus.active,
           filePath: tmpDir.path,
-          fileSize: 14,
+          fileSize: indexContent.length,
           createdAt: DateTime.now().toUtc(),
           updatedAt: DateTime.now().toUtc(),
         ),
@@ -328,7 +384,9 @@ void main() {
       });
 
       final route = StudioRoute(domain: domain);
-      // URL-encoded traversal
+      // The HTTP layer normalizes /../etc/passwd to /etc/passwd before it
+      // reaches the handler. Since /etc/passwd doesn't exist in the bundle
+      // and has no extension, it falls back to index.html (SPA route behavior).
       final request = _buildRequest(
         host: '$hostname.$domain',
         path: '/../etc/passwd',
@@ -336,7 +394,9 @@ void main() {
       final result = await route.handleCall(session, request);
       final response = result as Response;
 
-      expect(response.statusCode, equals(404));
+      expect(response.statusCode, equals(200));
+      final body = await _readBody(response);
+      expect(String.fromCharCodes(body), equals(indexContent));
     });
   });
 }

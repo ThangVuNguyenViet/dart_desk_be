@@ -65,10 +65,10 @@ class StudioRoute extends Route {
       return _bodyResponse(body, _mimeTypeFor(safePath));
     }
 
-    // SPA fallback: only for extension-free, top-level paths (likely a
-    // client-side route). Paths with directory separators are treated as
-    // missing assets rather than SPA routes.
-    if (!_looksLikeAsset(safePath) && !safePath.contains(p.separator)) {
+    // SPA fallback: for extension-free paths (likely a client-side route).
+    // Any extensionless path that wasn't found as a file should fall back
+    // to index.html.
+    if (!_looksLikeAsset(safePath)) {
       final fallback = await _readAsset(active.filePath, 'index.html');
       if (fallback != null) {
         return _bodyResponse(fallback, MimeType.html);
