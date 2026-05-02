@@ -36,6 +36,7 @@ void main() {
           clientId: TestDataFactory.testClientId,
           name: 'Deploy Project',
           slug: projectSlug,
+          deployHostname: 'test-$projectSlug',
           isActive: true,
         ),
       );

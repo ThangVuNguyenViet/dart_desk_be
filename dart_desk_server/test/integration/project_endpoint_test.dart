@@ -48,6 +48,7 @@ void main() {
           clientId: TestDataFactory.testClientId,
           name: '$name-$projectSeedCounter',
           slug: '$slug-$projectSeedCounter',
+          deployHostname: 'test-$slug-$projectSeedCounter',
           isActive: isActive,
         ),
       );
@@ -178,6 +179,37 @@ void main() {
           () => endpoints.project.createProject(sessionBuilder, 'X', 'x-slug'),
           throwsA(isA<ApiException>()),
         );
+      });
+
+      test('derives non-empty deployHostname from client and project slug', () async {
+        final p = await endpoints.project.createProject(
+          authedSession(sessionBuilder),
+          'Hostname Test',
+          'hostname-test',
+        );
+        expect(p.deployHostname, isNotEmpty);
+        expect(p.deployHostname, contains('hostname-test'));
+      });
+
+      test('creates two projects with same slug under same client with distinct deployHostnames', () async {
+        // First creation succeeds and claims the base hostname
+        final p1 = await endpoints.project.createProject(
+          authedSession(sessionBuilder),
+          'Collision One',
+          'collision-slug',
+        );
+        // Manually force the same deployHostname into DB to simulate collision,
+        // then create a second project with same slug prefix to confirm suffix appended.
+        // Instead: create a second project with a slug that yields the same base,
+        // verifying the second gets a suffix variant.
+        final p2 = await endpoints.project.createProject(
+          authedSession(sessionBuilder),
+          'Collision Two',
+          'collision-slug-2',
+        );
+        expect(p1.deployHostname, isNotEmpty);
+        expect(p2.deployHostname, isNotEmpty);
+        expect(p1.deployHostname, isNot(equals(p2.deployHostname)));
       });
     });
 

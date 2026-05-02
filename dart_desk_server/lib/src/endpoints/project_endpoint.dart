@@ -4,6 +4,7 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import '../auth/require_role.dart';
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
+import '../util/deploy_hostname.dart';
 
 /// Endpoint for managing projects.
 class ProjectEndpoint extends Endpoint {
@@ -104,22 +105,57 @@ class ProjectEndpoint extends Endpoint {
     }
     final member = await resolveUser(session);
 
-    final project = Project(
-      clientId: member.clientId!,
-      name: name,
-      slug: slug,
-      deployHostname: '', // TODO: accept deployHostname param (Task 2)
-      description: description,
-      isActive: true,
-      settings: settings,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      createdByUserId: member.id,
-      updatedByUserId: member.id,
-    );
+    final cmsClient = await CmsClient.db.findById(session, member.clientId!);
+    if (cmsClient == null) {
+      throw ApiException(message: 'Client not found', code: 404);
+    }
 
-    final inserted = await Project.db.insertRow(session, project);
-    session.log('Created Project id=${inserted.id} slug=$slug', level: LogLevel.info);
+    final base = slugifyForHostname('${cmsClient.slug}-$slug');
+
+    final inserted = await session.db.transaction((txn) async {
+      String? chosenHostname;
+      for (final candidate in deriveDeployHostnameCandidates(base)) {
+        if (!isValidDeployHostname(candidate) || isReservedDeployHostname(candidate)) {
+          continue;
+        }
+        final taken = await Project.db.findFirstRow(
+          session,
+          where: (t) => t.deployHostname.equals(candidate) & t.deletedAt.equals(null),
+          transaction: txn,
+        );
+        if (taken == null) {
+          chosenHostname = candidate;
+          break;
+        }
+      }
+
+      if (chosenHostname == null) {
+        throw ApiException(
+          message: 'Could not derive a unique deploy hostname for project',
+          code: 500,
+        );
+      }
+
+      return Project.db.insertRow(
+        session,
+        Project(
+          clientId: member.clientId!,
+          name: name,
+          slug: slug,
+          deployHostname: chosenHostname,
+          description: description,
+          isActive: true,
+          settings: settings,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          createdByUserId: member.id,
+          updatedByUserId: member.id,
+        ),
+        transaction: txn,
+      );
+    });
+
+    session.log('Created Project id=${inserted.id} slug=$slug deployHostname=${inserted.deployHostname}', level: LogLevel.info);
     return inserted;
   }
 
