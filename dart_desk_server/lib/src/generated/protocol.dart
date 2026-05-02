@@ -47,17 +47,18 @@ import 'project.dart' as _i32;
 import 'project_member.dart' as _i33;
 import 'project_role.dart' as _i34;
 import 'public_document.dart' as _i35;
-import 'user.dart' as _i36;
-import 'package:dart_desk_server/src/generated/client_with_role.dart' as _i37;
-import 'package:dart_desk_server/src/generated/api_token.dart' as _i38;
-import 'package:dart_desk_server/src/generated/deployment.dart' as _i39;
+import 'published_document.dart' as _i36;
+import 'user.dart' as _i37;
+import 'package:dart_desk_server/src/generated/client_with_role.dart' as _i38;
+import 'package:dart_desk_server/src/generated/api_token.dart' as _i39;
+import 'package:dart_desk_server/src/generated/deployment.dart' as _i40;
 import 'package:dart_desk_server/src/generated/document_crdt_operation.dart'
-    as _i40;
-import 'package:dart_desk_server/src/generated/media_asset.dart' as _i41;
-import 'package:dart_desk_server/src/generated/user.dart' as _i42;
-import 'package:dart_desk_server/src/generated/migration_history.dart' as _i43;
-import 'package:dart_desk_server/src/generated/project_member.dart' as _i44;
-import 'package:dart_desk_server/src/generated/public_document.dart' as _i45;
+    as _i41;
+import 'package:dart_desk_server/src/generated/media_asset.dart' as _i42;
+import 'package:dart_desk_server/src/generated/user.dart' as _i43;
+import 'package:dart_desk_server/src/generated/migration_history.dart' as _i44;
+import 'package:dart_desk_server/src/generated/project_member.dart' as _i45;
+import 'package:dart_desk_server/src/generated/public_document.dart' as _i46;
 export 'api_exception.dart';
 export 'api_token.dart';
 export 'api_token_with_value.dart';
@@ -89,6 +90,7 @@ export 'project.dart';
 export 'project_member.dart';
 export 'project_role.dart';
 export 'public_document.dart';
+export 'published_document.dart';
 export 'user.dart';
 
 class Protocol extends _i1.DatabaseSerializationManager {
@@ -1814,6 +1816,192 @@ class Protocol extends _i1.DatabaseSerializationManager {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'published_documents',
+      dartName: 'PublishedDocument',
+      schema: 'public',
+      module: 'dart_desk',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+          columnDefault: 'random',
+        ),
+        _i2.ColumnDefinition(
+          name: 'documentId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'projectId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'documentType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'title',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'slug',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDefault',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'data',
+          columnType: _i2.ColumnType.jsonb,
+          isNullable: true,
+          dartType: 'Map<String,dynamic>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'publishedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'publishedVersionId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'now',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'published_documents_fk_0',
+          columns: ['documentId'],
+          referenceTable: 'documents',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'published_documents_fk_1',
+          columns: ['projectId'],
+          referenceTable: 'projects',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'published_documents_fk_2',
+          columns: ['publishedVersionId'],
+          referenceTable: 'document_versions',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.restrict,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'published_docs_document_id_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'published_docs_project_type_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'projectId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentType',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'published_docs_project_type_slug_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'projectId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentType',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'slug',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'published_docs_type_default_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'documentType',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'isDefault',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'users',
       dartName: 'User',
       schema: 'public',
@@ -2071,8 +2259,11 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == _i35.PublicDocument) {
       return _i35.PublicDocument.fromJson(data) as T;
     }
-    if (t == _i36.User) {
-      return _i36.User.fromJson(data) as T;
+    if (t == _i36.PublishedDocument) {
+      return _i36.PublishedDocument.fromJson(data) as T;
+    }
+    if (t == _i37.User) {
+      return _i37.User.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.ApiException?>()) {
       return (data != null ? _i5.ApiException.fromJson(data) : null) as T;
@@ -2188,8 +2379,11 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == _i1.getType<_i35.PublicDocument?>()) {
       return (data != null ? _i35.PublicDocument.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i36.User?>()) {
-      return (data != null ? _i36.User.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i36.PublishedDocument?>()) {
+      return (data != null ? _i36.PublishedDocument.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i37.User?>()) {
+      return (data != null ? _i37.User.fromJson(data) : null) as T;
     }
     if (t == List<_i21.DocumentVersionWithOperations>) {
       return (data as List)
@@ -2231,71 +2425,89 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return (data as List).map((e) => deserialize<_i32.Project>(e)).toList()
           as T;
     }
-    if (t == List<_i36.User>) {
-      return (data as List).map((e) => deserialize<_i36.User>(e)).toList() as T;
+    if (t == List<_i37.User>) {
+      return (data as List).map((e) => deserialize<_i37.User>(e)).toList() as T;
     }
-    if (t == List<_i37.ClientWithRole>) {
+    if (t == Map<String, dynamic>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(deserialize<String>(k), deserialize<dynamic>(v)),
+          )
+          as T;
+    }
+    if (t == dynamic) {
+      return decodeDynamicFieldValue(data) as T;
+    }
+    if (t == _i1.getType<Map<String, dynamic>?>()) {
+      return (data != null
+              ? (data as Map).map(
+                  (k, v) =>
+                      MapEntry(deserialize<String>(k), deserialize<dynamic>(v)),
+                )
+              : null)
+          as T;
+    }
+    if (t == List<_i38.ClientWithRole>) {
       return (data as List)
-              .map((e) => deserialize<_i37.ClientWithRole>(e))
+              .map((e) => deserialize<_i38.ClientWithRole>(e))
               .toList()
           as T;
     }
-    if (t == List<_i38.ApiToken>) {
-      return (data as List).map((e) => deserialize<_i38.ApiToken>(e)).toList()
+    if (t == List<_i39.ApiToken>) {
+      return (data as List).map((e) => deserialize<_i39.ApiToken>(e)).toList()
           as T;
     }
-    if (t == List<_i39.Deployment>) {
-      return (data as List).map((e) => deserialize<_i39.Deployment>(e)).toList()
+    if (t == List<_i40.Deployment>) {
+      return (data as List).map((e) => deserialize<_i40.Deployment>(e)).toList()
           as T;
     }
-    if (t == List<_i40.DocumentCrdtOperation>) {
+    if (t == List<_i41.DocumentCrdtOperation>) {
       return (data as List)
-              .map((e) => deserialize<_i40.DocumentCrdtOperation>(e))
+              .map((e) => deserialize<_i41.DocumentCrdtOperation>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i41.MediaAsset>) {
-      return (data as List).map((e) => deserialize<_i41.MediaAsset>(e)).toList()
+    if (t == List<_i42.MediaAsset>) {
+      return (data as List).map((e) => deserialize<_i42.MediaAsset>(e)).toList()
           as T;
     }
-    if (t == List<_i42.User>) {
-      return (data as List).map((e) => deserialize<_i42.User>(e)).toList() as T;
+    if (t == List<_i43.User>) {
+      return (data as List).map((e) => deserialize<_i43.User>(e)).toList() as T;
     }
-    if (t == List<_i43.MigrationHistory>) {
+    if (t == List<_i44.MigrationHistory>) {
       return (data as List)
-              .map((e) => deserialize<_i43.MigrationHistory>(e))
+              .map((e) => deserialize<_i44.MigrationHistory>(e))
               .toList()
           as T;
     }
-    if (t == List<_i44.ProjectMember>) {
+    if (t == List<_i45.ProjectMember>) {
       return (data as List)
-              .map((e) => deserialize<_i44.ProjectMember>(e))
+              .map((e) => deserialize<_i45.ProjectMember>(e))
               .toList()
           as T;
     }
-    if (t == Map<String, List<_i45.PublicDocument>>) {
+    if (t == Map<String, List<_i46.PublicDocument>>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<List<_i45.PublicDocument>>(v),
+              deserialize<List<_i46.PublicDocument>>(v),
             ),
           )
           as T;
     }
-    if (t == List<_i45.PublicDocument>) {
+    if (t == List<_i46.PublicDocument>) {
       return (data as List)
-              .map((e) => deserialize<_i45.PublicDocument>(e))
+              .map((e) => deserialize<_i46.PublicDocument>(e))
               .toList()
           as T;
     }
-    if (t == Map<String, _i45.PublicDocument>) {
+    if (t == Map<String, _i46.PublicDocument>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i45.PublicDocument>(v),
+              deserialize<_i46.PublicDocument>(v),
             ),
           )
           as T;
@@ -2346,7 +2558,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
       _i33.ProjectMember => 'ProjectMember',
       _i34.ProjectRole => 'ProjectRole',
       _i35.PublicDocument => 'PublicDocument',
-      _i36.User => 'User',
+      _i36.PublishedDocument => 'PublishedDocument',
+      _i37.User => 'User',
       _ => null,
     };
   }
@@ -2423,7 +2636,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return 'ProjectRole';
       case _i35.PublicDocument():
         return 'PublicDocument';
-      case _i36.User():
+      case _i36.PublishedDocument():
+        return 'PublishedDocument';
+      case _i37.User():
         return 'User';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -2540,8 +2755,11 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (dataClassName == 'PublicDocument') {
       return deserialize<_i35.PublicDocument>(data['data']);
     }
+    if (dataClassName == 'PublishedDocument') {
+      return deserialize<_i36.PublishedDocument>(data['data']);
+    }
     if (dataClassName == 'User') {
-      return deserialize<_i36.User>(data['data']);
+      return deserialize<_i37.User>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -2603,8 +2821,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return _i32.Project.t;
       case _i33.ProjectMember:
         return _i33.ProjectMember.t;
-      case _i36.User:
-        return _i36.User.t;
+      case _i36.PublishedDocument:
+        return _i36.PublishedDocument.t;
+      case _i37.User:
+        return _i37.User.t;
     }
     return null;
   }

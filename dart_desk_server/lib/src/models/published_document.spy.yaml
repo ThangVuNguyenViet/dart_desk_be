@@ -1,0 +1,25 @@
+class: PublishedDocument
+table: published_documents
+fields:
+  id: UuidValue, defaultModel=random
+  documentId: UuidValue, relation(parent=documents, onDelete=Cascade)
+  projectId: UuidValue, relation(parent=projects, onDelete=Cascade)
+  documentType: String
+  title: String
+  slug: String
+  isDefault: bool, default=false
+  data: Map<String, dynamic>?, serializationDataType=jsonb
+  publishedAt: DateTime
+  publishedVersionId: UuidValue, relation(parent=document_versions, onDelete=Restrict)
+  updatedAt: DateTime?, default=now
+  deletedAt: DateTime?
+indexes:
+  published_docs_document_id_unique_idx:
+    fields: documentId
+    unique: true
+  published_docs_project_type_idx:
+    fields: projectId, documentType
+  published_docs_project_type_slug_idx:
+    fields: projectId, documentType, slug
+  published_docs_type_default_idx:
+    fields: documentType, isDefault
