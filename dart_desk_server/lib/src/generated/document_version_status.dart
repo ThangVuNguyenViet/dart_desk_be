@@ -16,7 +16,8 @@ enum DocumentVersionStatus implements _i1.SerializableModel {
   draft,
   published,
   scheduled,
-  archived;
+  archived
+  ;
 
   static DocumentVersionStatus fromJson(String name) {
     switch (name) {

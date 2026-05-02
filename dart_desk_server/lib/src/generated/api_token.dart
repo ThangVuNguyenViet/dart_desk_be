@@ -175,6 +175,7 @@ abstract class ApiToken
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ApiTokenTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ApiTokenTable>? orderByList,
     ApiTokenInclude? include,
@@ -184,7 +185,8 @@ abstract class ApiToken
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ApiToken.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ApiToken.t),
       include: include,
     );
@@ -438,6 +440,7 @@ class ApiTokenIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -483,6 +486,7 @@ class ApiTokenRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ApiTokenTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ApiTokenTable>? orderByList,
     _i1.Transaction? transaction,
@@ -493,7 +497,8 @@ class ApiTokenRepository {
       where: where?.call(ApiToken.t),
       orderBy: orderBy?.call(ApiToken.t),
       orderByList: orderByList?.call(ApiToken.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -524,6 +529,7 @@ class ApiTokenRepository {
     _i1.WhereExpressionBuilder<ApiTokenTable>? where,
     int? offset,
     _i1.OrderByBuilder<ApiTokenTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ApiTokenTable>? orderByList,
     _i1.Transaction? transaction,
@@ -534,7 +540,8 @@ class ApiTokenRepository {
       where: where?.call(ApiToken.t),
       orderBy: orderBy?.call(ApiToken.t),
       orderByList: orderByList?.call(ApiToken.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -654,6 +661,7 @@ class ApiTokenRepository {
     int? offset,
     _i1.OrderByBuilder<ApiTokenTable>? orderBy,
     _i1.OrderByListBuilder<ApiTokenTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -664,21 +672,34 @@ class ApiTokenRepository {
       offset: offset,
       orderBy: orderBy?.call(ApiToken.t),
       orderByList: orderByList?.call(ApiToken.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [ApiToken]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ApiToken>> delete(
     _i1.DatabaseSession session,
     List<ApiToken> rows, {
+    _i1.OrderByBuilder<ApiTokenTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ApiTokenTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ApiToken>(
       rows,
+      orderBy: orderBy?.call(ApiToken.t),
+      orderByList: orderByList?.call(ApiToken.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -696,13 +717,24 @@ class ApiTokenRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ApiToken>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ApiTokenTable> where,
+    _i1.OrderByBuilder<ApiTokenTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ApiTokenTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ApiToken>(
       where: where(ApiToken.t),
+      orderBy: orderBy?.call(ApiToken.t),
+      orderByList: orderByList?.call(ApiToken.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

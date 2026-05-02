@@ -15,7 +15,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 enum MediaAssetMetadataStatus implements _i1.SerializableModel {
   pending,
   complete,
-  failed;
+  failed
+  ;
 
   static MediaAssetMetadataStatus fromJson(String name) {
     switch (name) {

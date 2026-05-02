@@ -146,6 +146,7 @@ abstract class CmsClient
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CmsClientTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CmsClientTable>? orderByList,
     CmsClientInclude? include,
@@ -155,7 +156,8 @@ abstract class CmsClient
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CmsClient.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(CmsClient.t),
       include: include,
     );
@@ -356,6 +358,7 @@ class CmsClientIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -401,6 +404,7 @@ class CmsClientRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CmsClientTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CmsClientTable>? orderByList,
     _i1.Transaction? transaction,
@@ -411,7 +415,8 @@ class CmsClientRepository {
       where: where?.call(CmsClient.t),
       orderBy: orderBy?.call(CmsClient.t),
       orderByList: orderByList?.call(CmsClient.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -442,6 +447,7 @@ class CmsClientRepository {
     _i1.WhereExpressionBuilder<CmsClientTable>? where,
     int? offset,
     _i1.OrderByBuilder<CmsClientTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CmsClientTable>? orderByList,
     _i1.Transaction? transaction,
@@ -452,7 +458,8 @@ class CmsClientRepository {
       where: where?.call(CmsClient.t),
       orderBy: orderBy?.call(CmsClient.t),
       orderByList: orderByList?.call(CmsClient.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -572,6 +579,7 @@ class CmsClientRepository {
     int? offset,
     _i1.OrderByBuilder<CmsClientTable>? orderBy,
     _i1.OrderByListBuilder<CmsClientTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -582,21 +590,34 @@ class CmsClientRepository {
       offset: offset,
       orderBy: orderBy?.call(CmsClient.t),
       orderByList: orderByList?.call(CmsClient.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [CmsClient]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<CmsClient>> delete(
     _i1.DatabaseSession session,
     List<CmsClient> rows, {
+    _i1.OrderByBuilder<CmsClientTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CmsClientTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<CmsClient>(
       rows,
+      orderBy: orderBy?.call(CmsClient.t),
+      orderByList: orderByList?.call(CmsClient.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -614,13 +635,24 @@ class CmsClientRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<CmsClient>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CmsClientTable> where,
+    _i1.OrderByBuilder<CmsClientTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CmsClientTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<CmsClient>(
       where: where(CmsClient.t),
+      orderBy: orderBy?.call(CmsClient.t),
+      orderByList: orderByList?.call(CmsClient.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

@@ -91,7 +91,7 @@ export 'project_role.dart';
 export 'public_document.dart';
 export 'user.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -110,7 +110,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'projectId',
@@ -178,7 +178,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
       ],
       foreignKeys: [
@@ -204,19 +204,6 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'api_tokens_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'api_token_project_idx',
           tableSpace: null,
@@ -282,7 +269,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'name',
@@ -320,14 +307,14 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'updatedAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'deletedAt',
@@ -338,19 +325,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       foreignKeys: [],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'clients_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'clients_slug_idx',
           tableSpace: null,
@@ -391,7 +365,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'projectId',
@@ -446,14 +420,14 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'updatedAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
       ],
       foreignKeys: [
@@ -479,19 +453,6 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'deployments_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'deployment_project_idx',
           tableSpace: null,
@@ -553,7 +514,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'documentId',
@@ -596,7 +557,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'createdByUserId',
@@ -628,19 +589,6 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'document_crdt_operations_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'document_crdt_operations_document_hlc_idx',
           tableSpace: null,
@@ -698,7 +646,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'documentId',
@@ -729,7 +677,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
       ],
       foreignKeys: [
@@ -745,19 +693,6 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'document_crdt_snapshots_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'document_crdt_snapshots_document_hlc_idx',
           tableSpace: null,
@@ -802,7 +737,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'documentId',
@@ -864,7 +799,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'createdByUserId',
@@ -918,19 +853,6 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'document_versions_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'document_versions_document_id_idx',
           tableSpace: null,
@@ -1044,7 +966,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'projectId',
@@ -1106,14 +1028,14 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'updatedAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'createdByUserId',
@@ -1167,19 +1089,6 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'documents_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'documents_project_type_idx',
           tableSpace: null,
@@ -1279,7 +1188,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'documentType',
@@ -1298,14 +1207,14 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'updatedAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'createdByUserId',
@@ -1322,19 +1231,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       foreignKeys: [],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'documents_data_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'documents_data_document_type_idx',
           tableSpace: null,
@@ -1388,7 +1284,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'projectId',
@@ -1503,7 +1399,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'metadataStatus',
@@ -1525,19 +1421,6 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'media_assets_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'media_asset_project_id_idx',
           tableSpace: null,
@@ -1604,7 +1487,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'projectId',
@@ -1629,7 +1512,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'operationsJson',
@@ -1657,19 +1540,6 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'migration_history_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'migration_history_project_name_idx',
           tableSpace: null,
@@ -1701,7 +1571,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'userId',
@@ -1726,7 +1596,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
       ],
       foreignKeys: [
@@ -1752,19 +1622,6 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'project_members_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'project_member_unique',
           tableSpace: null,
@@ -1809,7 +1666,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'clientId',
@@ -1853,14 +1710,14 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'updatedAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'createdByUserId',
@@ -1915,19 +1772,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'projects_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
           indexName: 'projects_client_idx',
           tableSpace: null,
           elements: [
@@ -1980,7 +1824,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
-          columnDefault: 'gen_random_uuid()',
+          columnDefault: 'random',
         ),
         _i2.ColumnDefinition(
           name: 'clientId',
@@ -2005,7 +1849,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'protocol:ClientRole',
-          columnDefault: '\'viewer\'::text',
+          columnDefault: '\'viewer\'',
         ),
         _i2.ColumnDefinition(
           name: 'isActive',
@@ -2025,14 +1869,14 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'updatedAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'deletedAt',
@@ -2043,19 +1887,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       foreignKeys: [],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'users_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'users_client_email_idx',
           tableSpace: null,

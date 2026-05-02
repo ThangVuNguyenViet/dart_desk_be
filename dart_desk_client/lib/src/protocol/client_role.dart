@@ -16,7 +16,8 @@ enum ClientRole implements _i1.SerializableModel {
   owner,
   admin,
   member,
-  viewer;
+  viewer
+  ;
 
   static ClientRole fromJson(String name) {
     switch (name) {

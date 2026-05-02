@@ -119,6 +119,7 @@ abstract class DocumentCrdtSnapshot
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DocumentCrdtSnapshotTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentCrdtSnapshotTable>? orderByList,
     DocumentCrdtSnapshotInclude? include,
@@ -128,7 +129,8 @@ abstract class DocumentCrdtSnapshot
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DocumentCrdtSnapshot.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(DocumentCrdtSnapshot.t),
       include: include,
     );
@@ -283,6 +285,7 @@ class DocumentCrdtSnapshotIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -328,6 +331,7 @@ class DocumentCrdtSnapshotRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DocumentCrdtSnapshotTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentCrdtSnapshotTable>? orderByList,
     _i1.Transaction? transaction,
@@ -338,7 +342,8 @@ class DocumentCrdtSnapshotRepository {
       where: where?.call(DocumentCrdtSnapshot.t),
       orderBy: orderBy?.call(DocumentCrdtSnapshot.t),
       orderByList: orderByList?.call(DocumentCrdtSnapshot.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -369,6 +374,7 @@ class DocumentCrdtSnapshotRepository {
     _i1.WhereExpressionBuilder<DocumentCrdtSnapshotTable>? where,
     int? offset,
     _i1.OrderByBuilder<DocumentCrdtSnapshotTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentCrdtSnapshotTable>? orderByList,
     _i1.Transaction? transaction,
@@ -379,7 +385,8 @@ class DocumentCrdtSnapshotRepository {
       where: where?.call(DocumentCrdtSnapshot.t),
       orderBy: orderBy?.call(DocumentCrdtSnapshot.t),
       orderByList: orderByList?.call(DocumentCrdtSnapshot.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -501,6 +508,7 @@ class DocumentCrdtSnapshotRepository {
     int? offset,
     _i1.OrderByBuilder<DocumentCrdtSnapshotTable>? orderBy,
     _i1.OrderByListBuilder<DocumentCrdtSnapshotTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -511,21 +519,34 @@ class DocumentCrdtSnapshotRepository {
       offset: offset,
       orderBy: orderBy?.call(DocumentCrdtSnapshot.t),
       orderByList: orderByList?.call(DocumentCrdtSnapshot.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [DocumentCrdtSnapshot]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<DocumentCrdtSnapshot>> delete(
     _i1.DatabaseSession session,
     List<DocumentCrdtSnapshot> rows, {
+    _i1.OrderByBuilder<DocumentCrdtSnapshotTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DocumentCrdtSnapshotTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<DocumentCrdtSnapshot>(
       rows,
+      orderBy: orderBy?.call(DocumentCrdtSnapshot.t),
+      orderByList: orderByList?.call(DocumentCrdtSnapshot.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -543,13 +564,24 @@ class DocumentCrdtSnapshotRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<DocumentCrdtSnapshot>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DocumentCrdtSnapshotTable> where,
+    _i1.OrderByBuilder<DocumentCrdtSnapshotTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DocumentCrdtSnapshotTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<DocumentCrdtSnapshot>(
       where: where(DocumentCrdtSnapshot.t),
+      orderBy: orderBy?.call(DocumentCrdtSnapshot.t),
+      orderByList: orderByList?.call(DocumentCrdtSnapshot.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

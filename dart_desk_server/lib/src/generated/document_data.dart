@@ -133,6 +133,7 @@ abstract class DocumentData
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DocumentDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentDataTable>? orderByList,
     DocumentDataInclude? include,
@@ -142,7 +143,8 @@ abstract class DocumentData
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DocumentData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(DocumentData.t),
       include: include,
     );
@@ -318,6 +320,7 @@ class DocumentDataIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -363,6 +366,7 @@ class DocumentDataRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DocumentDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentDataTable>? orderByList,
     _i1.Transaction? transaction,
@@ -373,7 +377,8 @@ class DocumentDataRepository {
       where: where?.call(DocumentData.t),
       orderBy: orderBy?.call(DocumentData.t),
       orderByList: orderByList?.call(DocumentData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -404,6 +409,7 @@ class DocumentDataRepository {
     _i1.WhereExpressionBuilder<DocumentDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<DocumentDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentDataTable>? orderByList,
     _i1.Transaction? transaction,
@@ -414,7 +420,8 @@ class DocumentDataRepository {
       where: where?.call(DocumentData.t),
       orderBy: orderBy?.call(DocumentData.t),
       orderByList: orderByList?.call(DocumentData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -534,6 +541,7 @@ class DocumentDataRepository {
     int? offset,
     _i1.OrderByBuilder<DocumentDataTable>? orderBy,
     _i1.OrderByListBuilder<DocumentDataTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -544,21 +552,34 @@ class DocumentDataRepository {
       offset: offset,
       orderBy: orderBy?.call(DocumentData.t),
       orderByList: orderByList?.call(DocumentData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [DocumentData]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<DocumentData>> delete(
     _i1.DatabaseSession session,
     List<DocumentData> rows, {
+    _i1.OrderByBuilder<DocumentDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DocumentDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<DocumentData>(
       rows,
+      orderBy: orderBy?.call(DocumentData.t),
+      orderByList: orderByList?.call(DocumentData.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -576,13 +597,24 @@ class DocumentDataRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<DocumentData>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DocumentDataTable> where,
+    _i1.OrderByBuilder<DocumentDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DocumentDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<DocumentData>(
       where: where(DocumentData.t),
+      orderBy: orderBy?.call(DocumentData.t),
+      orderByList: orderByList?.call(DocumentData.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

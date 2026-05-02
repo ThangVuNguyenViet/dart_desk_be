@@ -15,7 +15,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 enum ProjectRole implements _i1.SerializableModel {
   admin,
   editor,
-  viewer;
+  viewer
+  ;
 
   static ProjectRole fromJson(String name) {
     switch (name) {
