@@ -330,6 +330,11 @@ class Endpoints extends _i1.EndpointDispatch {
         'list': _i1.MethodConnector(
           name: 'list',
           params: {
+            'clientSlug': _i1.ParameterDescription(
+              name: 'clientSlug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
             'projectSlug': _i1.ParameterDescription(
               name: 'projectSlug',
               type: _i1.getType<String>(),
@@ -343,12 +348,18 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['deployment'] as _i4.DeploymentEndpoint).list(
                     session,
+                    params['clientSlug'],
                     params['projectSlug'],
                   ),
         ),
         'getActive': _i1.MethodConnector(
           name: 'getActive',
           params: {
+            'clientSlug': _i1.ParameterDescription(
+              name: 'clientSlug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
             'projectSlug': _i1.ParameterDescription(
               name: 'projectSlug',
               type: _i1.getType<String>(),
@@ -362,12 +373,18 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['deployment'] as _i4.DeploymentEndpoint).getActive(
                     session,
+                    params['clientSlug'],
                     params['projectSlug'],
                   ),
         ),
         'activate': _i1.MethodConnector(
           name: 'activate',
           params: {
+            'clientSlug': _i1.ParameterDescription(
+              name: 'clientSlug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
             'projectSlug': _i1.ParameterDescription(
               name: 'projectSlug',
               type: _i1.getType<String>(),
@@ -386,6 +403,7 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['deployment'] as _i4.DeploymentEndpoint).activate(
                     session,
+                    params['clientSlug'],
                     params['projectSlug'],
                     params['version'],
                   ),
@@ -393,6 +411,11 @@ class Endpoints extends _i1.EndpointDispatch {
         'delete': _i1.MethodConnector(
           name: 'delete',
           params: {
+            'clientSlug': _i1.ParameterDescription(
+              name: 'clientSlug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
             'projectSlug': _i1.ParameterDescription(
               name: 'projectSlug',
               type: _i1.getType<String>(),
@@ -411,6 +434,7 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async =>
                   (endpoints['deployment'] as _i4.DeploymentEndpoint).delete(
                     session,
+                    params['clientSlug'],
                     params['projectSlug'],
                     params['version'],
                   ),
@@ -631,25 +655,6 @@ class Endpoints extends _i1.EndpointDispatch {
                   (endpoints['document'] as _i6.DocumentEndpoint).getDocument(
                     session,
                     params['documentId'],
-                  ),
-        ),
-        'getDocumentBySlug': _i1.MethodConnector(
-          name: 'getDocumentBySlug',
-          params: {
-            'slug': _i1.ParameterDescription(
-              name: 'slug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
-                  .getDocumentBySlug(
-                    session,
-                    params['slug'],
                   ),
         ),
         'getDefaultDocument': _i1.MethodConnector(
@@ -1699,25 +1704,6 @@ class Endpoints extends _i1.EndpointDispatch {
                     search: params['search'],
                     limit: params['limit'],
                     offset: params['offset'],
-                  ),
-        ),
-        'getProjectBySlug': _i1.MethodConnector(
-          name: 'getProjectBySlug',
-          params: {
-            'slug': _i1.ParameterDescription(
-              name: 'slug',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['project'] as _i13.ProjectEndpoint)
-                  .getProjectBySlug(
-                    session,
-                    params['slug'],
                   ),
         ),
         'getProject': _i1.MethodConnector(

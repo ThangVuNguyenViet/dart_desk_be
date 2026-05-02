@@ -520,6 +520,7 @@ class _DeploymentEndpoint {
 
   _i3.Future<List<_i7.Deployment>> list(
     _i1.TestSessionBuilder sessionBuilder,
+    String clientSlug,
     String projectSlug,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -533,7 +534,10 @@ class _DeploymentEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'deployment',
           methodName: 'list',
-          parameters: _i1.testObjectToJson({'projectSlug': projectSlug}),
+          parameters: _i1.testObjectToJson({
+            'clientSlug': clientSlug,
+            'projectSlug': projectSlug,
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -551,6 +555,7 @@ class _DeploymentEndpoint {
 
   _i3.Future<_i7.Deployment?> getActive(
     _i1.TestSessionBuilder sessionBuilder,
+    String clientSlug,
     String projectSlug,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -564,7 +569,10 @@ class _DeploymentEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'deployment',
           methodName: 'getActive',
-          parameters: _i1.testObjectToJson({'projectSlug': projectSlug}),
+          parameters: _i1.testObjectToJson({
+            'clientSlug': clientSlug,
+            'projectSlug': projectSlug,
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -582,6 +590,7 @@ class _DeploymentEndpoint {
 
   _i3.Future<_i7.Deployment> activate(
     _i1.TestSessionBuilder sessionBuilder,
+    String clientSlug,
     String projectSlug,
     int version,
   ) async {
@@ -597,6 +606,7 @@ class _DeploymentEndpoint {
           endpointPath: 'deployment',
           methodName: 'activate',
           parameters: _i1.testObjectToJson({
+            'clientSlug': clientSlug,
             'projectSlug': projectSlug,
             'version': version,
           }),
@@ -617,6 +627,7 @@ class _DeploymentEndpoint {
 
   _i3.Future<bool> delete(
     _i1.TestSessionBuilder sessionBuilder,
+    String clientSlug,
     String projectSlug,
     int version,
   ) async {
@@ -632,6 +643,7 @@ class _DeploymentEndpoint {
           endpointPath: 'deployment',
           methodName: 'delete',
           parameters: _i1.testObjectToJson({
+            'clientSlug': clientSlug,
             'projectSlug': projectSlug,
             'version': version,
           }),
@@ -925,37 +937,6 @@ class _DocumentEndpoint {
           endpointPath: 'document',
           methodName: 'getDocument',
           parameters: _i1.testObjectToJson({'documentId': documentId}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i3.Future<_i9.Document?>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i3.Future<_i9.Document?> getDocumentBySlug(
-    _i1.TestSessionBuilder sessionBuilder,
-    String slug,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'document',
-            method: 'getDocumentBySlug',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'document',
-          methodName: 'getDocumentBySlug',
-          parameters: _i1.testObjectToJson({'slug': slug}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -2489,37 +2470,6 @@ class _ProjectEndpoint {
                   _localCallContext.arguments,
                 )
                 as _i3.Future<_i20.PaginatedProjects>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i3.Future<_i21.Project?> getProjectBySlug(
-    _i1.TestSessionBuilder sessionBuilder,
-    String slug,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'project',
-            method: 'getProjectBySlug',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'project',
-          methodName: 'getProjectBySlug',
-          parameters: _i1.testObjectToJson({'slug': slug}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i3.Future<_i21.Project?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
