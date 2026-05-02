@@ -1,0 +1,50 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "alterTable",
+      "alterTable": {
+        "__className__": "serverpod.TableMigration",
+        "name": "documents",
+        "schema": "public",
+        "addColumns": [],
+        "deleteColumns": [
+          "data_jsonb"
+        ],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [
+          "documents_data_gin"
+        ],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "columnDropped",
+            "message": "Column \"data_jsonb\" of table \"documents\" will be dropped.",
+            "table": "documents",
+            "columns": [
+              "data_jsonb"
+            ],
+            "destrucive": true
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "columnDropped",
+      "message": "Column \"data_jsonb\" of table \"documents\" will be dropped.",
+      "table": "documents",
+      "columns": [
+        "data_jsonb"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}

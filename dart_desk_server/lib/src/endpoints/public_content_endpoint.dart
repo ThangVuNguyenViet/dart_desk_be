@@ -154,7 +154,7 @@ class PublicContentEndpoint extends Endpoint {
     // Step 1: raw SQL filter using data_jsonb @> ... on published_documents.
     // published_documents.data is text; data_jsonb is a generated jsonb column
     // with a GIN index (published_docs_data_gin), so containment queries are
-    // index-backed. Same pattern as documents.data_jsonb (see CLAUDE.md).
+    // index-backed. See dart_desk_be/CLAUDE.md for schema drift rationale.
     final idRows = await session.db.unsafeQuery(
       r'''
       SELECT id FROM published_documents
