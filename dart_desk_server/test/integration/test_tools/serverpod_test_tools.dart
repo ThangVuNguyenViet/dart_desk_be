@@ -1450,6 +1450,41 @@ class _DocumentEndpoint {
     });
   }
 
+  _i3.Future<_i9.Document> restoreDocumentVersion(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue documentId,
+    _i2.UuidValue versionId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'document',
+            method: 'restoreDocumentVersion',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'document',
+          methodName: 'restoreDocumentVersion',
+          parameters: _i1.testObjectToJson({
+            'documentId': documentId,
+            'versionId': versionId,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i9.Document>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<_i12.DocumentVersion?> archiveDocumentVersion(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue versionId,

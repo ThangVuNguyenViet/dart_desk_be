@@ -1005,6 +1005,31 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['documentId'],
                   ),
         ),
+        'restoreDocumentVersion': _i1.MethodConnector(
+          name: 'restoreDocumentVersion',
+          params: {
+            'documentId': _i1.ParameterDescription(
+              name: 'documentId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+            'versionId': _i1.ParameterDescription(
+              name: 'versionId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+                  .restoreDocumentVersion(
+                    session,
+                    params['documentId'],
+                    params['versionId'],
+                  ),
+        ),
         'archiveDocumentVersion': _i1.MethodConnector(
           name: 'archiveDocumentVersion',
           params: {

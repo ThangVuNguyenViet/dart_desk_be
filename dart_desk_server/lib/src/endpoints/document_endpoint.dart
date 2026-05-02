@@ -786,6 +786,75 @@ class DocumentEndpoint extends Endpoint {
     });
   }
 
+  /// Restore a previous version's data into the current draft.
+  ///
+  /// Reconstructs the target version's state via the CRDT service, then
+  /// applies the diff (as append-only ops) to bring the draft back to that
+  /// state. Does not modify the historical version row and does not
+  /// auto-publish.
+  ///
+  /// Authorization: same role check as deleteDocument (owner/admin).
+  Future<Document> restoreDocumentVersion(
+    Session session,
+    UuidValue documentId,
+    UuidValue versionId,
+  ) async {
+    final auth = await _requireUser(session);
+    await RoleGuard.requireRole(
+      session,
+      allowed: RoleGuard.destructiveRoles,
+      clientId: auth.clientId,
+    );
+
+    final version = await DocumentVersion.db.findById(session, versionId);
+    if (version == null || version.documentId != documentId) {
+      throw ApiException(
+        message: 'Version not found for this document',
+        code: 404,
+      );
+    }
+    if (version.snapshotHlc == null) {
+      throw ApiException(
+        message: 'Version has no snapshot HLC; cannot restore',
+        code: 400,
+      );
+    }
+
+    // Reconstruct the target version's state from the CRDT op log.
+    final targetState = await session.crdtService.getStateAtHlc(
+      session,
+      documentId,
+      version.snapshotHlc!,
+    );
+
+    // Read the current draft state to diff against.
+    final currentDoc = await Document.db.findById(session, documentId);
+    if (currentDoc == null) {
+      throw ApiException(message: 'Document not found: $documentId', code: 404);
+    }
+    final currentState = currentDoc.data != null
+        ? jsonDecode(currentDoc.data!) as Map<String, dynamic>
+        : <String, dynamic>{};
+
+    // Apply the diff as append-only CRDT ops (delete removed fields, put
+    // changed/new fields). Op log stays append-only — no truncation.
+    final updated = await session.crdtService.applyMigrationResult(
+      session,
+      documentId,
+      currentState,
+      targetState,
+      'restore-${auth.user!.id}',
+      cmsUserId: auth.user?.id,
+    );
+
+    session.log(
+      'Restored Document id=$documentId from versionId=$versionId',
+      level: LogLevel.info,
+    );
+
+    return updated;
+  }
+
   /// Archive a version (set status to 'archived' and set archivedAt timestamp)
   Future<DocumentVersion?> archiveDocumentVersion(
     Session session,
