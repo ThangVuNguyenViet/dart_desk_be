@@ -677,17 +677,19 @@ class DocumentEndpoint extends Endpoint {
           code: 400);
     }
 
-    final opCount = await session.crdtService.getOperationCount(
-      session,
-      documentId,
-    );
-    final reconstructedData = await session.crdtService.getStateAtHlc(
-      session,
-      documentId,
-      snapshotHlc,
-    );
-
     return await session.db.transaction<DocumentVersion>((tx) async {
+      // Read snapshot data atomically inside the transaction so no concurrent
+      // write can slip in between the CRDT reads and the version row insert.
+      final opCount = await session.crdtService.getOperationCount(
+        session,
+        documentId,
+      );
+      final reconstructedData = await session.crdtService.getStateAtHlc(
+        session,
+        documentId,
+        snapshotHlc,
+      );
+
       // Determine next version number
       final existing = await DocumentVersion.db.find(
         session,
@@ -716,6 +718,9 @@ class DocumentEndpoint extends Endpoint {
         newVersion,
         transaction: tx,
       );
+      final insertedId = inserted.id ??
+          (throw StateError(
+              'insertRow returned null id for DocumentVersion'));
 
       // Upsert published_documents row.
       // PublishedDocument.data is String? (same as documents.data) — store as
@@ -739,7 +744,7 @@ class DocumentEndpoint extends Endpoint {
             isDefault: document.isDefault,
             data: dataJson,
             publishedAt: now,
-            publishedVersionId: inserted.id,
+            publishedVersionId: insertedId,
             updatedAt: now,
           ),
           transaction: tx,
@@ -754,7 +759,7 @@ class DocumentEndpoint extends Endpoint {
             isDefault: document.isDefault,
             data: dataJson,
             publishedAt: now,
-            publishedVersionId: inserted.id,
+            publishedVersionId: insertedId,
             updatedAt: now,
             deletedAt: null,
           ),
@@ -763,7 +768,7 @@ class DocumentEndpoint extends Endpoint {
       }
 
       session.log(
-          'Published DocumentVersion id=${inserted.id} documentId=$documentId versionNumber=$nextVersionNumber',
+          'Published DocumentVersion id=$insertedId documentId=$documentId versionNumber=$nextVersionNumber',
           level: LogLevel.info);
 
       return inserted;
@@ -790,6 +795,18 @@ class DocumentEndpoint extends Endpoint {
       clientId: auth.clientId,
     );
 
+    // Fetch the document first so we can enforce cross-project authorization
+    // before reading any CRDT data that could belong to another project.
+    final currentDoc = await Document.db.findById(session, documentId);
+    if (currentDoc == null) {
+      throw ApiException(message: 'Document not found: $documentId', code: 404);
+    }
+    if (currentDoc.projectId != auth.projectId) {
+      throw ApiException(
+          message: 'Access denied: document belongs to a different project',
+          code: 403);
+    }
+
     final version = await DocumentVersion.db.findById(session, versionId);
     if (version == null || version.documentId != documentId) {
       throw ApiException(
@@ -811,11 +828,7 @@ class DocumentEndpoint extends Endpoint {
       version.snapshotHlc!,
     );
 
-    // Read the current draft state to diff against.
-    final currentDoc = await Document.db.findById(session, documentId);
-    if (currentDoc == null) {
-      throw ApiException(message: 'Document not found: $documentId', code: 404);
-    }
+    // Current draft state for diffing.
     final currentState = currentDoc.data != null
         ? jsonDecode(currentDoc.data!) as Map<String, dynamic>
         : <String, dynamic>{};
