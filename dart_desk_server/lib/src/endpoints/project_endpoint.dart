@@ -4,6 +4,7 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import '../auth/require_role.dart';
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
+import '../util/deploy_hostname.dart';
 
 /// Endpoint for managing projects.
 class ProjectEndpoint extends Endpoint {
@@ -63,21 +64,6 @@ class ProjectEndpoint extends Endpoint {
     );
   }
 
-  /// Get a project by slug.
-  Future<Project?> getProjectBySlug(
-    Session session,
-    String slug,
-  ) async {
-    final project = await Project.db.findFirstRow(
-      session,
-      where: (t) => t.slug.equals(slug),
-    );
-    if (project != null && project.deletedAt != null) {
-      throw ApiException(message: 'Project has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
-    }
-    return project;
-  }
-
   /// Get a project by ID.
   Future<Project?> getProject(
     Session session,
@@ -104,21 +90,57 @@ class ProjectEndpoint extends Endpoint {
     }
     final member = await resolveUser(session);
 
-    final project = Project(
-      clientId: member.clientId!,
-      name: name,
-      slug: slug,
-      description: description,
-      isActive: true,
-      settings: settings,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      createdByUserId: member.id,
-      updatedByUserId: member.id,
-    );
+    final cmsClient = await CmsClient.db.findById(session, member.clientId!);
+    if (cmsClient == null) {
+      throw ApiException(message: 'Client not found', code: 404);
+    }
 
-    final inserted = await Project.db.insertRow(session, project);
-    session.log('Created Project id=${inserted.id} slug=$slug', level: LogLevel.info);
+    final base = slugifyForHostname('${cmsClient.slug}-$slug');
+
+    final inserted = await session.db.transaction((txn) async {
+      String? chosenHostname;
+      for (final candidate in deriveDeployHostnameCandidates(base)) {
+        if (!isValidDeployHostname(candidate) || isReservedDeployHostname(candidate)) {
+          continue;
+        }
+        final taken = await Project.db.findFirstRow(
+          session,
+          where: (t) => t.deployHostname.equals(candidate) & t.deletedAt.equals(null),
+          transaction: txn,
+        );
+        if (taken == null) {
+          chosenHostname = candidate;
+          break;
+        }
+      }
+
+      if (chosenHostname == null) {
+        throw ApiException(
+          message: 'Could not derive a unique deploy hostname for project',
+          code: 500,
+        );
+      }
+
+      return Project.db.insertRow(
+        session,
+        Project(
+          clientId: member.clientId!,
+          name: name,
+          slug: slug,
+          deployHostname: chosenHostname,
+          description: description,
+          isActive: true,
+          settings: settings,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          createdByUserId: member.id,
+          updatedByUserId: member.id,
+        ),
+        transaction: txn,
+      );
+    });
+
+    session.log('Created Project id=${inserted.id} slug=$slug deployHostname=${inserted.deployHostname}', level: LogLevel.info);
     return inserted;
   }
 
@@ -156,6 +178,59 @@ class ProjectEndpoint extends Endpoint {
 
     await Project.db.updateRow(session, updated);
     session.log('Updated Project id=$projectId', level: LogLevel.info);
+    return updated;
+  }
+
+  /// Update the deploy hostname for a project (requires admin/owner role).
+  Future<Project> updateDeployHostname(
+    Session session,
+    UuidValue projectId,
+    String newHostname,
+  ) async {
+    // Validate format
+    if (!isValidDeployHostname(newHostname)) {
+      throw ApiException(message: 'Invalid deploy hostname format: "$newHostname"', code: 400);
+    }
+    // Reject reserved names
+    if (isReservedDeployHostname(newHostname)) {
+      throw ApiException(message: 'Deploy hostname "$newHostname" is reserved', code: 400);
+    }
+
+    // Authz: caller must be admin or owner
+    final user = await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles);
+
+    // Look up project
+    final project = await Project.db.findById(session, projectId);
+    if (project == null) {
+      throw ApiException(message: 'Project not found', code: 404);
+    }
+
+    // Cross-client check
+    if (project.clientId != user.clientId) {
+      throw ApiException(message: 'Project belongs to a different client', code: 403);
+    }
+
+    // Update
+    final now = DateTime.now();
+    final updated = project.copyWith(
+      deployHostname: newHostname,
+      updatedAt: now,
+      updatedByUserId: user.id,
+    );
+
+    try {
+      await Project.db.updateRow(session, updated);
+    } catch (e) {
+      if (e.toString().contains('23505') || e.toString().toLowerCase().contains('unique')) {
+        throw ApiException(
+          message: 'Hostname "$newHostname" is already taken',
+          code: 409,
+        );
+      }
+      rethrow;
+    }
+
+    session.log('Updated deployHostname for Project id=$projectId to $newHostname', level: LogLevel.info);
     return updated;
   }
 

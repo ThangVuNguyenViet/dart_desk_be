@@ -76,19 +76,6 @@ class DocumentEndpoint extends Endpoint {
     return doc;
   }
 
-  /// Get a document by slug
-  Future<Document?> getDocumentBySlug(
-    Session session,
-    String slug,
-  ) async {
-    final documents = await Document.db.find(
-      session,
-      where: (t) => t.slug.equals(slug) & t.deletedAt.equals(null),
-      limit: 1,
-    );
-    return documents.isNotEmpty ? documents.first : null;
-  }
-
   /// Get the default document for a document type
   Future<Document?> getDefaultDocument(
     Session session,

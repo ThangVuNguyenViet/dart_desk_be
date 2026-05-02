@@ -18,6 +18,7 @@ abstract class Project implements _i1.SerializableModel {
     required this.clientId,
     required this.name,
     required this.slug,
+    required this.deployHostname,
     this.description,
     bool? isActive,
     this.settings,
@@ -36,6 +37,7 @@ abstract class Project implements _i1.SerializableModel {
     required _i1.UuidValue clientId,
     required String name,
     required String slug,
+    required String deployHostname,
     String? description,
     bool? isActive,
     String? settings,
@@ -56,6 +58,7 @@ abstract class Project implements _i1.SerializableModel {
       ),
       name: jsonSerialization['name'] as String,
       slug: jsonSerialization['slug'] as String,
+      deployHostname: jsonSerialization['deployHostname'] as String,
       description: jsonSerialization['description'] as String?,
       isActive: jsonSerialization['isActive'] == null
           ? null
@@ -92,6 +95,8 @@ abstract class Project implements _i1.SerializableModel {
 
   String slug;
 
+  String deployHostname;
+
   String? description;
 
   bool isActive;
@@ -116,6 +121,7 @@ abstract class Project implements _i1.SerializableModel {
     _i1.UuidValue? clientId,
     String? name,
     String? slug,
+    String? deployHostname,
     String? description,
     bool? isActive,
     String? settings,
@@ -133,6 +139,7 @@ abstract class Project implements _i1.SerializableModel {
       'clientId': clientId.toJson(),
       'name': name,
       'slug': slug,
+      'deployHostname': deployHostname,
       if (description != null) 'description': description,
       'isActive': isActive,
       if (settings != null) 'settings': settings,
@@ -158,6 +165,7 @@ class _ProjectImpl extends Project {
     required _i1.UuidValue clientId,
     required String name,
     required String slug,
+    required String deployHostname,
     String? description,
     bool? isActive,
     String? settings,
@@ -171,6 +179,7 @@ class _ProjectImpl extends Project {
          clientId: clientId,
          name: name,
          slug: slug,
+         deployHostname: deployHostname,
          description: description,
          isActive: isActive,
          settings: settings,
@@ -190,6 +199,7 @@ class _ProjectImpl extends Project {
     _i1.UuidValue? clientId,
     String? name,
     String? slug,
+    String? deployHostname,
     Object? description = _Undefined,
     bool? isActive,
     Object? settings = _Undefined,
@@ -204,6 +214,7 @@ class _ProjectImpl extends Project {
       clientId: clientId ?? this.clientId,
       name: name ?? this.name,
       slug: slug ?? this.slug,
+      deployHostname: deployHostname ?? this.deployHostname,
       description: description is String? ? description : this.description,
       isActive: isActive ?? this.isActive,
       settings: settings is String? ? settings : this.settings,

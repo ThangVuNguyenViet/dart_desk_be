@@ -8,6 +8,7 @@ import 'test_tools/serverpod_test_tools.dart';
 void main() {
   withServerpod('DeploymentEndpoint', (sessionBuilder, endpoints) {
     const adminUserId = 'deploy-admin-1';
+    const clientSlug = 'test-client';
     const projectSlug = 'deploy-project';
     late TestDataFactory factory;
 
@@ -36,6 +37,7 @@ void main() {
           clientId: TestDataFactory.testClientId,
           name: 'Deploy Project',
           slug: projectSlug,
+          deployHostname: 'test-$projectSlug',
           isActive: true,
         ),
       );
@@ -73,7 +75,7 @@ void main() {
       test('throws when not authenticated', () async {
         await seedProjectAndAdmin();
         await expectLater(
-          () => endpoints.deployment.list(sessionBuilder, projectSlug),
+          () => endpoints.deployment.list(sessionBuilder, clientSlug, projectSlug),
           throwsA(isA<ApiException>()),
         );
       });
@@ -82,7 +84,7 @@ void main() {
         await seedProjectAndAdmin();
         final stranger = authed(userIdentifier: 'stranger');
         await expectLater(
-          () => endpoints.deployment.list(stranger, projectSlug),
+          () => endpoints.deployment.list(stranger, clientSlug, projectSlug),
           throwsA(isA<ApiException>()),
         );
       });
@@ -102,6 +104,7 @@ void main() {
         await expectLater(
           () => endpoints.deployment.list(
             authed(userIdentifier: 'viewer-user'),
+            clientSlug,
             projectSlug,
           ),
           throwsA(isA<ApiException>()),
@@ -110,7 +113,7 @@ void main() {
 
       test('throws when project slug does not exist', () async {
         await expectLater(
-          () => endpoints.deployment.list(authed(), 'no-such-project'),
+          () => endpoints.deployment.list(authed(), clientSlug, 'no-such-project'),
           throwsA(isA<ApiException>()),
         );
       });
@@ -119,7 +122,7 @@ void main() {
     group('list', () {
       test('returns empty list when no deployments', () async {
         await seedProjectAndAdmin();
-        final result = await endpoints.deployment.list(authed(), projectSlug);
+        final result = await endpoints.deployment.list(authed(), clientSlug, projectSlug);
         expect(result, isEmpty);
       });
 
@@ -127,7 +130,7 @@ void main() {
         final project = await seedProjectAndAdmin();
         await seedDeployment(project.id, version: 1);
         await seedDeployment(project.id, version: 2);
-        final result = await endpoints.deployment.list(authed(), projectSlug);
+        final result = await endpoints.deployment.list(authed(), clientSlug, projectSlug);
         expect(result.length, equals(2));
       });
     });
@@ -138,7 +141,7 @@ void main() {
         await seedDeployment(project.id,
             version: 1, status: DeploymentStatus.inactive);
         final result =
-            await endpoints.deployment.getActive(authed(), projectSlug);
+            await endpoints.deployment.getActive(authed(), clientSlug, projectSlug);
         expect(result, isNull);
       });
 
@@ -147,7 +150,7 @@ void main() {
         final active = await seedDeployment(project.id,
             version: 1, status: DeploymentStatus.active);
         final result =
-            await endpoints.deployment.getActive(authed(), projectSlug);
+            await endpoints.deployment.getActive(authed(), clientSlug, projectSlug);
         expect(result, isNotNull);
         expect(result!.id, equals(active.id));
         expect(result.status, equals(DeploymentStatus.active));
@@ -159,7 +162,7 @@ void main() {
         final project = await seedProjectAndAdmin();
         await seedDeployment(project.id, version: 1);
         final result =
-            await endpoints.deployment.activate(authed(), projectSlug, 1);
+            await endpoints.deployment.activate(authed(), clientSlug, projectSlug, 1);
         expect(result.status, equals(DeploymentStatus.active));
       });
 
@@ -168,7 +171,7 @@ void main() {
         final wasActive = await seedDeployment(project.id,
             version: 1, status: DeploymentStatus.active);
         await seedDeployment(project.id, version: 2);
-        await endpoints.deployment.activate(authed(), projectSlug, 2);
+        await endpoints.deployment.activate(authed(), clientSlug, projectSlug, 2);
         final session = sessionBuilder.build();
         final nowInactive =
             await Deployment.db.findById(session, wasActive.id);
@@ -178,7 +181,7 @@ void main() {
       test('throws when version does not exist', () async {
         await seedProjectAndAdmin();
         await expectLater(
-          () => endpoints.deployment.activate(authed(), projectSlug, 999),
+          () => endpoints.deployment.activate(authed(), clientSlug, projectSlug, 999),
           throwsA(isA<ApiException>()),
         );
       });
@@ -189,7 +192,7 @@ void main() {
         final project = await seedProjectAndAdmin();
         await seedDeployment(project.id, version: 1);
         final result =
-            await endpoints.deployment.delete(authed(), projectSlug, 1);
+            await endpoints.deployment.delete(authed(), clientSlug, projectSlug, 1);
         expect(result, isTrue);
         final session = sessionBuilder.build();
         final gone = await Deployment.db.findFirstRow(
@@ -202,7 +205,7 @@ void main() {
       test('returns false when version does not exist', () async {
         await seedProjectAndAdmin();
         final result =
-            await endpoints.deployment.delete(authed(), projectSlug, 999);
+            await endpoints.deployment.delete(authed(), clientSlug, projectSlug, 999);
         expect(result, isFalse);
       });
 
@@ -211,7 +214,7 @@ void main() {
         await seedDeployment(project.id,
             version: 1, status: DeploymentStatus.active);
         await expectLater(
-          () => endpoints.deployment.delete(authed(), projectSlug, 1),
+          () => endpoints.deployment.delete(authed(), clientSlug, projectSlug, 1),
           throwsA(isA<ApiException>()),
         );
       });

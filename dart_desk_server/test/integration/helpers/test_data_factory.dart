@@ -92,6 +92,7 @@ class TestDataFactory {
         clientId: clientId,
         name: name,
         slug: slug,
+        deployHostname: 'test-$slug',
         isActive: true,
       ),
     );

@@ -21,7 +21,6 @@ documentCollaboration:
 document:
   - getDocuments:
   - getDocument:
-  - getDocumentBySlug:
   - getDefaultDocument:
   - createDocument:
   - updateDocumentData:
@@ -71,10 +70,10 @@ migration:
   - listMigrations:
 project:
   - getProjects:
-  - getProjectBySlug:
   - getProject:
   - createProject:
   - updateProject:
+  - updateDeployHostname:
   - deleteProject:
   - createClientWithOwner:
 projectMember:

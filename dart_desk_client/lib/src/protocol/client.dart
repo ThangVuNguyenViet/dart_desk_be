@@ -150,30 +150,42 @@ class EndpointDeployment extends _i1.EndpointRef {
   @override
   String get name => 'deployment';
 
-  /// List all deployments for a project by slug.
-  _i2.Future<List<_i6.Deployment>> list(String projectSlug) =>
-      caller.callServerEndpoint<List<_i6.Deployment>>(
-        'deployment',
-        'list',
-        {'projectSlug': projectSlug},
-      );
+  /// List all deployments for a project by client and project slug.
+  _i2.Future<List<_i6.Deployment>> list(
+    String clientSlug,
+    String projectSlug,
+  ) => caller.callServerEndpoint<List<_i6.Deployment>>(
+    'deployment',
+    'list',
+    {
+      'clientSlug': clientSlug,
+      'projectSlug': projectSlug,
+    },
+  );
 
   /// Get the currently active deployment for a project.
-  _i2.Future<_i6.Deployment?> getActive(String projectSlug) =>
-      caller.callServerEndpoint<_i6.Deployment?>(
-        'deployment',
-        'getActive',
-        {'projectSlug': projectSlug},
-      );
+  _i2.Future<_i6.Deployment?> getActive(
+    String clientSlug,
+    String projectSlug,
+  ) => caller.callServerEndpoint<_i6.Deployment?>(
+    'deployment',
+    'getActive',
+    {
+      'clientSlug': clientSlug,
+      'projectSlug': projectSlug,
+    },
+  );
 
   /// Activate (rollback to) a specific version.
   _i2.Future<_i6.Deployment> activate(
+    String clientSlug,
     String projectSlug,
     int version,
   ) => caller.callServerEndpoint<_i6.Deployment>(
     'deployment',
     'activate',
     {
+      'clientSlug': clientSlug,
       'projectSlug': projectSlug,
       'version': version,
     },
@@ -181,12 +193,14 @@ class EndpointDeployment extends _i1.EndpointRef {
 
   /// Delete a deployment version.
   _i2.Future<bool> delete(
+    String clientSlug,
     String projectSlug,
     int version,
   ) => caller.callServerEndpoint<bool>(
     'deployment',
     'delete',
     {
+      'clientSlug': clientSlug,
       'projectSlug': projectSlug,
       'version': version,
     },
@@ -302,14 +316,6 @@ class EndpointDocument extends _i1.EndpointRef {
         'document',
         'getDocument',
         {'documentId': documentId},
-      );
-
-  /// Get a document by slug
-  _i2.Future<_i8.Document?> getDocumentBySlug(String slug) =>
-      caller.callServerEndpoint<_i8.Document?>(
-        'document',
-        'getDocumentBySlug',
-        {'slug': slug},
       );
 
   /// Get the default document for a document type
@@ -962,14 +968,6 @@ class EndpointProject extends _i1.EndpointRef {
     },
   );
 
-  /// Get a project by slug.
-  _i2.Future<_i21.Project?> getProjectBySlug(String slug) =>
-      caller.callServerEndpoint<_i21.Project?>(
-        'project',
-        'getProjectBySlug',
-        {'slug': slug},
-      );
-
   /// Get a project by ID.
   _i2.Future<_i21.Project?> getProject(_i1.UuidValue projectId) =>
       caller.callServerEndpoint<_i21.Project?>(
@@ -1011,6 +1009,19 @@ class EndpointProject extends _i1.EndpointRef {
       'description': description,
       'isActive': isActive,
       'settings': settings,
+    },
+  );
+
+  /// Update the deploy hostname for a project (requires admin/owner role).
+  _i2.Future<_i21.Project> updateDeployHostname(
+    _i1.UuidValue projectId,
+    String newHostname,
+  ) => caller.callServerEndpoint<_i21.Project>(
+    'project',
+    'updateDeployHostname',
+    {
+      'projectId': projectId,
+      'newHostname': newHostname,
     },
   );
 
