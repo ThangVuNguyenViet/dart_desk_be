@@ -16,7 +16,8 @@ enum DeploymentStatus implements _i1.SerializableModel {
   uploading,
   active,
   inactive,
-  failed;
+  failed
+  ;
 
   static DeploymentStatus fromJson(String name) {
     switch (name) {

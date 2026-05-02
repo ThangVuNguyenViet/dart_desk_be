@@ -8,6 +8,8 @@ import '../generated/protocol.dart';
 /// Read-only public content API for external consumers.
 /// Requires a project API key with read permission.
 /// Project scope is derived from the API key.
+/// All reads come from [PublishedDocument] (the published snapshot table),
+/// so post-publish draft edits never leak to public consumers.
 class PublicContentEndpoint extends Endpoint {
   /// Returns all published documents grouped by document type.
   Future<Map<String, List<PublicDocument>>> getAllContents(
@@ -15,16 +17,14 @@ class PublicContentEndpoint extends Endpoint {
   ) async {
     final projectId = _requireReadAccess(session);
 
-    final documents = await Document.db.find(
+    final docs = await PublishedDocument.db.find(
       session,
       where: (t) =>
-          t.projectId.equals(projectId) &
-          t.publishedAt.notEquals(null) &
-          t.deletedAt.equals(null),
+          t.projectId.equals(projectId) & t.deletedAt.equals(null),
     );
 
     final grouped = <String, List<PublicDocument>>{};
-    for (final doc in documents) {
+    for (final doc in docs) {
       grouped.putIfAbsent(doc.documentType, () => []);
       grouped[doc.documentType]!.add(await _toPublicDocument(session, doc));
     }
@@ -37,17 +37,16 @@ class PublicContentEndpoint extends Endpoint {
   ) async {
     final projectId = _requireReadAccess(session);
 
-    final documents = await Document.db.find(
+    final docs = await PublishedDocument.db.find(
       session,
       where: (t) =>
           t.projectId.equals(projectId) &
-          t.publishedAt.notEquals(null) &
           t.isDefault.equals(true) &
           t.deletedAt.equals(null),
     );
 
     final result = <String, PublicDocument>{};
-    for (final doc in documents) {
+    for (final doc in docs) {
       result[doc.documentType] = await _toPublicDocument(session, doc);
     }
     return result;
@@ -60,16 +59,15 @@ class PublicContentEndpoint extends Endpoint {
   ) async {
     final projectId = _requireReadAccess(session);
 
-    final documents = await Document.db.find(
+    final docs = await PublishedDocument.db.find(
       session,
       where: (t) =>
           t.projectId.equals(projectId) &
-          t.publishedAt.notEquals(null) &
           t.documentType.equals(documentType) &
           t.deletedAt.equals(null),
     );
 
-    return Future.wait(documents.map((d) => _toPublicDocument(session, d)));
+    return Future.wait(docs.map((d) => _toPublicDocument(session, d)));
   }
 
   /// Returns the default published document for a specific type.
@@ -79,21 +77,23 @@ class PublicContentEndpoint extends Endpoint {
   ) async {
     final projectId = _requireReadAccess(session);
 
-    final document = await Document.db.findFirstRow(
+    final doc = await PublishedDocument.db.findFirstRow(
       session,
       where: (t) =>
           t.projectId.equals(projectId) &
-          t.publishedAt.notEquals(null) &
           t.documentType.equals(documentType) &
           t.isDefault.equals(true) &
           t.deletedAt.equals(null),
     );
 
-    if (document == null) {
-      throw ApiException(message: 'No default published document found for type "$documentType".', code: 404);
+    if (doc == null) {
+      throw ApiException(
+          message:
+              'No default published document found for type "$documentType".',
+          code: 404);
     }
 
-    return _toPublicDocument(session, document);
+    return _toPublicDocument(session, doc);
   }
 
   /// Returns a single published document by type and slug.
@@ -104,28 +104,30 @@ class PublicContentEndpoint extends Endpoint {
   ) async {
     final projectId = _requireReadAccess(session);
 
-    final document = await Document.db.findFirstRow(
+    final doc = await PublishedDocument.db.findFirstRow(
       session,
       where: (t) =>
           t.projectId.equals(projectId) &
-          t.publishedAt.notEquals(null) &
           t.documentType.equals(documentType) &
           t.slug.equals(slug) &
           t.deletedAt.equals(null),
     );
 
-    if (document == null) {
-      throw ApiException(message: 'No published document found for type "$documentType" with slug "$slug".', code: 404);
+    if (doc == null) {
+      throw ApiException(
+          message:
+              'No published document found for type "$documentType" with slug "$slug".',
+          code: 404);
     }
 
-    return _toPublicDocument(session, document);
+    return _toPublicDocument(session, doc);
   }
 
   /// Returns published documents of [documentType] whose JSON `data` contains
   /// the [dataContainsJson] fragment. The fragment must parse to a JSON object;
   /// scalars and arrays are rejected. Matching uses Postgres `jsonb` containment
-  /// (`@>`) against the `data_jsonb` generated column. Project scope is enforced
-  /// from the API key. Capped at 100 results.
+  /// (`@>`) against the `data` jsonb column on `published_documents`. Project
+  /// scope is enforced from the API key. Capped at 100 results.
   Future<List<PublicDocument>> getContentsByDataContains(
     Session session,
     String documentType,
@@ -149,16 +151,15 @@ class PublicContentEndpoint extends Endpoint {
       );
     }
 
-    // Step 1: raw SQL filter using data_jsonb @> ... — only fetches matching IDs.
-    // Uses the data_jsonb generated column (not data) because Postgres can only
-    // GIN-index jsonb, and the typed ORM doesn't know about data_jsonb.
-    // Column names are quoted camelCase to match the documents table DDL.
+    // Step 1: raw SQL filter using data_jsonb @> ... on published_documents.
+    // published_documents.data is text; data_jsonb is a generated jsonb column
+    // with a GIN index (published_docs_data_gin), so containment queries are
+    // index-backed. See dart_desk_be/CLAUDE.md for schema drift rationale.
     final idRows = await session.db.unsafeQuery(
       r'''
-      SELECT id FROM documents
+      SELECT id FROM published_documents
       WHERE "projectId" = @projectId
         AND "documentType" = @docType
-        AND "publishedAt" IS NOT NULL
         AND "deletedAt" IS NULL
         AND data_jsonb @> @fragment::jsonb
       LIMIT 100
@@ -170,35 +171,12 @@ class PublicContentEndpoint extends Endpoint {
       }),
     );
 
-    final ids = idRows.map((r) => UuidValue.fromString(r[0].toString())).toSet();
+    final ids =
+        idRows.map((r) => UuidValue.fromString(r[0].toString())).toSet();
     if (ids.isEmpty) return [];
 
     // Step 2: typed materialization via the normal ORM.
-    //
-    // Design decision: we use a two-step pattern (raw SQL filter, then typed
-    // load by ID) instead of a single SELECT * + hand-written row-to-Document
-    // mapper. The trade-offs:
-    //
-    //   Two-step (chosen):
-    //     - Document.db.find returns fully-typed Document objects automatically.
-    //     - No hand-rolled deserializer to maintain.
-    //     - Adding a new field to Document later: this endpoint adapts for free.
-    //     - Survives column reorders and schema evolution.
-    //     - Cost: one extra DB round-trip (negligible at LIMIT 100 on indexed
-    //       queries — sub-ms locally, single-digit ms across a managed DB).
-    //
-    //   One-step (rejected):
-    //     - SELECT * + DatabaseResultRow.toColumnMap() + hand-rolled mapper.
-    //     - One round-trip, but ~15 lines of brittle name-keyed deserialization.
-    //     - Silent-bug failure mode: adding a new field to Document leaves it
-    //       unset on every result from this endpoint until someone notices.
-    //     - Tight coupling between this endpoint and Document's column list.
-    //
-    // The typed `data_jsonb` column would also re-introduce the type-cast issue
-    // we hit during D5 (driver decodes jsonb to Map; can't cast to String?).
-    // Loading via Document.db.find sidesteps that — it reads the `data` text
-    // column normally, which is why this two-step pattern works at all.
-    final docs = await Document.db.find(
+    final docs = await PublishedDocument.db.find(
       session,
       where: (t) => t.id.inSet(ids),
     );
@@ -234,9 +212,8 @@ class PublicContentEndpoint extends Endpoint {
 
     final idRows = await session.db.unsafeQuery(
       r'''
-      SELECT id FROM documents
+      SELECT id FROM published_documents
       WHERE "projectId" = @projectId
-        AND "publishedAt" IS NOT NULL
         AND "deletedAt" IS NULL
         AND data_jsonb @> @fragment::jsonb
       LIMIT 100
@@ -247,10 +224,11 @@ class PublicContentEndpoint extends Endpoint {
       }),
     );
 
-    final ids = idRows.map((r) => UuidValue.fromString(r[0].toString())).toSet();
+    final ids =
+        idRows.map((r) => UuidValue.fromString(r[0].toString())).toSet();
     if (ids.isEmpty) return {};
 
-    final docs = await Document.db.find(
+    final docs = await PublishedDocument.db.find(
       session,
       where: (t) => t.id.inSet(ids),
     );
@@ -279,17 +257,20 @@ class PublicContentEndpoint extends Endpoint {
     return projectId;
   }
 
-  Future<PublicDocument> _toPublicDocument(Session session, Document doc) async {
-    final data = await _resolveImageReferences(session, doc.data ?? '{}');
+  Future<PublicDocument> _toPublicDocument(
+    Session session,
+    PublishedDocument live,
+  ) async {
+    final resolved = await _resolveImageReferences(session, live.data ?? '{}');
     return PublicDocument(
-      id: doc.id,
-      documentType: doc.documentType,
-      title: doc.title,
-      slug: doc.slug,
-      isDefault: doc.isDefault,
-      data: data,
-      publishedAt: doc.publishedAt!,
-      updatedAt: doc.updatedAt ?? DateTime.now(),
+      id: live.documentId,
+      documentType: live.documentType,
+      title: live.title,
+      slug: live.slug,
+      isDefault: live.isDefault,
+      data: resolved,
+      publishedAt: live.publishedAt,
+      updatedAt: live.updatedAt ?? DateTime.now(),
     );
   }
 

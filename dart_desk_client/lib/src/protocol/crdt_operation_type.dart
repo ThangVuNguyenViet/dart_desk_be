@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 enum CrdtOperationType implements _i1.SerializableModel {
   put,
-  delete;
+  delete
+  ;
 
   static CrdtOperationType fromJson(String name) {
     switch (name) {

@@ -482,6 +482,23 @@ class EndpointDocument extends _i1.EndpointRef {
     {'versionId': versionId},
   );
 
+  /// Publish the document's current draft as a new version.
+  ///
+  /// Atomic flow:
+  /// 1. Read the document's current crdtHlc as snapshotHlc.
+  /// 2. Determine next version number.
+  /// 3. Insert a new document_versions row with status=published.
+  /// 4. Reconstruct the full data Map at snapshotHlc.
+  /// 5. Upsert the published_documents row.
+  /// Steps 3-5 are wrapped in a single transaction.
+  _i2.Future<_i11.DocumentVersion> publishCurrentVersion(
+    _i1.UuidValue documentId,
+  ) => caller.callServerEndpoint<_i11.DocumentVersion>(
+    'document',
+    'publishCurrentVersion',
+    {'documentId': documentId},
+  );
+
   /// Archive a version (set status to 'archived' and set archivedAt timestamp)
   _i2.Future<_i11.DocumentVersion?> archiveDocumentVersion(
     _i1.UuidValue versionId,
@@ -1088,6 +1105,8 @@ class EndpointProjectMember extends _i1.EndpointRef {
 /// Read-only public content API for external consumers.
 /// Requires a project API key with read permission.
 /// Project scope is derived from the API key.
+/// All reads come from [PublishedDocument] (the published snapshot table),
+/// so post-publish draft edits never leak to public consumers.
 /// {@category Endpoint}
 class EndpointPublicContent extends _i1.EndpointRef {
   EndpointPublicContent(_i1.EndpointCaller caller) : super(caller);
@@ -1144,8 +1163,8 @@ class EndpointPublicContent extends _i1.EndpointRef {
   /// Returns published documents of [documentType] whose JSON `data` contains
   /// the [dataContainsJson] fragment. The fragment must parse to a JSON object;
   /// scalars and arrays are rejected. Matching uses Postgres `jsonb` containment
-  /// (`@>`) against the `data_jsonb` generated column. Project scope is enforced
-  /// from the API key. Capped at 100 results.
+  /// (`@>`) against the `data` jsonb column on `published_documents`. Project
+  /// scope is enforced from the API key. Capped at 100 results.
   _i2.Future<List<_i25.PublicDocument>> getContentsByDataContains(
     String documentType,
     String dataContainsJson,

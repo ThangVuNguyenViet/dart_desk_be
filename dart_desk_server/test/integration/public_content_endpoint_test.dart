@@ -20,7 +20,8 @@ void main() {
       await factory.ensureTestUser();
     });
 
-    /// Helper: create a document, create a version, publish it.
+    /// Helper: create a document and publish the current version.
+    /// Uses publishCurrentVersion (Task 4) which writes to published_documents.
     Future<Document> createPublishedDocument({
       required String documentType,
       required String title,
@@ -35,14 +36,46 @@ void main() {
         isDefault: isDefault,
         data: data,
       );
-      final version = await factory.createTestVersion(doc.id);
-      await endpoints.document.publishDocumentVersion(
+      await endpoints.document.publishCurrentVersion(
         factory.authenticatedSession(),
-        version.id,
+        doc.id,
       );
-      // Re-fetch to get updated publishedAt
+      // Re-fetch to get latest document state
       return (await endpoints.document.getDocument(sessionBuilder, doc.id))!;
     }
+
+    group('draft-leak prevention', () {
+      test('post-publish edits to draft do NOT leak to public endpoints',
+          () async {
+        final authed = factory.authenticatedSession();
+        final doc = await factory.createTestDocument(
+          documentType: 'blog',
+          title: 'Leak Test',
+          slug: 'leak-test',
+          data: {'title': 'published'},
+        );
+
+        // Publish v1.
+        await endpoints.document.publishCurrentVersion(authed, doc.id);
+
+        // Edit draft AFTER publishing — must not affect public reads.
+        await endpoints.document.updateDocumentData(
+          authed,
+          doc.id,
+          '{"title":"draft-only"}',
+        );
+
+        final publicDoc = await endpoints.publicContent.getContentBySlug(
+          factory.authenticatedSession(),
+          'blog',
+          'leak-test',
+        );
+
+        final decoded = jsonDecode(publicDoc.data) as Map<String, dynamic>;
+        expect(decoded['title'], equals('published'));
+        expect(publicDoc.data, isNot(contains('draft-only')));
+      });
+    });
 
     group('getAllContents', () {
       test('returns published documents grouped by type', () async {
@@ -110,7 +143,6 @@ void main() {
             slug: 'other-project-blog',
             isDefault: false,
             data: jsonEncode({'body': 'other'}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -186,7 +218,6 @@ void main() {
             slug: 'deleted-all',
             isDefault: false,
             data: jsonEncode({'body': 'gone'}),
-            publishedAt: DateTime.now(),
             deletedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
@@ -275,7 +306,6 @@ void main() {
             slug: 'other-default',
             isDefault: true,
             data: jsonEncode({'body': 'other'}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -346,7 +376,6 @@ void main() {
             slug: 'deleted-default',
             isDefault: true,
             data: jsonEncode({'body': 'gone'}),
-            publishedAt: DateTime.now(),
             deletedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
@@ -435,7 +464,6 @@ void main() {
             slug: 'other-blog-type',
             isDefault: false,
             data: jsonEncode({'body': 'other'}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -502,7 +530,6 @@ void main() {
             slug: 'deleted-blog-type',
             isDefault: false,
             data: jsonEncode({'body': 'gone'}),
-            publishedAt: DateTime.now(),
             deletedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
@@ -598,7 +625,6 @@ void main() {
             slug: 'other-default-content',
             isDefault: true,
             data: jsonEncode({'body': 'other'}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -661,7 +687,6 @@ void main() {
             slug: 'deleted-default-content',
             isDefault: true,
             data: jsonEncode({'body': 'gone'}),
-            publishedAt: DateTime.now(),
             deletedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
@@ -753,7 +778,6 @@ void main() {
             slug: 'shared-slug',
             isDefault: false,
             data: jsonEncode({'body': 'other'}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -823,7 +847,6 @@ void main() {
             slug: 'deleted-slug-post',
             isDefault: false,
             data: jsonEncode({'body': 'gone'}),
-            publishedAt: DateTime.now(),
             deletedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
@@ -1083,7 +1106,6 @@ void main() {
             slug: 'other-group',
             isDefault: false,
             data: jsonEncode({'deviceIds': ['SHARED']}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -1177,32 +1199,28 @@ void main() {
 
       // ---- Task 6: Index-usage smoke test ----
 
-      test('documents_data_gin GIN index exists on data_jsonb column',
+      test('published_docs_data_gin GIN index exists on data_jsonb column',
           () async {
-        // Task 6: Verify the GIN index that enables containment lookups is
-        // present in the database. Planner-usage tests are unreliable in
-        // transactional test environments because ANALYZE reads only committed
-        // data; uncommitted rows seeded within the test transaction leave
-        // statistics stale, causing the planner to prefer seq scan regardless
-        // of row count. Asserting index existence is the stable substitute.
+        // Verify the GIN index that enables containment lookups is present.
+        // Index was relocated from documents.data_jsonb to
+        // published_documents.data_jsonb in the save/publish redesign.
         final session = sessionBuilder.build();
 
         final rows = await session.db.unsafeQuery(
           r'''
           SELECT indexname, indexdef
           FROM pg_indexes
-          WHERE tablename = 'documents'
-            AND indexname = 'documents_data_gin'
+          WHERE tablename = 'published_documents'
+            AND indexname = 'published_docs_data_gin'
           ''',
         );
 
         expect(
           rows,
           isNotEmpty,
-          reason: 'Expected documents_data_gin GIN index to exist.',
+          reason: 'Expected published_docs_data_gin GIN index to exist.',
         );
 
-        // Also confirm it is a GIN index on data_jsonb.
         final indexDef = rows.first[1].toString();
         expect(indexDef, contains('gin'));
         expect(indexDef, contains('data_jsonb'));
@@ -1426,7 +1444,6 @@ void main() {
             slug: 'other-group',
             isDefault: false,
             data: jsonEncode({'deviceIds': ['SHARED']}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -1520,32 +1537,28 @@ void main() {
 
       // ---- Task 6: Index-usage smoke test ----
 
-      test('documents_data_gin GIN index exists on data_jsonb column',
+      test('published_docs_data_gin GIN index exists on data_jsonb column',
           () async {
-        // Task 6: Verify the GIN index that enables containment lookups is
-        // present in the database. Planner-usage tests are unreliable in
-        // transactional test environments because ANALYZE reads only committed
-        // data; uncommitted rows seeded within the test transaction leave
-        // statistics stale, causing the planner to prefer seq scan regardless
-        // of row count. Asserting index existence is the stable substitute.
+        // Verify the GIN index that enables containment lookups is present.
+        // Index was relocated from documents.data_jsonb to
+        // published_documents.data_jsonb in the save/publish redesign.
         final session = sessionBuilder.build();
 
         final rows = await session.db.unsafeQuery(
           r'''
           SELECT indexname, indexdef
           FROM pg_indexes
-          WHERE tablename = 'documents'
-            AND indexname = 'documents_data_gin'
+          WHERE tablename = 'published_documents'
+            AND indexname = 'published_docs_data_gin'
           ''',
         );
 
         expect(
           rows,
           isNotEmpty,
-          reason: 'Expected documents_data_gin GIN index to exist.',
+          reason: 'Expected published_docs_data_gin GIN index to exist.',
         );
 
-        // Also confirm it is a GIN index on data_jsonb.
         final indexDef = rows.first[1].toString();
         expect(indexDef, contains('gin'));
         expect(indexDef, contains('data_jsonb'));
@@ -1567,7 +1580,8 @@ void main() {
         await factory.ensureTestUser();
       });
 
-      /// Helper: create a document, create a version, publish it.
+      /// Helper: create a document and publish the current version.
+      /// Uses publishCurrentVersion (Task 4) which writes to published_documents.
       Future<Document> createPublishedDocument({
         required String documentType,
         required String title,
@@ -1582,12 +1596,11 @@ void main() {
           isDefault: isDefault,
           data: data,
         );
-        final version = await factory.createTestVersion(doc.id);
-        await endpoints.document.publishDocumentVersion(
+        await endpoints.document.publishCurrentVersion(
           factory.authenticatedSession(),
-          version.id,
+          doc.id,
         );
-        // Re-fetch to get updated publishedAt
+        // Re-fetch to get latest document state
         return (await endpoints.document.getDocument(
           sessionBuilder,
           doc.id,
@@ -1797,8 +1810,7 @@ void main() {
               slug: 'other-group',
               isDefault: false,
               data: jsonEncode({'deviceIds': ['SHARED']}),
-              publishedAt: DateTime.now(),
-              createdAt: DateTime.now(),
+                createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
             ),
           );

@@ -204,6 +204,7 @@ abstract class DocumentVersion
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DocumentVersionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentVersionTable>? orderByList,
     DocumentVersionInclude? include,
@@ -213,7 +214,8 @@ abstract class DocumentVersion
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DocumentVersion.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(DocumentVersion.t),
       include: include,
     );
@@ -509,6 +511,7 @@ class DocumentVersionIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -554,6 +557,7 @@ class DocumentVersionRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DocumentVersionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentVersionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -564,7 +568,8 @@ class DocumentVersionRepository {
       where: where?.call(DocumentVersion.t),
       orderBy: orderBy?.call(DocumentVersion.t),
       orderByList: orderByList?.call(DocumentVersion.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -595,6 +600,7 @@ class DocumentVersionRepository {
     _i1.WhereExpressionBuilder<DocumentVersionTable>? where,
     int? offset,
     _i1.OrderByBuilder<DocumentVersionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DocumentVersionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -605,7 +611,8 @@ class DocumentVersionRepository {
       where: where?.call(DocumentVersion.t),
       orderBy: orderBy?.call(DocumentVersion.t),
       orderByList: orderByList?.call(DocumentVersion.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -727,6 +734,7 @@ class DocumentVersionRepository {
     int? offset,
     _i1.OrderByBuilder<DocumentVersionTable>? orderBy,
     _i1.OrderByListBuilder<DocumentVersionTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -737,21 +745,34 @@ class DocumentVersionRepository {
       offset: offset,
       orderBy: orderBy?.call(DocumentVersion.t),
       orderByList: orderByList?.call(DocumentVersion.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [DocumentVersion]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<DocumentVersion>> delete(
     _i1.DatabaseSession session,
     List<DocumentVersion> rows, {
+    _i1.OrderByBuilder<DocumentVersionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DocumentVersionTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<DocumentVersion>(
       rows,
+      orderBy: orderBy?.call(DocumentVersion.t),
+      orderByList: orderByList?.call(DocumentVersion.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -769,13 +790,24 @@ class DocumentVersionRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<DocumentVersion>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DocumentVersionTable> where,
+    _i1.OrderByBuilder<DocumentVersionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DocumentVersionTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<DocumentVersion>(
       where: where(DocumentVersion.t),
+      orderBy: orderBy?.call(DocumentVersion.t),
+      orderByList: orderByList?.call(DocumentVersion.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

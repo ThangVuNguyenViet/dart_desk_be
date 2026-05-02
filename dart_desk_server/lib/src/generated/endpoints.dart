@@ -986,6 +986,25 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['versionId'],
                   ),
         ),
+        'publishCurrentVersion': _i1.MethodConnector(
+          name: 'publishCurrentVersion',
+          params: {
+            'documentId': _i1.ParameterDescription(
+              name: 'documentId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['document'] as _i6.DocumentEndpoint)
+                  .publishCurrentVersion(
+                    session,
+                    params['documentId'],
+                  ),
+        ),
         'archiveDocumentVersion': _i1.MethodConnector(
           name: 'archiveDocumentVersion',
           params: {

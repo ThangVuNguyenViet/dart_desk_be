@@ -124,6 +124,7 @@ abstract class MigrationHistory
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MigrationHistoryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MigrationHistoryTable>? orderByList,
     MigrationHistoryInclude? include,
@@ -133,7 +134,8 @@ abstract class MigrationHistory
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MigrationHistory.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(MigrationHistory.t),
       include: include,
     );
@@ -301,6 +303,7 @@ class MigrationHistoryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -346,6 +349,7 @@ class MigrationHistoryRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MigrationHistoryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MigrationHistoryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -356,7 +360,8 @@ class MigrationHistoryRepository {
       where: where?.call(MigrationHistory.t),
       orderBy: orderBy?.call(MigrationHistory.t),
       orderByList: orderByList?.call(MigrationHistory.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -387,6 +392,7 @@ class MigrationHistoryRepository {
     _i1.WhereExpressionBuilder<MigrationHistoryTable>? where,
     int? offset,
     _i1.OrderByBuilder<MigrationHistoryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MigrationHistoryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -397,7 +403,8 @@ class MigrationHistoryRepository {
       where: where?.call(MigrationHistory.t),
       orderBy: orderBy?.call(MigrationHistory.t),
       orderByList: orderByList?.call(MigrationHistory.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -519,6 +526,7 @@ class MigrationHistoryRepository {
     int? offset,
     _i1.OrderByBuilder<MigrationHistoryTable>? orderBy,
     _i1.OrderByListBuilder<MigrationHistoryTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -529,21 +537,34 @@ class MigrationHistoryRepository {
       offset: offset,
       orderBy: orderBy?.call(MigrationHistory.t),
       orderByList: orderByList?.call(MigrationHistory.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [MigrationHistory]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<MigrationHistory>> delete(
     _i1.DatabaseSession session,
     List<MigrationHistory> rows, {
+    _i1.OrderByBuilder<MigrationHistoryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<MigrationHistoryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<MigrationHistory>(
       rows,
+      orderBy: orderBy?.call(MigrationHistory.t),
+      orderByList: orderByList?.call(MigrationHistory.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -561,13 +582,24 @@ class MigrationHistoryRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<MigrationHistory>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MigrationHistoryTable> where,
+    _i1.OrderByBuilder<MigrationHistoryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<MigrationHistoryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<MigrationHistory>(
       where: where(MigrationHistory.t),
+      orderBy: orderBy?.call(MigrationHistory.t),
+      orderByList: orderByList?.call(MigrationHistory.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
