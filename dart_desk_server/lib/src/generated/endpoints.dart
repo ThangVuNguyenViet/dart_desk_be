@@ -1819,6 +1819,31 @@ class Endpoints extends _i1.EndpointDispatch {
                     settings: params['settings'],
                   ),
         ),
+        'updateDeployHostname': _i1.MethodConnector(
+          name: 'updateDeployHostname',
+          params: {
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+            'newHostname': _i1.ParameterDescription(
+              name: 'newHostname',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['project'] as _i13.ProjectEndpoint)
+                  .updateDeployHostname(
+                    session,
+                    params['projectId'],
+                    params['newHostname'],
+                  ),
+        ),
         'deleteProject': _i1.MethodConnector(
           name: 'deleteProject',
           params: {

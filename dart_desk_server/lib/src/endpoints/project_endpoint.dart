@@ -196,6 +196,59 @@ class ProjectEndpoint extends Endpoint {
     return updated;
   }
 
+  /// Update the deploy hostname for a project (requires admin/owner role).
+  Future<Project> updateDeployHostname(
+    Session session,
+    UuidValue projectId,
+    String newHostname,
+  ) async {
+    // Validate format
+    if (!isValidDeployHostname(newHostname)) {
+      throw ApiException(message: 'Invalid deploy hostname format: "$newHostname"', code: 400);
+    }
+    // Reject reserved names
+    if (isReservedDeployHostname(newHostname)) {
+      throw ApiException(message: 'Deploy hostname "$newHostname" is reserved', code: 400);
+    }
+
+    // Authz: caller must be admin or owner
+    final user = await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles);
+
+    // Look up project
+    final project = await Project.db.findById(session, projectId);
+    if (project == null) {
+      throw ApiException(message: 'Project not found', code: 404);
+    }
+
+    // Cross-client check
+    if (project.clientId != user.clientId) {
+      throw ApiException(message: 'Project belongs to a different client', code: 403);
+    }
+
+    // Update
+    final now = DateTime.now();
+    final updated = project.copyWith(
+      deployHostname: newHostname,
+      updatedAt: now,
+      updatedByUserId: user.id,
+    );
+
+    try {
+      await Project.db.updateRow(session, updated);
+    } catch (e) {
+      if (e.toString().contains('23505') || e.toString().toLowerCase().contains('unique')) {
+        throw ApiException(
+          message: 'Hostname "$newHostname" is already taken',
+          code: 409,
+        );
+      }
+      rethrow;
+    }
+
+    session.log('Updated deployHostname for Project id=$projectId to $newHostname', level: LogLevel.info);
+    return updated;
+  }
+
   /// Delete a project (requires owner role, soft delete).
   Future<bool> deleteProject(
     Session session,

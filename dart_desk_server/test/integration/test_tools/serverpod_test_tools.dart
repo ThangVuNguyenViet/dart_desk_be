@@ -2638,6 +2638,41 @@ class _ProjectEndpoint {
     });
   }
 
+  _i3.Future<_i21.Project> updateDeployHostname(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue projectId,
+    String newHostname,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'project',
+            method: 'updateDeployHostname',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'project',
+          methodName: 'updateDeployHostname',
+          parameters: _i1.testObjectToJson({
+            'projectId': projectId,
+            'newHostname': newHostname,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i21.Project>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<bool> deleteProject(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue projectId,

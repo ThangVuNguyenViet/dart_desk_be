@@ -76,6 +76,7 @@ project:
   - getProject:
   - createProject:
   - updateProject:
+  - updateDeployHostname:
   - deleteProject:
   - createClientWithOwner:
 projectMember:

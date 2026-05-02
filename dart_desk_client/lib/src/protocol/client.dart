@@ -1023,6 +1023,19 @@ class EndpointProject extends _i1.EndpointRef {
     },
   );
 
+  /// Update the deploy hostname for a project (requires admin/owner role).
+  _i2.Future<_i21.Project> updateDeployHostname(
+    _i1.UuidValue projectId,
+    String newHostname,
+  ) => caller.callServerEndpoint<_i21.Project>(
+    'project',
+    'updateDeployHostname',
+    {
+      'projectId': projectId,
+      'newHostname': newHostname,
+    },
+  );
+
   /// Delete a project (requires owner role, soft delete).
   _i2.Future<bool> deleteProject(_i1.UuidValue projectId) =>
       caller.callServerEndpoint<bool>(
