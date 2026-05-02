@@ -1666,6 +1666,12 @@ class Protocol extends _i1.DatabaseSerializationManager {
           dartType: 'String',
         ),
         _i2.ColumnDefinition(
+          name: 'deployHostname',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
           name: 'description',
           columnType: _i2.ColumnType.text,
           isNullable: true,
@@ -1757,19 +1763,6 @@ class Protocol extends _i1.DatabaseSerializationManager {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'clientId',
-            ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'projects_slug_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'slug',
             ),
           ],
           type: 'btree',

@@ -5,6 +5,7 @@ fields:
   clientId: UuidValue, relation(parent=clients, onDelete=Cascade)
   name: String
   slug: String
+  deployHostname: String
   description: String?
   isActive: bool, default=true
   settings: String?
@@ -16,7 +17,5 @@ fields:
 indexes:
   projects_client_idx:
     fields: clientId
-  projects_slug_idx:
-    fields: slug
   projects_is_active_idx:
     fields: isActive

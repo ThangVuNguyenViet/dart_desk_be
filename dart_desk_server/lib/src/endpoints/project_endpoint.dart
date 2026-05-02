@@ -108,6 +108,7 @@ class ProjectEndpoint extends Endpoint {
       clientId: member.clientId!,
       name: name,
       slug: slug,
+      deployHostname: '', // TODO: accept deployHostname param (Task 2)
       description: description,
       isActive: true,
       settings: settings,
