@@ -24,7 +24,6 @@ abstract class Document
     this.data,
     this.crdtNodeId,
     this.crdtHlc,
-    this.publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
     this.createdByUserId,
@@ -45,7 +44,6 @@ abstract class Document
     String? data,
     String? crdtNodeId,
     String? crdtHlc,
-    DateTime? publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
     _i1.UuidValue? createdByUserId,
@@ -70,11 +68,6 @@ abstract class Document
       data: jsonSerialization['data'] as String?,
       crdtNodeId: jsonSerialization['crdtNodeId'] as String?,
       crdtHlc: jsonSerialization['crdtHlc'] as String?,
-      publishedAt: jsonSerialization['publishedAt'] == null
-          ? null
-          : _i1.DateTimeJsonExtension.fromJson(
-              jsonSerialization['publishedAt'],
-            ),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -120,8 +113,6 @@ abstract class Document
 
   String? crdtHlc;
 
-  DateTime? publishedAt;
-
   DateTime? createdAt;
 
   DateTime? updatedAt;
@@ -148,7 +139,6 @@ abstract class Document
     String? data,
     String? crdtNodeId,
     String? crdtHlc,
-    DateTime? publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
     _i1.UuidValue? createdByUserId,
@@ -168,7 +158,6 @@ abstract class Document
       if (data != null) 'data': data,
       if (crdtNodeId != null) 'crdtNodeId': crdtNodeId,
       if (crdtHlc != null) 'crdtHlc': crdtHlc,
-      if (publishedAt != null) 'publishedAt': publishedAt?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
       if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
@@ -190,7 +179,6 @@ abstract class Document
       if (data != null) 'data': data,
       if (crdtNodeId != null) 'crdtNodeId': crdtNodeId,
       if (crdtHlc != null) 'crdtHlc': crdtHlc,
-      if (publishedAt != null) 'publishedAt': publishedAt?.toJson(),
       if (createdAt != null) 'createdAt': createdAt?.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
       if (createdByUserId != null) 'createdByUserId': createdByUserId?.toJson(),
@@ -244,7 +232,6 @@ class _DocumentImpl extends Document {
     String? data,
     String? crdtNodeId,
     String? crdtHlc,
-    DateTime? publishedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
     _i1.UuidValue? createdByUserId,
@@ -260,7 +247,6 @@ class _DocumentImpl extends Document {
          data: data,
          crdtNodeId: crdtNodeId,
          crdtHlc: crdtHlc,
-         publishedAt: publishedAt,
          createdAt: createdAt,
          updatedAt: updatedAt,
          createdByUserId: createdByUserId,
@@ -282,7 +268,6 @@ class _DocumentImpl extends Document {
     Object? data = _Undefined,
     Object? crdtNodeId = _Undefined,
     Object? crdtHlc = _Undefined,
-    Object? publishedAt = _Undefined,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
     Object? createdByUserId = _Undefined,
@@ -299,7 +284,6 @@ class _DocumentImpl extends Document {
       data: data is String? ? data : this.data,
       crdtNodeId: crdtNodeId is String? ? crdtNodeId : this.crdtNodeId,
       crdtHlc: crdtHlc is String? ? crdtHlc : this.crdtHlc,
-      publishedAt: publishedAt is DateTime? ? publishedAt : this.publishedAt,
       createdAt: createdAt is DateTime? ? createdAt : this.createdAt,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
       createdByUserId: createdByUserId is _i1.UuidValue?
@@ -357,12 +341,6 @@ class DocumentUpdateTable extends _i1.UpdateTable<DocumentTable> {
     table.crdtHlc,
     value,
   );
-
-  _i1.ColumnValue<DateTime, DateTime> publishedAt(DateTime? value) =>
-      _i1.ColumnValue(
-        table.publishedAt,
-        value,
-      );
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime? value) =>
       _i1.ColumnValue(
@@ -433,10 +411,6 @@ class DocumentTable extends _i1.Table<_i1.UuidValue> {
       'crdtHlc',
       this,
     );
-    publishedAt = _i1.ColumnDateTime(
-      'publishedAt',
-      this,
-    );
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
@@ -479,8 +453,6 @@ class DocumentTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnString crdtHlc;
 
-  late final _i1.ColumnDateTime publishedAt;
-
   late final _i1.ColumnDateTime createdAt;
 
   late final _i1.ColumnDateTime updatedAt;
@@ -502,7 +474,6 @@ class DocumentTable extends _i1.Table<_i1.UuidValue> {
     data,
     crdtNodeId,
     crdtHlc,
-    publishedAt,
     createdAt,
     updatedAt,
     createdByUserId,

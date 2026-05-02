@@ -40,7 +40,7 @@ void main() {
         factory.authenticatedSession(),
         doc.id,
       );
-      // Re-fetch to get updated publishedAt
+      // Re-fetch to get latest document state
       return (await endpoints.document.getDocument(sessionBuilder, doc.id))!;
     }
 
@@ -143,7 +143,6 @@ void main() {
             slug: 'other-project-blog',
             isDefault: false,
             data: jsonEncode({'body': 'other'}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -219,7 +218,6 @@ void main() {
             slug: 'deleted-all',
             isDefault: false,
             data: jsonEncode({'body': 'gone'}),
-            publishedAt: DateTime.now(),
             deletedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
@@ -308,7 +306,6 @@ void main() {
             slug: 'other-default',
             isDefault: true,
             data: jsonEncode({'body': 'other'}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -379,7 +376,6 @@ void main() {
             slug: 'deleted-default',
             isDefault: true,
             data: jsonEncode({'body': 'gone'}),
-            publishedAt: DateTime.now(),
             deletedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
@@ -468,7 +464,6 @@ void main() {
             slug: 'other-blog-type',
             isDefault: false,
             data: jsonEncode({'body': 'other'}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -535,7 +530,6 @@ void main() {
             slug: 'deleted-blog-type',
             isDefault: false,
             data: jsonEncode({'body': 'gone'}),
-            publishedAt: DateTime.now(),
             deletedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
@@ -631,7 +625,6 @@ void main() {
             slug: 'other-default-content',
             isDefault: true,
             data: jsonEncode({'body': 'other'}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -694,7 +687,6 @@ void main() {
             slug: 'deleted-default-content',
             isDefault: true,
             data: jsonEncode({'body': 'gone'}),
-            publishedAt: DateTime.now(),
             deletedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
@@ -786,7 +778,6 @@ void main() {
             slug: 'shared-slug',
             isDefault: false,
             data: jsonEncode({'body': 'other'}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -856,7 +847,6 @@ void main() {
             slug: 'deleted-slug-post',
             isDefault: false,
             data: jsonEncode({'body': 'gone'}),
-            publishedAt: DateTime.now(),
             deletedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
@@ -1116,7 +1106,6 @@ void main() {
             slug: 'other-group',
             isDefault: false,
             data: jsonEncode({'deviceIds': ['SHARED']}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -1459,7 +1448,6 @@ void main() {
             slug: 'other-group',
             isDefault: false,
             data: jsonEncode({'deviceIds': ['SHARED']}),
-            publishedAt: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
@@ -1620,7 +1608,7 @@ void main() {
           factory.authenticatedSession(),
           doc.id,
         );
-        // Re-fetch to get updated publishedAt
+        // Re-fetch to get latest document state
         return (await endpoints.document.getDocument(
           sessionBuilder,
           doc.id,
@@ -1830,8 +1818,7 @@ void main() {
               slug: 'other-group',
               isDefault: false,
               data: jsonEncode({'deviceIds': ['SHARED']}),
-              publishedAt: DateTime.now(),
-              createdAt: DateTime.now(),
+                createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
             ),
           );

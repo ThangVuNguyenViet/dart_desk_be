@@ -10,7 +10,6 @@ fields:
   data: String?
   crdtNodeId: String?
   crdtHlc: String?
-  publishedAt: DateTime?
   createdAt: DateTime?, default=now
   updatedAt: DateTime?, default=now
   createdByUserId: UuidValue?, relation(parent=users, onDelete=SetNull)
@@ -25,5 +24,3 @@ indexes:
     fields: documentType, isDefault
   documents_created_at_idx:
     fields: createdAt
-  documents_project_published_idx:
-    fields: projectId, publishedAt

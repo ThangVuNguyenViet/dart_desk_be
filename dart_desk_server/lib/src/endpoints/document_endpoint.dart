@@ -641,15 +641,6 @@ class DocumentEndpoint extends Endpoint {
         'Published DocumentVersion id=$versionId documentId=${existing.documentId}',
         level: LogLevel.info);
 
-    // Sync publishedAt to the parent document for fast public reads
-    final document = await Document.db.findById(session, existing.documentId);
-    if (document != null) {
-      await Document.db.updateRow(
-        session,
-        document.copyWith(publishedAt: now),
-      );
-    }
-
     return updated;
   }
 
@@ -771,13 +762,6 @@ class DocumentEndpoint extends Endpoint {
         );
       }
 
-      // Sync publishedAt to the parent document
-      await Document.db.updateRow(
-        session,
-        document.copyWith(publishedAt: now),
-        transaction: tx,
-      );
-
       session.log(
           'Published DocumentVersion id=${inserted.id} documentId=$documentId versionNumber=$nextVersionNumber',
           level: LogLevel.info);
@@ -885,16 +869,6 @@ class DocumentEndpoint extends Endpoint {
           t.documentId.equals(existing.documentId) &
           t.status.equals(DocumentVersionStatus.published),
     );
-
-    if (publishedCount == 0) {
-      final document = await Document.db.findById(session, existing.documentId);
-      if (document != null) {
-        await Document.db.updateRow(
-          session,
-          document.copyWith(publishedAt: null),
-        );
-      }
-    }
 
     return updated;
   }
