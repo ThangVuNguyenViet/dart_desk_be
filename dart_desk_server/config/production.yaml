@@ -41,7 +41,7 @@ redis:
 
 validateHeaders: false
 
-maxRequestSize: 10485760 # The maximum size of requests allowed in bytes (10MB for file uploads)
+maxRequestSize: 104857600 # The maximum size of requests allowed in bytes (100MB for deployment uploads)
 
 # Storage configuration for file uploads.
 # S3 cloud storage is registered programmatically in server.dart.
