@@ -617,33 +617,6 @@ class DocumentEndpoint extends Endpoint {
     return created;
   }
 
-  /// Publish a version (set status to 'published' and set publishedAt timestamp)
-  Future<DocumentVersion?> publishDocumentVersion(
-    Session session,
-    UuidValue versionId,
-  ) async {
-    await _requireAuth(session);
-
-    final existing = await DocumentVersion.db.findById(session, versionId);
-
-    if (existing == null) {
-      return null;
-    }
-
-    final now = DateTime.now();
-    final updated = existing.copyWith(
-      status: DocumentVersionStatus.published,
-      publishedAt: now,
-    );
-
-    await DocumentVersion.db.updateRow(session, updated);
-    session.log(
-        'Published DocumentVersion id=$versionId documentId=${existing.documentId}',
-        level: LogLevel.info);
-
-    return updated;
-  }
-
   /// Publish the document's current draft as a new version.
   ///
   /// Atomic flow:

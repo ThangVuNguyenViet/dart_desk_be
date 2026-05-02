@@ -34,7 +34,6 @@ document:
   - getDocumentVersion:
   - getDocumentVersionData:
   - createDocumentVersion:
-  - publishDocumentVersion:
   - publishCurrentVersion:
   - archiveDocumentVersion:
   - deleteDocumentVersion:

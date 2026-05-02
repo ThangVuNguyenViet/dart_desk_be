@@ -473,15 +473,6 @@ class EndpointDocument extends _i1.EndpointRef {
     },
   );
 
-  /// Publish a version (set status to 'published' and set publishedAt timestamp)
-  _i2.Future<_i11.DocumentVersion?> publishDocumentVersion(
-    _i1.UuidValue versionId,
-  ) => caller.callServerEndpoint<_i11.DocumentVersion?>(
-    'document',
-    'publishDocumentVersion',
-    {'versionId': versionId},
-  );
-
   /// Publish the document's current draft as a new version.
   ///
   /// Atomic flow:

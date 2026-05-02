@@ -50,31 +50,12 @@ void main() {
       });
     });
 
-    group('publishDocumentVersion', () {
-      test('changes status to published and sets publishedAt', () async {
-        final doc = await factory.createTestDocument(title: 'Publish Test');
-        final draft = await factory.createTestVersion(doc.id);
-        final authed = factory.authenticatedSession();
-
-        final published = await endpoints.document.publishDocumentVersion(
-          authed,
-          draft.id,
-        );
-
-        expect(published, isNotNull);
-        expect(published!.status, equals(DocumentVersionStatus.published));
-        expect(published.publishedAt, isNotNull);
-      });
-    });
-
     group('archiveDocumentVersion', () {
       test('changes status to archived and sets archivedAt', () async {
         final doc = await factory.createTestDocument(title: 'Archive Test');
         final draft = await factory.createTestVersion(doc.id);
         final authed = factory.authenticatedSession();
 
-        // Publish first, then archive
-        await endpoints.document.publishDocumentVersion(authed, draft.id);
         final archived = await endpoints.document.archiveDocumentVersion(
           authed,
           draft.id,
@@ -125,27 +106,6 @@ void main() {
 
         expect(page1.versions.length, equals(2));
         expect(page1.total, equals(6));
-      });
-    });
-
-    group('publishDocumentVersion edge cases', () {
-      test('publish already-published version succeeds idempotently', () async {
-        final doc = await factory.createTestDocument(title: 'Double Publish');
-        final draft = await factory.createTestVersion(doc.id);
-        final authed = factory.authenticatedSession();
-
-        // Publish first time — should succeed
-        final first =
-            await endpoints.document.publishDocumentVersion(authed, draft.id);
-        expect(first, isNotNull);
-        expect(first!.status, equals(DocumentVersionStatus.published));
-
-        // Publish again — endpoint updates the same version (idempotent)
-        final second =
-            await endpoints.document.publishDocumentVersion(authed, draft.id);
-        expect(second, isNotNull);
-        expect(second!.status, equals(DocumentVersionStatus.published));
-        expect(second.id, equals(first.id));
       });
     });
 
