@@ -11,7 +11,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:dart_desk_client/src/protocol/protocol.dart' as _i2;
 
 abstract class PublishedDocument implements _i1.SerializableModel {
   PublishedDocument._({
@@ -39,7 +38,7 @@ abstract class PublishedDocument implements _i1.SerializableModel {
     required String title,
     required String slug,
     bool? isDefault,
-    Map<String, dynamic>? data,
+    String? data,
     required DateTime publishedAt,
     required _i1.UuidValue publishedVersionId,
     DateTime? updatedAt,
@@ -63,11 +62,7 @@ abstract class PublishedDocument implements _i1.SerializableModel {
       isDefault: jsonSerialization['isDefault'] == null
           ? null
           : _i1.BoolJsonExtension.fromJson(jsonSerialization['isDefault']),
-      data: jsonSerialization['data'] == null
-          ? null
-          : _i2.Protocol().deserialize<Map<String, dynamic>>(
-              jsonSerialization['data'],
-            ),
+      data: jsonSerialization['data'] as String?,
       publishedAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['publishedAt'],
       ),
@@ -98,7 +93,7 @@ abstract class PublishedDocument implements _i1.SerializableModel {
 
   bool isDefault;
 
-  Map<String, dynamic>? data;
+  String? data;
 
   DateTime publishedAt;
 
@@ -119,7 +114,7 @@ abstract class PublishedDocument implements _i1.SerializableModel {
     String? title,
     String? slug,
     bool? isDefault,
-    Map<String, dynamic>? data,
+    String? data,
     DateTime? publishedAt,
     _i1.UuidValue? publishedVersionId,
     DateTime? updatedAt,
@@ -136,10 +131,7 @@ abstract class PublishedDocument implements _i1.SerializableModel {
       'title': title,
       'slug': slug,
       'isDefault': isDefault,
-      if (data != null)
-        'data': data?.toJson(
-          valueToJson: (v) => _i2.Protocol().encodeWithType(v),
-        ),
+      if (data != null) 'data': data,
       'publishedAt': publishedAt.toJson(),
       'publishedVersionId': publishedVersionId.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
@@ -164,7 +156,7 @@ class _PublishedDocumentImpl extends PublishedDocument {
     required String title,
     required String slug,
     bool? isDefault,
-    Map<String, dynamic>? data,
+    String? data,
     required DateTime publishedAt,
     required _i1.UuidValue publishedVersionId,
     DateTime? updatedAt,
@@ -210,17 +202,7 @@ class _PublishedDocumentImpl extends PublishedDocument {
       title: title ?? this.title,
       slug: slug ?? this.slug,
       isDefault: isDefault ?? this.isDefault,
-      data: data is Map<String, dynamic>?
-          ? data
-          : this.data?.map(
-              (
-                key0,
-                value0,
-              ) => MapEntry(
-                key0,
-                value0,
-              ),
-            ),
+      data: data is String? ? data : this.data,
       publishedAt: publishedAt ?? this.publishedAt,
       publishedVersionId: publishedVersionId ?? this.publishedVersionId,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,

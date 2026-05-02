@@ -53,7 +53,9 @@ void main() {
         );
         expect(live, isNotNull);
         expect(live!.publishedVersionId, published.id);
-        expect(live.data, {'title': 'Hello', 'body': 'World'});
+        // data is stored as JSON-encoded text (String?).
+        expect(live.data, contains('"title":"Hello"'));
+        expect(live.data, contains('"body":"World"'));
       },
     );
 
@@ -103,7 +105,8 @@ void main() {
       );
       expect(liveRows.length, 1);
       expect(liveRows.single.publishedVersionId, v2.id);
-      expect(liveRows.single.data, {'title': 'v2'});
+      // data is stored as JSON-encoded text (String?).
+      expect(liveRows.single.data, contains('"title":"v2"'));
     });
   });
 }

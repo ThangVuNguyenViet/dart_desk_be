@@ -1867,9 +1867,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
         ),
         _i2.ColumnDefinition(
           name: 'data',
-          columnType: _i2.ColumnType.jsonb,
+          columnType: _i2.ColumnType.text,
           isNullable: true,
-          dartType: 'Map<String,dynamic>?',
+          dartType: 'String?',
         ),
         _i2.ColumnDefinition(
           name: 'publishedAt',
@@ -2427,24 +2427,6 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
     if (t == List<_i37.User>) {
       return (data as List).map((e) => deserialize<_i37.User>(e)).toList() as T;
-    }
-    if (t == Map<String, dynamic>) {
-      return (data as Map).map(
-            (k, v) => MapEntry(deserialize<String>(k), deserialize<dynamic>(v)),
-          )
-          as T;
-    }
-    if (t == dynamic) {
-      return decodeDynamicFieldValue(data) as T;
-    }
-    if (t == _i1.getType<Map<String, dynamic>?>()) {
-      return (data != null
-              ? (data as Map).map(
-                  (k, v) =>
-                      MapEntry(deserialize<String>(k), deserialize<dynamic>(v)),
-                )
-              : null)
-          as T;
     }
     if (t == List<_i38.ClientWithRole>) {
       return (data as List)

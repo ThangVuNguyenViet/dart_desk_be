@@ -8,7 +8,7 @@ fields:
   title: String
   slug: String
   isDefault: bool, default=false
-  data: Map<String, dynamic>?, serializationDataType=jsonb
+  data: String?
   publishedAt: DateTime
   publishedVersionId: UuidValue, relation(parent=document_versions, onDelete=Restrict)
   updatedAt: DateTime?, default=now

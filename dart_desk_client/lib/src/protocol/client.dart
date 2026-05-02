@@ -1105,6 +1105,8 @@ class EndpointProjectMember extends _i1.EndpointRef {
 /// Read-only public content API for external consumers.
 /// Requires a project API key with read permission.
 /// Project scope is derived from the API key.
+/// All reads come from [PublishedDocument] (the published snapshot table),
+/// so post-publish draft edits never leak to public consumers.
 /// {@category Endpoint}
 class EndpointPublicContent extends _i1.EndpointRef {
   EndpointPublicContent(_i1.EndpointCaller caller) : super(caller);
@@ -1161,8 +1163,8 @@ class EndpointPublicContent extends _i1.EndpointRef {
   /// Returns published documents of [documentType] whose JSON `data` contains
   /// the [dataContainsJson] fragment. The fragment must parse to a JSON object;
   /// scalars and arrays are rejected. Matching uses Postgres `jsonb` containment
-  /// (`@>`) against the `data_jsonb` generated column. Project scope is enforced
-  /// from the API key. Capped at 100 results.
+  /// (`@>`) against the `data` jsonb column on `published_documents`. Project
+  /// scope is enforced from the API key. Capped at 100 results.
   _i2.Future<List<_i25.PublicDocument>> getContentsByDataContains(
     String documentType,
     String dataContainsJson,

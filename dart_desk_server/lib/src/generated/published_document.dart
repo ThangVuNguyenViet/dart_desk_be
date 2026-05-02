@@ -11,7 +11,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:dart_desk_server/src/generated/protocol.dart' as _i2;
 
 abstract class PublishedDocument
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
@@ -40,7 +39,7 @@ abstract class PublishedDocument
     required String title,
     required String slug,
     bool? isDefault,
-    Map<String, dynamic>? data,
+    String? data,
     required DateTime publishedAt,
     required _i1.UuidValue publishedVersionId,
     DateTime? updatedAt,
@@ -64,11 +63,7 @@ abstract class PublishedDocument
       isDefault: jsonSerialization['isDefault'] == null
           ? null
           : _i1.BoolJsonExtension.fromJson(jsonSerialization['isDefault']),
-      data: jsonSerialization['data'] == null
-          ? null
-          : _i2.Protocol().deserialize<Map<String, dynamic>>(
-              jsonSerialization['data'],
-            ),
+      data: jsonSerialization['data'] as String?,
       publishedAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['publishedAt'],
       ),
@@ -103,7 +98,7 @@ abstract class PublishedDocument
 
   bool isDefault;
 
-  Map<String, dynamic>? data;
+  String? data;
 
   DateTime publishedAt;
 
@@ -127,7 +122,7 @@ abstract class PublishedDocument
     String? title,
     String? slug,
     bool? isDefault,
-    Map<String, dynamic>? data,
+    String? data,
     DateTime? publishedAt,
     _i1.UuidValue? publishedVersionId,
     DateTime? updatedAt,
@@ -144,10 +139,7 @@ abstract class PublishedDocument
       'title': title,
       'slug': slug,
       'isDefault': isDefault,
-      if (data != null)
-        'data': data?.toJson(
-          valueToJson: (v) => _i2.Protocol().encodeWithType(v),
-        ),
+      if (data != null) 'data': data,
       'publishedAt': publishedAt.toJson(),
       'publishedVersionId': publishedVersionId.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
@@ -166,10 +158,7 @@ abstract class PublishedDocument
       'title': title,
       'slug': slug,
       'isDefault': isDefault,
-      if (data != null)
-        'data': data?.toJson(
-          valueToJson: (v) => _i2.Protocol().encodeWithTypeForProtocol(v),
-        ),
+      if (data != null) 'data': data,
       'publishedAt': publishedAt.toJson(),
       'publishedVersionId': publishedVersionId.toJson(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toJson(),
@@ -220,7 +209,7 @@ class _PublishedDocumentImpl extends PublishedDocument {
     required String title,
     required String slug,
     bool? isDefault,
-    Map<String, dynamic>? data,
+    String? data,
     required DateTime publishedAt,
     required _i1.UuidValue publishedVersionId,
     DateTime? updatedAt,
@@ -266,17 +255,7 @@ class _PublishedDocumentImpl extends PublishedDocument {
       title: title ?? this.title,
       slug: slug ?? this.slug,
       isDefault: isDefault ?? this.isDefault,
-      data: data is Map<String, dynamic>?
-          ? data
-          : this.data?.map(
-              (
-                key0,
-                value0,
-              ) => MapEntry(
-                key0,
-                value0,
-              ),
-            ),
+      data: data is String? ? data : this.data,
       publishedAt: publishedAt ?? this.publishedAt,
       publishedVersionId: publishedVersionId ?? this.publishedVersionId,
       updatedAt: updatedAt is DateTime? ? updatedAt : this.updatedAt,
@@ -323,9 +302,7 @@ class PublishedDocumentUpdateTable
     value,
   );
 
-  _i1.ColumnValue<Map<String, dynamic>, Map<String, dynamic>> data(
-    Map<String, dynamic>? value,
-  ) => _i1.ColumnValue(
+  _i1.ColumnValue<String, String> data(String? value) => _i1.ColumnValue(
     table.data,
     value,
   );
@@ -385,7 +362,7 @@ class PublishedDocumentTable extends _i1.Table<_i1.UuidValue> {
       this,
       hasDefault: true,
     );
-    data = _i1.ColumnStructured<Map<String, dynamic>>(
+    data = _i1.ColumnString(
       'data',
       this,
     );
@@ -422,7 +399,7 @@ class PublishedDocumentTable extends _i1.Table<_i1.UuidValue> {
 
   late final _i1.ColumnBool isDefault;
 
-  late final _i1.ColumnStructured<Map<String, dynamic>> data;
+  late final _i1.ColumnString data;
 
   late final _i1.ColumnDateTime publishedAt;
 

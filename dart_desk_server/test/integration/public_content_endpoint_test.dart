@@ -20,7 +20,8 @@ void main() {
       await factory.ensureTestUser();
     });
 
-    /// Helper: create a document, create a version, publish it.
+    /// Helper: create a document and publish the current version.
+    /// Uses publishCurrentVersion (Task 4) which writes to published_documents.
     Future<Document> createPublishedDocument({
       required String documentType,
       required String title,
@@ -35,14 +36,46 @@ void main() {
         isDefault: isDefault,
         data: data,
       );
-      final version = await factory.createTestVersion(doc.id);
-      await endpoints.document.publishDocumentVersion(
+      await endpoints.document.publishCurrentVersion(
         factory.authenticatedSession(),
-        version.id,
+        doc.id,
       );
       // Re-fetch to get updated publishedAt
       return (await endpoints.document.getDocument(sessionBuilder, doc.id))!;
     }
+
+    group('draft-leak prevention', () {
+      test('post-publish edits to draft do NOT leak to public endpoints',
+          () async {
+        final authed = factory.authenticatedSession();
+        final doc = await factory.createTestDocument(
+          documentType: 'blog',
+          title: 'Leak Test',
+          slug: 'leak-test',
+          data: {'title': 'published'},
+        );
+
+        // Publish v1.
+        await endpoints.document.publishCurrentVersion(authed, doc.id);
+
+        // Edit draft AFTER publishing — must not affect public reads.
+        await endpoints.document.updateDocumentData(
+          authed,
+          doc.id,
+          '{"title":"draft-only"}',
+        );
+
+        final publicDoc = await endpoints.publicContent.getContentBySlug(
+          factory.authenticatedSession(),
+          'blog',
+          'leak-test',
+        );
+
+        final decoded = jsonDecode(publicDoc.data) as Map<String, dynamic>;
+        expect(decoded['title'], equals('published'));
+        expect(publicDoc.data, isNot(contains('draft-only')));
+      });
+    });
 
     group('getAllContents', () {
       test('returns published documents grouped by type', () async {
@@ -1567,7 +1600,8 @@ void main() {
         await factory.ensureTestUser();
       });
 
-      /// Helper: create a document, create a version, publish it.
+      /// Helper: create a document and publish the current version.
+      /// Uses publishCurrentVersion (Task 4) which writes to published_documents.
       Future<Document> createPublishedDocument({
         required String documentType,
         required String title,
@@ -1582,10 +1616,9 @@ void main() {
           isDefault: isDefault,
           data: data,
         );
-        final version = await factory.createTestVersion(doc.id);
-        await endpoints.document.publishDocumentVersion(
+        await endpoints.document.publishCurrentVersion(
           factory.authenticatedSession(),
-          version.id,
+          doc.id,
         );
         // Re-fetch to get updated publishedAt
         return (await endpoints.document.getDocument(

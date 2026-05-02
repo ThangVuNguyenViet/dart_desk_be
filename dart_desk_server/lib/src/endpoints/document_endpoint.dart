@@ -726,7 +726,10 @@ class DocumentEndpoint extends Endpoint {
         transaction: tx,
       );
 
-      // Upsert published_documents row
+      // Upsert published_documents row.
+      // PublishedDocument.data is String? (same as documents.data) — store as
+      // JSON-encoded text. Postgres maintains data_jsonb as a generated column.
+      final dataJson = jsonEncode(reconstructedData);
       final existingLive = await PublishedDocument.db.findFirstRow(
         session,
         where: (t) => t.documentId.equals(documentId),
@@ -743,7 +746,7 @@ class DocumentEndpoint extends Endpoint {
             title: document.title,
             slug: document.slug,
             isDefault: document.isDefault,
-            data: reconstructedData,
+            data: dataJson,
             publishedAt: now,
             publishedVersionId: inserted.id,
             updatedAt: now,
@@ -758,7 +761,7 @@ class DocumentEndpoint extends Endpoint {
             title: document.title,
             slug: document.slug,
             isDefault: document.isDefault,
-            data: reconstructedData,
+            data: dataJson,
             publishedAt: now,
             publishedVersionId: inserted.id,
             updatedAt: now,

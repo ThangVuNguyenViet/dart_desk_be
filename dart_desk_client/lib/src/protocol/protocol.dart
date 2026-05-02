@@ -389,24 +389,6 @@ class Protocol extends _i1.SerializationManager {
     if (t == List<_i34.User>) {
       return (data as List).map((e) => deserialize<_i34.User>(e)).toList() as T;
     }
-    if (t == Map<String, dynamic>) {
-      return (data as Map).map(
-            (k, v) => MapEntry(deserialize<String>(k), deserialize<dynamic>(v)),
-          )
-          as T;
-    }
-    if (t == dynamic) {
-      return decodeDynamicFieldValue(data) as T;
-    }
-    if (t == _i1.getType<Map<String, dynamic>?>()) {
-      return (data != null
-              ? (data as Map).map(
-                  (k, v) =>
-                      MapEntry(deserialize<String>(k), deserialize<dynamic>(v)),
-                )
-              : null)
-          as T;
-    }
     if (t == List<_i35.ClientWithRole>) {
       return (data as List)
               .map((e) => deserialize<_i35.ClientWithRole>(e))
