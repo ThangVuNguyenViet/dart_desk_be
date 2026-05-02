@@ -677,19 +677,24 @@ class DocumentEndpoint extends Endpoint {
           code: 400);
     }
 
-    return await session.db.transaction<DocumentVersion>((tx) async {
-      // Read snapshot data atomically inside the transaction so no concurrent
-      // write can slip in between the CRDT reads and the version row insert.
-      final opCount = await session.crdtService.getOperationCount(
-        session,
-        documentId,
-      );
-      final reconstructedData = await session.crdtService.getStateAtHlc(
-        session,
-        documentId,
-        snapshotHlc,
-      );
+    // Reconstruct CRDT state at the captured HLC. These reads happen outside
+    // the transaction by design: the op log is append-only and HLC-keyed, so
+    // reconstruction at a fixed snapshotHlc is deterministic regardless of
+    // concurrent writes (a later write produces a newer HLC, not a different
+    // value at our captured HLC). Inlining these into the transaction would
+    // also break under `serverpod_test`'s RollbackDatabase, which forbids
+    // bare-session reads while a transaction is active.
+    final opCount = await session.crdtService.getOperationCount(
+      session,
+      documentId,
+    );
+    final reconstructedData = await session.crdtService.getStateAtHlc(
+      session,
+      documentId,
+      snapshotHlc,
+    );
 
+    return await session.db.transaction<DocumentVersion>((tx) async {
       // Determine next version number
       final existing = await DocumentVersion.db.find(
         session,
