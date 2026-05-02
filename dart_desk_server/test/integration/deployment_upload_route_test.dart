@@ -70,6 +70,7 @@ Future<Map<String, dynamic>> _decodeResponse(Response response) async {
 void main() {
   withServerpod('DeploymentUploadRoute', (sessionBuilder, endpoints) {
     const adminUserId = 'upload-admin-1';
+    const clientSlug = 'test-client';
     const projectSlug = 'upload-test-project';
 
     late TestDataFactory factory;
@@ -134,7 +135,7 @@ void main() {
 
         final request = _buildRequest(
           method: 'POST',
-          url: 'http://localhost/deployment/upload?slug=$projectSlug',
+          url: 'http://localhost/deployment/upload?clientSlug=$clientSlug&projectSlug=$projectSlug',
           body: _buildTarGz(),
         );
 
@@ -181,7 +182,7 @@ void main() {
           authedSession().build(),
           _buildRequest(
             method: 'POST',
-            url: 'http://localhost/deployment/upload?slug=$projectSlug',
+            url: 'http://localhost/deployment/upload?clientSlug=$clientSlug&projectSlug=$projectSlug',
             body: _buildTarGz(content: 'v1'),
           ),
         );
@@ -192,7 +193,7 @@ void main() {
           authedSession().build(),
           _buildRequest(
             method: 'POST',
-            url: 'http://localhost/deployment/upload?slug=$projectSlug',
+            url: 'http://localhost/deployment/upload?clientSlug=$clientSlug&projectSlug=$projectSlug',
             body: _buildTarGz(content: 'v2'),
           ),
         );
@@ -230,7 +231,7 @@ void main() {
         final route = DeploymentUploadRoute();
         final request = _buildRequest(
           method: 'GET',
-          url: 'http://localhost/deployment/upload?slug=$projectSlug',
+          url: 'http://localhost/deployment/upload?clientSlug=$clientSlug&projectSlug=$projectSlug',
         );
 
         final result =
@@ -238,11 +239,11 @@ void main() {
         expect((result as Response).statusCode, equals(405));
       });
 
-      test('returns 400 when slug is missing', () async {
+      test('returns 400 when clientSlug is missing', () async {
         final route = DeploymentUploadRoute();
         final request = _buildRequest(
           method: 'POST',
-          url: 'http://localhost/deployment/upload',
+          url: 'http://localhost/deployment/upload?projectSlug=$projectSlug',
         );
 
         final result =
@@ -250,7 +251,22 @@ void main() {
         final response = result as Response;
         expect(response.statusCode, equals(400));
         final body = await _decodeResponse(response);
-        expect(body['error'], contains('slug'));
+        expect(body['error'], contains('clientSlug'));
+      });
+
+      test('returns 400 when projectSlug is missing', () async {
+        final route = DeploymentUploadRoute();
+        final request = _buildRequest(
+          method: 'POST',
+          url: 'http://localhost/deployment/upload?clientSlug=$clientSlug',
+        );
+
+        final result =
+            await route.handleCall(authedSession().build(), request);
+        final response = result as Response;
+        expect(response.statusCode, equals(400));
+        final body = await _decodeResponse(response);
+        expect(body['error'], contains('projectSlug'));
       });
 
       test('returns 401 when not authenticated', () async {
@@ -259,7 +275,7 @@ void main() {
         final session = sessionBuilder.build();
         final request = _buildRequest(
           method: 'POST',
-          url: 'http://localhost/deployment/upload?slug=$projectSlug',
+          url: 'http://localhost/deployment/upload?clientSlug=$clientSlug&projectSlug=$projectSlug',
           body: _buildTarGz(),
         );
 
@@ -271,7 +287,7 @@ void main() {
         final route = DeploymentUploadRoute();
         final request = _buildRequest(
           method: 'POST',
-          url: 'http://localhost/deployment/upload?slug=no-such-project',
+          url: 'http://localhost/deployment/upload?clientSlug=$clientSlug&projectSlug=no-such-project',
           body: _buildTarGz(),
         );
 
@@ -306,7 +322,7 @@ void main() {
 
         final request = _buildRequest(
           method: 'POST',
-          url: 'http://localhost/deployment/upload?slug=$projectSlug',
+          url: 'http://localhost/deployment/upload?clientSlug=$clientSlug&projectSlug=$projectSlug',
           body: _buildTarGz(),
         );
 
@@ -318,7 +334,7 @@ void main() {
         final route = DeploymentUploadRoute();
         final request = _buildRequest(
           method: 'POST',
-          url: 'http://localhost/deployment/upload?slug=$projectSlug',
+          url: 'http://localhost/deployment/upload?clientSlug=$clientSlug&projectSlug=$projectSlug',
           body: [0x00, 0x01, 0x02, 0x03], // not valid gzip
         );
 
@@ -334,7 +350,7 @@ void main() {
         final route = DeploymentUploadRoute();
         final request = _buildRequest(
           method: 'POST',
-          url: 'http://localhost/deployment/upload?slug=$projectSlug',
+          url: 'http://localhost/deployment/upload?clientSlug=$clientSlug&projectSlug=$projectSlug',
           body: [],
         );
 

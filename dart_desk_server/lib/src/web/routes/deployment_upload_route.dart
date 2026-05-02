@@ -8,9 +8,10 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 
 import '../../auth/require_role.dart';
+import '../../db/repositories/project_repository.dart' as repo;
 import '../../generated/protocol.dart';
 
-/// HTTP POST /deployment/upload?slug=`<projectSlug>`[&commit=`<sha>`]
+/// HTTP POST /deployment/upload?clientSlug=`<clientSlug>`&projectSlug=`<projectSlug>`[&commit=`<sha>`]
 ///
 /// Accepts a gzipped tar of the Flutter web build, extracts it to
 /// `storage/deployments/<deploymentId>/`, inserts a Deployment row, and
@@ -37,9 +38,13 @@ class DeploymentUploadRoute extends Route {
       return _jsonResponse(405, {'error': 'Method not allowed'});
     }
 
-    final slug = request.url.queryParameters['slug'];
-    if (slug == null || slug.isEmpty) {
-      return _jsonResponse(400, {'error': 'Missing slug query parameter'});
+    final clientSlug = request.url.queryParameters['clientSlug'];
+    if (clientSlug == null || clientSlug.isEmpty) {
+      return _jsonResponse(400, {'error': 'Missing clientSlug query parameter'});
+    }
+    final projectSlug = request.url.queryParameters['projectSlug'];
+    if (projectSlug == null || projectSlug.isEmpty) {
+      return _jsonResponse(400, {'error': 'Missing projectSlug query parameter'});
     }
     final commitHash = request.url.queryParameters['commit'];
 
@@ -48,15 +53,21 @@ class DeploymentUploadRoute extends Route {
       return _jsonResponse(401, {'error': 'Not authenticated'});
     }
 
-    final project = await Project.db.findFirstRow(
+    final client = await CmsClient.db.findFirstRow(
       session,
-      where: (t) =>
-          t.slug.equals(slug) &
-          t.isActive.equals(true) &
-          t.deletedAt.equals(null),
+      where: (t) => t.slug.equals(clientSlug),
     );
-    if (project == null) {
-      return _jsonResponse(404, {'error': 'Project not found: $slug'});
+    if (client == null) {
+      return _jsonResponse(404, {'error': 'Client not found: $clientSlug'});
+    }
+
+    final project = await repo.ProjectRepository.findByClientAndSlug(
+      session,
+      clientId: client.id,
+      slug: projectSlug,
+    );
+    if (project == null || project.isActive == false) {
+      return _jsonResponse(404, {'error': 'Project not found: $clientSlug/$projectSlug'});
     }
 
     final User user;
@@ -187,7 +198,7 @@ class DeploymentUploadRoute extends Route {
 
     session.log(
       'Uploaded Deployment id=${newDeployment.id} '
-      'project=${project.slug} '
+      'project=$clientSlug/$projectSlug '
       'version=${newDeployment.version} '
       'bytes=${bytes.length}',
       level: LogLevel.info,

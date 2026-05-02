@@ -64,21 +64,6 @@ class ProjectEndpoint extends Endpoint {
     );
   }
 
-  /// Get a project by slug.
-  Future<Project?> getProjectBySlug(
-    Session session,
-    String slug,
-  ) async {
-    final project = await Project.db.findFirstRow(
-      session,
-      where: (t) => t.slug.equals(slug),
-    );
-    if (project != null && project.deletedAt != null) {
-      throw ApiException(message: 'Project has been deleted', code: 410, errorCode: 'RESOURCE_DELETED');
-    }
-    return project;
-  }
-
   /// Get a project by ID.
   Future<Project?> getProject(
     Session session,

@@ -70,30 +70,6 @@ void main() {
       });
     });
 
-    group('getDocumentBySlug', () {
-      test('returns document by slug', () async {
-        await factory.createTestDocument(
-          title: 'Slug Test',
-          slug: 'slug-test',
-        );
-        final fetched = await endpoints.document.getDocumentBySlug(
-          sessionBuilder,
-          'slug-test',
-        );
-
-        expect(fetched, isNotNull);
-        expect(fetched!.title, equals('Slug Test'));
-      });
-
-      test('returns null for nonexistent slug', () async {
-        final fetched = await endpoints.document.getDocumentBySlug(
-          sessionBuilder,
-          'nonexistent-slug',
-        );
-        expect(fetched, isNull);
-      });
-    });
-
     group('getDefaultDocument', () {
       test('returns default document for type', () async {
         await factory.createTestDocument(

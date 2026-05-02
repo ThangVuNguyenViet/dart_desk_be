@@ -122,26 +122,6 @@ void main() {
       });
     });
 
-    group('getProjectBySlug', () {
-      test('returns matching project', () async {
-        final seeded = await seedProject(slug: 'find-me-slug');
-        final p = await endpoints.project.getProjectBySlug(
-          sessionBuilder,
-          seeded.slug,
-        );
-        expect(p, isNotNull);
-        expect(p!.slug, equals(seeded.slug));
-      });
-
-      test('returns null for unknown slug', () async {
-        final p = await endpoints.project.getProjectBySlug(
-          sessionBuilder,
-          'no-such-slug-zzz',
-        );
-        expect(p, isNull);
-      });
-    });
-
     group('getProject', () {
       test('returns project by id', () async {
         final seeded = await seedProject();

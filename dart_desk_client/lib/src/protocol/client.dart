@@ -318,14 +318,6 @@ class EndpointDocument extends _i1.EndpointRef {
         {'documentId': documentId},
       );
 
-  /// Get a document by slug
-  _i2.Future<_i8.Document?> getDocumentBySlug(String slug) =>
-      caller.callServerEndpoint<_i8.Document?>(
-        'document',
-        'getDocumentBySlug',
-        {'slug': slug},
-      );
-
   /// Get the default document for a document type
   _i2.Future<_i8.Document?> getDefaultDocument(String documentType) =>
       caller.callServerEndpoint<_i8.Document?>(
@@ -984,14 +976,6 @@ class EndpointProject extends _i1.EndpointRef {
       'offset': offset,
     },
   );
-
-  /// Get a project by slug.
-  _i2.Future<_i21.Project?> getProjectBySlug(String slug) =>
-      caller.callServerEndpoint<_i21.Project?>(
-        'project',
-        'getProjectBySlug',
-        {'slug': slug},
-      );
 
   /// Get a project by ID.
   _i2.Future<_i21.Project?> getProject(_i1.UuidValue projectId) =>
