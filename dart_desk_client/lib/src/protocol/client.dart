@@ -482,6 +482,23 @@ class EndpointDocument extends _i1.EndpointRef {
     {'versionId': versionId},
   );
 
+  /// Publish the document's current draft as a new version.
+  ///
+  /// Atomic flow:
+  /// 1. Read the document's current crdtHlc as snapshotHlc.
+  /// 2. Determine next version number.
+  /// 3. Insert a new document_versions row with status=published.
+  /// 4. Reconstruct the full data Map at snapshotHlc.
+  /// 5. Upsert the published_documents row.
+  /// Steps 3-5 are wrapped in a single transaction.
+  _i2.Future<_i11.DocumentVersion> publishCurrentVersion(
+    _i1.UuidValue documentId,
+  ) => caller.callServerEndpoint<_i11.DocumentVersion>(
+    'document',
+    'publishCurrentVersion',
+    {'documentId': documentId},
+  );
+
   /// Archive a version (set status to 'archived' and set archivedAt timestamp)
   _i2.Future<_i11.DocumentVersion?> archiveDocumentVersion(
     _i1.UuidValue versionId,

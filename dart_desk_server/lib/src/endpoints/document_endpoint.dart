@@ -653,6 +653,136 @@ class DocumentEndpoint extends Endpoint {
     return updated;
   }
 
+  /// Publish the document's current draft as a new version.
+  ///
+  /// Atomic flow:
+  /// 1. Read the document's current crdtHlc as snapshotHlc.
+  /// 2. Determine next version number.
+  /// 3. Insert a new document_versions row with status=published.
+  /// 4. Reconstruct the full data Map at snapshotHlc.
+  /// 5. Upsert the published_documents row.
+  /// Steps 3-5 are wrapped in a single transaction.
+  Future<DocumentVersion> publishCurrentVersion(
+    Session session,
+    UuidValue documentId,
+  ) async {
+    final auth = await _requireUser(session);
+    final userId = auth.user!.id;
+
+    final document = await Document.db.findById(session, documentId);
+    if (document == null) {
+      throw ApiException(message: 'Document not found: $documentId', code: 404);
+    }
+    if (document.projectId != auth.projectId) {
+      throw ApiException(
+          message: 'Access denied: document belongs to a different project',
+          code: 403);
+    }
+
+    final snapshotHlc = document.crdtHlc;
+    if (snapshotHlc == null) {
+      throw ApiException(
+          message: 'Document has no CRDT state; cannot publish',
+          code: 400);
+    }
+
+    final opCount = await session.crdtService.getOperationCount(
+      session,
+      documentId,
+    );
+    final reconstructedData = await session.crdtService.getStateAtHlc(
+      session,
+      documentId,
+      snapshotHlc,
+    );
+
+    return await session.db.transaction<DocumentVersion>((tx) async {
+      // Determine next version number
+      final existing = await DocumentVersion.db.find(
+        session,
+        where: (t) => t.documentId.equals(documentId),
+        orderBy: (t) => t.versionNumber,
+        orderDescending: true,
+        limit: 1,
+        transaction: tx,
+      );
+      final nextVersionNumber =
+          existing.isEmpty ? 1 : existing.first.versionNumber + 1;
+
+      final now = DateTime.now();
+      final newVersion = DocumentVersion(
+        documentId: documentId,
+        versionNumber: nextVersionNumber,
+        status: DocumentVersionStatus.published,
+        snapshotHlc: snapshotHlc,
+        operationCount: opCount,
+        publishedAt: now,
+        createdAt: now,
+        createdByUserId: userId,
+      );
+      final inserted = await DocumentVersion.db.insertRow(
+        session,
+        newVersion,
+        transaction: tx,
+      );
+
+      // Upsert published_documents row
+      final existingLive = await PublishedDocument.db.findFirstRow(
+        session,
+        where: (t) => t.documentId.equals(documentId),
+        transaction: tx,
+      );
+
+      if (existingLive == null) {
+        await PublishedDocument.db.insertRow(
+          session,
+          PublishedDocument(
+            documentId: documentId,
+            projectId: document.projectId,
+            documentType: document.documentType,
+            title: document.title,
+            slug: document.slug,
+            isDefault: document.isDefault,
+            data: reconstructedData,
+            publishedAt: now,
+            publishedVersionId: inserted.id,
+            updatedAt: now,
+          ),
+          transaction: tx,
+        );
+      } else {
+        await PublishedDocument.db.updateRow(
+          session,
+          existingLive.copyWith(
+            documentType: document.documentType,
+            title: document.title,
+            slug: document.slug,
+            isDefault: document.isDefault,
+            data: reconstructedData,
+            publishedAt: now,
+            publishedVersionId: inserted.id,
+            updatedAt: now,
+            deletedAt: null,
+          ),
+          transaction: tx,
+        );
+      }
+
+      // Sync publishedAt to the parent document
+      await Document.db.updateRow(
+        session,
+        document.copyWith(publishedAt: now),
+        transaction: tx,
+      );
+
+      session.log(
+          'Published DocumentVersion id=${inserted.id} documentId=$documentId versionNumber=$nextVersionNumber',
+          level: LogLevel.info);
+
+      return inserted;
+    });
+  }
+
   /// Archive a version (set status to 'archived' and set archivedAt timestamp)
   Future<DocumentVersion?> archiveDocumentVersion(
     Session session,
