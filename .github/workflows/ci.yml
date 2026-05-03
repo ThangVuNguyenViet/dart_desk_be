@@ -28,7 +28,6 @@ jobs:
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     services:
       postgres:
         image: pgvector/pgvector:pg16
