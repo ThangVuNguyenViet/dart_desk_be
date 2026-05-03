@@ -3,7 +3,6 @@ import 'dart:io' show Directory;
 import 'package:serverpod/serverpod.dart';
 
 import 'routes/deployment_upload_route.dart';
-import 'routes/root.dart';
 import 'routes/studio_route.dart';
 
 /// Signature compatible with `WebServer.addRoute`. Indirected so route
@@ -27,8 +26,6 @@ void configureWebRoutes(
   Directory? publicStorageDir,
   Directory? staticDir,
 }) {
-  register(RouteRoot(), '/');
-  register(RouteRoot(), '/index.html');
   register(DeploymentUploadRoute(), '/deployment/upload');
   if (publicStorageDir != null) {
     register(StaticRoute.directory(publicStorageDir), '/files/*');
