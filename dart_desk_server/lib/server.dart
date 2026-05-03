@@ -1,9 +1,7 @@
 import 'dart:io' show Directory;
 
 import 'package:dart_desk_server/src/services/email_service.dart';
-import 'package:dart_desk_server/src/web/routes/deployment_upload_route.dart';
-import 'package:dart_desk_server/src/web/routes/root.dart';
-import 'package:dart_desk_server/src/web/routes/studio_route.dart';
+import 'package:dart_desk_server/src/web/configure_web_routes.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
@@ -67,33 +65,10 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
     ));
   }
 
-  // Setup a default page at the web root.
-  pod.webServer.addRoute(RouteRoot(), '/');
-  pod.webServer.addRoute(RouteRoot(), '/index.html');
-
-  // Handle deployment bundle uploads from the CLI.
-  pod.webServer.addRoute(
-    DeploymentUploadRoute(),
-    '/deployment/upload',
-  );
-
-  // Serve uploaded files from storage/public directory
-  pod.webServer.addRoute(
-    StaticRoute.directory(Directory('storage/public')),
-    '/files/*',
-  );
-
-  // Serve Flutter web bundles for *.app.dartdesk.dev subdomains, falling back
-  // to the /static directory for non-studio hostnames. Relic doesn't allow
-  // two routes at the same path, so the static fallback is delegated.
-  final studioDomain =
-      pod.getPassword('studioDomain') ?? 'app.dartdesk.dev';
-  pod.webServer.addRoute(
-    StudioRoute(
-      domain: studioDomain,
-      staticFallback: Directory('static'),
-    ),
-    '/*',
+  configureWebRoutes(
+    pod.webServer.addRoute,
+    studioDomain: pod.getPassword('studioDomain') ?? 'app.dartdesk.dev',
+    staticDir: Directory('static'),
   );
 
   pod.initializeAuthServices(
