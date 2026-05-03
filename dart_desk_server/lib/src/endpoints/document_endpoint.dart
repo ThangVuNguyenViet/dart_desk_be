@@ -206,6 +206,18 @@ class DocumentEndpoint extends Endpoint {
       cmsUserId: auth.user?.id,
     );
     session.log('Updated DocumentData id=$documentId', level: LogLevel.info);
+
+    // Only autosave when there were actual field changes.
+    if (doc.crdtHlc != null && session.authenticated != null && updates.isNotEmpty) {
+      final user = await resolveUser(session, clientId: session.clientId);
+      await _upsertAutosaveVersion(
+        session,
+        documentId,
+        doc.crdtHlc!,
+        user.id,
+      );
+    }
+
     return doc;
   }
 
@@ -421,6 +433,70 @@ class DocumentEndpoint extends Endpoint {
   // ============================================================
   // Document Version Operations
   // ============================================================
+
+  /// Maintains exactly one current-draft DocumentVersion row per
+  /// (document, author, 5-min bucket). Called from updateDocumentData after
+  /// applyOperations advances the document's crdtHlc.
+  ///
+  /// Bucket-break rules (insert new row when ANY is true):
+  /// 1. No prior version row.
+  /// 2. Latest version status != draft (last action was a publish).
+  /// 3. Latest version createdByUserId != [userId] (author switch).
+  /// 4. More than 5 minutes since latest.createdAt.
+  ///
+  /// No-op autosave (HLC unchanged from latest snapshot) is skipped.
+  Future<void> _upsertAutosaveVersion(
+    Session session,
+    UuidValue documentId,
+    String currentHlc,
+    UuidValue userId,
+  ) async {
+    const bucketWindow = Duration(minutes: 5);
+
+    final latest = await DocumentVersion.db.findFirstRow(
+      session,
+      where: (t) => t.documentId.equals(documentId) & t.deletedAt.equals(null),
+      orderBy: (t) => t.versionNumber,
+      orderDescending: true,
+    );
+
+    if (latest != null && latest.snapshotHlc == currentHlc) {
+      return;
+    }
+
+    final now = DateTime.now();
+    final canExtend = latest != null &&
+        latest.status == DocumentVersionStatus.draft &&
+        latest.createdByUserId == userId &&
+        now.difference(latest.createdAt ?? now) < bucketWindow;
+
+    final opCount =
+        await session.crdtService.getOperationCount(session, documentId);
+
+    if (canExtend) {
+      await DocumentVersion.db.updateRow(
+        session,
+        latest.copyWith(
+          snapshotHlc: currentHlc,
+          operationCount: opCount,
+        ),
+      );
+    } else {
+      final nextVersionNumber = (latest?.versionNumber ?? 0) + 1;
+      await DocumentVersion.db.insertRow(
+        session,
+        DocumentVersion(
+          documentId: documentId,
+          versionNumber: nextVersionNumber,
+          status: DocumentVersionStatus.draft,
+          snapshotHlc: currentHlc,
+          operationCount: opCount,
+          createdAt: now,
+          createdByUserId: userId,
+        ),
+      );
+    }
+  }
 
   /// Get all versions for a document with pagination
   /// Optionally includes CRDT operations between adjacent versions
