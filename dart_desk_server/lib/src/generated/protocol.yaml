@@ -1,11 +1,11 @@
 client:
   - getClientsForUser:
-apiToken:
-  - getTokens:
-  - createToken:
-  - updateToken:
-  - regenerateToken:
-  - deleteToken:
+apiKey:
+  - getKeys:
+  - createKey:
+  - updateKey:
+  - regenerateKey:
+  - deleteKey:
 deployment:
   - list:
   - getActive:

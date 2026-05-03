@@ -5,7 +5,7 @@ import 'test_tools/serverpod_test_tools.dart';
 import 'helpers/test_data_factory.dart';
 
 void main() {
-  withServerpod('ApiToken validation', (sessionBuilder, endpoints) {
+  withServerpod('ApiKey validation', (sessionBuilder, endpoints) {
     late TestDataFactory factory;
 
     setUp(() async {
@@ -16,11 +16,11 @@ void main() {
       await factory.ensureTestUser(role: ClientRole.admin);
     });
 
-    test('created token validates successfully', () async {
+    test('created key validates successfully', () async {
       final authed = factory.authenticatedSession();
-      final result = await endpoints.apiToken.createToken(
+      final result = await endpoints.apiKey.createKey(
         authed,
-        'Valid Token',
+        'Valid Key',
         'write',
         null,
         projectId: TestDataFactory.testProjectId,
@@ -29,16 +29,16 @@ void main() {
       final session = sessionBuilder.build();
       final context = await ApiKeyValidator.validate(
         session,
-        result.plaintextToken,
+        result.plaintextKey,
       );
 
       expect(context, isNotNull);
       expect(context!.role, equals('write'));
     });
 
-    test('deactivated token fails validation', () async {
+    test('deactivated key fails validation', () async {
       final authed = factory.authenticatedSession();
-      final result = await endpoints.apiToken.createToken(
+      final result = await endpoints.apiKey.createKey(
         authed,
         'Deactivated',
         'read',
@@ -46,9 +46,9 @@ void main() {
         projectId: TestDataFactory.testProjectId,
       );
 
-      await endpoints.apiToken.updateToken(
+      await endpoints.apiKey.updateKey(
         authed,
-        result.token.id,
+        result.apiKey.id,
         null,
         false,
         null,
@@ -58,71 +58,71 @@ void main() {
       final session = sessionBuilder.build();
       final context = await ApiKeyValidator.validate(
         session,
-        result.plaintextToken,
+        result.plaintextKey,
       );
 
       expect(context, isNull);
     });
 
-    test('regenerated token invalidates old, validates new', () async {
+    test('regenerated key invalidates old, validates new', () async {
       final authed = factory.authenticatedSession();
-      final original = await endpoints.apiToken.createToken(
+      final original = await endpoints.apiKey.createKey(
         authed,
         'Regen',
         'write',
         null,
         projectId: TestDataFactory.testProjectId,
       );
-      final oldToken = original.plaintextToken;
+      final oldKey = original.plaintextKey;
 
-      final regenerated = await endpoints.apiToken.regenerateToken(
+      final regenerated = await endpoints.apiKey.regenerateKey(
         authed,
-        original.token.id,
+        original.apiKey.id,
         projectId: TestDataFactory.testProjectId,
       );
 
       final session = sessionBuilder.build();
 
-      // Old token fails
+      // Old key fails
       expect(
-        await ApiKeyValidator.validate(session, oldToken),
+        await ApiKeyValidator.validate(session, oldKey),
         isNull,
       );
 
-      // New token works
+      // New key works
       final context = await ApiKeyValidator.validate(
         session,
-        regenerated.plaintextToken,
+        regenerated.plaintextKey,
       );
       expect(context, isNotNull);
       expect(context!.role, equals('write'));
     });
 
-    test('deleted token fails validation', () async {
+    test('deleted key fails validation', () async {
       final authed = factory.authenticatedSession();
-      final result = await endpoints.apiToken.createToken(
+      final result = await endpoints.apiKey.createKey(
         authed,
         'Deleted',
         'read',
         null,
         projectId: TestDataFactory.testProjectId,
       );
-      final token = result.plaintextToken;
+      final key = result.plaintextKey;
 
-      await endpoints.apiToken.deleteToken(
+      await endpoints.apiKey.deleteKey(
         authed,
-        result.token.id,
+        result.apiKey.id,
         projectId: TestDataFactory.testProjectId,
       );
 
       final session = sessionBuilder.build();
       expect(
-        await ApiKeyValidator.validate(session, token),
+        await ApiKeyValidator.validate(session, key),
         isNull,
       );
     });
 
-    test('garbage token fails validation', () async {
+    test('garbage key fails validation', () async {
       final session = sessionBuilder.build();
       expect(await ApiKeyValidator.validate(session, 'not-a-token'), isNull);
       expect(await ApiKeyValidator.validate(session, ''), isNull);

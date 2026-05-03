@@ -13,8 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:dart_desk_client/src/protocol/client_with_role.dart' as _i3;
-import 'package:dart_desk_client/src/protocol/api_token.dart' as _i4;
-import 'package:dart_desk_client/src/protocol/api_token_with_value.dart' as _i5;
+import 'package:dart_desk_client/src/protocol/api_key.dart' as _i4;
+import 'package:dart_desk_client/src/protocol/api_key_with_value.dart' as _i5;
 import 'package:dart_desk_client/src/protocol/deployment.dart' as _i6;
 import 'package:dart_desk_client/src/protocol/document_crdt_operation.dart'
     as _i7;
@@ -59,34 +59,33 @@ class EndpointClient extends _i1.EndpointRef {
       );
 }
 
-/// Endpoint for managing CMS API tokens.
+/// Endpoint for managing CMS API keys.
 /// All methods require Serverpod auth (session.authenticated).
 /// Authorization: caller must be a User belonging to the project's tenant.
 /// {@category Endpoint}
-class EndpointApiToken extends _i1.EndpointRef {
-  EndpointApiToken(_i1.EndpointCaller caller) : super(caller);
+class EndpointApiKey extends _i1.EndpointRef {
+  EndpointApiKey(_i1.EndpointCaller caller) : super(caller);
 
   @override
-  String get name => 'apiToken';
+  String get name => 'apiKey';
 
-  /// List all tokens for a project (metadata only, never the hash).
-  _i2.Future<List<_i4.ApiToken>> getTokens({
-    required _i1.UuidValue projectId,
-  }) => caller.callServerEndpoint<List<_i4.ApiToken>>(
-    'apiToken',
-    'getTokens',
-    {'projectId': projectId},
-  );
+  /// List all keys for a project (metadata only, never the hash).
+  _i2.Future<List<_i4.ApiKey>> getKeys({required _i1.UuidValue projectId}) =>
+      caller.callServerEndpoint<List<_i4.ApiKey>>(
+        'apiKey',
+        'getKeys',
+        {'projectId': projectId},
+      );
 
-  /// Create a new named token. Returns plaintext token (shown once).
-  _i2.Future<_i5.ApiTokenWithValue> createToken(
+  /// Create a new named key. Returns plaintext key (shown once).
+  _i2.Future<_i5.ApiKeyWithValue> createKey(
     String name,
     String role,
     DateTime? expiresAt, {
     required _i1.UuidValue projectId,
-  }) => caller.callServerEndpoint<_i5.ApiTokenWithValue>(
-    'apiToken',
-    'createToken',
+  }) => caller.callServerEndpoint<_i5.ApiKeyWithValue>(
+    'apiKey',
+    'createKey',
     {
       'name': name,
       'role': role,
@@ -95,18 +94,18 @@ class EndpointApiToken extends _i1.EndpointRef {
     },
   );
 
-  /// Update token metadata (name, isActive, expiresAt).
-  _i2.Future<_i4.ApiToken> updateToken(
-    _i1.UuidValue tokenId,
+  /// Update key metadata (name, isActive, expiresAt).
+  _i2.Future<_i4.ApiKey> updateKey(
+    _i1.UuidValue keyId,
     String? name,
     bool? isActive,
     DateTime? expiresAt, {
     required _i1.UuidValue projectId,
-  }) => caller.callServerEndpoint<_i4.ApiToken>(
-    'apiToken',
-    'updateToken',
+  }) => caller.callServerEndpoint<_i4.ApiKey>(
+    'apiKey',
+    'updateKey',
     {
-      'tokenId': tokenId,
+      'keyId': keyId,
       'name': name,
       'isActive': isActive,
       'expiresAt': expiresAt,
@@ -114,28 +113,28 @@ class EndpointApiToken extends _i1.EndpointRef {
     },
   );
 
-  /// Regenerate token value. Returns new plaintext token (shown once).
-  _i2.Future<_i5.ApiTokenWithValue> regenerateToken(
-    _i1.UuidValue tokenId, {
+  /// Regenerate key value. Returns new plaintext key (shown once).
+  _i2.Future<_i5.ApiKeyWithValue> regenerateKey(
+    _i1.UuidValue keyId, {
     required _i1.UuidValue projectId,
-  }) => caller.callServerEndpoint<_i5.ApiTokenWithValue>(
-    'apiToken',
-    'regenerateToken',
+  }) => caller.callServerEndpoint<_i5.ApiKeyWithValue>(
+    'apiKey',
+    'regenerateKey',
     {
-      'tokenId': tokenId,
+      'keyId': keyId,
       'projectId': projectId,
     },
   );
 
-  /// Delete a token permanently.
-  _i2.Future<bool> deleteToken(
-    _i1.UuidValue tokenId, {
+  /// Delete a key permanently.
+  _i2.Future<bool> deleteKey(
+    _i1.UuidValue keyId, {
     required _i1.UuidValue projectId,
   }) => caller.callServerEndpoint<bool>(
-    'apiToken',
-    'deleteToken',
+    'apiKey',
+    'deleteKey',
     {
-      'tokenId': tokenId,
+      'keyId': keyId,
       'projectId': projectId,
     },
   );
@@ -1344,7 +1343,7 @@ class Client extends _i1.ServerpodClientShared {
              disconnectStreamsOnLostInternetConnection,
        ) {
     client = EndpointClient(this);
-    apiToken = EndpointApiToken(this);
+    apiKey = EndpointApiKey(this);
     deployment = EndpointDeployment(this);
     documentCollaboration = EndpointDocumentCollaboration(this);
     document = EndpointDocument(this);
@@ -1366,7 +1365,7 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointClient client;
 
-  late final EndpointApiToken apiToken;
+  late final EndpointApiKey apiKey;
 
   late final EndpointDeployment deployment;
 
@@ -1405,7 +1404,7 @@ class Client extends _i1.ServerpodClientShared {
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
     'client': client,
-    'apiToken': apiToken,
+    'apiKey': apiKey,
     'deployment': deployment,
     'documentCollaboration': documentCollaboration,
     'document': document,

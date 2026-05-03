@@ -12,7 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/client_endpoint.dart' as _i2;
-import '../endpoints/cms_api_token_endpoint.dart' as _i3;
+import '../endpoints/cms_api_key_endpoint.dart' as _i3;
 import '../endpoints/deployment_endpoint.dart' as _i4;
 import '../endpoints/document_collaboration_endpoint.dart' as _i5;
 import '../endpoints/document_endpoint.dart' as _i6;
@@ -49,10 +49,10 @@ class Endpoints extends _i1.EndpointDispatch {
           'client',
           null,
         ),
-      'apiToken': _i3.ApiTokenEndpoint()
+      'apiKey': _i3.ApiKeyEndpoint()
         ..initialize(
           server,
-          'apiToken',
+          'apiKey',
           null,
         ),
       'deployment': _i4.DeploymentEndpoint()
@@ -168,12 +168,12 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    connectors['apiToken'] = _i1.EndpointConnector(
-      name: 'apiToken',
-      endpoint: endpoints['apiToken']!,
+    connectors['apiKey'] = _i1.EndpointConnector(
+      name: 'apiKey',
+      endpoint: endpoints['apiKey']!,
       methodConnectors: {
-        'getTokens': _i1.MethodConnector(
-          name: 'getTokens',
+        'getKeys': _i1.MethodConnector(
+          name: 'getKeys',
           params: {
             'projectId': _i1.ParameterDescription(
               name: 'projectId',
@@ -185,14 +185,13 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['apiToken'] as _i3.ApiTokenEndpoint).getTokens(
-                    session,
-                    projectId: params['projectId'],
-                  ),
+              ) async => (endpoints['apiKey'] as _i3.ApiKeyEndpoint).getKeys(
+                session,
+                projectId: params['projectId'],
+              ),
         ),
-        'createToken': _i1.MethodConnector(
-          name: 'createToken',
+        'createKey': _i1.MethodConnector(
+          name: 'createKey',
           params: {
             'name': _i1.ParameterDescription(
               name: 'name',
@@ -219,20 +218,19 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['apiToken'] as _i3.ApiTokenEndpoint).createToken(
-                    session,
-                    params['name'],
-                    params['role'],
-                    params['expiresAt'],
-                    projectId: params['projectId'],
-                  ),
+              ) async => (endpoints['apiKey'] as _i3.ApiKeyEndpoint).createKey(
+                session,
+                params['name'],
+                params['role'],
+                params['expiresAt'],
+                projectId: params['projectId'],
+              ),
         ),
-        'updateToken': _i1.MethodConnector(
-          name: 'updateToken',
+        'updateKey': _i1.MethodConnector(
+          name: 'updateKey',
           params: {
-            'tokenId': _i1.ParameterDescription(
-              name: 'tokenId',
+            'keyId': _i1.ParameterDescription(
+              name: 'keyId',
               type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
@@ -261,46 +259,20 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['apiToken'] as _i3.ApiTokenEndpoint).updateToken(
-                    session,
-                    params['tokenId'],
-                    params['name'],
-                    params['isActive'],
-                    params['expiresAt'],
-                    projectId: params['projectId'],
-                  ),
+              ) async => (endpoints['apiKey'] as _i3.ApiKeyEndpoint).updateKey(
+                session,
+                params['keyId'],
+                params['name'],
+                params['isActive'],
+                params['expiresAt'],
+                projectId: params['projectId'],
+              ),
         ),
-        'regenerateToken': _i1.MethodConnector(
-          name: 'regenerateToken',
+        'regenerateKey': _i1.MethodConnector(
+          name: 'regenerateKey',
           params: {
-            'tokenId': _i1.ParameterDescription(
-              name: 'tokenId',
-              type: _i1.getType<_i1.UuidValue>(),
-              nullable: false,
-            ),
-            'projectId': _i1.ParameterDescription(
-              name: 'projectId',
-              type: _i1.getType<_i1.UuidValue>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['apiToken'] as _i3.ApiTokenEndpoint)
-                  .regenerateToken(
-                    session,
-                    params['tokenId'],
-                    projectId: params['projectId'],
-                  ),
-        ),
-        'deleteToken': _i1.MethodConnector(
-          name: 'deleteToken',
-          params: {
-            'tokenId': _i1.ParameterDescription(
-              name: 'tokenId',
+            'keyId': _i1.ParameterDescription(
+              name: 'keyId',
               type: _i1.getType<_i1.UuidValue>(),
               nullable: false,
             ),
@@ -315,11 +287,35 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['apiToken'] as _i3.ApiTokenEndpoint).deleteToken(
+                  (endpoints['apiKey'] as _i3.ApiKeyEndpoint).regenerateKey(
                     session,
-                    params['tokenId'],
+                    params['keyId'],
                     projectId: params['projectId'],
                   ),
+        ),
+        'deleteKey': _i1.MethodConnector(
+          name: 'deleteKey',
+          params: {
+            'keyId': _i1.ParameterDescription(
+              name: 'keyId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+            'projectId': _i1.ParameterDescription(
+              name: 'projectId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['apiKey'] as _i3.ApiKeyEndpoint).deleteKey(
+                session,
+                params['keyId'],
+                projectId: params['projectId'],
+              ),
         ),
       },
     );

@@ -12,8 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'api_exception.dart' as _i2;
-import 'api_token.dart' as _i3;
-import 'api_token_with_value.dart' as _i4;
+import 'api_key.dart' as _i3;
+import 'api_key_with_value.dart' as _i4;
 import 'client_role.dart' as _i5;
 import 'client_with_role.dart' as _i6;
 import 'cms_client.dart' as _i7;
@@ -31,7 +31,7 @@ import 'document_version_with_operations.dart' as _i18;
 import 'media_asset.dart' as _i19;
 import 'media_asset_metadata_status.dart' as _i20;
 import 'migration_history.dart' as _i21;
-import 'paginated_api_tokens.dart' as _i22;
+import 'paginated_api_keys.dart' as _i22;
 import 'paginated_document_versions.dart' as _i23;
 import 'paginated_documents.dart' as _i24;
 import 'paginated_media_assets.dart' as _i25;
@@ -45,7 +45,7 @@ import 'public_document.dart' as _i32;
 import 'published_document.dart' as _i33;
 import 'user.dart' as _i34;
 import 'package:dart_desk_client/src/protocol/client_with_role.dart' as _i35;
-import 'package:dart_desk_client/src/protocol/api_token.dart' as _i36;
+import 'package:dart_desk_client/src/protocol/api_key.dart' as _i36;
 import 'package:dart_desk_client/src/protocol/deployment.dart' as _i37;
 import 'package:dart_desk_client/src/protocol/document_crdt_operation.dart'
     as _i38;
@@ -59,8 +59,8 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i45;
 export 'api_exception.dart';
-export 'api_token.dart';
-export 'api_token_with_value.dart';
+export 'api_key.dart';
+export 'api_key_with_value.dart';
 export 'client_role.dart';
 export 'client_with_role.dart';
 export 'cms_client.dart';
@@ -78,7 +78,7 @@ export 'document_version_with_operations.dart';
 export 'media_asset.dart';
 export 'media_asset_metadata_status.dart';
 export 'migration_history.dart';
-export 'paginated_api_tokens.dart';
+export 'paginated_api_keys.dart';
 export 'paginated_document_versions.dart';
 export 'paginated_documents.dart';
 export 'paginated_media_assets.dart';
@@ -130,11 +130,11 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i2.ApiException) {
       return _i2.ApiException.fromJson(data) as T;
     }
-    if (t == _i3.ApiToken) {
-      return _i3.ApiToken.fromJson(data) as T;
+    if (t == _i3.ApiKey) {
+      return _i3.ApiKey.fromJson(data) as T;
     }
-    if (t == _i4.ApiTokenWithValue) {
-      return _i4.ApiTokenWithValue.fromJson(data) as T;
+    if (t == _i4.ApiKeyWithValue) {
+      return _i4.ApiKeyWithValue.fromJson(data) as T;
     }
     if (t == _i5.ClientRole) {
       return _i5.ClientRole.fromJson(data) as T;
@@ -187,8 +187,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i21.MigrationHistory) {
       return _i21.MigrationHistory.fromJson(data) as T;
     }
-    if (t == _i22.PaginatedApiTokens) {
-      return _i22.PaginatedApiTokens.fromJson(data) as T;
+    if (t == _i22.PaginatedApiKeys) {
+      return _i22.PaginatedApiKeys.fromJson(data) as T;
     }
     if (t == _i23.PaginatedDocumentVersions) {
       return _i23.PaginatedDocumentVersions.fromJson(data) as T;
@@ -229,11 +229,11 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i2.ApiException?>()) {
       return (data != null ? _i2.ApiException.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i3.ApiToken?>()) {
-      return (data != null ? _i3.ApiToken.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i3.ApiKey?>()) {
+      return (data != null ? _i3.ApiKey.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i4.ApiTokenWithValue?>()) {
-      return (data != null ? _i4.ApiTokenWithValue.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i4.ApiKeyWithValue?>()) {
+      return (data != null ? _i4.ApiKeyWithValue.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i5.ClientRole?>()) {
       return (data != null ? _i5.ClientRole.fromJson(data) : null) as T;
@@ -298,9 +298,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i21.MigrationHistory?>()) {
       return (data != null ? _i21.MigrationHistory.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i22.PaginatedApiTokens?>()) {
-      return (data != null ? _i22.PaginatedApiTokens.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i22.PaginatedApiKeys?>()) {
+      return (data != null ? _i22.PaginatedApiKeys.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i23.PaginatedDocumentVersions?>()) {
       return (data != null
@@ -358,8 +357,8 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i3.ApiToken>) {
-      return (data as List).map((e) => deserialize<_i3.ApiToken>(e)).toList()
+    if (t == List<_i3.ApiKey>) {
+      return (data as List).map((e) => deserialize<_i3.ApiKey>(e)).toList()
           as T;
     }
     if (t == List<_i15.DocumentVersion>) {
@@ -395,8 +394,8 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i36.ApiToken>) {
-      return (data as List).map((e) => deserialize<_i36.ApiToken>(e)).toList()
+    if (t == List<_i36.ApiKey>) {
+      return (data as List).map((e) => deserialize<_i36.ApiKey>(e)).toList()
           as T;
     }
     if (t == List<_i37.Deployment>) {
@@ -467,8 +466,8 @@ class Protocol extends _i1.SerializationManager {
   static String? getClassNameForType(Type type) {
     return switch (type) {
       _i2.ApiException => 'ApiException',
-      _i3.ApiToken => 'ApiToken',
-      _i4.ApiTokenWithValue => 'ApiTokenWithValue',
+      _i3.ApiKey => 'ApiKey',
+      _i4.ApiKeyWithValue => 'ApiKeyWithValue',
       _i5.ClientRole => 'ClientRole',
       _i6.ClientWithRole => 'ClientWithRole',
       _i7.CmsClient => 'CmsClient',
@@ -487,7 +486,7 @@ class Protocol extends _i1.SerializationManager {
       _i19.MediaAsset => 'MediaAsset',
       _i20.MediaAssetMetadataStatus => 'MediaAssetMetadataStatus',
       _i21.MigrationHistory => 'MigrationHistory',
-      _i22.PaginatedApiTokens => 'PaginatedApiTokens',
+      _i22.PaginatedApiKeys => 'PaginatedApiKeys',
       _i23.PaginatedDocumentVersions => 'PaginatedDocumentVersions',
       _i24.PaginatedDocuments => 'PaginatedDocuments',
       _i25.PaginatedMediaAssets => 'PaginatedMediaAssets',
@@ -516,10 +515,10 @@ class Protocol extends _i1.SerializationManager {
     switch (data) {
       case _i2.ApiException():
         return 'ApiException';
-      case _i3.ApiToken():
-        return 'ApiToken';
-      case _i4.ApiTokenWithValue():
-        return 'ApiTokenWithValue';
+      case _i3.ApiKey():
+        return 'ApiKey';
+      case _i4.ApiKeyWithValue():
+        return 'ApiKeyWithValue';
       case _i5.ClientRole():
         return 'ClientRole';
       case _i6.ClientWithRole():
@@ -554,8 +553,8 @@ class Protocol extends _i1.SerializationManager {
         return 'MediaAssetMetadataStatus';
       case _i21.MigrationHistory():
         return 'MigrationHistory';
-      case _i22.PaginatedApiTokens():
-        return 'PaginatedApiTokens';
+      case _i22.PaginatedApiKeys():
+        return 'PaginatedApiKeys';
       case _i23.PaginatedDocumentVersions():
         return 'PaginatedDocumentVersions';
       case _i24.PaginatedDocuments():
@@ -601,11 +600,11 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'ApiException') {
       return deserialize<_i2.ApiException>(data['data']);
     }
-    if (dataClassName == 'ApiToken') {
-      return deserialize<_i3.ApiToken>(data['data']);
+    if (dataClassName == 'ApiKey') {
+      return deserialize<_i3.ApiKey>(data['data']);
     }
-    if (dataClassName == 'ApiTokenWithValue') {
-      return deserialize<_i4.ApiTokenWithValue>(data['data']);
+    if (dataClassName == 'ApiKeyWithValue') {
+      return deserialize<_i4.ApiKeyWithValue>(data['data']);
     }
     if (dataClassName == 'ClientRole') {
       return deserialize<_i5.ClientRole>(data['data']);
@@ -658,8 +657,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'MigrationHistory') {
       return deserialize<_i21.MigrationHistory>(data['data']);
     }
-    if (dataClassName == 'PaginatedApiTokens') {
-      return deserialize<_i22.PaginatedApiTokens>(data['data']);
+    if (dataClassName == 'PaginatedApiKeys') {
+      return deserialize<_i22.PaginatedApiKeys>(data['data']);
     }
     if (dataClassName == 'PaginatedDocumentVersions') {
       return deserialize<_i23.PaginatedDocumentVersions>(data['data']);

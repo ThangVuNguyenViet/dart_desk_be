@@ -80,7 +80,7 @@ class DeploymentUploadRoute extends Route {
     // signed-in human (JWT). API-token callers (CI) and the cloud-admin key
     // have no User row — leave uploadedByUserId null.
     UuidValue? uploadedByUserId;
-    if (!auth.userIdentifier.startsWith('api-token:') &&
+    if (!auth.userIdentifier.startsWith('api-key:') &&
         auth.userIdentifier != 'cloud-admin') {
       try {
         final user = await resolveUser(session, clientId: project.clientId);

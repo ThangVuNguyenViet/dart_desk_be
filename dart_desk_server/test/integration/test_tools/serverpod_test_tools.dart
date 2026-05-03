@@ -15,9 +15,8 @@ import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
 import 'package:dart_desk_server/src/generated/client_with_role.dart' as _i4;
-import 'package:dart_desk_server/src/generated/api_token.dart' as _i5;
-import 'package:dart_desk_server/src/generated/api_token_with_value.dart'
-    as _i6;
+import 'package:dart_desk_server/src/generated/api_key.dart' as _i5;
+import 'package:dart_desk_server/src/generated/api_key_with_value.dart' as _i6;
 import 'package:dart_desk_server/src/generated/deployment.dart' as _i7;
 import 'package:dart_desk_server/src/generated/document_crdt_operation.dart'
     as _i8;
@@ -158,7 +157,7 @@ void withServerpod(
 class TestEndpoints {
   late final _ClientEndpoint client;
 
-  late final _ApiTokenEndpoint apiToken;
+  late final _ApiKeyEndpoint apiKey;
 
   late final _DeploymentEndpoint deployment;
 
@@ -204,7 +203,7 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
-    apiToken = _ApiTokenEndpoint(
+    apiKey = _ApiKeyEndpoint(
       endpoints,
       serializationManager,
     );
@@ -316,8 +315,8 @@ class _ClientEndpoint {
   }
 }
 
-class _ApiTokenEndpoint {
-  _ApiTokenEndpoint(
+class _ApiKeyEndpoint {
+  _ApiKeyEndpoint(
     this._endpointDispatch,
     this._serializationManager,
   );
@@ -326,21 +325,21 @@ class _ApiTokenEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i5.ApiToken>> getTokens(
+  _i3.Future<List<_i5.ApiKey>> getKeys(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'apiToken',
-            method: 'getTokens',
+            endpoint: 'apiKey',
+            method: 'getKeys',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'apiToken',
-          methodName: 'getTokens',
+          endpointPath: 'apiKey',
+          methodName: 'getKeys',
           parameters: _i1.testObjectToJson({'projectId': projectId}),
           serializationManager: _serializationManager,
         );
@@ -349,7 +348,7 @@ class _ApiTokenEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i5.ApiToken>>);
+                as _i3.Future<List<_i5.ApiKey>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -357,7 +356,7 @@ class _ApiTokenEndpoint {
     });
   }
 
-  _i3.Future<_i6.ApiTokenWithValue> createToken(
+  _i3.Future<_i6.ApiKeyWithValue> createKey(
     _i1.TestSessionBuilder sessionBuilder,
     String name,
     String role,
@@ -367,14 +366,14 @@ class _ApiTokenEndpoint {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'apiToken',
-            method: 'createToken',
+            endpoint: 'apiKey',
+            method: 'createKey',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'apiToken',
-          methodName: 'createToken',
+          endpointPath: 'apiKey',
+          methodName: 'createKey',
           parameters: _i1.testObjectToJson({
             'name': name,
             'role': role,
@@ -388,7 +387,7 @@ class _ApiTokenEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i6.ApiTokenWithValue>);
+                as _i3.Future<_i6.ApiKeyWithValue>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -396,9 +395,9 @@ class _ApiTokenEndpoint {
     });
   }
 
-  _i3.Future<_i5.ApiToken> updateToken(
+  _i3.Future<_i5.ApiKey> updateKey(
     _i1.TestSessionBuilder sessionBuilder,
-    _i2.UuidValue tokenId,
+    _i2.UuidValue keyId,
     String? name,
     bool? isActive,
     DateTime? expiresAt, {
@@ -407,16 +406,16 @@ class _ApiTokenEndpoint {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'apiToken',
-            method: 'updateToken',
+            endpoint: 'apiKey',
+            method: 'updateKey',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'apiToken',
-          methodName: 'updateToken',
+          endpointPath: 'apiKey',
+          methodName: 'updateKey',
           parameters: _i1.testObjectToJson({
-            'tokenId': tokenId,
+            'keyId': keyId,
             'name': name,
             'isActive': isActive,
             'expiresAt': expiresAt,
@@ -429,7 +428,7 @@ class _ApiTokenEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i5.ApiToken>);
+                as _i3.Future<_i5.ApiKey>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -437,24 +436,24 @@ class _ApiTokenEndpoint {
     });
   }
 
-  _i3.Future<_i6.ApiTokenWithValue> regenerateToken(
+  _i3.Future<_i6.ApiKeyWithValue> regenerateKey(
     _i1.TestSessionBuilder sessionBuilder,
-    _i2.UuidValue tokenId, {
+    _i2.UuidValue keyId, {
     required _i2.UuidValue projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'apiToken',
-            method: 'regenerateToken',
+            endpoint: 'apiKey',
+            method: 'regenerateKey',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'apiToken',
-          methodName: 'regenerateToken',
+          endpointPath: 'apiKey',
+          methodName: 'regenerateKey',
           parameters: _i1.testObjectToJson({
-            'tokenId': tokenId,
+            'keyId': keyId,
             'projectId': projectId,
           }),
           serializationManager: _serializationManager,
@@ -464,7 +463,7 @@ class _ApiTokenEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i6.ApiTokenWithValue>);
+                as _i3.Future<_i6.ApiKeyWithValue>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -472,24 +471,24 @@ class _ApiTokenEndpoint {
     });
   }
 
-  _i3.Future<bool> deleteToken(
+  _i3.Future<bool> deleteKey(
     _i1.TestSessionBuilder sessionBuilder,
-    _i2.UuidValue tokenId, {
+    _i2.UuidValue keyId, {
     required _i2.UuidValue projectId,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'apiToken',
-            method: 'deleteToken',
+            endpoint: 'apiKey',
+            method: 'deleteKey',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'apiToken',
-          methodName: 'deleteToken',
+          endpointPath: 'apiKey',
+          methodName: 'deleteKey',
           parameters: _i1.testObjectToJson({
-            'tokenId': tokenId,
+            'keyId': keyId,
             'projectId': projectId,
           }),
           serializationManager: _serializationManager,

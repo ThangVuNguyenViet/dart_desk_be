@@ -18,7 +18,7 @@ class ParsedApiKey {
   });
 }
 
-/// Validates Authorization API key values against the ApiToken table.
+/// Validates Authorization API key values against the ApiKey table.
 ///
 /// This is a stateless utility. Call [validate] from endpoint methods
 /// or from the authentication handler in server.dart.
@@ -53,8 +53,8 @@ class ApiKeyValidator {
   }
 
   /// Validate an API key against the database.
-  /// Returns the matching [ApiToken] row on success, null on failure.
-  static Future<ApiToken?> validate(
+  /// Returns the matching [ApiKey] row on success, null on failure.
+  static Future<ApiKey?> validate(
     Session session,
     String apiKey,
   ) async {
@@ -64,8 +64,8 @@ class ApiKeyValidator {
     final hash = hashToken(parsed.rawToken);
 
     // Query by prefix + suffix without clientId filter.
-    // The token lookup IS the tenant resolution.
-    final candidates = await ApiToken.db.find(
+    // The key lookup IS the tenant resolution.
+    final candidates = await ApiKey.db.find(
       session,
       where: (t) =>
           t.tokenPrefix.equals(parsed.prefix) &
@@ -87,7 +87,7 @@ class ApiKeyValidator {
       if (candidate.lastUsedAt == null ||
           now.difference(candidate.lastUsedAt!) > _lastUsedDebounce) {
         try {
-          await ApiToken.db.updateRow(
+          await ApiKey.db.updateRow(
             session,
             candidate.copyWith(lastUsedAt: now),
           );

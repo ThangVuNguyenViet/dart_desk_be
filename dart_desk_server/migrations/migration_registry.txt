@@ -12,3 +12,4 @@
 20260502061331738
 20260502061740168-drop-documents-data-jsonb
 20260502102432242-per-client-slugs
+20260503053750456-rename-api-tokens-to-api-keys

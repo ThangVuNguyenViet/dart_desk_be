@@ -11,12 +11,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'api_token.dart' as _i2;
+import 'api_key.dart' as _i2;
 import 'package:dart_desk_server/src/generated/protocol.dart' as _i3;
 
-abstract class PaginatedApiTokens
+abstract class PaginatedApiKeys
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  PaginatedApiTokens._({
+  PaginatedApiKeys._({
     required this.items,
     required this.total,
     required this.limit,
@@ -24,17 +24,17 @@ abstract class PaginatedApiTokens
     required this.hasMore,
   });
 
-  factory PaginatedApiTokens({
-    required List<_i2.ApiToken> items,
+  factory PaginatedApiKeys({
+    required List<_i2.ApiKey> items,
     required int total,
     required int limit,
     required int offset,
     required bool hasMore,
-  }) = _PaginatedApiTokensImpl;
+  }) = _PaginatedApiKeysImpl;
 
-  factory PaginatedApiTokens.fromJson(Map<String, dynamic> jsonSerialization) {
-    return PaginatedApiTokens(
-      items: _i3.Protocol().deserialize<List<_i2.ApiToken>>(
+  factory PaginatedApiKeys.fromJson(Map<String, dynamic> jsonSerialization) {
+    return PaginatedApiKeys(
+      items: _i3.Protocol().deserialize<List<_i2.ApiKey>>(
         jsonSerialization['items'],
       ),
       total: jsonSerialization['total'] as int,
@@ -44,7 +44,7 @@ abstract class PaginatedApiTokens
     );
   }
 
-  List<_i2.ApiToken> items;
+  List<_i2.ApiKey> items;
 
   int total;
 
@@ -54,11 +54,11 @@ abstract class PaginatedApiTokens
 
   bool hasMore;
 
-  /// Returns a shallow copy of this [PaginatedApiTokens]
+  /// Returns a shallow copy of this [PaginatedApiKeys]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  PaginatedApiTokens copyWith({
-    List<_i2.ApiToken>? items,
+  PaginatedApiKeys copyWith({
+    List<_i2.ApiKey>? items,
     int? total,
     int? limit,
     int? offset,
@@ -67,7 +67,7 @@ abstract class PaginatedApiTokens
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'PaginatedApiTokens',
+      '__className__': 'PaginatedApiKeys',
       'items': items.toJson(valueToJson: (v) => v.toJson()),
       'total': total,
       'limit': limit,
@@ -79,7 +79,7 @@ abstract class PaginatedApiTokens
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'PaginatedApiTokens',
+      '__className__': 'PaginatedApiKeys',
       'items': items.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'total': total,
       'limit': limit,
@@ -94,9 +94,9 @@ abstract class PaginatedApiTokens
   }
 }
 
-class _PaginatedApiTokensImpl extends PaginatedApiTokens {
-  _PaginatedApiTokensImpl({
-    required List<_i2.ApiToken> items,
+class _PaginatedApiKeysImpl extends PaginatedApiKeys {
+  _PaginatedApiKeysImpl({
+    required List<_i2.ApiKey> items,
     required int total,
     required int limit,
     required int offset,
@@ -109,18 +109,18 @@ class _PaginatedApiTokensImpl extends PaginatedApiTokens {
          hasMore: hasMore,
        );
 
-  /// Returns a shallow copy of this [PaginatedApiTokens]
+  /// Returns a shallow copy of this [PaginatedApiKeys]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  PaginatedApiTokens copyWith({
-    List<_i2.ApiToken>? items,
+  PaginatedApiKeys copyWith({
+    List<_i2.ApiKey>? items,
     int? total,
     int? limit,
     int? offset,
     bool? hasMore,
   }) {
-    return PaginatedApiTokens(
+    return PaginatedApiKeys(
       items: items ?? this.items.map((e0) => e0.copyWith()).toList(),
       total: total ?? this.total,
       limit: limit ?? this.limit,
