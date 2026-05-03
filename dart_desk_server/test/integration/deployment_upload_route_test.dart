@@ -11,7 +11,6 @@
 // be in production after the authenticationHandler chain runs.
 
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
@@ -79,7 +78,11 @@ void main() {
     TestSessionBuilder authedSession() => sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
             adminUserId,
-            {Scope('user')},
+            {
+              Scope('user'),
+              Scope('project:${seedProject.id.uuid}'),
+              const Scope('project.write'),
+            },
           ),
         );
 
@@ -120,18 +123,10 @@ void main() {
     // -----------------------------------------------------------------------
 
     group('happy path', () {
-      test('returns 200 with version and url, extracts bundle to disk',
+      test('returns 200 with version and url, uploads bundle to storage',
           () async {
         final route = DeploymentUploadRoute();
         final session = authedSession().build();
-        String? extractDir;
-
-        addTearDown(() {
-          if (extractDir != null) {
-            final dir = Directory(extractDir);
-            if (dir.existsSync()) dir.deleteSync(recursive: true);
-          }
-        });
 
         final request = _buildRequest(
           method: 'POST',
@@ -156,26 +151,24 @@ void main() {
         );
         expect(deployment, isNotNull);
         expect(deployment!.status, equals(DeploymentStatus.active));
-        extractDir = deployment.filePath;
-        expect(extractDir, isNotEmpty);
+        expect(deployment.filePath, isNotEmpty);
 
-        // Verify file on disk.
-        final indexFile = File('$extractDir/index.html');
-        expect(indexFile.existsSync(), isTrue,
-            reason: 'index.html should be extracted to $extractDir');
-        expect(indexFile.readAsStringSync(), equals('hello'));
+        // Verify file landed in `public` cloud storage at <prefix>/index.html.
+        final stored = await dbSession.storage.retrieveFile(
+          storageId: 'public',
+          path: '${deployment.filePath}/index.html',
+        );
+        expect(stored, isNotNull,
+            reason: 'index.html should be stored at ${deployment.filePath}/index.html');
+        expect(
+          utf8.decode(stored!.buffer
+              .asUint8List(stored.offsetInBytes, stored.lengthInBytes)),
+          equals('hello'),
+        );
       });
 
       test('second upload increments version and demotes previous', () async {
         final route = DeploymentUploadRoute();
-        final dirs = <String>[];
-
-        addTearDown(() {
-          for (final d in dirs) {
-            final dir = Directory(d);
-            if (dir.existsSync()) dir.deleteSync(recursive: true);
-          }
-        });
 
         // First upload.
         final result1 = await route.handleCall(
@@ -210,7 +203,6 @@ void main() {
               t.projectId.equals(seedProject.id) & t.version.equals(1),
         );
         expect(d1!.status, equals(DeploymentStatus.inactive));
-        dirs.add(d1.filePath);
 
         final d2 = await Deployment.db.findFirstRow(
           dbSession,
@@ -218,7 +210,6 @@ void main() {
               t.projectId.equals(seedProject.id) & t.version.equals(2),
         );
         expect(d2!.status, equals(DeploymentStatus.active));
-        dirs.add(d2.filePath);
       });
     });
 
