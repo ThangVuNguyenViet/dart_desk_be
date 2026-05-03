@@ -64,13 +64,19 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
     ));
   }
 
-  configureWebRoutes(
-    pod.webServer.addRoute,
-    setFallback: (route) => pod.webServer.fallbackRoute = route,
-    studioDomain: pod.getPassword('studioDomain') ?? 'app.dartdesk.dev',
-    publicStorageDir: Directory('storage/public'),
-    staticDir: Directory('static'),
-  );
+  // In maintenance role (smoke-boot, migrations) the web server is disabled
+  // and accessing pod.webServer throws. Skip route wiring in that case.
+  final isMaintenance = args.contains('maintenance') &&
+      (args.contains('--role') || args.contains('-r'));
+  if (!isMaintenance) {
+    configureWebRoutes(
+      pod.webServer.addRoute,
+      setFallback: (route) => pod.webServer.fallbackRoute = route,
+      studioDomain: pod.getPassword('studioDomain') ?? 'app.dartdesk.dev',
+      publicStorageDir: Directory('storage/public'),
+      staticDir: Directory('static'),
+    );
+  }
 
   pod.initializeAuthServices(
     tokenManagerBuilders: [
