@@ -26,11 +26,9 @@ class DeploymentUploadRoute extends Route {
   static const _maxBodyBytes = 100 * 1024 * 1024; // 100 MB
   static const _bundleRoot = 'storage/deployments';
 
-  DeploymentUploadRoute()
-      : super(
-          methods: {Method.post},
-          path: '/deployment/upload',
-        );
+  // path is set by addRoute(...). Setting Route.path here would double-mount
+  // the handler at '/deployment/upload/deployment/upload'.
+  DeploymentUploadRoute() : super(methods: {Method.post});
 
   @override
   FutureOr<Result> handleCall(Session session, Request request) async {
