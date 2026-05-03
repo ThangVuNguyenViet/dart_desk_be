@@ -134,9 +134,20 @@ class DeploymentUploadRoute extends Route {
       entries.add(_BundleEntry(normalized, entry.content as List<int>));
     }
 
-    // Insert DB row first to obtain a stable id, then upload files. If any
-    // upload fails after the row is inserted we mark it failed (rather than
-    // try to roll back partial S3 writes).
+    // Three-phase deploy to avoid a window where zero active deployments exist:
+    //
+    // Phase 1 (transactional): Insert the new row with status=uploading and
+    //   filePath=''. Do NOT demote the previously-active row yet — it keeps
+    //   serving traffic while the upload is in progress.
+    //
+    // Phase 2 (upload): Stream every file to S3. On failure mark the new row
+    //   inactive and return 500; the previously-active row is untouched.
+    //
+    // Phase 3 (transactional swap): In a single transaction update the new row
+    //   to status=active/filePath=bundlePrefix AND demote the old active row to
+    //   inactive. Readers see either old-active or new-active, never zero.
+
+    // --- Phase 1 ---
     final Deployment inserted = await session.db.transaction((txn) async {
       final latestDeployment = await Deployment.db.findFirstRow(
         session,
@@ -147,30 +158,12 @@ class DeploymentUploadRoute extends Route {
       );
       final nextVersion = (latestDeployment?.version ?? 0) + 1;
 
-      final currentActive = await Deployment.db.findFirstRow(
-        session,
-        where: (t) =>
-            t.projectId.equals(project.id) &
-            t.status.equals(DeploymentStatus.active),
-        transaction: txn,
-      );
-      if (currentActive != null) {
-        await Deployment.db.updateRow(
-          session,
-          currentActive.copyWith(
-            status: DeploymentStatus.inactive,
-            updatedAt: DateTime.now().toUtc(),
-          ),
-          transaction: txn,
-        );
-      }
-
       return Deployment.db.insertRow(
         session,
         Deployment(
           projectId: project.id,
           version: nextVersion,
-          status: DeploymentStatus.active,
+          status: DeploymentStatus.uploading, // not yet visible to StudioRoute
           filePath: '', // set after upload succeeds
           fileSize: bytes.length,
           uploadedByUserId: uploadedByUserId,
@@ -182,6 +175,7 @@ class DeploymentUploadRoute extends Route {
       );
     });
 
+    // --- Phase 2 ---
     final bundlePrefix = p.posix.join(_bundleRoot, inserted.id.uuid);
     try {
       for (final entry in entries) {
@@ -193,7 +187,8 @@ class DeploymentUploadRoute extends Route {
         );
       }
     } catch (e) {
-      // Mark deployment failed so it doesn't shadow the previous active one.
+      // Upload failed — mark the new row inactive and leave the previously-
+      // active deployment untouched so the site keeps serving.
       await Deployment.db.updateRow(
         session,
         inserted.copyWith(
@@ -205,13 +200,53 @@ class DeploymentUploadRoute extends Route {
       return _jsonResponse(500, {'error': 'Failed to upload bundle'});
     }
 
-    final newDeployment = await Deployment.db.updateRow(
-      session,
-      inserted.copyWith(
-        filePath: bundlePrefix,
-        updatedAt: DateTime.now().toUtc(),
-      ),
-    );
+    // --- Phase 3 ---
+    final Deployment newDeployment;
+    try {
+      newDeployment = await session.db.transaction((txn) async {
+        // Demote previous active deployment (if any) inside the same txn.
+        final currentActive = await Deployment.db.findFirstRow(
+          session,
+          where: (t) =>
+              t.projectId.equals(project.id) &
+              t.status.equals(DeploymentStatus.active),
+          transaction: txn,
+        );
+        if (currentActive != null) {
+          await Deployment.db.updateRow(
+            session,
+            currentActive.copyWith(
+              status: DeploymentStatus.inactive,
+              updatedAt: DateTime.now().toUtc(),
+            ),
+            transaction: txn,
+          );
+        }
+
+        // Promote the new deployment to active now that S3 is verified.
+        return Deployment.db.updateRow(
+          session,
+          inserted.copyWith(
+            status: DeploymentStatus.active,
+            filePath: bundlePrefix,
+            updatedAt: DateTime.now().toUtc(),
+          ),
+          transaction: txn,
+        );
+      });
+    } catch (e) {
+      // Swap transaction failed — mark new row inactive; old row was not
+      // demoted (the transaction rolled back), so the site keeps serving.
+      await Deployment.db.updateRow(
+        session,
+        inserted.copyWith(
+          status: DeploymentStatus.inactive,
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      );
+      session.log('Deployment swap failed: $e', level: LogLevel.error);
+      return _jsonResponse(500, {'error': 'Failed to activate deployment'});
+    }
 
     session.log(
       'Uploaded Deployment id=${newDeployment.id} '

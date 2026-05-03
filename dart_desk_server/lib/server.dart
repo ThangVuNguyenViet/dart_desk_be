@@ -3,7 +3,6 @@ import 'dart:io' show Directory;
 import 'package:dart_desk_server/src/services/email_service.dart';
 import 'package:dart_desk_server/src/web/configure_web_routes.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     hide Protocol, Endpoints;
 import 'package:serverpod_auth_idp_server/core.dart';
@@ -11,6 +10,7 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 
 import 'src/auth/api_key_validator.dart';
+import 'src/storage/no_acl_s3_cloud_storage.dart';
 import 'src/auth/compound_token_parser.dart';
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
@@ -55,10 +55,9 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   final awsRegion = pod.getPassword('awsRegion');
   final s3PublicHost = pod.getPassword('s3PublicHost');
   if (s3Bucket != null && awsRegion != null) {
-    pod.addCloudStorage(S3CloudStorage(
+    pod.addCloudStorage(NoAclS3CloudStorage(
       serverpod: pod,
       storageId: 'public',
-      public: true,
       region: awsRegion,
       bucket: s3Bucket,
       publicHost: s3PublicHost,
