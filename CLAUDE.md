@@ -45,6 +45,35 @@ hand-edit the migration to preserve the `*_active_idx`. If you add a
 new table with the same shape, add a matching partial unique index via
 hand-edited migration.
 
+## ⚠️ Reverse schema drift: prod may be missing objects that local definition.sql has
+
+Hand-edited migrations can reference constraints or indexes that were **never
+created** in prod (because an earlier hand-edited migration omitted them).
+Serverpod-generated `RENAME CONSTRAINT` / `DROP CONSTRAINT` will fail at
+runtime if the target constraint doesn't exist, rolling back the whole
+`BEGIN/COMMIT` block. With `applyMigrations: true` Serverpod logs the failure
+but keeps serving — so the binary runs against a partially-migrated schema.
+
+**Rule**: before merging any migration that uses `RENAME CONSTRAINT`,
+`DROP CONSTRAINT`, `ALTER INDEX … RENAME`, or `DROP INDEX` on an existing
+object, verify that object actually exists in prod. Wrap the operation in an
+idempotent guard:
+
+```sql
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'old_name' AND conrelid = 'table'::regclass) THEN
+    ALTER TABLE "table" RENAME CONSTRAINT "old_name" TO "new_name";
+  END IF;
+END $$;
+```
+
+**Known instance**: `api_tokens_fk_0` (the `projectId → projects` FK on
+`api_tokens`) was never created in prod. The rename migration assumed it
+existed and failed. A repair migration
+(`20260503094803605-repair-api-keys-fk`) adds back `api_keys_fk_0`
+idempotently. Note: the prod PK is still named `api_tokens_pkey` (harmless —
+Postgres enforces it correctly regardless of name).
+
 ## ⚠️ `definition.sql` also drifts — required for CI
 
 `serverpod_test`'s `withServerpod(applyMigrations: true)` bootstraps a fresh
