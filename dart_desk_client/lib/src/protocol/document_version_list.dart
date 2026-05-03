@@ -11,45 +11,36 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'document_version_with_operations.dart' as _i2;
+import 'document_version.dart' as _i2;
 import 'package:dart_desk_client/src/protocol/protocol.dart' as _i3;
 
-abstract class DocumentVersionListWithOperations
-    implements _i1.SerializableModel {
-  DocumentVersionListWithOperations._({
+abstract class DocumentVersionList implements _i1.SerializableModel {
+  DocumentVersionList._({
     required this.versions,
-    this.baseData,
     required this.total,
     required this.page,
     required this.pageSize,
   });
 
-  factory DocumentVersionListWithOperations({
-    required List<_i2.DocumentVersionWithOperations> versions,
-    String? baseData,
+  factory DocumentVersionList({
+    required List<_i2.DocumentVersion> versions,
     required int total,
     required int page,
     required int pageSize,
-  }) = _DocumentVersionListWithOperationsImpl;
+  }) = _DocumentVersionListImpl;
 
-  factory DocumentVersionListWithOperations.fromJson(
-    Map<String, dynamic> jsonSerialization,
-  ) {
-    return DocumentVersionListWithOperations(
-      versions: _i3.Protocol()
-          .deserialize<List<_i2.DocumentVersionWithOperations>>(
-            jsonSerialization['versions'],
-          ),
-      baseData: jsonSerialization['baseData'] as String?,
+  factory DocumentVersionList.fromJson(Map<String, dynamic> jsonSerialization) {
+    return DocumentVersionList(
+      versions: _i3.Protocol().deserialize<List<_i2.DocumentVersion>>(
+        jsonSerialization['versions'],
+      ),
       total: jsonSerialization['total'] as int,
       page: jsonSerialization['page'] as int,
       pageSize: jsonSerialization['pageSize'] as int,
     );
   }
 
-  List<_i2.DocumentVersionWithOperations> versions;
-
-  String? baseData;
+  List<_i2.DocumentVersion> versions;
 
   int total;
 
@@ -57,12 +48,11 @@ abstract class DocumentVersionListWithOperations
 
   int pageSize;
 
-  /// Returns a shallow copy of this [DocumentVersionListWithOperations]
+  /// Returns a shallow copy of this [DocumentVersionList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  DocumentVersionListWithOperations copyWith({
-    List<_i2.DocumentVersionWithOperations>? versions,
-    String? baseData,
+  DocumentVersionList copyWith({
+    List<_i2.DocumentVersion>? versions,
     int? total,
     int? page,
     int? pageSize,
@@ -70,9 +60,8 @@ abstract class DocumentVersionListWithOperations
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'DocumentVersionListWithOperations',
+      '__className__': 'DocumentVersionList',
       'versions': versions.toJson(valueToJson: (v) => v.toJson()),
-      if (baseData != null) 'baseData': baseData,
       'total': total,
       'page': page,
       'pageSize': pageSize,
@@ -85,38 +74,31 @@ abstract class DocumentVersionListWithOperations
   }
 }
 
-class _Undefined {}
-
-class _DocumentVersionListWithOperationsImpl
-    extends DocumentVersionListWithOperations {
-  _DocumentVersionListWithOperationsImpl({
-    required List<_i2.DocumentVersionWithOperations> versions,
-    String? baseData,
+class _DocumentVersionListImpl extends DocumentVersionList {
+  _DocumentVersionListImpl({
+    required List<_i2.DocumentVersion> versions,
     required int total,
     required int page,
     required int pageSize,
   }) : super._(
          versions: versions,
-         baseData: baseData,
          total: total,
          page: page,
          pageSize: pageSize,
        );
 
-  /// Returns a shallow copy of this [DocumentVersionListWithOperations]
+  /// Returns a shallow copy of this [DocumentVersionList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  DocumentVersionListWithOperations copyWith({
-    List<_i2.DocumentVersionWithOperations>? versions,
-    Object? baseData = _Undefined,
+  DocumentVersionList copyWith({
+    List<_i2.DocumentVersion>? versions,
     int? total,
     int? page,
     int? pageSize,
   }) {
-    return DocumentVersionListWithOperations(
+    return DocumentVersionList(
       versions: versions ?? this.versions.map((e0) => e0.copyWith()).toList(),
-      baseData: baseData is String? ? baseData : this.baseData,
       total: total ?? this.total,
       page: page ?? this.page,
       pageSize: pageSize ?? this.pageSize,

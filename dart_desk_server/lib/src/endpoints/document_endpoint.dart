@@ -206,6 +206,18 @@ class DocumentEndpoint extends Endpoint {
       cmsUserId: auth.user?.id,
     );
     session.log('Updated DocumentData id=$documentId', level: LogLevel.info);
+
+    // Only autosave when there were actual field changes.
+    if (doc.crdtHlc != null && session.authenticated != null && updates.isNotEmpty) {
+      final user = await resolveUser(session, clientId: session.clientId);
+      await _upsertAutosaveVersion(
+        session,
+        documentId,
+        doc.crdtHlc!,
+        user.id,
+      );
+    }
+
     return doc;
   }
 
@@ -344,6 +356,9 @@ class DocumentEndpoint extends Endpoint {
     String title,
     String documentType,
   ) async {
+    final auth = await _requireAuth(session);
+    final projectId = auth.projectId;
+
     // Generate base slug from title
     var baseSlug = title
         .toLowerCase()
@@ -363,6 +378,7 @@ class DocumentEndpoint extends Endpoint {
     final existing = await Document.db.findFirstRow(
       session,
       where: (t) =>
+          t.projectId.equals(projectId) &
           t.slug.equals(baseSlug) &
           t.documentType.equals(documentType) &
           t.deletedAt.equals(null),
@@ -377,6 +393,7 @@ class DocumentEndpoint extends Endpoint {
     final similarDocs = await Document.db.find(
       session,
       where: (t) =>
+          t.projectId.equals(projectId) &
           t.slug.like('$baseSlug%') &
           t.documentType.equals(documentType) &
           t.deletedAt.equals(null),
@@ -417,23 +434,83 @@ class DocumentEndpoint extends Endpoint {
   // Document Version Operations
   // ============================================================
 
-  /// Get all versions for a document with pagination
-  /// Optionally includes CRDT operations between adjacent versions
-  Future<DocumentVersionListWithOperations> getDocumentVersions(
+  /// Maintains exactly one current-draft DocumentVersion row per
+  /// (document, author, 5-min bucket). Called from updateDocumentData after
+  /// applyOperations advances the document's crdtHlc.
+  ///
+  /// Bucket-break rules (insert new row when ANY is true):
+  /// 1. No prior version row.
+  /// 2. Latest version status != draft (last action was a publish).
+  /// 3. Latest version createdByUserId != [userId] (author switch).
+  /// 4. More than 5 minutes since latest.createdAt.
+  ///
+  /// No-op autosave (HLC unchanged from latest snapshot) is skipped.
+  Future<void> _upsertAutosaveVersion(
+    Session session,
+    UuidValue documentId,
+    String currentHlc,
+    UuidValue userId,
+  ) async {
+    const bucketWindow = Duration(minutes: 5);
+
+    final latest = await DocumentVersion.db.findFirstRow(
+      session,
+      where: (t) => t.documentId.equals(documentId) & t.deletedAt.equals(null),
+      orderBy: (t) => t.versionNumber,
+      orderDescending: true,
+    );
+
+    if (latest != null && latest.snapshotHlc == currentHlc) {
+      return;
+    }
+
+    final now = DateTime.now();
+    final canExtend = latest != null &&
+        latest.status == DocumentVersionStatus.draft &&
+        latest.createdByUserId == userId &&
+        now.difference(latest.createdAt ?? now) < bucketWindow;
+
+    final opCount =
+        await session.crdtService.getOperationCount(session, documentId);
+
+    if (canExtend) {
+      await DocumentVersion.db.updateRow(
+        session,
+        latest.copyWith(
+          snapshotHlc: currentHlc,
+          operationCount: opCount,
+        ),
+      );
+    } else {
+      final nextVersionNumber = (latest?.versionNumber ?? 0) + 1;
+      await DocumentVersion.db.insertRow(
+        session,
+        DocumentVersion(
+          documentId: documentId,
+          versionNumber: nextVersionNumber,
+          status: DocumentVersionStatus.draft,
+          snapshotHlc: currentHlc,
+          operationCount: opCount,
+          createdAt: now,
+          createdByUserId: userId,
+        ),
+      );
+    }
+  }
+
+  /// Get all non-deleted versions for a document with pagination, ordered by
+  /// versionNumber ascending.
+  Future<DocumentVersionList> getDocumentVersions(
     Session session,
     UuidValue documentId, {
     int limit = 20,
     int offset = 0,
-    bool includeOperations = false,
   }) async {
-    // Get total count
     final total = await DocumentVersion.db.count(
       session,
       where: (t) => t.documentId.equals(documentId) & t.deletedAt.equals(null),
     );
 
-    // Get paginated versions, ordered by version number ascending
-    // (to properly pair adjacent versions for operations)
     final versions = await DocumentVersion.db.find(
       session,
       where: (t) => t.documentId.equals(documentId) & t.deletedAt.equals(null),
@@ -443,75 +520,10 @@ class DocumentEndpoint extends Endpoint {
       offset: offset,
     );
 
-    // Handle pagination edge case: need previous version's HLC for first item
-    String? prevHlcForFirstItem;
-    if (includeOperations && offset > 0 && versions.isNotEmpty) {
-      final prevVersions = await DocumentVersion.db.find(
-        session,
-        where: (t) =>
-            t.documentId.equals(documentId) & t.deletedAt.equals(null),
-        orderBy: (t) => t.versionNumber,
-        orderDescending: false,
-        limit: 1,
-        offset: offset - 1,
-      );
-      prevHlcForFirstItem = prevVersions.firstOrNull?.snapshotHlc;
-    }
-
-    // Get base state for the first version in this page (for reconstruction)
-    String? baseData;
-    if (includeOperations && versions.isNotEmpty) {
-      // Use the HLC BEFORE the first version as the base state
-      final baseHlc = prevHlcForFirstItem;
-
-      if (baseHlc != null) {
-        // Reconstruct state at that point using getStateAtHlc
-        final baseState = await session.crdtService.getStateAtHlc(
-          session,
-          documentId,
-          baseHlc,
-        );
-        baseData = jsonEncode(baseState);
-      }
-      // If baseHlc is null, we're at version 1, so baseState is empty {}
-    }
-
-    // Build versions with operations
-    final versionsWithOps = <DocumentVersionWithOperations>[];
-
-    for (var i = 0; i < versions.length; i++) {
-      final version = versions[i];
-      List<DocumentCrdtOperation> ops = [];
-
-      if (includeOperations && version.snapshotHlc != null) {
-        // Get previous version's HLC
-        String? prevHlc;
-        if (i == 0) {
-          // First item in page: use fetched prev HLC (null for first version)
-          prevHlc = prevHlcForFirstItem;
-        } else {
-          prevHlc = versions[i - 1].snapshotHlc;
-        }
-
-        ops = await session.crdtService.getOperationsBetweenHlc(
-          session,
-          documentId,
-          prevHlc,
-          version.snapshotHlc!,
-        );
-      }
-
-      versionsWithOps.add(DocumentVersionWithOperations(
-        version: version,
-        operationsSincePrevious: ops,
-      ));
-    }
-
-    return DocumentVersionListWithOperations(
-      versions: versionsWithOps,
-      baseData: baseData,
+    return DocumentVersionList(
+      versions: versions,
       total: total,
-      page: (offset ~/ limit) + 1,
+      page: offset ~/ limit,
       pageSize: limit,
     );
   }

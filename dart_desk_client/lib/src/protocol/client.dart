@@ -20,7 +20,7 @@ import 'package:dart_desk_client/src/protocol/document_crdt_operation.dart'
     as _i7;
 import 'package:dart_desk_client/src/protocol/document.dart' as _i8;
 import 'package:dart_desk_client/src/protocol/paginated_documents.dart' as _i9;
-import 'package:dart_desk_client/src/protocol/document_version_list_with_operations.dart'
+import 'package:dart_desk_client/src/protocol/document_version_list.dart'
     as _i10;
 import 'package:dart_desk_client/src/protocol/document_version.dart' as _i11;
 import 'package:dart_desk_client/src/protocol/document_version_status.dart'
@@ -426,21 +426,19 @@ class EndpointDocument extends _i1.EndpointRef {
         {},
       );
 
-  /// Get all versions for a document with pagination
-  /// Optionally includes CRDT operations between adjacent versions
-  _i2.Future<_i10.DocumentVersionListWithOperations> getDocumentVersions(
+  /// Get all non-deleted versions for a document with pagination, ordered by
+  /// versionNumber ascending.
+  _i2.Future<_i10.DocumentVersionList> getDocumentVersions(
     _i1.UuidValue documentId, {
     required int limit,
     required int offset,
-    required bool includeOperations,
-  }) => caller.callServerEndpoint<_i10.DocumentVersionListWithOperations>(
+  }) => caller.callServerEndpoint<_i10.DocumentVersionList>(
     'document',
     'getDocumentVersions',
     {
       'documentId': documentId,
       'limit': limit,
       'offset': offset,
-      'includeOperations': includeOperations,
     },
   );
 

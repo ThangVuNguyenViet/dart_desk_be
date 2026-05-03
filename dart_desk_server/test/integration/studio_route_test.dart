@@ -4,7 +4,7 @@
 // technique used by deployment_upload_route_test.dart) and calls
 // `route.handleCall` directly — no HTTP server is required.
 
-import 'dart:io';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dart_desk_server/src/generated/protocol.dart';
@@ -40,6 +40,27 @@ Request _buildRequest({
 /// Read body bytes from a [Response].
 Future<List<int>> _readBody(Response response) async {
   return response.body.read().expand((b) => b).toList();
+}
+
+/// Seed a deployment bundle into the `public` cloud storage and return the
+/// bundle prefix (the value to set on `Deployment.filePath`).
+///
+/// `StudioRoute` reads bundle assets via `session.storage.retrieveFile`
+/// (S3 in prod, DB-backed in tests) keyed at `<filePath>/<rel>`.
+Future<String> _seedBundle(
+  Session session, {
+  required Map<String, String> files,
+}) async {
+  final prefix = 'deployments/${const Uuid().v4()}';
+  for (final entry in files.entries) {
+    final bytes = Uint8List.fromList(utf8.encode(entry.value));
+    await session.storage.storeFile(
+      storageId: 'public',
+      path: p.posix.join(prefix, entry.key),
+      byteData: ByteData.sublistView(bytes),
+    );
+  }
+  return prefix;
 }
 
 // ---------------------------------------------------------------------------
@@ -79,13 +100,11 @@ void main() {
         ),
       );
 
-      // Create a temporary bundle directory.
-      final tmpDir = Directory.systemTemp.createTempSync('studio_test_');
-      addTearDown(() => tmpDir.deleteSync(recursive: true));
-
       const indexContent = '<html>hello</html>';
-      File(p.join(tmpDir.path, 'index.html'))
-          .writeAsStringSync(indexContent);
+      final bundlePrefix = await _seedBundle(
+        session,
+        files: {'index.html': indexContent},
+      );
 
       final deployment = await Deployment.db.insertRow(
         session,
@@ -93,7 +112,7 @@ void main() {
           projectId: project.id,
           version: 1,
           status: DeploymentStatus.active,
-          filePath: tmpDir.path,
+          filePath: bundlePrefix,
           fileSize: indexContent.length,
           createdAt: DateTime.now().toUtc(),
           updatedAt: DateTime.now().toUtc(),
@@ -139,11 +158,11 @@ void main() {
         ),
       );
 
-      final tmpDir = Directory.systemTemp.createTempSync('studio_js_');
-      addTearDown(() => tmpDir.deleteSync(recursive: true));
-
       const jsContent = 'var x = 1;';
-      File(p.join(tmpDir.path, 'main.dart.js')).writeAsStringSync(jsContent);
+      final bundlePrefix = await _seedBundle(
+        session,
+        files: {'main.dart.js': jsContent},
+      );
 
       final deployment = await Deployment.db.insertRow(
         session,
@@ -151,7 +170,7 @@ void main() {
           projectId: project.id,
           version: 1,
           status: DeploymentStatus.active,
-          filePath: tmpDir.path,
+          filePath: bundlePrefix,
           fileSize: jsContent.length,
           createdAt: DateTime.now().toUtc(),
           updatedAt: DateTime.now().toUtc(),
@@ -194,12 +213,11 @@ void main() {
         ),
       );
 
-      final tmpDir = Directory.systemTemp.createTempSync('studio_spa_');
-      addTearDown(() => tmpDir.deleteSync(recursive: true));
-
       const indexContent = '<html>spa</html>';
-      File(p.join(tmpDir.path, 'index.html'))
-          .writeAsStringSync(indexContent);
+      final bundlePrefix = await _seedBundle(
+        session,
+        files: {'index.html': indexContent},
+      );
 
       final deployment = await Deployment.db.insertRow(
         session,
@@ -207,7 +225,7 @@ void main() {
           projectId: project.id,
           version: 1,
           status: DeploymentStatus.active,
-          filePath: tmpDir.path,
+          filePath: bundlePrefix,
           fileSize: indexContent.length,
           createdAt: DateTime.now().toUtc(),
           updatedAt: DateTime.now().toUtc(),
@@ -248,12 +266,11 @@ void main() {
         ),
       );
 
-      final tmpDir = Directory.systemTemp.createTempSync('studio_deep_spa_');
-      addTearDown(() => tmpDir.deleteSync(recursive: true));
-
       const indexContent = '<html>deep spa</html>';
-      File(p.join(tmpDir.path, 'index.html'))
-          .writeAsStringSync(indexContent);
+      final bundlePrefix = await _seedBundle(
+        session,
+        files: {'index.html': indexContent},
+      );
 
       final deployment = await Deployment.db.insertRow(
         session,
@@ -261,7 +278,7 @@ void main() {
           projectId: project.id,
           version: 1,
           status: DeploymentStatus.active,
-          filePath: tmpDir.path,
+          filePath: bundlePrefix,
           fileSize: indexContent.length,
           createdAt: DateTime.now().toUtc(),
           updatedAt: DateTime.now().toUtc(),
@@ -359,12 +376,11 @@ void main() {
         ),
       );
 
-      final tmpDir = Directory.systemTemp.createTempSync('studio_trav_');
-      addTearDown(() => tmpDir.deleteSync(recursive: true));
-
       const indexContent = '<html>spa</html>';
-      File(p.join(tmpDir.path, 'index.html'))
-          .writeAsStringSync(indexContent);
+      final bundlePrefix = await _seedBundle(
+        session,
+        files: {'index.html': indexContent},
+      );
 
       final deployment = await Deployment.db.insertRow(
         session,
@@ -372,7 +388,7 @@ void main() {
           projectId: project.id,
           version: 1,
           status: DeploymentStatus.active,
-          filePath: tmpDir.path,
+          filePath: bundlePrefix,
           fileSize: indexContent.length,
           createdAt: DateTime.now().toUtc(),
           updatedAt: DateTime.now().toUtc(),
