@@ -10,13 +10,19 @@ import 'routes/studio_route.dart';
 /// registration is testable without booting Serverpod.
 typedef RouteRegistrar = void Function(Route route, String matchPath);
 
+/// Sink for `pod.webServer.fallbackRoute = ...`, indirected for tests.
+typedef FallbackRegistrar = void Function(Route route);
+
 /// Registers every web route on [register] in the same order as production.
 ///
-/// Relic's `PathTrie` throws `Invalid argument(s): Conflicting parameters`
-/// at registration time if two routes share a path. Tests inject a recording
-/// [register] to assert paths are unique without standing up a full pod.
+/// StudioRoute is wired through [setFallback] (not [register]) so it only
+/// fires when no explicit route matches. Registering it at `'/*'` shadows
+/// more-specific POST routes like `/deployment/upload` because Relic's
+/// router matches the wildcard with GET/HEAD methods first and returns
+/// 405 instead of falling through to the specific POST handler.
 void configureWebRoutes(
   RouteRegistrar register, {
+  required FallbackRegistrar setFallback,
   required String studioDomain,
   Directory? publicStorageDir,
   Directory? staticDir,
@@ -27,8 +33,7 @@ void configureWebRoutes(
   if (publicStorageDir != null) {
     register(StaticRoute.directory(publicStorageDir), '/files/*');
   }
-  register(
+  setFallback(
     StudioRoute(domain: studioDomain, staticFallback: staticDir),
-    '/*',
   );
 }
