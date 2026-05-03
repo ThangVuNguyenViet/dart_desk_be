@@ -8,22 +8,22 @@ import '../auth/require_role.dart';
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
 
-/// Endpoint for managing CMS API tokens.
+/// Endpoint for managing CMS API keys.
 /// All methods require Serverpod auth (session.authenticated).
 /// Authorization: caller must be a User belonging to the project's tenant.
-class ApiTokenEndpoint extends Endpoint {
+class ApiKeyEndpoint extends Endpoint {
   static const _maxRetries = 5;
   static const _rolePrefixes = {
     'read': 'cms_r_',
     'write': 'cms_w_',
   };
 
-  /// List all tokens for a project (metadata only, never the hash).
-  Future<List<ApiToken>> getTokens(Session session,
+  /// List all keys for a project (metadata only, never the hash).
+  Future<List<ApiKey>> getKeys(Session session,
       {required UuidValue projectId}) async {
     await _requireAuth(session, projectId: projectId);
 
-    return await ApiToken.db.find(
+    return await ApiKey.db.find(
       session,
       where: (t) => t.projectId.equals(projectId),
       orderBy: (t) => t.createdAt,
@@ -31,8 +31,8 @@ class ApiTokenEndpoint extends Endpoint {
     );
   }
 
-  /// Create a new named token. Returns plaintext token (shown once).
-  Future<ApiTokenWithValue> createToken(
+  /// Create a new named key. Returns plaintext key (shown once).
+  Future<ApiKeyWithValue> createKey(
     Session session,
     String name,
     String role,
@@ -49,12 +49,12 @@ class ApiTokenEndpoint extends Endpoint {
     final prefix = _rolePrefixes[role]!;
 
     for (var attempt = 0; attempt < _maxRetries; attempt++) {
-      final rawToken = _generateToken(prefix);
-      final suffix = rawToken.substring(rawToken.length - 4);
-      final hash = ApiKeyValidator.hashToken(rawToken);
+      final rawKey = _generateKey(prefix);
+      final suffix = rawKey.substring(rawKey.length - 4);
+      final hash = ApiKeyValidator.hashToken(rawKey);
 
       // Check for collision on (projectId, tokenPrefix, tokenSuffix)
-      final existing = await ApiToken.db.findFirstRow(
+      final existing = await ApiKey.db.findFirstRow(
         session,
         where: (t) =>
             t.projectId.equals(auth.projectId) &
@@ -63,7 +63,7 @@ class ApiTokenEndpoint extends Endpoint {
       );
       if (existing != null) continue;
 
-      final token = ApiToken(
+      final key = ApiKey(
         projectId: auth.projectId,
         name: name,
         tokenHash: hash,
@@ -76,106 +76,106 @@ class ApiTokenEndpoint extends Endpoint {
       );
 
       if (expiresAt != null) {
-        token.expiresAt = expiresAt;
+        key.expiresAt = expiresAt;
       }
 
-      final inserted = await ApiToken.db.insertRow(session, token);
-      session.log('Created ApiToken id=${inserted.id} projectId=$projectId role=$role', level: LogLevel.info);
-      return ApiTokenWithValue(token: inserted, plaintextToken: rawToken);
+      final inserted = await ApiKey.db.insertRow(session, key);
+      session.log('Created ApiKey id=${inserted.id} projectId=$projectId role=$role', level: LogLevel.info);
+      return ApiKeyWithValue(apiKey: inserted, plaintextKey: rawKey);
     }
 
-    throw ApiException(message: 'Failed to generate unique token after $_maxRetries attempts', code: 400);
+    throw ApiException(message: 'Failed to generate unique key after $_maxRetries attempts', code: 400);
   }
 
-  /// Update token metadata (name, isActive, expiresAt).
-  Future<ApiToken> updateToken(
+  /// Update key metadata (name, isActive, expiresAt).
+  Future<ApiKey> updateKey(
     Session session,
-    UuidValue tokenId,
+    UuidValue keyId,
     String? name,
     bool? isActive,
     DateTime? expiresAt, {
     required UuidValue projectId,
   }) async {
-    final token = await ApiToken.db.findById(session, tokenId);
-    if (token == null) throw ApiException(message: 'Token not found: $tokenId', code: 404);
+    final key = await ApiKey.db.findById(session, keyId);
+    if (key == null) throw ApiException(message: 'Key not found: $keyId', code: 404);
 
     await _requireAuth(session, projectId: projectId);
-    if (token.projectId != projectId) {
-      throw ApiException(message: 'Token belongs to a different project', code: 403);
+    if (key.projectId != projectId) {
+      throw ApiException(message: 'Key belongs to a different project', code: 403);
     }
 
-    final updated = token.copyWith(
-      name: name ?? token.name,
-      isActive: isActive ?? token.isActive,
-      expiresAt: expiresAt ?? token.expiresAt,
+    final updated = key.copyWith(
+      name: name ?? key.name,
+      isActive: isActive ?? key.isActive,
+      expiresAt: expiresAt ?? key.expiresAt,
     );
 
-    return await ApiToken.db.updateRow(session, updated);
+    return await ApiKey.db.updateRow(session, updated);
   }
 
-  /// Regenerate token value. Returns new plaintext token (shown once).
-  Future<ApiTokenWithValue> regenerateToken(
+  /// Regenerate key value. Returns new plaintext key (shown once).
+  Future<ApiKeyWithValue> regenerateKey(
     Session session,
-    UuidValue tokenId, {
+    UuidValue keyId, {
     required UuidValue projectId,
   }) async {
-    final token = await ApiToken.db.findById(session, tokenId);
-    if (token == null) throw ApiException(message: 'Token not found: $tokenId', code: 404);
+    final key = await ApiKey.db.findById(session, keyId);
+    if (key == null) throw ApiException(message: 'Key not found: $keyId', code: 404);
 
     await _requireAuth(session, projectId: projectId);
     await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles);
-    if (token.projectId != projectId) {
-      throw ApiException(message: 'Token belongs to a different project', code: 403);
+    if (key.projectId != projectId) {
+      throw ApiException(message: 'Key belongs to a different project', code: 403);
     }
 
-    final prefix = _rolePrefixes[token.role]!;
+    final prefix = _rolePrefixes[key.role]!;
 
     for (var attempt = 0; attempt < _maxRetries; attempt++) {
-      final rawToken = _generateToken(prefix);
-      final suffix = rawToken.substring(rawToken.length - 4);
-      final hash = ApiKeyValidator.hashToken(rawToken);
+      final rawKey = _generateKey(prefix);
+      final suffix = rawKey.substring(rawKey.length - 4);
+      final hash = ApiKeyValidator.hashToken(rawKey);
 
       // Check collision (skip self)
-      final existing = await ApiToken.db.findFirstRow(
+      final existing = await ApiKey.db.findFirstRow(
         session,
         where: (t) =>
-            t.projectId.equals(token.projectId) &
+            t.projectId.equals(key.projectId) &
             t.tokenPrefix.equals(prefix) &
             t.tokenSuffix.equals(suffix) &
-            t.id.notEquals(tokenId),
+            t.id.notEquals(keyId),
       );
       if (existing != null) continue;
 
-      final updated = token.copyWith(
+      final updated = key.copyWith(
         tokenHash: hash,
         tokenSuffix: suffix,
       );
 
-      final result = await ApiToken.db.updateRow(session, updated);
-      session.log('Regenerated ApiToken id=$tokenId projectId=$projectId', level: LogLevel.info);
-      return ApiTokenWithValue(token: result, plaintextToken: rawToken);
+      final result = await ApiKey.db.updateRow(session, updated);
+      session.log('Regenerated ApiKey id=$keyId projectId=$projectId', level: LogLevel.info);
+      return ApiKeyWithValue(apiKey: result, plaintextKey: rawKey);
     }
 
-    throw ApiException(message: 'Failed to generate unique token after $_maxRetries attempts', code: 400);
+    throw ApiException(message: 'Failed to generate unique key after $_maxRetries attempts', code: 400);
   }
 
-  /// Delete a token permanently.
-  Future<bool> deleteToken(
+  /// Delete a key permanently.
+  Future<bool> deleteKey(
     Session session,
-    UuidValue tokenId, {
+    UuidValue keyId, {
     required UuidValue projectId,
   }) async {
-    final token = await ApiToken.db.findById(session, tokenId);
-    if (token == null) return false;
+    final key = await ApiKey.db.findById(session, keyId);
+    if (key == null) return false;
 
     await _requireAuth(session, projectId: projectId);
     await RoleGuard.requireRole(session, allowed: RoleGuard.destructiveRoles);
-    if (token.projectId != projectId) {
-      throw ApiException(message: 'Token belongs to a different project', code: 403);
+    if (key.projectId != projectId) {
+      throw ApiException(message: 'Key belongs to a different project', code: 403);
     }
 
-    await ApiToken.db.deleteRow(session, token);
-    session.log('Deleted ApiToken id=$tokenId projectId=$projectId', level: LogLevel.info);
+    await ApiKey.db.deleteRow(session, key);
+    session.log('Deleted ApiKey id=$keyId projectId=$projectId', level: LogLevel.info);
     return true;
   }
 
@@ -197,8 +197,8 @@ class ApiTokenEndpoint extends Endpoint {
     return (user: user, clientId: project.clientId, projectId: projectId);
   }
 
-  /// Generate a crypto-random API token with the given prefix.
-  static String _generateToken(String prefix) {
+  /// Generate a crypto-random API key with the given prefix.
+  static String _generateKey(String prefix) {
     final random = Random.secure();
     final bytes = List<int>.generate(32, (_) => random.nextInt(256));
     final randomPart = base64Url.encode(bytes).replaceAll('=', '');

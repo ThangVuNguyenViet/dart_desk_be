@@ -168,8 +168,8 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
             scopes.add(Scope('project.write'));
           }
           scopes.add(Scope('client:${project.clientId}'));
-          userIdentifier ??= 'api-token:${tokenRow.id}';
-          authId ??= 'api-token:${tokenRow.id}';
+          userIdentifier ??= 'api-key:${tokenRow.id}';
+          authId ??= 'api-key:${tokenRow.id}';
         }
       }
     }

@@ -12,8 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ApiToken implements _i1.SerializableModel {
-  ApiToken._({
+abstract class ApiKey implements _i1.SerializableModel {
+  ApiKey._({
     _i1.UuidValue? id,
     required this.projectId,
     required this.name,
@@ -30,7 +30,7 @@ abstract class ApiToken implements _i1.SerializableModel {
        isActive = isActive ?? true,
        createdAt = createdAt ?? DateTime.now();
 
-  factory ApiToken({
+  factory ApiKey({
     _i1.UuidValue? id,
     required _i1.UuidValue projectId,
     required String name,
@@ -43,10 +43,10 @@ abstract class ApiToken implements _i1.SerializableModel {
     DateTime? expiresAt,
     bool? isActive,
     DateTime? createdAt,
-  }) = _ApiTokenImpl;
+  }) = _ApiKeyImpl;
 
-  factory ApiToken.fromJson(Map<String, dynamic> jsonSerialization) {
-    return ApiToken(
+  factory ApiKey.fromJson(Map<String, dynamic> jsonSerialization) {
+    return ApiKey(
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
@@ -103,10 +103,10 @@ abstract class ApiToken implements _i1.SerializableModel {
 
   DateTime? createdAt;
 
-  /// Returns a shallow copy of this [ApiToken]
+  /// Returns a shallow copy of this [ApiKey]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ApiToken copyWith({
+  ApiKey copyWith({
     _i1.UuidValue? id,
     _i1.UuidValue? projectId,
     String? name,
@@ -123,7 +123,7 @@ abstract class ApiToken implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'ApiToken',
+      '__className__': 'ApiKey',
       'id': id.toJson(),
       'projectId': projectId.toJson(),
       'name': name,
@@ -147,8 +147,8 @@ abstract class ApiToken implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _ApiTokenImpl extends ApiToken {
-  _ApiTokenImpl({
+class _ApiKeyImpl extends ApiKey {
+  _ApiKeyImpl({
     _i1.UuidValue? id,
     required _i1.UuidValue projectId,
     required String name,
@@ -176,11 +176,11 @@ class _ApiTokenImpl extends ApiToken {
          createdAt: createdAt,
        );
 
-  /// Returns a shallow copy of this [ApiToken]
+  /// Returns a shallow copy of this [ApiKey]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ApiToken copyWith({
+  ApiKey copyWith({
     _i1.UuidValue? id,
     _i1.UuidValue? projectId,
     String? name,
@@ -194,7 +194,7 @@ class _ApiTokenImpl extends ApiToken {
     bool? isActive,
     Object? createdAt = _Undefined,
   }) {
-    return ApiToken(
+    return ApiKey(
       id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       name: name ?? this.name,

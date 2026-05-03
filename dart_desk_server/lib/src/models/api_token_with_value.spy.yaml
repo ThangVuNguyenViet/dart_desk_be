@@ -1,4 +1,0 @@
-class: ApiTokenWithValue
-fields:
-  token: ApiToken
-  plaintextToken: String

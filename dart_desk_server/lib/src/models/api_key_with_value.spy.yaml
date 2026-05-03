@@ -1,0 +1,4 @@
+class: ApiKeyWithValue
+fields:
+  apiKey: ApiKey
+  plaintextKey: String

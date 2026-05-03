@@ -1,6 +1,6 @@
-class: PaginatedApiTokens
+class: PaginatedApiKeys
 fields:
-  items: List<ApiToken>
+  items: List<ApiKey>
   total: int
   limit: int
   offset: int

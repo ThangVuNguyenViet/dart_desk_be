@@ -20,7 +20,7 @@ void main() {
     test('validates a created write token', () async {
       final authed = factory.authenticatedSession();
 
-      final tokenResult = await endpoints.apiToken.createToken(
+      final tokenResult = await endpoints.apiKey.createKey(
         authed,
         'Test Write Token',
         'write',
@@ -31,7 +31,7 @@ void main() {
       final session = sessionBuilder.build();
       final context = await ApiKeyValidator.validate(
         session,
-        tokenResult.plaintextToken,
+        tokenResult.plaintextKey,
       );
 
       expect(context, isNotNull);
@@ -42,7 +42,7 @@ void main() {
     test('validates a created read token', () async {
       final authed = factory.authenticatedSession();
 
-      final tokenResult = await endpoints.apiToken.createToken(
+      final tokenResult = await endpoints.apiKey.createKey(
         authed,
         'Test Read Token',
         'read',
@@ -53,7 +53,7 @@ void main() {
       final session = sessionBuilder.build();
       final context = await ApiKeyValidator.validate(
         session,
-        tokenResult.plaintextToken,
+        tokenResult.plaintextKey,
       );
 
       expect(context, isNotNull);
@@ -74,7 +74,7 @@ void main() {
     test('rejects deactivated token', () async {
       final authed = factory.authenticatedSession();
 
-      final tokenResult = await endpoints.apiToken.createToken(
+      final tokenResult = await endpoints.apiKey.createKey(
         authed,
         'Deactivated Token',
         'read',
@@ -82,9 +82,9 @@ void main() {
         projectId: TestDataFactory.testProjectId,
       );
 
-      await endpoints.apiToken.updateToken(
+      await endpoints.apiKey.updateKey(
         authed,
-        tokenResult.token.id,
+        tokenResult.apiKey.id,
         null,
         false,
         null,
@@ -94,7 +94,7 @@ void main() {
       final session = sessionBuilder.build();
       final context = await ApiKeyValidator.validate(
         session,
-        tokenResult.plaintextToken,
+        tokenResult.plaintextKey,
       );
 
       expect(context, isNull);
@@ -104,7 +104,7 @@ void main() {
       final authed = factory.authenticatedSession();
 
       // Create token with expiry in the past
-      final tokenResult = await endpoints.apiToken.createToken(
+      final tokenResult = await endpoints.apiKey.createKey(
         authed,
         'Expired Token',
         'write',
@@ -115,7 +115,7 @@ void main() {
       final session = sessionBuilder.build();
       final context = await ApiKeyValidator.validate(
         session,
-        tokenResult.plaintextToken,
+        tokenResult.plaintextKey,
       );
 
       expect(context, isNull);
