@@ -83,15 +83,16 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
     '/files/*',
   );
 
-  // Serve Flutter web bundles for *.app.dartdesk.dev subdomains.
-  // Must be registered before the catch-all StaticRoute so it gets first dibs.
+  // Serve Flutter web bundles for *.app.dartdesk.dev subdomains, falling back
+  // to the /static directory for non-studio hostnames. Relic doesn't allow
+  // two routes at the same path, so the static fallback is delegated.
   final studioDomain =
       pod.getPassword('studioDomain') ?? 'app.dartdesk.dev';
-  pod.webServer.addRoute(StudioRoute(domain: studioDomain), '/*');
-
-  // Serve all files in the /static directory.
   pod.webServer.addRoute(
-    StaticRoute.directory(Directory('static')),
+    StudioRoute(
+      domain: studioDomain,
+      staticFallback: Directory('static'),
+    ),
     '/*',
   );
 

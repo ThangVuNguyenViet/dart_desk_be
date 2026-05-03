@@ -23,8 +23,9 @@ import 'subdomain_router.dart';
 /// 6. Otherwise → 404.
 class StudioRoute extends Route {
   final String domain;
+  final Directory? staticFallback;
 
-  StudioRoute({required this.domain})
+  StudioRoute({required this.domain, this.staticFallback})
       : super(
           methods: {Method.get, Method.head},
           path: '/*',
@@ -32,17 +33,15 @@ class StudioRoute extends Route {
 
   @override
   FutureOr<Result> handleCall(Session session, Request request) async {
-    // Extract the Host header value as a raw string (host + optional port).
     final hostHeader = request.headers.host;
-    if (hostHeader == null) return _notFound();
+    final rawHost = hostHeader == null
+        ? null
+        : (hostHeader.port != null
+            ? '${hostHeader.host}:${hostHeader.port}'
+            : hostHeader.host);
 
-    // Reconstruct the full host[:port] string for extractSubdomain.
-    final rawHost = hostHeader.port != null
-        ? '${hostHeader.host}:${hostHeader.port}'
-        : hostHeader.host;
-
-    final hostname = extractSubdomain(rawHost, domain);
-    if (hostname == null) return _notFound();
+    final hostname = rawHost == null ? null : extractSubdomain(rawHost, domain);
+    if (hostname == null) return _serveStatic(request);
 
     final project =
         await project_repo.ProjectRepository.findByDeployHostname(session, hostname);
@@ -56,7 +55,7 @@ class StudioRoute extends Route {
     );
     if (active == null) return _notFound();
 
-    final reqPath = request.url.path; // e.g. "/main.dart.js" or "/"
+    final reqPath = request.url.path;
     final safePath = _safeRelative(reqPath);
     if (safePath == null) return _notFound();
 
@@ -65,9 +64,6 @@ class StudioRoute extends Route {
       return _bodyResponse(body, _mimeTypeFor(safePath));
     }
 
-    // SPA fallback: for extension-free paths (likely a client-side route).
-    // Any extensionless path that wasn't found as a file should fall back
-    // to index.html.
     if (!_looksLikeAsset(safePath)) {
       final fallback = await _readAsset(active.filePath, 'index.html');
       if (fallback != null) {
@@ -75,6 +71,16 @@ class StudioRoute extends Route {
       }
     }
 
+    return _notFound();
+  }
+
+  Future<Result> _serveStatic(Request request) async {
+    final dir = staticFallback;
+    if (dir == null) return _notFound();
+    final safePath = _safeRelative(request.url.path);
+    if (safePath == null) return _notFound();
+    final body = await _readAsset(dir.path, safePath);
+    if (body != null) return _bodyResponse(body, _mimeTypeFor(safePath));
     return _notFound();
   }
 
