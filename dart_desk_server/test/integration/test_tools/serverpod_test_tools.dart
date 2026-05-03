@@ -24,7 +24,7 @@ import 'package:dart_desk_server/src/generated/document_crdt_operation.dart'
 import 'package:dart_desk_server/src/generated/document.dart' as _i9;
 import 'package:dart_desk_server/src/generated/paginated_documents.dart'
     as _i10;
-import 'package:dart_desk_server/src/generated/document_version_list_with_operations.dart'
+import 'package:dart_desk_server/src/generated/document_version_list.dart'
     as _i11;
 import 'package:dart_desk_server/src/generated/document_version.dart' as _i12;
 import 'package:dart_desk_server/src/generated/document_version_status.dart'
@@ -1231,12 +1231,11 @@ class _DocumentEndpoint {
     });
   }
 
-  _i3.Future<_i11.DocumentVersionListWithOperations> getDocumentVersions(
+  _i3.Future<_i11.DocumentVersionList> getDocumentVersions(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue documentId, {
     required int limit,
     required int offset,
-    required bool includeOperations,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1253,7 +1252,6 @@ class _DocumentEndpoint {
             'documentId': documentId,
             'limit': limit,
             'offset': offset,
-            'includeOperations': includeOperations,
           }),
           serializationManager: _serializationManager,
         );
@@ -1262,7 +1260,7 @@ class _DocumentEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i11.DocumentVersionListWithOperations>);
+                as _i3.Future<_i11.DocumentVersionList>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

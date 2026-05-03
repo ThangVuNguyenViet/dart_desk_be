@@ -1,0 +1,6 @@
+class: DocumentVersionList
+fields:
+  versions: List<DocumentVersion>
+  total: int
+  page: int
+  pageSize: int

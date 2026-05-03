@@ -39,14 +39,13 @@ void main() {
           doc.id,
           limit: 100,
           offset: 0,
-          includeOperations: false,
         );
         expect(result.versions, hasLength(1));
         expect(
-          result.versions.first.version.status,
+          result.versions.first.status,
           DocumentVersionStatus.draft,
         );
-        final v1Hlc = result.versions.first.version.snapshotHlc;
+        final v1Hlc = result.versions.first.snapshotHlc;
 
         // Edit -> should extend v1 bucket, not insert a new row.
         await endpoints.document.updateDocumentData(
@@ -60,17 +59,16 @@ void main() {
           doc.id,
           limit: 100,
           offset: 0,
-          includeOperations: false,
         );
         expect(result.versions, hasLength(1),
             reason: 'edit within bucket should extend, not insert');
-        expect(result.versions.first.version.versionNumber, 1);
+        expect(result.versions.first.versionNumber, 1);
         expect(
-          result.versions.first.version.status,
+          result.versions.first.status,
           DocumentVersionStatus.draft,
         );
         expect(
-          result.versions.first.version.snapshotHlc,
+          result.versions.first.snapshotHlc,
           isNot(equals(v1Hlc)),
           reason: 'snapshotHlc should advance',
         );
@@ -101,18 +99,16 @@ void main() {
         doc.id,
         limit: 100,
         offset: 0,
-        includeOperations: false,
       );
 
-      final statuses =
-          result.versions.map((v) => v.version.status).toList();
+      final statuses = result.versions.map((v) => v.status).toList();
       // Expect: v1 draft, v2 published, v3 draft.
       expect(statuses, [
         DocumentVersionStatus.draft,
         DocumentVersionStatus.published,
         DocumentVersionStatus.draft,
       ]);
-      expect(result.versions.last.version.versionNumber, 3);
+      expect(result.versions.last.versionNumber, 3);
     });
 
     test('author switch inserts a new draft (Z rule)', () async {
@@ -160,21 +156,20 @@ void main() {
         doc.id,
         limit: 100,
         offset: 0,
-        includeOperations: false,
       );
 
       expect(result.versions, hasLength(2),
           reason: 'author switch breaks the bucket');
       expect(
-        result.versions[0].version.createdByUserId,
+        result.versions[0].createdByUserId,
         aliceUser.id,
       );
       expect(
-        result.versions[1].version.createdByUserId,
+        result.versions[1].createdByUserId,
         bobUser.id,
       );
       expect(
-        result.versions[1].version.status,
+        result.versions[1].status,
         DocumentVersionStatus.draft,
       );
     });
@@ -195,11 +190,9 @@ void main() {
         doc.id,
         limit: 100,
         offset: 0,
-        includeOperations: false,
       ))
           .versions
-          .first
-          .version;
+          .first;
 
       // Empty update — no CRDT ops applied, HLC unchanged.
       await endpoints.document.updateDocumentData(
@@ -213,11 +206,10 @@ void main() {
         doc.id,
         limit: 100,
         offset: 0,
-        includeOperations: false,
       );
 
       expect(after.versions, hasLength(1));
-      expect(after.versions.first.version.snapshotHlc, before.snapshotHlc);
+      expect(after.versions.first.snapshotHlc, before.snapshotHlc);
     });
   });
 }

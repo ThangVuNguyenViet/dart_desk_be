@@ -1,4 +1,0 @@
-class: DocumentVersionWithOperations
-fields:
-  version: DocumentVersion
-  operationsSincePrevious: List<DocumentCrdtOperation>

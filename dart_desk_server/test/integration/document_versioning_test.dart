@@ -79,14 +79,13 @@ void main() {
           doc.id,
           limit: 100,
           offset: 0,
-          includeOperations: false,
         );
 
         expect(result.versions.length, equals(4));
         // Ascending order: v1, v2, v3, v4
         expect(
-          result.versions.first.version.versionNumber,
-          lessThan(result.versions.last.version.versionNumber),
+          result.versions.first.versionNumber,
+          lessThan(result.versions.last.versionNumber),
         );
       });
 
@@ -101,7 +100,6 @@ void main() {
           doc.id,
           limit: 2,
           offset: 0,
-          includeOperations: false,
         );
 
         expect(page1.versions.length, equals(2));
