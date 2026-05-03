@@ -79,14 +79,13 @@ void main() {
           doc.id,
           limit: 100,
           offset: 0,
-          includeOperations: false,
         );
 
         expect(result.versions.length, equals(4));
         // Ascending order: v1, v2, v3, v4
         expect(
-          result.versions.first.version.versionNumber,
-          lessThan(result.versions.last.version.versionNumber),
+          result.versions.first.versionNumber,
+          lessThan(result.versions.last.versionNumber),
         );
       });
 
@@ -101,7 +100,6 @@ void main() {
           doc.id,
           limit: 2,
           offset: 0,
-          includeOperations: false,
         );
 
         expect(page1.versions.length, equals(2));
@@ -117,20 +115,23 @@ void main() {
         );
         final authed = factory.authenticatedSession();
 
-        // Create version at v1
-        final v1 = await factory.createTestVersion(doc.id);
+        // Publish v1 — creates an immutable published row at the current HLC.
+        // Published rows are never extended by _upsertAutosaveVersion, so
+        // v1's snapshotHlc is guaranteed to remain at the 'v1' HLC.
+        final publishedV1 =
+            await endpoints.document.publishCurrentVersion(authed, doc.id);
 
-        // Update data to v2
+        // Update data to v2 — autosave creates a new draft row.
         await endpoints.document.updateDocumentData(
           authed,
           doc.id,
           jsonEncode({'content': 'v2'}),
         );
 
-        // Retrieve v1 snapshot data — should still be v1
+        // Retrieve the published v1 snapshot data — should still be 'v1'.
         final v1Data = await endpoints.document.getDocumentVersionData(
           sessionBuilder,
-          v1.id,
+          publishedV1.id,
         );
         final v1Json = jsonDecode(v1Data!) as Map<String, dynamic>;
 

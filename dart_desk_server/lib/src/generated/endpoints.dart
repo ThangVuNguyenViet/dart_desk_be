@@ -884,11 +884,6 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<int>(),
               nullable: false,
             ),
-            'includeOperations': _i1.ParameterDescription(
-              name: 'includeOperations',
-              type: _i1.getType<bool>(),
-              nullable: false,
-            ),
           },
           call:
               (
@@ -900,7 +895,6 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['documentId'],
                     limit: params['limit'],
                     offset: params['offset'],
-                    includeOperations: params['includeOperations'],
                   ),
         ),
         'getDocumentVersion': _i1.MethodConnector(
