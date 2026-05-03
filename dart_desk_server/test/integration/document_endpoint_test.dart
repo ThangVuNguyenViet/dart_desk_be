@@ -281,8 +281,9 @@ void main() {
 
     group('suggestSlug', () {
       test('generates slug from title', () async {
+        final authed = factory.authenticatedSession();
         final slug = await endpoints.document.suggestSlug(
-          sessionBuilder,
+          authed,
           'My Amazing Blog Post',
           'blog',
         );
@@ -297,14 +298,66 @@ void main() {
           documentType: 'slug_test',
         );
 
+        final authed = factory.authenticatedSession();
         final slug = await endpoints.document.suggestSlug(
-          sessionBuilder,
+          authed,
           'Duplicate',
           'slug_test',
         );
 
         // Should append a suffix to avoid collision
         expect(slug, isNot(equals('duplicate')));
+      });
+
+      test('ignores documents from other projects', () async {
+        // Create a doc with slug "main" of type "cross_project_type"
+        // in a different project, via direct DB insert.
+        final otherProjectId =
+            UuidValue.fromString('00000000-0000-4000-8000-0000000000aa');
+        await factory.ensureTestProject(
+          projectId: otherProjectId,
+          slug: 'other-project',
+          name: 'Other Project',
+        );
+        final session = sessionBuilder.build();
+        await Document.db.insertRow(
+          session,
+          Document(
+            projectId: otherProjectId,
+            documentType: 'cross_project_type',
+            title: 'Main',
+            slug: 'main',
+            isDefault: false,
+          ),
+        );
+
+        // Caller in the default test project should still get "main",
+        // because the slug is free in their own project.
+        final authed = factory.authenticatedSession();
+        final slug = await endpoints.document.suggestSlug(
+          authed,
+          'Main',
+          'cross_project_type',
+        );
+
+        expect(slug, equals('main'));
+      });
+
+      test('suffixes when slug exists in same project and type', () async {
+        await factory.createTestDocument(
+          title: 'Main',
+          slug: 'main',
+          documentType: 'same_project_type',
+        );
+
+        final authed = factory.authenticatedSession();
+        final slug = await endpoints.document.suggestSlug(
+          authed,
+          'Main',
+          'same_project_type',
+        );
+
+        expect(slug, equals('main-2'));
       });
     });
 
