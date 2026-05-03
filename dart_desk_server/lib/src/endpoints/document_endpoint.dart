@@ -344,6 +344,9 @@ class DocumentEndpoint extends Endpoint {
     String title,
     String documentType,
   ) async {
+    final auth = await _requireAuth(session);
+    final projectId = auth.projectId;
+
     // Generate base slug from title
     var baseSlug = title
         .toLowerCase()
@@ -363,6 +366,7 @@ class DocumentEndpoint extends Endpoint {
     final existing = await Document.db.findFirstRow(
       session,
       where: (t) =>
+          t.projectId.equals(projectId) &
           t.slug.equals(baseSlug) &
           t.documentType.equals(documentType) &
           t.deletedAt.equals(null),
@@ -377,6 +381,7 @@ class DocumentEndpoint extends Endpoint {
     final similarDocs = await Document.db.find(
       session,
       where: (t) =>
+          t.projectId.equals(projectId) &
           t.slug.like('$baseSlug%') &
           t.documentType.equals(documentType) &
           t.deletedAt.equals(null),
