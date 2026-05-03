@@ -12,18 +12,22 @@ import 'subdomain_router.dart';
 
 /// Serves Flutter web bundles for `*.<domain>` hostnames.
 ///
-/// Route: `/*` (GET / HEAD).
+/// Route: registered as the WebServer fallback (GET / HEAD).
 ///
 /// Resolution order:
-/// 1. Extract subdomain label from `Host` header. If none → 404.
+/// 1. Extract subdomain label from `Host` header. If none → serve from
+///    [staticFallback] if provided, otherwise 404.
 /// 2. Look up `Project` by `deployHostname`. If none → 404.
 /// 3. Find active `Deployment` for that project. If none → 404.
-/// 4. Serve the requested file from `deployment.filePath/<path>`.
+/// 4. Read the requested file from `<deployment.filePath>/<path>` in the
+///    `public` cloud storage bucket (S3 in prod, local in dev).
 /// 5. For paths with no extension (SPA routes), fall back to `index.html`.
 /// 6. Otherwise → 404.
 class StudioRoute extends Route {
   final String domain;
   final Directory? staticFallback;
+
+  static const _storageId = 'public';
 
   StudioRoute({required this.domain, this.staticFallback})
       : super(methods: {Method.get, Method.head});
@@ -47,7 +51,7 @@ class StudioRoute extends Route {
     final active = await Deployment.db.findFirstRow(
       session,
       where: (t) =>
-          t.projectId.equals(project.id!) &
+          t.projectId.equals(project.id) &
           t.status.equals(DeploymentStatus.active),
     );
     if (active == null) return _notFound();
@@ -56,13 +60,13 @@ class StudioRoute extends Route {
     final safePath = _safeRelative(reqPath);
     if (safePath == null) return _notFound();
 
-    final body = await _readAsset(active.filePath, safePath);
+    final body = await _readBundleAsset(session, active.filePath, safePath);
     if (body != null) {
       return _bodyResponse(body, _mimeTypeFor(safePath));
     }
 
     if (!_looksLikeAsset(safePath)) {
-      final fallback = await _readAsset(active.filePath, 'index.html');
+      final fallback = await _readBundleAsset(session, active.filePath, 'index.html');
       if (fallback != null) {
         return _bodyResponse(fallback, MimeType.html);
       }
@@ -76,9 +80,10 @@ class StudioRoute extends Route {
     if (dir == null) return _notFound();
     final safePath = _safeRelative(request.url.path);
     if (safePath == null) return _notFound();
-    final body = await _readAsset(dir.path, safePath);
-    if (body != null) return _bodyResponse(body, _mimeTypeFor(safePath));
-    return _notFound();
+    final file = File(p.join(dir.path, safePath));
+    if (!await file.exists()) return _notFound();
+    final body = await file.readAsBytes();
+    return _bodyResponse(body, _mimeTypeFor(safePath));
   }
 
   // ---------------------------------------------------------------------------
@@ -89,15 +94,28 @@ class StudioRoute extends Route {
   String? _safeRelative(String reqPath) {
     var rel = reqPath.startsWith('/') ? reqPath.substring(1) : reqPath;
     if (rel.isEmpty) rel = 'index.html';
-    final normalized = p.normalize(rel);
-    if (normalized.startsWith('..') || p.isAbsolute(normalized)) return null;
+    final normalized = p.posix.normalize(rel);
+    if (normalized.startsWith('..') || normalized.startsWith('/')) return null;
     return normalized;
   }
 
-  Future<List<int>?> _readAsset(String bundleDir, String relPath) async {
-    final file = File(p.join(bundleDir, relPath));
-    if (!await file.exists()) return null;
-    return file.readAsBytes();
+  Future<List<int>?> _readBundleAsset(
+    Session session,
+    String bundlePrefix,
+    String relPath,
+  ) async {
+    if (bundlePrefix.isEmpty) return null;
+    final storagePath = p.posix.join(bundlePrefix, relPath);
+    try {
+      final data = await session.storage.retrieveFile(
+        storageId: _storageId,
+        path: storagePath,
+      );
+      if (data == null) return null;
+      return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    } catch (_) {
+      return null;
+    }
   }
 
   bool _looksLikeAsset(String path) => p.extension(path).isNotEmpty;
