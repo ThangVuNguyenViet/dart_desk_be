@@ -1,15 +1,17 @@
 import 'dart:io';
 
 import 'package:dart_desk_server/src/web/configure_web_routes.dart';
+import 'package:dart_desk_server/src/web/routes/studio_route.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('configureWebRoutes', () {
-    test('Fix 2: registration runs without throwing', () {
+    test('registration runs without throwing', () {
       expect(
         () => configureWebRoutes(
           (_, __) {},
+          setFallback: (_) {},
           studioDomain: 'app.dartdesk.dev',
           publicStorageDir: Directory.systemTemp.createTempSync(),
         ),
@@ -17,40 +19,51 @@ void main() {
       );
     });
 
-    test('Fix 3: no two web routes share the same path', () {
-      // The bug: Relic's PathTrie throws `Invalid argument(s): Conflicting
-      // parameters` when two routes register at the same path. Asserting
-      // unique paths catches that class of mistake without booting Relic.
+    test('no two web routes share the same path', () {
+      // Relic throws `Invalid argument(s): Conflicting parameters` when two
+      // routes register at the same path. Asserting unique paths catches that.
       final paths = <String>[];
       configureWebRoutes(
         (route, path) => paths.add(path),
+        setFallback: (_) {},
         studioDomain: 'app.dartdesk.dev',
         publicStorageDir: Directory.systemTemp.createTempSync(),
       );
 
-      final duplicates = paths.toList()
-        ..sort()
-        ..removeWhere((p) {
-          final first = paths.indexOf(p);
-          final last = paths.lastIndexOf(p);
-          return first == last;
-        });
+      expect(paths.toSet().length, paths.length,
+          reason: 'duplicate paths: $paths');
+    });
 
+    test('StudioRoute is wired through fallbackRoute, not addRoute', () {
+      // Registering StudioRoute at '/*' shadows specific POST routes
+      // (Relic returns 405 with `Allow: GET, HEAD`). Using fallbackRoute
+      // ensures specific routes win and StudioRoute only fires when
+      // nothing else matches.
+      final addPaths = <String>[];
+      Route? fallback;
+      configureWebRoutes(
+        (_, path) => addPaths.add(path),
+        setFallback: (r) => fallback = r,
+        studioDomain: 'app.dartdesk.dev',
+      );
+
+      expect(fallback, isA<StudioRoute>());
       expect(
-        paths.toSet().length,
-        paths.length,
-        reason: 'duplicate web route paths registered: $duplicates',
+        addPaths,
+        isNot(contains('/*')),
+        reason: 'StudioRoute must NOT be registered as a wildcard route — '
+            'use fallbackRoute instead. See git log for context.',
       );
     });
 
-    test('every registered handler is a Route', () {
-      final routes = <Route>[];
+    test('DeploymentUploadRoute is registered explicitly', () {
+      final paths = <String>[];
       configureWebRoutes(
-        (route, _) => routes.add(route),
+        (_, path) => paths.add(path),
+        setFallback: (_) {},
         studioDomain: 'app.dartdesk.dev',
       );
-      expect(routes, isNotEmpty);
-      expect(routes, everyElement(isA<Route>()));
+      expect(paths, contains('/deployment/upload'));
     });
   });
 }

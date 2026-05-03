@@ -26,10 +26,7 @@ class StudioRoute extends Route {
   final Directory? staticFallback;
 
   StudioRoute({required this.domain, this.staticFallback})
-      : super(
-          methods: {Method.get, Method.head},
-          path: '/*',
-        );
+      : super(methods: {Method.get, Method.head});
 
   @override
   FutureOr<Result> handleCall(Session session, Request request) async {
