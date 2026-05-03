@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dart_desk_server/src/web/configure_web_routes.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
@@ -9,6 +11,7 @@ void main() {
         () => configureWebRoutes(
           (_, __) {},
           studioDomain: 'app.dartdesk.dev',
+          publicStorageDir: Directory.systemTemp.createTempSync(),
         ),
         returnsNormally,
       );
@@ -22,6 +25,7 @@ void main() {
       configureWebRoutes(
         (route, path) => paths.add(path),
         studioDomain: 'app.dartdesk.dev',
+        publicStorageDir: Directory.systemTemp.createTempSync(),
       );
 
       final duplicates = paths.toList()

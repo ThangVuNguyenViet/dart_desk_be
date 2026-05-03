@@ -18,12 +18,15 @@ typedef RouteRegistrar = void Function(Route route, String matchPath);
 void configureWebRoutes(
   RouteRegistrar register, {
   required String studioDomain,
+  Directory? publicStorageDir,
   Directory? staticDir,
 }) {
   register(RouteRoot(), '/');
   register(RouteRoot(), '/index.html');
   register(DeploymentUploadRoute(), '/deployment/upload');
-  register(StaticRoute.directory(Directory('storage/public')), '/files/*');
+  if (publicStorageDir != null) {
+    register(StaticRoute.directory(publicStorageDir), '/files/*');
+  }
   register(
     StudioRoute(domain: studioDomain, staticFallback: staticDir),
     '/*',

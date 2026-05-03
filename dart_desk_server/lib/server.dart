@@ -68,6 +68,7 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   configureWebRoutes(
     pod.webServer.addRoute,
     studioDomain: pod.getPassword('studioDomain') ?? 'app.dartdesk.dev',
+    publicStorageDir: Directory('storage/public'),
     staticDir: Directory('static'),
   );
 
