@@ -14,12 +14,6 @@ class _FakeEndpoint implements S3EndpointConfig {
   @override
   Uri buildBucketUri(String bucket, String region) => _origin;
 
-  @override
-  Uri buildObjectUri(String bucket, String region, String path) =>
-      _origin.replace(path: '/$path');
-
-  @override
-  Uri? get publicHost => null;
 
   @override
   bool get supportsObjectAcl => false;
