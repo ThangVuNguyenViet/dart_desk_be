@@ -589,13 +589,31 @@ void main() {
         expect(result.isDefault, isTrue);
       });
 
-      test('throws when no default exists', () async {
+      test('falls back to most recently published when no default exists',
+          () async {
         await createPublishedDocument(
           documentType: 'blog',
-          title: 'Not Default',
-          slug: 'not-default',
+          title: 'Older',
+          slug: 'older',
+        );
+        // Small delay to ensure distinct publishedAt timestamps.
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+        await createPublishedDocument(
+          documentType: 'blog',
+          title: 'Newer',
+          slug: 'newer',
         );
 
+        final result = await endpoints.publicContent.getDefaultContent(
+          factory.authenticatedSession(),
+          'blog',
+        );
+
+        expect(result.title, equals('Newer'));
+        expect(result.isDefault, isFalse);
+      });
+
+      test('throws when no published document exists for the type', () async {
         await expectLater(
           () => endpoints.publicContent.getDefaultContent(
             factory.authenticatedSession(),
