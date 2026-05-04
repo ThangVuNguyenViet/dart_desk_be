@@ -27,7 +27,7 @@ class ContentTypeMultipartPostStrategy extends MultipartPostUploadStrategy {
     required String region,
     required ByteData data,
     required String path,
-    required bool public,
+    bool public = false,
     required S3EndpointConfig endpoints,
     bool preventOverwrite = false,
   }) async {
@@ -38,8 +38,6 @@ class ContentTypeMultipartPostStrategy extends MultipartPostUploadStrategy {
     final uploadUri = endpoints.buildBucketUri(bucket, region);
     final length = data.lengthInBytes;
     final stream = http.ByteStream.fromBytes(Uint8List.sublistView(data));
-
-    final supportsAcl = endpoints.supportsObjectAcl;
 
     // Build policy by hand: upstream Policy.toString() builds a fixed
     // condition list and is not extension-friendly. Mirror its structure
@@ -59,8 +57,6 @@ class ContentTypeMultipartPostStrategy extends MultipartPostUploadStrategy {
     final conditions = <String>[
       '{"bucket": "$bucket"}',
       '["starts-with", "\$key", "$path"]',
-      if (supportsAcl)
-        '{"acl": "${public ? 'public-read' : 'private'}"}',
       '["content-length-range", 1, $length]',
       '{"Content-Type": "$contentType"}',
       '{"x-amz-credential": "$credential"}',
@@ -91,9 +87,6 @@ class ContentTypeMultipartPostStrategy extends MultipartPostUploadStrategy {
       ),
     );
     req.fields['key'] = path;
-    if (supportsAcl) {
-      req.fields['acl'] = public ? 'public-read' : 'private';
-    }
     req.fields['Content-Type'] = contentType;
     req.fields['X-Amz-Credential'] = credential;
     req.fields['X-Amz-Algorithm'] = 'AWS4-HMAC-SHA256';
