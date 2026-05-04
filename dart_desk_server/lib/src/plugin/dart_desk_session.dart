@@ -1,7 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../services/document_crdt_service.dart';
-import '../services/image_storage_provider.dart';
 import 'dart_desk_registry.dart';
 
 /// Extension on [Session] for accessing plugin-provided services.
@@ -26,10 +25,6 @@ extension DartDeskSession on Session {
     }
     return _registry!;
   }
-
-  /// Get an [ImageStorageProvider] for this session.
-  ImageStorageProvider get imageStorage =>
-      DartDeskSession.registry.createImageStorage(this);
 
   /// Get the [DocumentCrdtService] instance.
   DocumentCrdtService get crdtService =>

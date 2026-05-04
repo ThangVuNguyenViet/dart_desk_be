@@ -8,7 +8,6 @@ import 'package:serverpod/serverpod.dart';
 import '../auth/dart_desk_session.dart';
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
-import '../plugin/dart_desk_session.dart';
 import '../services/image_metadata.dart';
 
 /// Allowed image MIME types for upload validation.
@@ -111,9 +110,16 @@ class MediaEndpoint extends Endpoint {
     if (existing != null) return existing;
 
     final slugged = slugifyFilename(fileName);
-    final provider = session.imageStorage;
-    final publicUrl = await provider.store(assetId, slugged, bytes, mimeType);
     final storagePath = 'media/$assetId/$slugged';
+    await session.storage.storeFile(
+      storageId: 'public',
+      path: storagePath,
+      byteData: ByteData.sublistView(bytes),
+    );
+    final publicUrl = (await session.storage.getPublicUrl(
+      storageId: 'public',
+      path: storagePath,
+    )).toString();
 
     final asset = MediaAsset(
       projectId: auth.projectId!,
@@ -187,9 +193,16 @@ class MediaEndpoint extends Endpoint {
     }
 
     // Store file
-    final provider = session.imageStorage;
-    final publicUrl = await provider.store(assetId, fileName, bytes, mimeType);
     final storagePath = 'media/$assetId/$fileName';
+    await session.storage.storeFile(
+      storageId: 'public',
+      path: storagePath,
+      byteData: ByteData.sublistView(bytes),
+    );
+    final publicUrl = (await session.storage.getPublicUrl(
+      storageId: 'public',
+      path: storagePath,
+    )).toString();
 
     // Create DB record
     final asset = MediaAsset(
@@ -247,8 +260,10 @@ class MediaEndpoint extends Endpoint {
     }
 
     // Delete from storage
-    final provider = session.imageStorage;
-    await provider.delete(asset.storagePath);
+    await session.storage.deleteFile(
+      storageId: 'public',
+      path: asset.storagePath,
+    );
 
     // Delete DB record
     await MediaAsset.db.deleteRow(session, asset);
