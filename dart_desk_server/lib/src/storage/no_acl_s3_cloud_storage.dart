@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
+import 'content_type_multipart_strategy.dart';
 
 /// AWS endpoint config that disables per-object ACLs.
 ///
@@ -43,7 +44,7 @@ class NoAclS3CloudStorage extends S3CompatCloudStorage {
            publicHost:
                publicHost != null ? Uri.parse('https://$publicHost') : null,
          ),
-         uploadStrategy: MultipartPostUploadStrategy(),
+         uploadStrategy: ContentTypeMultipartPostStrategy(),
        );
 
   static String _loadAccessKey(Serverpod serverpod) {
