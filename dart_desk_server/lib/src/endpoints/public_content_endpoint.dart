@@ -32,6 +32,8 @@ class PublicContentEndpoint extends Endpoint {
   }
 
   /// Returns the default published document for each document type.
+  /// If no document of a given type is flagged as default, falls back to the
+  /// most recently published document of that type.
   Future<Map<String, PublicDocument>> getDefaultContents(
     Session session,
   ) async {
@@ -40,14 +42,23 @@ class PublicContentEndpoint extends Endpoint {
     final docs = await PublishedDocument.db.find(
       session,
       where: (t) =>
-          t.projectId.equals(projectId) &
-          t.isDefault.equals(true) &
-          t.deletedAt.equals(null),
+          t.projectId.equals(projectId) & t.deletedAt.equals(null),
+      orderBy: (t) => t.publishedAt.desc(),
     );
 
-    final result = <String, PublicDocument>{};
+    final picked = <String, PublishedDocument>{};
     for (final doc in docs) {
-      result[doc.documentType] = await _toPublicDocument(session, doc);
+      final current = picked[doc.documentType];
+      if (current == null) {
+        picked[doc.documentType] = doc;
+      } else if (!current.isDefault && doc.isDefault) {
+        picked[doc.documentType] = doc;
+      }
+    }
+
+    final result = <String, PublicDocument>{};
+    for (final entry in picked.entries) {
+      result[entry.key] = await _toPublicDocument(session, entry.value);
     }
     return result;
   }
@@ -77,22 +88,22 @@ class PublicContentEndpoint extends Endpoint {
   ) async {
     final projectId = _requireReadAccess(session);
 
-    final doc = await PublishedDocument.db.findFirstRow(
+    final docs = await PublishedDocument.db.find(
       session,
       where: (t) =>
           t.projectId.equals(projectId) &
           t.documentType.equals(documentType) &
-          t.isDefault.equals(true) &
           t.deletedAt.equals(null),
+      orderBy: (t) => t.publishedAt.desc(),
     );
 
-    if (doc == null) {
+    if (docs.isEmpty) {
       throw ApiException(
-          message:
-              'No default published document found for type "$documentType".',
+          message: 'No published document found for type "$documentType".',
           code: 404);
     }
 
+    final doc = docs.firstWhere((d) => d.isDefault, orElse: () => docs.first);
     return _toPublicDocument(session, doc);
   }
 
