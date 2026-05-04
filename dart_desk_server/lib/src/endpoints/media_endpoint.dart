@@ -8,7 +8,6 @@ import 'package:serverpod/serverpod.dart';
 import '../auth/dart_desk_session.dart';
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
-import '../plugin/dart_desk_session.dart';
 import '../services/image_metadata.dart';
 
 /// Allowed image MIME types for upload validation.
