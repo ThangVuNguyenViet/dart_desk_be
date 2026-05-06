@@ -1,12 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 
-import '../../db/repositories/project_repository.dart'
-    as project_repo;
+import '../../db/repositories/project_repository.dart' as project_repo;
 import '../../generated/protocol.dart';
 import 'subdomain_router.dart';
 
@@ -44,8 +45,8 @@ class StudioRoute extends Route {
     final hostname = rawHost == null ? null : extractSubdomain(rawHost, domain);
     if (hostname == null) return _serveStatic(request);
 
-    final project =
-        await project_repo.ProjectRepository.findByDeployHostname(session, hostname);
+    final project = await project_repo.ProjectRepository.findByDeployHostname(
+        session, hostname);
     if (project == null) return _notFound();
 
     final active = await Deployment.db.findFirstRow(
@@ -60,15 +61,46 @@ class StudioRoute extends Route {
     final safePath = _safeRelative(reqPath);
     if (safePath == null) return _notFound();
 
-    final body = await _readBundleAsset(session, active.filePath, safePath);
-    if (body != null) {
-      return _bodyResponse(body, _mimeTypeFor(safePath));
+    final isAsset = _looksLikeAsset(safePath);
+    final etagRelPath = isAsset ? safePath : 'index.html';
+    final etag = _etagFor(active.id.toString(), etagRelPath);
+    final cacheControl = _cacheControlFor(safePath);
+
+    final ifNoneMatch = request.headers['if-none-match'];
+    if (ifNoneMatch != null) {
+      for (final v in ifNoneMatch) {
+        final trimmed = v.trim();
+        if (trimmed == etag || trimmed == 'W/$etag' || trimmed == '*') {
+          final headers = Headers.build((h) {
+            h['cache-control'] = [cacheControl];
+            h['etag'] = [etag];
+          });
+          return Response.notModified(headers: headers);
+        }
+      }
     }
 
-    if (!_looksLikeAsset(safePath)) {
-      final fallback = await _readBundleAsset(session, active.filePath, 'index.html');
+    final body = await _readBundleAsset(session, active.filePath, safePath);
+    if (body != null) {
+      final headers = Headers.build((h) {
+        h['cache-control'] = [cacheControl];
+        h['etag'] = [etag];
+      });
+      return _bodyResponse(body, _mimeTypeFor(safePath), extraHeaders: headers);
+    }
+
+    if (!isAsset) {
+      final fallbackEtag = _etagFor(active.id.toString(), 'index.html');
+      final fallbackCache = _cacheControlFor('index.html');
+      final fallbackHeaders = Headers.build((h) {
+        h['cache-control'] = [fallbackCache];
+        h['etag'] = [fallbackEtag];
+      });
+      final fallback =
+          await _readBundleAsset(session, active.filePath, 'index.html');
       if (fallback != null) {
-        return _bodyResponse(fallback, MimeType.html);
+        return _bodyResponse(fallback, MimeType.html,
+            extraHeaders: fallbackHeaders);
       }
     }
 
@@ -83,7 +115,11 @@ class StudioRoute extends Route {
     final file = File(p.join(dir.path, safePath));
     if (!await file.exists()) return _notFound();
     final body = await file.readAsBytes();
-    return _bodyResponse(body, _mimeTypeFor(safePath));
+    final cacheControl = _cacheControlFor(safePath);
+    final headers = Headers.build((h) {
+      h['cache-control'] = [cacheControl];
+    });
+    return _bodyResponse(body, _mimeTypeFor(safePath), extraHeaders: headers);
   }
 
   // ---------------------------------------------------------------------------
@@ -120,6 +156,29 @@ class StudioRoute extends Route {
 
   bool _looksLikeAsset(String path) => p.extension(path).isNotEmpty;
 
+  static final _contentHashRegex =
+      RegExp(r'[0-9a-f]{8,}');
+
+  String _cacheControlFor(String relPath) {
+    final baseName = p.basename(relPath);
+    if (baseName == 'index.html' || p.extension(relPath).isEmpty) {
+      return 'public, max-age=0, must-revalidate';
+    }
+    if (baseName == 'flutter_service_worker.js') {
+      return 'public, max-age=0, must-revalidate';
+    }
+    if (_contentHashRegex.hasMatch(baseName)) {
+      return 'public, max-age=31536000, immutable';
+    }
+    return 'public, max-age=300';
+  }
+
+  String _etagFor(String deploymentId, String relPath) {
+    final pathHash =
+        sha1.convert(utf8.encode(relPath)).toString().substring(0, 16);
+    return '"$deploymentId-$pathHash"';
+  }
+
   MimeType _mimeTypeFor(String path) {
     if (path.endsWith('.html')) return MimeType.html;
     if (path.endsWith('.css')) return MimeType.css;
@@ -139,13 +198,15 @@ class StudioRoute extends Route {
     );
   }
 
-  Response _bodyResponse(List<int> body, MimeType contentType) {
+  Response _bodyResponse(List<int> body, MimeType contentType,
+      {Headers? extraHeaders}) {
     return Response(
       200,
       body: Body.fromData(
-        Uint8List.fromList(body),
+        body is Uint8List ? body : Uint8List.fromList(body),
         mimeType: contentType,
       ),
+      headers: extraHeaders ?? Headers.empty(),
     );
   }
 }

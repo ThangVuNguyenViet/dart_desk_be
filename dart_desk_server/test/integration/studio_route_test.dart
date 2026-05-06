@@ -24,10 +24,16 @@ import 'test_tools/serverpod_test_tools.dart';
 Request _buildRequest({
   required String host,
   String path = '/',
+  Map<String, String>? extraHeaders,
 }) {
   final url = Uri.parse('http://$host$path');
   final headers = Headers.build((h) {
     h.host = HostHeader(host);
+    if (extraHeaders != null) {
+      for (final entry in extraHeaders.entries) {
+        h[entry.key.toLowerCase()] = [entry.value];
+      }
+    }
   });
   return RequestInternal.create(
     Method.get,
@@ -197,7 +203,8 @@ void main() {
     // SPA fallback
     // -----------------------------------------------------------------------
 
-    test('GET /some-route falls back to index.html (top-level SPA route)', () async {
+    test('GET /some-route falls back to index.html (top-level SPA route)',
+        () async {
       final session = sessionBuilder.build();
       const hostname = 'spa-test';
       const domain = 'app.dartdesk.dev';
@@ -359,7 +366,8 @@ void main() {
     // Path normalization and SPA fallback
     // -----------------------------------------------------------------------
 
-    test('Path traversal /../etc/passwd is normalized and falls back to index.html',
+    test(
+        'Path traversal /../etc/passwd is normalized and falls back to index.html',
         () async {
       final session = sessionBuilder.build();
       const hostname = 'traversal-test';
@@ -413,6 +421,429 @@ void main() {
       expect(response.statusCode, equals(200));
       final body = await _readBody(response);
       expect(String.fromCharCodes(body), equals(indexContent));
+    });
+
+    // -----------------------------------------------------------------------
+    // Cache-Control: hashed asset gets immutable cache
+    // -----------------------------------------------------------------------
+
+    test('Hashed asset gets immutable cache-control and etag', () async {
+      final session = sessionBuilder.build();
+      const hostname = 'cache-hash-test';
+      const domain = 'app.dartdesk.dev';
+
+      final project = await Project.db.insertRow(
+        session,
+        Project(
+          clientId: TestDataFactory.testClientId,
+          name: 'Cache Hash Test',
+          slug: 'cache-hash-test',
+          deployHostname: hostname,
+          isActive: true,
+        ),
+      );
+
+      const content = 'binary-image-data';
+      final bundlePrefix = await _seedBundle(
+        session,
+        files: {'assets/abc1234567def890.png': content},
+      );
+
+      final deployment = await Deployment.db.insertRow(
+        session,
+        Deployment(
+          projectId: project.id,
+          version: 1,
+          status: DeploymentStatus.active,
+          filePath: bundlePrefix,
+          fileSize: content.length,
+          createdAt: DateTime.now().toUtc(),
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      );
+      addTearDown(() async {
+        await Deployment.db.deleteRow(session, deployment);
+        await Project.db.deleteRow(session, project);
+      });
+
+      final route = StudioRoute(domain: domain);
+      final request = _buildRequest(
+        host: '$hostname.$domain',
+        path: '/assets/abc1234567def890.png',
+      );
+      final result = await route.handleCall(session, request);
+      final response = result as Response;
+
+      expect(response.statusCode, equals(200));
+      final cc = response.headers['cache-control'];
+      expect(cc, isNotNull);
+      expect(cc!.first, equals('public, max-age=31536000, immutable'));
+      final etag = response.headers['etag'];
+      expect(etag, isNotNull);
+      expect(etag!.first, startsWith('"'));
+      expect(etag.first, endsWith('"'));
+    });
+
+    // -----------------------------------------------------------------------
+    // Cache-Control: index.html gets short cache
+    // -----------------------------------------------------------------------
+
+    test('index.html gets must-revalidate cache-control', () async {
+      final session = sessionBuilder.build();
+      const hostname = 'cache-idx-test';
+      const domain = 'app.dartdesk.dev';
+
+      final project = await Project.db.insertRow(
+        session,
+        Project(
+          clientId: TestDataFactory.testClientId,
+          name: 'Cache Idx Test',
+          slug: 'cache-idx-test',
+          deployHostname: hostname,
+          isActive: true,
+        ),
+      );
+
+      const indexContent = '<html>hello</html>';
+      final bundlePrefix = await _seedBundle(
+        session,
+        files: {'index.html': indexContent},
+      );
+
+      final deployment = await Deployment.db.insertRow(
+        session,
+        Deployment(
+          projectId: project.id,
+          version: 1,
+          status: DeploymentStatus.active,
+          filePath: bundlePrefix,
+          fileSize: indexContent.length,
+          createdAt: DateTime.now().toUtc(),
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      );
+      addTearDown(() async {
+        await Deployment.db.deleteRow(session, deployment);
+        await Project.db.deleteRow(session, project);
+      });
+
+      final route = StudioRoute(domain: domain);
+      final request = _buildRequest(
+        host: '$hostname.$domain',
+        path: '/',
+      );
+      final result = await route.handleCall(session, request);
+      final response = result as Response;
+
+      expect(response.statusCode, equals(200));
+      final cc = response.headers['cache-control'];
+      expect(cc, isNotNull);
+      expect(cc!.first, equals('public, max-age=0, must-revalidate'));
+    });
+
+    // -----------------------------------------------------------------------
+    // SPA fallback shares etag with index.html
+    // -----------------------------------------------------------------------
+
+    test('SPA fallback shares etag with index.html', () async {
+      final session = sessionBuilder.build();
+      const hostname = 'spa-etag-test';
+      const domain = 'app.dartdesk.dev';
+
+      final project = await Project.db.insertRow(
+        session,
+        Project(
+          clientId: TestDataFactory.testClientId,
+          name: 'SPA Etag Test',
+          slug: 'spa-etag-test',
+          deployHostname: hostname,
+          isActive: true,
+        ),
+      );
+
+      const indexContent = '<html>spa</html>';
+      final bundlePrefix = await _seedBundle(
+        session,
+        files: {'index.html': indexContent},
+      );
+
+      final deployment = await Deployment.db.insertRow(
+        session,
+        Deployment(
+          projectId: project.id,
+          version: 1,
+          status: DeploymentStatus.active,
+          filePath: bundlePrefix,
+          fileSize: indexContent.length,
+          createdAt: DateTime.now().toUtc(),
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      );
+      addTearDown(() async {
+        await Deployment.db.deleteRow(session, deployment);
+        await Project.db.deleteRow(session, project);
+      });
+
+      final route = StudioRoute(domain: domain);
+
+      final reqFoo = _buildRequest(
+        host: '$hostname.$domain',
+        path: '/foo',
+      );
+      final resultFoo = await route.handleCall(session, reqFoo);
+      final respFoo = resultFoo as Response;
+      final etagFoo = respFoo.headers['etag']!.first;
+
+      final reqRoot = _buildRequest(
+        host: '$hostname.$domain',
+        path: '/',
+      );
+      final resultRoot = await route.handleCall(session, reqRoot);
+      final respRoot = resultRoot as Response;
+      final etagRoot = respRoot.headers['etag']!.first;
+
+      expect(etagFoo, equals(etagRoot));
+    });
+
+    // -----------------------------------------------------------------------
+    // Service worker is NOT immutable
+    // -----------------------------------------------------------------------
+
+    test('flutter_service_worker.js gets must-revalidate cache-control',
+        () async {
+      final session = sessionBuilder.build();
+      const hostname = 'sw-cache-test';
+      const domain = 'app.dartdesk.dev';
+
+      final project = await Project.db.insertRow(
+        session,
+        Project(
+          clientId: TestDataFactory.testClientId,
+          name: 'SW Cache Test',
+          slug: 'sw-cache-test',
+          deployHostname: hostname,
+          isActive: true,
+        ),
+      );
+
+      const swContent = 'self.addEventListener("install", ()=>{});';
+      final bundlePrefix = await _seedBundle(
+        session,
+        files: {'flutter_service_worker.js': swContent},
+      );
+
+      final deployment = await Deployment.db.insertRow(
+        session,
+        Deployment(
+          projectId: project.id,
+          version: 1,
+          status: DeploymentStatus.active,
+          filePath: bundlePrefix,
+          fileSize: swContent.length,
+          createdAt: DateTime.now().toUtc(),
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      );
+      addTearDown(() async {
+        await Deployment.db.deleteRow(session, deployment);
+        await Project.db.deleteRow(session, project);
+      });
+
+      final route = StudioRoute(domain: domain);
+      final request = _buildRequest(
+        host: '$hostname.$domain',
+        path: '/flutter_service_worker.js',
+      );
+      final result = await route.handleCall(session, request);
+      final response = result as Response;
+
+      expect(response.statusCode, equals(200));
+      final cc = response.headers['cache-control'];
+      expect(cc, isNotNull);
+      expect(cc!.first, equals('public, max-age=0, must-revalidate'));
+    });
+
+    // -----------------------------------------------------------------------
+    // If-None-Match returns 304
+    // -----------------------------------------------------------------------
+
+    test('If-None-Match match returns 304 with empty body', () async {
+      final session = sessionBuilder.build();
+      const hostname = 'etag-304-test';
+      const domain = 'app.dartdesk.dev';
+
+      final project = await Project.db.insertRow(
+        session,
+        Project(
+          clientId: TestDataFactory.testClientId,
+          name: 'ETag 304 Test',
+          slug: 'etag-304-test',
+          deployHostname: hostname,
+          isActive: true,
+        ),
+      );
+
+      const content = 'hashed-content';
+      final bundlePrefix = await _seedBundle(
+        session,
+        files: {'assets/abc1234567def890.png': content},
+      );
+
+      final deployment = await Deployment.db.insertRow(
+        session,
+        Deployment(
+          projectId: project.id,
+          version: 1,
+          status: DeploymentStatus.active,
+          filePath: bundlePrefix,
+          fileSize: content.length,
+          createdAt: DateTime.now().toUtc(),
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      );
+      addTearDown(() async {
+        await Deployment.db.deleteRow(session, deployment);
+        await Project.db.deleteRow(session, project);
+      });
+
+      final route = StudioRoute(domain: domain);
+
+      final req1 = _buildRequest(
+        host: '$hostname.$domain',
+        path: '/assets/abc1234567def890.png',
+      );
+      final result1 = await route.handleCall(session, req1);
+      final resp1 = result1 as Response;
+      final etag = resp1.headers['etag']!.first;
+
+      final req2 = _buildRequest(
+        host: '$hostname.$domain',
+        path: '/assets/abc1234567def890.png',
+        extraHeaders: {'if-none-match': etag},
+      );
+      final result2 = await route.handleCall(session, req2);
+      final resp2 = result2 as Response;
+
+      expect(resp2.statusCode, equals(304));
+      final body2 = await _readBody(resp2);
+      expect(body2, isEmpty);
+      expect(resp2.headers['cache-control']!.first,
+          equals('public, max-age=31536000, immutable'));
+      expect(resp2.headers['etag']!.first, equals(etag));
+    });
+
+    // -----------------------------------------------------------------------
+    // If-None-Match mismatch returns 200 + body
+    // -----------------------------------------------------------------------
+
+    test('If-None-Match mismatch returns 200 with full body', () async {
+      final session = sessionBuilder.build();
+      const hostname = 'etag-mismatch-test';
+      const domain = 'app.dartdesk.dev';
+
+      final project = await Project.db.insertRow(
+        session,
+        Project(
+          clientId: TestDataFactory.testClientId,
+          name: 'ETag Mismatch Test',
+          slug: 'etag-mismatch-test',
+          deployHostname: hostname,
+          isActive: true,
+        ),
+      );
+
+      const content = 'mismatch-content';
+      final bundlePrefix = await _seedBundle(
+        session,
+        files: {'main.dart.js': content},
+      );
+
+      final deployment = await Deployment.db.insertRow(
+        session,
+        Deployment(
+          projectId: project.id,
+          version: 1,
+          status: DeploymentStatus.active,
+          filePath: bundlePrefix,
+          fileSize: content.length,
+          createdAt: DateTime.now().toUtc(),
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      );
+      addTearDown(() async {
+        await Deployment.db.deleteRow(session, deployment);
+        await Project.db.deleteRow(session, project);
+      });
+
+      final route = StudioRoute(domain: domain);
+      final request = _buildRequest(
+        host: '$hostname.$domain',
+        path: '/main.dart.js',
+        extraHeaders: {'if-none-match': '"wrong-etag-value"'},
+      );
+      final result = await route.handleCall(session, request);
+      final response = result as Response;
+
+      expect(response.statusCode, equals(200));
+      final body = await _readBody(response);
+      expect(String.fromCharCodes(body), equals(content));
+    });
+
+    // -----------------------------------------------------------------------
+    // Default cache for non-hashed .js
+    // -----------------------------------------------------------------------
+
+    test('Non-hashed .js gets default 5-minute cache-control', () async {
+      final session = sessionBuilder.build();
+      const hostname = 'default-cache-test';
+      const domain = 'app.dartdesk.dev';
+
+      final project = await Project.db.insertRow(
+        session,
+        Project(
+          clientId: TestDataFactory.testClientId,
+          name: 'Default Cache Test',
+          slug: 'default-cache-test',
+          deployHostname: hostname,
+          isActive: true,
+        ),
+      );
+
+      const jsContent = 'var x = 1;';
+      final bundlePrefix = await _seedBundle(
+        session,
+        files: {'main.dart.js': jsContent},
+      );
+
+      final deployment = await Deployment.db.insertRow(
+        session,
+        Deployment(
+          projectId: project.id,
+          version: 1,
+          status: DeploymentStatus.active,
+          filePath: bundlePrefix,
+          fileSize: jsContent.length,
+          createdAt: DateTime.now().toUtc(),
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      );
+      addTearDown(() async {
+        await Deployment.db.deleteRow(session, deployment);
+        await Project.db.deleteRow(session, project);
+      });
+
+      final route = StudioRoute(domain: domain);
+      final request = _buildRequest(
+        host: '$hostname.$domain',
+        path: '/main.dart.js',
+      );
+      final result = await route.handleCall(session, request);
+      final response = result as Response;
+
+      expect(response.statusCode, equals(200));
+      final cc = response.headers['cache-control'];
+      expect(cc, isNotNull);
+      expect(cc!.first, equals('public, max-age=300'));
     });
   });
 }
