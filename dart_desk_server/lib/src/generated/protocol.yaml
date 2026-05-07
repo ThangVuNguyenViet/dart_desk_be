@@ -63,6 +63,9 @@ media:
 member:
   - listMembers:
   - inviteMember:
+  - listPendingInvites:
+  - resendInvite:
+  - revokeInvite:
   - updateMemberRole:
   - removeMember:
 migration:

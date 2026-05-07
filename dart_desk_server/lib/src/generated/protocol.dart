@@ -58,9 +58,10 @@ import 'package:dart_desk_server/src/generated/document_crdt_operation.dart'
     as _i43;
 import 'package:dart_desk_server/src/generated/media_asset.dart' as _i44;
 import 'package:dart_desk_server/src/generated/user.dart' as _i45;
-import 'package:dart_desk_server/src/generated/migration_history.dart' as _i46;
-import 'package:dart_desk_server/src/generated/project_member.dart' as _i47;
-import 'package:dart_desk_server/src/generated/public_document.dart' as _i48;
+import 'package:dart_desk_server/src/generated/invite.dart' as _i46;
+import 'package:dart_desk_server/src/generated/migration_history.dart' as _i47;
+import 'package:dart_desk_server/src/generated/project_member.dart' as _i48;
+import 'package:dart_desk_server/src/generated/public_document.dart' as _i49;
 export 'api_exception.dart';
 export 'api_key.dart';
 export 'api_key_with_value.dart';
@@ -2539,38 +2540,42 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == List<_i45.User>) {
       return (data as List).map((e) => deserialize<_i45.User>(e)).toList() as T;
     }
-    if (t == List<_i46.MigrationHistory>) {
+    if (t == List<_i46.Invite>) {
+      return (data as List).map((e) => deserialize<_i46.Invite>(e)).toList()
+          as T;
+    }
+    if (t == List<_i47.MigrationHistory>) {
       return (data as List)
-              .map((e) => deserialize<_i46.MigrationHistory>(e))
+              .map((e) => deserialize<_i47.MigrationHistory>(e))
               .toList()
           as T;
     }
-    if (t == List<_i47.ProjectMember>) {
+    if (t == List<_i48.ProjectMember>) {
       return (data as List)
-              .map((e) => deserialize<_i47.ProjectMember>(e))
+              .map((e) => deserialize<_i48.ProjectMember>(e))
               .toList()
           as T;
     }
-    if (t == Map<String, List<_i48.PublicDocument>>) {
+    if (t == Map<String, List<_i49.PublicDocument>>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<List<_i48.PublicDocument>>(v),
+              deserialize<List<_i49.PublicDocument>>(v),
             ),
           )
           as T;
     }
-    if (t == List<_i48.PublicDocument>) {
+    if (t == List<_i49.PublicDocument>) {
       return (data as List)
-              .map((e) => deserialize<_i48.PublicDocument>(e))
+              .map((e) => deserialize<_i49.PublicDocument>(e))
               .toList()
           as T;
     }
-    if (t == Map<String, _i48.PublicDocument>) {
+    if (t == Map<String, _i49.PublicDocument>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i48.PublicDocument>(v),
+              deserialize<_i49.PublicDocument>(v),
             ),
           )
           as T;

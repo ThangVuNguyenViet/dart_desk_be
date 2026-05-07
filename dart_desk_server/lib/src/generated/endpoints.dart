@@ -1531,6 +1531,63 @@ class Endpoints extends _i1.EndpointDispatch {
                     role: params['role'],
                   ),
         ),
+        'listPendingInvites': _i1.MethodConnector(
+          name: 'listPendingInvites',
+          params: {
+            'clientId': _i1.ParameterDescription(
+              name: 'clientId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['member'] as _i11.MemberEndpoint)
+                  .listPendingInvites(
+                    session,
+                    clientId: params['clientId'],
+                  ),
+        ),
+        'resendInvite': _i1.MethodConnector(
+          name: 'resendInvite',
+          params: {
+            'inviteId': _i1.ParameterDescription(
+              name: 'inviteId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['member'] as _i11.MemberEndpoint).resendInvite(
+                    session,
+                    inviteId: params['inviteId'],
+                  ),
+        ),
+        'revokeInvite': _i1.MethodConnector(
+          name: 'revokeInvite',
+          params: {
+            'inviteId': _i1.ParameterDescription(
+              name: 'inviteId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['member'] as _i11.MemberEndpoint).revokeInvite(
+                    session,
+                    inviteId: params['inviteId'],
+                  ),
+        ),
         'updateMemberRole': _i1.MethodConnector(
           name: 'updateMemberRole',
           params: {
