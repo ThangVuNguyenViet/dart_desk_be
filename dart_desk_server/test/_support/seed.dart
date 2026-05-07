@@ -31,7 +31,10 @@ Future<SeedContext> seedMemberContext(TestSessionBuilder sessionBuilder) =>
 Future<SeedContext> _seed(
     TestSessionBuilder sessionBuilder, ClientRole role) async {
   final clientId = UuidValue.fromString(const Uuid().v4());
-  final userIdentifier = 'seed-user-${const Uuid().v4()}';
+  // Use a UUID as the userIdentifier so it is parseable as an authUserId
+  // (Serverpod's AuthenticationInfoAuthUserId extension parses userIdentifier
+  // as UuidValue). This mirrors how real auth issues userIdentifiers.
+  final userIdentifier = const Uuid().v4();
 
   final session = sessionBuilder.build();
 
@@ -51,7 +54,7 @@ Future<SeedContext> _seed(
     session,
     User(
       clientId: clientId,
-      email: '$userIdentifier@example.com',
+      email: 'seed-user-$userIdentifier@example.com',
       name: 'Seed User',
       role: role,
       isActive: true,

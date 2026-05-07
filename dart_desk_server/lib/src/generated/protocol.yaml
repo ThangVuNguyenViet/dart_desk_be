@@ -51,6 +51,9 @@ googleIdp:
   - hasAccount:
 health:
   - check:
+invite:
+  - previewInvite:
+  - acceptInvite:
 media:
   - uploadImage:
   - uploadFile:
