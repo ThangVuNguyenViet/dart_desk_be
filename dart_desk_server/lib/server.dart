@@ -1,5 +1,6 @@
 import 'dart:io' show Directory;
 
+import 'package:dart_desk_server/src/services/app_config.dart';
 import 'package:dart_desk_server/src/services/email_sender.dart';
 import 'package:dart_desk_server/src/services/email_service.dart';
 import 'package:dart_desk_server/src/web/configure_web_routes.dart';
@@ -48,6 +49,12 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
   if (_emailService != null) {
     EmailSenderRegistry.set(SmtpEmailSender(_emailService!));
   }
+
+  // Initialize app config (manageBaseUrl used for invite email links, etc.).
+  AppConfigRegistry.set(AppConfig(
+    manageBaseUrl:
+        pod.getPassword('manageBaseUrl') ?? 'https://manage.dartdesk.dev',
+  ));
 
   // Initialize CRDT service with node ID from passwords.yaml
   final nodeId = pod.getPassword('crdtNodeId') ?? 'postgres-main';
