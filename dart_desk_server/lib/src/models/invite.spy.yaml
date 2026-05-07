@@ -1,0 +1,21 @@
+class: Invite
+table: invites
+fields:
+  id: UuidValue, defaultModel=random
+  clientId: UuidValue
+  email: String
+  role: ClientRole
+  token: String
+  invitedByUserId: UuidValue
+  expiresAt: DateTime
+  acceptedAt: DateTime?
+  acceptedUserId: UuidValue?
+  revokedAt: DateTime?
+  createdAt: DateTime?, default=now
+  updatedAt: DateTime?, default=now
+indexes:
+  invites_token_idx:
+    fields: token
+    unique: true
+  invites_client_idx:
+    fields: clientId

@@ -1,0 +1,5 @@
+### server-only DTO returned by inviteMember and resendInvite
+class: InviteResult
+fields:
+  invite: Invite
+  emailSent: bool

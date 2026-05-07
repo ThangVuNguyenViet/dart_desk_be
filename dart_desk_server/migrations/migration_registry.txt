@@ -14,3 +14,4 @@
 20260502102432242-per-client-slugs
 20260503053750456-rename-api-tokens-to-api-keys
 20260503094803605-repair-api-keys-fk
+20260507133526201-add-invites

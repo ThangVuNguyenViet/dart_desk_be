@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:serverpod/serverpod.dart';
 
 import '../auth/resolve_user.dart';
 import '../generated/protocol.dart';
+import '../services/invite_email.dart';
 
 class MemberEndpoint extends Endpoint {
   /// Helper to verify caller is admin+ for the client.
@@ -43,41 +47,153 @@ class MemberEndpoint extends Endpoint {
     );
   }
 
-  Future<User> inviteMember(
+  Future<InviteResult> inviteMember(
     Session session, {
     required UuidValue clientId,
     required String email,
     required ClientRole role,
   }) async {
-    await _requireClientAdmin(session, clientId);
+    final caller = await _requireClientAdmin(session, clientId);
 
-    // Check for duplicate (ignore soft-deleted users so removed members
-    // can be re-invited with the same email).
-    final existing = await User.db.findFirstRow(
+    if (role == ClientRole.owner) {
+      throw ApiException(message: 'Cannot invite as owner', code: 400);
+    }
+
+    final activeMember = await User.db.findFirstRow(
       session,
       where: (t) =>
           t.clientId.equals(clientId) &
           t.email.equals(email) &
+          t.isActive.equals(true) &
           t.deletedAt.equals(null),
     );
-    if (existing != null) {
+    if (activeMember != null) {
       throw ApiException(
-        message: 'User with this email already exists in this workspace',
+        message: 'A member with this email already exists in this workspace',
         code: 409,
+        errorCode: 'EMAIL_ALREADY_MEMBER',
       );
     }
 
-    final invited = await User.db.insertRow(
+    final pending = await Invite.db.findFirstRow(
       session,
-      User(
+      where: (t) =>
+          t.clientId.equals(clientId) &
+          t.email.equals(email) &
+          t.acceptedAt.equals(null) &
+          t.revokedAt.equals(null),
+    );
+    if (pending != null) {
+      throw ApiException(
+        message: 'An invite is already pending for this email',
+        code: 409,
+        errorCode: 'INVITE_ALREADY_PENDING',
+      );
+    }
+
+    final token = _generateToken();
+    final now = DateTime.now().toUtc();
+    final invite = await Invite.db.insertRow(
+      session,
+      Invite(
         clientId: clientId,
         email: email,
         role: role,
-        isActive: true,
+        token: token,
+        invitedByUserId: caller.id,
+        expiresAt: now.add(const Duration(days: 14)),
+        createdAt: now,
+        updatedAt: now,
       ),
     );
-    session.log('Invited Member id=${invited.id} clientId=$clientId role=$role', level: LogLevel.info);
-    return invited;
+    session.log(
+      'Invite created id=${invite.id} clientId=$clientId email=$email role=$role',
+      level: LogLevel.info,
+    );
+
+    final emailSent = await _sendInvite(session, invite, caller);
+    return InviteResult(invite: invite, emailSent: emailSent);
+  }
+
+  Future<List<Invite>> listPendingInvites(
+    Session session, {
+    required UuidValue clientId,
+  }) async {
+    await _requireClientAdmin(session, clientId);
+    final now = DateTime.now().toUtc();
+    return Invite.db.find(
+      session,
+      where: (t) =>
+          t.clientId.equals(clientId) &
+          t.acceptedAt.equals(null) &
+          t.revokedAt.equals(null) &
+          (t.expiresAt > now),
+      orderBy: (t) => t.createdAt,
+      orderDescending: true,
+    );
+  }
+
+  Future<InviteResult> resendInvite(
+    Session session, {
+    required UuidValue inviteId,
+  }) async {
+    final invite = await Invite.db.findById(session, inviteId);
+    if (invite == null) {
+      throw ApiException(
+        message: 'Invite not found',
+        code: 404,
+        errorCode: 'INVITE_NOT_FOUND',
+      );
+    }
+    final caller = await _requireClientAdmin(session, invite.clientId);
+    if (invite.acceptedAt != null) {
+      throw ApiException(
+        message: 'Invite already accepted',
+        code: 409,
+        errorCode: 'INVITE_ALREADY_ACCEPTED',
+      );
+    }
+    if (invite.revokedAt != null) {
+      throw ApiException(
+        message: 'Invite revoked',
+        code: 409,
+        errorCode: 'INVITE_REVOKED',
+      );
+    }
+    final now = DateTime.now().toUtc();
+    invite.expiresAt = now.add(const Duration(days: 14));
+    invite.updatedAt = now;
+    await Invite.db.updateRow(session, invite);
+
+    final emailSent = await _sendInvite(session, invite, caller);
+    return InviteResult(invite: invite, emailSent: emailSent);
+  }
+
+  Future<void> revokeInvite(
+    Session session, {
+    required UuidValue inviteId,
+  }) async {
+    final invite = await Invite.db.findById(session, inviteId);
+    if (invite == null) {
+      throw ApiException(
+        message: 'Invite not found',
+        code: 404,
+        errorCode: 'INVITE_NOT_FOUND',
+      );
+    }
+    await _requireClientAdmin(session, invite.clientId);
+    if (invite.acceptedAt != null) {
+      throw ApiException(
+        message: 'Cannot revoke accepted invite',
+        code: 409,
+        errorCode: 'INVITE_ALREADY_ACCEPTED',
+      );
+    }
+    final now = DateTime.now().toUtc();
+    invite.revokedAt = now;
+    invite.updatedAt = now;
+    await Invite.db.updateRow(session, invite);
+    session.log('Invite revoked id=$inviteId', level: LogLevel.info);
   }
 
   Future<User> updateMemberRole(
@@ -110,7 +226,10 @@ class MemberEndpoint extends Endpoint {
 
     final updated = target.copyWith(role: role, updatedAt: DateTime.now());
     await User.db.updateRow(session, updated);
-    session.log('Updated Member id=$userId clientId=$clientId role=$role', level: LogLevel.info);
+    session.log(
+      'Updated Member id=$userId clientId=$clientId role=$role',
+      level: LogLevel.info,
+    );
     return updated;
   }
 
@@ -158,6 +277,38 @@ class MemberEndpoint extends Endpoint {
     for (final m in memberships) {
       await ProjectMember.db.deleteRow(session, m);
     }
-    session.log('Removed Member id=$userId clientId=$clientId', level: LogLevel.info);
+    session.log('Removed Member id=$userId clientId=$clientId',
+        level: LogLevel.info);
+  }
+
+  /// Returns true if the email was sent successfully; false if the SMTP
+  /// path threw (logged at error level). Never rethrows — invite persistence
+  /// is independent of email delivery.
+  Future<bool> _sendInvite(Session session, Invite invite, User inviter) async {
+    final clientRow = await CmsClient.db.findById(session, invite.clientId);
+    final clientName = clientRow?.name ?? 'your workspace';
+    final inviterName = inviter.name ?? inviter.email;
+    try {
+      await sendInviteEmail(
+        session,
+        invite: invite,
+        clientName: clientName,
+        inviterName: inviterName,
+        inviterEmail: inviter.email,
+      );
+      return true;
+    } catch (e) {
+      session.log(
+        'Invite email failed id=${invite.id} email=${invite.email}: $e',
+        level: LogLevel.error,
+      );
+      return false;
+    }
+  }
+
+  String _generateToken() {
+    final bytes =
+        List<int>.generate(32, (_) => Random.secure().nextInt(256));
+    return base64Url.encode(bytes).replaceAll('=', '');
   }
 }

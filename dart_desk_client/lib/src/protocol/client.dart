@@ -29,18 +29,21 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i13;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i14;
-import 'package:dart_desk_client/src/protocol/media_asset.dart' as _i15;
-import 'dart:typed_data' as _i16;
-import 'package:dart_desk_client/src/protocol/user.dart' as _i17;
-import 'package:dart_desk_client/src/protocol/client_role.dart' as _i18;
-import 'package:dart_desk_client/src/protocol/migration_history.dart' as _i19;
-import 'package:dart_desk_client/src/protocol/paginated_projects.dart' as _i20;
-import 'package:dart_desk_client/src/protocol/project.dart' as _i21;
-import 'package:dart_desk_client/src/protocol/cms_client.dart' as _i22;
-import 'package:dart_desk_client/src/protocol/project_member.dart' as _i23;
-import 'package:dart_desk_client/src/protocol/project_role.dart' as _i24;
-import 'package:dart_desk_client/src/protocol/public_document.dart' as _i25;
-import 'protocol.dart' as _i26;
+import 'package:dart_desk_client/src/protocol/invite_preview.dart' as _i15;
+import 'package:dart_desk_client/src/protocol/media_asset.dart' as _i16;
+import 'dart:typed_data' as _i17;
+import 'package:dart_desk_client/src/protocol/user.dart' as _i18;
+import 'package:dart_desk_client/src/protocol/invite_result.dart' as _i19;
+import 'package:dart_desk_client/src/protocol/client_role.dart' as _i20;
+import 'package:dart_desk_client/src/protocol/invite.dart' as _i21;
+import 'package:dart_desk_client/src/protocol/migration_history.dart' as _i22;
+import 'package:dart_desk_client/src/protocol/paginated_projects.dart' as _i23;
+import 'package:dart_desk_client/src/protocol/project.dart' as _i24;
+import 'package:dart_desk_client/src/protocol/cms_client.dart' as _i25;
+import 'package:dart_desk_client/src/protocol/project_member.dart' as _i26;
+import 'package:dart_desk_client/src/protocol/project_role.dart' as _i27;
+import 'package:dart_desk_client/src/protocol/public_document.dart' as _i28;
+import 'protocol.dart' as _i29;
 
 /// {@category Endpoint}
 class EndpointClient extends _i1.EndpointRef {
@@ -732,6 +735,33 @@ class EndpointHealth extends _i1.EndpointRef {
   );
 }
 
+/// {@category Endpoint}
+class EndpointInvite extends _i1.EndpointRef {
+  EndpointInvite(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'invite';
+
+  _i2.Future<_i15.InvitePreview> previewInvite({required String token}) =>
+      caller.callServerEndpoint<_i15.InvitePreview>(
+        'invite',
+        'previewInvite',
+        {'token': token},
+      );
+
+  _i2.Future<_i14.AuthSuccess> acceptInvite({
+    required String token,
+    String? password,
+  }) => caller.callServerEndpoint<_i14.AuthSuccess>(
+    'invite',
+    'acceptInvite',
+    {
+      'token': token,
+      'password': password,
+    },
+  );
+}
+
 /// Endpoint for managing media assets (images and files).
 /// All operations require authentication.
 /// {@category Endpoint}
@@ -746,10 +776,10 @@ class EndpointMedia extends _i1.EndpointRef {
   ///
   /// Deduplication: same bytes produce the same assetId and return the
   /// existing row.
-  _i2.Future<_i15.MediaAsset> uploadImage(
+  _i2.Future<_i16.MediaAsset> uploadImage(
     String fileName,
-    _i16.ByteData fileData,
-  ) => caller.callServerEndpoint<_i15.MediaAsset>(
+    _i17.ByteData fileData,
+  ) => caller.callServerEndpoint<_i16.MediaAsset>(
     'media',
     'uploadImage',
     {
@@ -761,10 +791,10 @@ class EndpointMedia extends _i1.EndpointRef {
   /// Upload a non-image file.
   ///
   /// Content hash is computed server-side via SHA-256.
-  _i2.Future<_i15.MediaAsset> uploadFile(
+  _i2.Future<_i16.MediaAsset> uploadFile(
     String fileName,
-    _i16.ByteData fileData,
-  ) => caller.callServerEndpoint<_i15.MediaAsset>(
+    _i17.ByteData fileData,
+  ) => caller.callServerEndpoint<_i16.MediaAsset>(
     'media',
     'uploadFile',
     {
@@ -784,21 +814,21 @@ class EndpointMedia extends _i1.EndpointRef {
       );
 
   /// Get a single media asset by assetId.
-  _i2.Future<_i15.MediaAsset?> getMedia(String assetId) =>
-      caller.callServerEndpoint<_i15.MediaAsset?>(
+  _i2.Future<_i16.MediaAsset?> getMedia(String assetId) =>
+      caller.callServerEndpoint<_i16.MediaAsset?>(
         'media',
         'getMedia',
         {'assetId': assetId},
       );
 
   /// List media assets with search, filter, sort, and pagination.
-  _i2.Future<List<_i15.MediaAsset>> listMedia({
+  _i2.Future<List<_i16.MediaAsset>> listMedia({
     String? search,
     String? mimeTypePrefix,
     required String sortBy,
     required int limit,
     required int offset,
-  }) => caller.callServerEndpoint<List<_i15.MediaAsset>>(
+  }) => caller.callServerEndpoint<List<_i16.MediaAsset>>(
     'media',
     'listMedia',
     {
@@ -832,10 +862,10 @@ class EndpointMedia extends _i1.EndpointRef {
       );
 
   /// Update a media asset's metadata (currently supports renaming).
-  _i2.Future<_i15.MediaAsset> updateMediaAsset(
+  _i2.Future<_i16.MediaAsset> updateMediaAsset(
     String assetId, {
     String? fileName,
-  }) => caller.callServerEndpoint<_i15.MediaAsset>(
+  }) => caller.callServerEndpoint<_i16.MediaAsset>(
     'media',
     'updateMediaAsset',
     {
@@ -852,18 +882,18 @@ class EndpointMember extends _i1.EndpointRef {
   @override
   String get name => 'member';
 
-  _i2.Future<List<_i17.User>> listMembers({required _i1.UuidValue clientId}) =>
-      caller.callServerEndpoint<List<_i17.User>>(
+  _i2.Future<List<_i18.User>> listMembers({required _i1.UuidValue clientId}) =>
+      caller.callServerEndpoint<List<_i18.User>>(
         'member',
         'listMembers',
         {'clientId': clientId},
       );
 
-  _i2.Future<_i17.User> inviteMember({
+  _i2.Future<_i19.InviteResult> inviteMember({
     required _i1.UuidValue clientId,
     required String email,
-    required _i18.ClientRole role,
-  }) => caller.callServerEndpoint<_i17.User>(
+    required _i20.ClientRole role,
+  }) => caller.callServerEndpoint<_i19.InviteResult>(
     'member',
     'inviteMember',
     {
@@ -873,11 +903,34 @@ class EndpointMember extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i17.User> updateMemberRole({
+  _i2.Future<List<_i21.Invite>> listPendingInvites({
+    required _i1.UuidValue clientId,
+  }) => caller.callServerEndpoint<List<_i21.Invite>>(
+    'member',
+    'listPendingInvites',
+    {'clientId': clientId},
+  );
+
+  _i2.Future<_i19.InviteResult> resendInvite({
+    required _i1.UuidValue inviteId,
+  }) => caller.callServerEndpoint<_i19.InviteResult>(
+    'member',
+    'resendInvite',
+    {'inviteId': inviteId},
+  );
+
+  _i2.Future<void> revokeInvite({required _i1.UuidValue inviteId}) =>
+      caller.callServerEndpoint<void>(
+        'member',
+        'revokeInvite',
+        {'inviteId': inviteId},
+      );
+
+  _i2.Future<_i18.User> updateMemberRole({
     required _i1.UuidValue clientId,
     required _i1.UuidValue userId,
-    required _i18.ClientRole role,
-  }) => caller.callServerEndpoint<_i17.User>(
+    required _i20.ClientRole role,
+  }) => caller.callServerEndpoint<_i18.User>(
     'member',
     'updateMemberRole',
     {
@@ -934,8 +987,8 @@ class EndpointMigration extends _i1.EndpointRef {
   );
 
   /// Return all [MigrationHistory] records for the current project.
-  _i2.Future<List<_i19.MigrationHistory>> listMigrations() =>
-      caller.callServerEndpoint<List<_i19.MigrationHistory>>(
+  _i2.Future<List<_i22.MigrationHistory>> listMigrations() =>
+      caller.callServerEndpoint<List<_i22.MigrationHistory>>(
         'migration',
         'listMigrations',
         {},
@@ -951,11 +1004,11 @@ class EndpointProject extends _i1.EndpointRef {
   String get name => 'project';
 
   /// Get all projects with pagination and optional search.
-  _i2.Future<_i20.PaginatedProjects> getProjects({
+  _i2.Future<_i23.PaginatedProjects> getProjects({
     String? search,
     required int limit,
     required int offset,
-  }) => caller.callServerEndpoint<_i20.PaginatedProjects>(
+  }) => caller.callServerEndpoint<_i23.PaginatedProjects>(
     'project',
     'getProjects',
     {
@@ -966,20 +1019,20 @@ class EndpointProject extends _i1.EndpointRef {
   );
 
   /// Get a project by ID.
-  _i2.Future<_i21.Project?> getProject(_i1.UuidValue projectId) =>
-      caller.callServerEndpoint<_i21.Project?>(
+  _i2.Future<_i24.Project?> getProject(_i1.UuidValue projectId) =>
+      caller.callServerEndpoint<_i24.Project?>(
         'project',
         'getProject',
         {'projectId': projectId},
       );
 
   /// Create a new project (requires authentication).
-  _i2.Future<_i21.Project> createProject(
+  _i2.Future<_i24.Project> createProject(
     String name,
     String slug, {
     String? description,
     String? settings,
-  }) => caller.callServerEndpoint<_i21.Project>(
+  }) => caller.callServerEndpoint<_i24.Project>(
     'project',
     'createProject',
     {
@@ -991,13 +1044,13 @@ class EndpointProject extends _i1.EndpointRef {
   );
 
   /// Update an existing project (requires authentication).
-  _i2.Future<_i21.Project?> updateProject(
+  _i2.Future<_i24.Project?> updateProject(
     _i1.UuidValue projectId, {
     String? name,
     String? description,
     bool? isActive,
     String? settings,
-  }) => caller.callServerEndpoint<_i21.Project?>(
+  }) => caller.callServerEndpoint<_i24.Project?>(
     'project',
     'updateProject',
     {
@@ -1010,10 +1063,10 @@ class EndpointProject extends _i1.EndpointRef {
   );
 
   /// Update the deploy hostname for a project (requires admin/owner role).
-  _i2.Future<_i21.Project> updateDeployHostname(
+  _i2.Future<_i24.Project> updateDeployHostname(
     _i1.UuidValue projectId,
     String newHostname,
-  ) => caller.callServerEndpoint<_i21.Project>(
+  ) => caller.callServerEndpoint<_i24.Project>(
     'project',
     'updateDeployHostname',
     {
@@ -1032,10 +1085,10 @@ class EndpointProject extends _i1.EndpointRef {
 
   /// Create a new CmsClient (workspace) and an admin User for the caller in one transaction.
   /// Used by the manage app's setup wizard for first-time users.
-  _i2.Future<_i22.CmsClient> createClientWithOwner({
+  _i2.Future<_i25.CmsClient> createClientWithOwner({
     required String clientName,
     required String clientSlug,
-  }) => caller.callServerEndpoint<_i22.CmsClient>(
+  }) => caller.callServerEndpoint<_i25.CmsClient>(
     'project',
     'createClientWithOwner',
     {
@@ -1052,19 +1105,19 @@ class EndpointProjectMember extends _i1.EndpointRef {
   @override
   String get name => 'projectMember';
 
-  _i2.Future<List<_i23.ProjectMember>> listProjectMembers({
+  _i2.Future<List<_i26.ProjectMember>> listProjectMembers({
     required _i1.UuidValue projectId,
-  }) => caller.callServerEndpoint<List<_i23.ProjectMember>>(
+  }) => caller.callServerEndpoint<List<_i26.ProjectMember>>(
     'projectMember',
     'listProjectMembers',
     {'projectId': projectId},
   );
 
-  _i2.Future<_i23.ProjectMember> addProjectMember({
+  _i2.Future<_i26.ProjectMember> addProjectMember({
     required _i1.UuidValue projectId,
     required _i1.UuidValue userId,
-    required _i24.ProjectRole role,
-  }) => caller.callServerEndpoint<_i23.ProjectMember>(
+    required _i27.ProjectRole role,
+  }) => caller.callServerEndpoint<_i26.ProjectMember>(
     'projectMember',
     'addProjectMember',
     {
@@ -1074,11 +1127,11 @@ class EndpointProjectMember extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i23.ProjectMember> updateProjectMemberRole({
+  _i2.Future<_i26.ProjectMember> updateProjectMemberRole({
     required _i1.UuidValue projectId,
     required _i1.UuidValue userId,
-    required _i24.ProjectRole role,
-  }) => caller.callServerEndpoint<_i23.ProjectMember>(
+    required _i27.ProjectRole role,
+  }) => caller.callServerEndpoint<_i26.ProjectMember>(
     'projectMember',
     'updateProjectMemberRole',
     {
@@ -1114,43 +1167,45 @@ class EndpointPublicContent extends _i1.EndpointRef {
   String get name => 'publicContent';
 
   /// Returns all published documents grouped by document type.
-  _i2.Future<Map<String, List<_i25.PublicDocument>>> getAllContents() =>
-      caller.callServerEndpoint<Map<String, List<_i25.PublicDocument>>>(
+  _i2.Future<Map<String, List<_i28.PublicDocument>>> getAllContents() =>
+      caller.callServerEndpoint<Map<String, List<_i28.PublicDocument>>>(
         'publicContent',
         'getAllContents',
         {},
       );
 
   /// Returns the default published document for each document type.
-  _i2.Future<Map<String, _i25.PublicDocument>> getDefaultContents() =>
-      caller.callServerEndpoint<Map<String, _i25.PublicDocument>>(
+  /// If no document of a given type is flagged as default, falls back to the
+  /// most recently published document of that type.
+  _i2.Future<Map<String, _i28.PublicDocument>> getDefaultContents() =>
+      caller.callServerEndpoint<Map<String, _i28.PublicDocument>>(
         'publicContent',
         'getDefaultContents',
         {},
       );
 
   /// Returns all published documents of a specific type.
-  _i2.Future<List<_i25.PublicDocument>> getContentsByType(
+  _i2.Future<List<_i28.PublicDocument>> getContentsByType(
     String documentType,
-  ) => caller.callServerEndpoint<List<_i25.PublicDocument>>(
+  ) => caller.callServerEndpoint<List<_i28.PublicDocument>>(
     'publicContent',
     'getContentsByType',
     {'documentType': documentType},
   );
 
   /// Returns the default published document for a specific type.
-  _i2.Future<_i25.PublicDocument> getDefaultContent(String documentType) =>
-      caller.callServerEndpoint<_i25.PublicDocument>(
+  _i2.Future<_i28.PublicDocument> getDefaultContent(String documentType) =>
+      caller.callServerEndpoint<_i28.PublicDocument>(
         'publicContent',
         'getDefaultContent',
         {'documentType': documentType},
       );
 
   /// Returns a single published document by type and slug.
-  _i2.Future<_i25.PublicDocument> getContentBySlug(
+  _i2.Future<_i28.PublicDocument> getContentBySlug(
     String documentType,
     String slug,
-  ) => caller.callServerEndpoint<_i25.PublicDocument>(
+  ) => caller.callServerEndpoint<_i28.PublicDocument>(
     'publicContent',
     'getContentBySlug',
     {
@@ -1164,10 +1219,10 @@ class EndpointPublicContent extends _i1.EndpointRef {
   /// scalars and arrays are rejected. Matching uses Postgres `jsonb` containment
   /// (`@>`) against the `data` jsonb column on `published_documents`. Project
   /// scope is enforced from the API key. Capped at 100 results.
-  _i2.Future<List<_i25.PublicDocument>> getContentsByDataContains(
+  _i2.Future<List<_i28.PublicDocument>> getContentsByDataContains(
     String documentType,
     String dataContainsJson,
-  ) => caller.callServerEndpoint<List<_i25.PublicDocument>>(
+  ) => caller.callServerEndpoint<List<_i28.PublicDocument>>(
     'publicContent',
     'getContentsByDataContains',
     {
@@ -1180,9 +1235,9 @@ class EndpointPublicContent extends _i1.EndpointRef {
   /// documents in the project whose JSON `data` contains [dataContainsJson],
   /// grouped by `documentType`. Same JSONB containment (`@>`) semantics and
   /// 100-row cap as the typed variant.
-  _i2.Future<Map<String, List<_i25.PublicDocument>>>
+  _i2.Future<Map<String, List<_i28.PublicDocument>>>
   getAllContentsByDataContains(String dataContainsJson) =>
-      caller.callServerEndpoint<Map<String, List<_i25.PublicDocument>>>(
+      caller.callServerEndpoint<Map<String, List<_i28.PublicDocument>>>(
         'publicContent',
         'getAllContentsByDataContains',
         {'dataContainsJson': dataContainsJson},
@@ -1239,15 +1294,15 @@ class EndpointRestore extends _i1.EndpointRef {
         {'documentId': documentId},
       );
 
-  _i2.Future<_i21.Project> restoreProject(_i1.UuidValue projectId) =>
-      caller.callServerEndpoint<_i21.Project>(
+  _i2.Future<_i24.Project> restoreProject(_i1.UuidValue projectId) =>
+      caller.callServerEndpoint<_i24.Project>(
         'restore',
         'restoreProject',
         {'projectId': projectId},
       );
 
-  _i2.Future<_i17.User> restoreUser(_i1.UuidValue userId) =>
-      caller.callServerEndpoint<_i17.User>(
+  _i2.Future<_i18.User> restoreUser(_i1.UuidValue userId) =>
+      caller.callServerEndpoint<_i18.User>(
         'restore',
         'restoreUser',
         {'userId': userId},
@@ -1284,8 +1339,8 @@ class EndpointUser extends _i1.EndpointRef {
   /// Get the current authenticated user.
   /// [clientId] is optional — if omitted, falls back to session.clientId.
   /// The _manage app passes clientId explicitly; consumer apps rely on API key in Authorization header.
-  _i2.Future<_i17.User?> getCurrentUser({_i1.UuidValue? clientId}) =>
-      caller.callServerEndpoint<_i17.User?>(
+  _i2.Future<_i18.User?> getCurrentUser({_i1.UuidValue? clientId}) =>
+      caller.callServerEndpoint<_i18.User?>(
         'user',
         'getCurrentUser',
         {'clientId': clientId},
@@ -1331,7 +1386,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i26.Protocol(),
+         _i29.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -1348,6 +1403,7 @@ class Client extends _i1.ServerpodClientShared {
     emailIdp = EndpointEmailIdp(this);
     googleIdp = EndpointGoogleIdp(this);
     health = EndpointHealth(this);
+    invite = EndpointInvite(this);
     media = EndpointMedia(this);
     member = EndpointMember(this);
     migration = EndpointMigration(this);
@@ -1376,6 +1432,8 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointGoogleIdp googleIdp;
 
   late final EndpointHealth health;
+
+  late final EndpointInvite invite;
 
   late final EndpointMedia media;
 
@@ -1409,6 +1467,7 @@ class Client extends _i1.ServerpodClientShared {
     'emailIdp': emailIdp,
     'googleIdp': googleIdp,
     'health': health,
+    'invite': invite,
     'media': media,
     'member': member,
     'migration': migration,
