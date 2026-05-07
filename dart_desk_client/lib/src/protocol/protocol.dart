@@ -27,36 +27,39 @@ import 'document_data.dart' as _i14;
 import 'document_version.dart' as _i15;
 import 'document_version_list.dart' as _i16;
 import 'document_version_status.dart' as _i17;
-import 'media_asset.dart' as _i18;
-import 'media_asset_metadata_status.dart' as _i19;
-import 'migration_history.dart' as _i20;
-import 'paginated_api_keys.dart' as _i21;
-import 'paginated_document_versions.dart' as _i22;
-import 'paginated_documents.dart' as _i23;
-import 'paginated_media_assets.dart' as _i24;
-import 'paginated_migration_histories.dart' as _i25;
-import 'paginated_projects.dart' as _i26;
-import 'paginated_users.dart' as _i27;
-import 'project.dart' as _i28;
-import 'project_member.dart' as _i29;
-import 'project_role.dart' as _i30;
-import 'public_document.dart' as _i31;
-import 'published_document.dart' as _i32;
-import 'user.dart' as _i33;
-import 'package:dart_desk_client/src/protocol/client_with_role.dart' as _i34;
-import 'package:dart_desk_client/src/protocol/api_key.dart' as _i35;
-import 'package:dart_desk_client/src/protocol/deployment.dart' as _i36;
+import 'invite.dart' as _i18;
+import 'invite_preview.dart' as _i19;
+import 'invite_result.dart' as _i20;
+import 'media_asset.dart' as _i21;
+import 'media_asset_metadata_status.dart' as _i22;
+import 'migration_history.dart' as _i23;
+import 'paginated_api_keys.dart' as _i24;
+import 'paginated_document_versions.dart' as _i25;
+import 'paginated_documents.dart' as _i26;
+import 'paginated_media_assets.dart' as _i27;
+import 'paginated_migration_histories.dart' as _i28;
+import 'paginated_projects.dart' as _i29;
+import 'paginated_users.dart' as _i30;
+import 'project.dart' as _i31;
+import 'project_member.dart' as _i32;
+import 'project_role.dart' as _i33;
+import 'public_document.dart' as _i34;
+import 'published_document.dart' as _i35;
+import 'user.dart' as _i36;
+import 'package:dart_desk_client/src/protocol/client_with_role.dart' as _i37;
+import 'package:dart_desk_client/src/protocol/api_key.dart' as _i38;
+import 'package:dart_desk_client/src/protocol/deployment.dart' as _i39;
 import 'package:dart_desk_client/src/protocol/document_crdt_operation.dart'
-    as _i37;
-import 'package:dart_desk_client/src/protocol/media_asset.dart' as _i38;
-import 'package:dart_desk_client/src/protocol/user.dart' as _i39;
-import 'package:dart_desk_client/src/protocol/migration_history.dart' as _i40;
-import 'package:dart_desk_client/src/protocol/project_member.dart' as _i41;
-import 'package:dart_desk_client/src/protocol/public_document.dart' as _i42;
+    as _i40;
+import 'package:dart_desk_client/src/protocol/media_asset.dart' as _i41;
+import 'package:dart_desk_client/src/protocol/user.dart' as _i42;
+import 'package:dart_desk_client/src/protocol/migration_history.dart' as _i43;
+import 'package:dart_desk_client/src/protocol/project_member.dart' as _i44;
+import 'package:dart_desk_client/src/protocol/public_document.dart' as _i45;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i43;
+    as _i46;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i44;
+    as _i47;
 export 'api_exception.dart';
 export 'api_key.dart';
 export 'api_key_with_value.dart';
@@ -73,6 +76,9 @@ export 'document_data.dart';
 export 'document_version.dart';
 export 'document_version_list.dart';
 export 'document_version_status.dart';
+export 'invite.dart';
+export 'invite_preview.dart';
+export 'invite_result.dart';
 export 'media_asset.dart';
 export 'media_asset_metadata_status.dart';
 export 'migration_history.dart';
@@ -173,53 +179,62 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i17.DocumentVersionStatus) {
       return _i17.DocumentVersionStatus.fromJson(data) as T;
     }
-    if (t == _i18.MediaAsset) {
-      return _i18.MediaAsset.fromJson(data) as T;
+    if (t == _i18.Invite) {
+      return _i18.Invite.fromJson(data) as T;
     }
-    if (t == _i19.MediaAssetMetadataStatus) {
-      return _i19.MediaAssetMetadataStatus.fromJson(data) as T;
+    if (t == _i19.InvitePreview) {
+      return _i19.InvitePreview.fromJson(data) as T;
     }
-    if (t == _i20.MigrationHistory) {
-      return _i20.MigrationHistory.fromJson(data) as T;
+    if (t == _i20.InviteResult) {
+      return _i20.InviteResult.fromJson(data) as T;
     }
-    if (t == _i21.PaginatedApiKeys) {
-      return _i21.PaginatedApiKeys.fromJson(data) as T;
+    if (t == _i21.MediaAsset) {
+      return _i21.MediaAsset.fromJson(data) as T;
     }
-    if (t == _i22.PaginatedDocumentVersions) {
-      return _i22.PaginatedDocumentVersions.fromJson(data) as T;
+    if (t == _i22.MediaAssetMetadataStatus) {
+      return _i22.MediaAssetMetadataStatus.fromJson(data) as T;
     }
-    if (t == _i23.PaginatedDocuments) {
-      return _i23.PaginatedDocuments.fromJson(data) as T;
+    if (t == _i23.MigrationHistory) {
+      return _i23.MigrationHistory.fromJson(data) as T;
     }
-    if (t == _i24.PaginatedMediaAssets) {
-      return _i24.PaginatedMediaAssets.fromJson(data) as T;
+    if (t == _i24.PaginatedApiKeys) {
+      return _i24.PaginatedApiKeys.fromJson(data) as T;
     }
-    if (t == _i25.PaginatedMigrationHistories) {
-      return _i25.PaginatedMigrationHistories.fromJson(data) as T;
+    if (t == _i25.PaginatedDocumentVersions) {
+      return _i25.PaginatedDocumentVersions.fromJson(data) as T;
     }
-    if (t == _i26.PaginatedProjects) {
-      return _i26.PaginatedProjects.fromJson(data) as T;
+    if (t == _i26.PaginatedDocuments) {
+      return _i26.PaginatedDocuments.fromJson(data) as T;
     }
-    if (t == _i27.PaginatedUsers) {
-      return _i27.PaginatedUsers.fromJson(data) as T;
+    if (t == _i27.PaginatedMediaAssets) {
+      return _i27.PaginatedMediaAssets.fromJson(data) as T;
     }
-    if (t == _i28.Project) {
-      return _i28.Project.fromJson(data) as T;
+    if (t == _i28.PaginatedMigrationHistories) {
+      return _i28.PaginatedMigrationHistories.fromJson(data) as T;
     }
-    if (t == _i29.ProjectMember) {
-      return _i29.ProjectMember.fromJson(data) as T;
+    if (t == _i29.PaginatedProjects) {
+      return _i29.PaginatedProjects.fromJson(data) as T;
     }
-    if (t == _i30.ProjectRole) {
-      return _i30.ProjectRole.fromJson(data) as T;
+    if (t == _i30.PaginatedUsers) {
+      return _i30.PaginatedUsers.fromJson(data) as T;
     }
-    if (t == _i31.PublicDocument) {
-      return _i31.PublicDocument.fromJson(data) as T;
+    if (t == _i31.Project) {
+      return _i31.Project.fromJson(data) as T;
     }
-    if (t == _i32.PublishedDocument) {
-      return _i32.PublishedDocument.fromJson(data) as T;
+    if (t == _i32.ProjectMember) {
+      return _i32.ProjectMember.fromJson(data) as T;
     }
-    if (t == _i33.User) {
-      return _i33.User.fromJson(data) as T;
+    if (t == _i33.ProjectRole) {
+      return _i33.ProjectRole.fromJson(data) as T;
+    }
+    if (t == _i34.PublicDocument) {
+      return _i34.PublicDocument.fromJson(data) as T;
+    }
+    if (t == _i35.PublishedDocument) {
+      return _i35.PublishedDocument.fromJson(data) as T;
+    }
+    if (t == _i36.User) {
+      return _i36.User.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.ApiException?>()) {
       return (data != null ? _i2.ApiException.fromJson(data) : null) as T;
@@ -273,64 +288,73 @@ class Protocol extends _i1.SerializationManager {
       return (data != null ? _i17.DocumentVersionStatus.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i18.MediaAsset?>()) {
-      return (data != null ? _i18.MediaAsset.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i18.Invite?>()) {
+      return (data != null ? _i18.Invite.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.MediaAssetMetadataStatus?>()) {
+    if (t == _i1.getType<_i19.InvitePreview?>()) {
+      return (data != null ? _i19.InvitePreview.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i20.InviteResult?>()) {
+      return (data != null ? _i20.InviteResult.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i21.MediaAsset?>()) {
+      return (data != null ? _i21.MediaAsset.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i22.MediaAssetMetadataStatus?>()) {
       return (data != null
-              ? _i19.MediaAssetMetadataStatus.fromJson(data)
+              ? _i22.MediaAssetMetadataStatus.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i20.MigrationHistory?>()) {
-      return (data != null ? _i20.MigrationHistory.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i23.MigrationHistory?>()) {
+      return (data != null ? _i23.MigrationHistory.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i21.PaginatedApiKeys?>()) {
-      return (data != null ? _i21.PaginatedApiKeys.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i24.PaginatedApiKeys?>()) {
+      return (data != null ? _i24.PaginatedApiKeys.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i22.PaginatedDocumentVersions?>()) {
+    if (t == _i1.getType<_i25.PaginatedDocumentVersions?>()) {
       return (data != null
-              ? _i22.PaginatedDocumentVersions.fromJson(data)
+              ? _i25.PaginatedDocumentVersions.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i23.PaginatedDocuments?>()) {
-      return (data != null ? _i23.PaginatedDocuments.fromJson(data) : null)
+    if (t == _i1.getType<_i26.PaginatedDocuments?>()) {
+      return (data != null ? _i26.PaginatedDocuments.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i24.PaginatedMediaAssets?>()) {
-      return (data != null ? _i24.PaginatedMediaAssets.fromJson(data) : null)
+    if (t == _i1.getType<_i27.PaginatedMediaAssets?>()) {
+      return (data != null ? _i27.PaginatedMediaAssets.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i25.PaginatedMigrationHistories?>()) {
+    if (t == _i1.getType<_i28.PaginatedMigrationHistories?>()) {
       return (data != null
-              ? _i25.PaginatedMigrationHistories.fromJson(data)
+              ? _i28.PaginatedMigrationHistories.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i26.PaginatedProjects?>()) {
-      return (data != null ? _i26.PaginatedProjects.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i29.PaginatedProjects?>()) {
+      return (data != null ? _i29.PaginatedProjects.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i27.PaginatedUsers?>()) {
-      return (data != null ? _i27.PaginatedUsers.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i30.PaginatedUsers?>()) {
+      return (data != null ? _i30.PaginatedUsers.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i28.Project?>()) {
-      return (data != null ? _i28.Project.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i31.Project?>()) {
+      return (data != null ? _i31.Project.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i29.ProjectMember?>()) {
-      return (data != null ? _i29.ProjectMember.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i32.ProjectMember?>()) {
+      return (data != null ? _i32.ProjectMember.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i30.ProjectRole?>()) {
-      return (data != null ? _i30.ProjectRole.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i33.ProjectRole?>()) {
+      return (data != null ? _i33.ProjectRole.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i31.PublicDocument?>()) {
-      return (data != null ? _i31.PublicDocument.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i34.PublicDocument?>()) {
+      return (data != null ? _i34.PublicDocument.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i32.PublishedDocument?>()) {
-      return (data != null ? _i32.PublishedDocument.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i35.PublishedDocument?>()) {
+      return (data != null ? _i35.PublishedDocument.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i33.User?>()) {
-      return (data != null ? _i33.User.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i36.User?>()) {
+      return (data != null ? _i36.User.fromJson(data) : null) as T;
     }
     if (t == List<_i15.DocumentVersion>) {
       return (data as List)
@@ -346,94 +370,94 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<_i11.Document>(e)).toList()
           as T;
     }
-    if (t == List<_i18.MediaAsset>) {
-      return (data as List).map((e) => deserialize<_i18.MediaAsset>(e)).toList()
+    if (t == List<_i21.MediaAsset>) {
+      return (data as List).map((e) => deserialize<_i21.MediaAsset>(e)).toList()
           as T;
     }
-    if (t == List<_i20.MigrationHistory>) {
+    if (t == List<_i23.MigrationHistory>) {
       return (data as List)
-              .map((e) => deserialize<_i20.MigrationHistory>(e))
+              .map((e) => deserialize<_i23.MigrationHistory>(e))
               .toList()
           as T;
     }
-    if (t == List<_i28.Project>) {
-      return (data as List).map((e) => deserialize<_i28.Project>(e)).toList()
+    if (t == List<_i31.Project>) {
+      return (data as List).map((e) => deserialize<_i31.Project>(e)).toList()
           as T;
     }
-    if (t == List<_i33.User>) {
-      return (data as List).map((e) => deserialize<_i33.User>(e)).toList() as T;
+    if (t == List<_i36.User>) {
+      return (data as List).map((e) => deserialize<_i36.User>(e)).toList() as T;
     }
-    if (t == List<_i34.ClientWithRole>) {
+    if (t == List<_i37.ClientWithRole>) {
       return (data as List)
-              .map((e) => deserialize<_i34.ClientWithRole>(e))
+              .map((e) => deserialize<_i37.ClientWithRole>(e))
               .toList()
           as T;
     }
-    if (t == List<_i35.ApiKey>) {
-      return (data as List).map((e) => deserialize<_i35.ApiKey>(e)).toList()
+    if (t == List<_i38.ApiKey>) {
+      return (data as List).map((e) => deserialize<_i38.ApiKey>(e)).toList()
           as T;
     }
-    if (t == List<_i36.Deployment>) {
-      return (data as List).map((e) => deserialize<_i36.Deployment>(e)).toList()
+    if (t == List<_i39.Deployment>) {
+      return (data as List).map((e) => deserialize<_i39.Deployment>(e)).toList()
           as T;
     }
-    if (t == List<_i37.DocumentCrdtOperation>) {
+    if (t == List<_i40.DocumentCrdtOperation>) {
       return (data as List)
-              .map((e) => deserialize<_i37.DocumentCrdtOperation>(e))
+              .map((e) => deserialize<_i40.DocumentCrdtOperation>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i38.MediaAsset>) {
-      return (data as List).map((e) => deserialize<_i38.MediaAsset>(e)).toList()
+    if (t == List<_i41.MediaAsset>) {
+      return (data as List).map((e) => deserialize<_i41.MediaAsset>(e)).toList()
           as T;
     }
-    if (t == List<_i39.User>) {
-      return (data as List).map((e) => deserialize<_i39.User>(e)).toList() as T;
+    if (t == List<_i42.User>) {
+      return (data as List).map((e) => deserialize<_i42.User>(e)).toList() as T;
     }
-    if (t == List<_i40.MigrationHistory>) {
+    if (t == List<_i43.MigrationHistory>) {
       return (data as List)
-              .map((e) => deserialize<_i40.MigrationHistory>(e))
+              .map((e) => deserialize<_i43.MigrationHistory>(e))
               .toList()
           as T;
     }
-    if (t == List<_i41.ProjectMember>) {
+    if (t == List<_i44.ProjectMember>) {
       return (data as List)
-              .map((e) => deserialize<_i41.ProjectMember>(e))
+              .map((e) => deserialize<_i44.ProjectMember>(e))
               .toList()
           as T;
     }
-    if (t == Map<String, List<_i42.PublicDocument>>) {
+    if (t == Map<String, List<_i45.PublicDocument>>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<List<_i42.PublicDocument>>(v),
+              deserialize<List<_i45.PublicDocument>>(v),
             ),
           )
           as T;
     }
-    if (t == List<_i42.PublicDocument>) {
+    if (t == List<_i45.PublicDocument>) {
       return (data as List)
-              .map((e) => deserialize<_i42.PublicDocument>(e))
+              .map((e) => deserialize<_i45.PublicDocument>(e))
               .toList()
           as T;
     }
-    if (t == Map<String, _i42.PublicDocument>) {
+    if (t == Map<String, _i45.PublicDocument>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i42.PublicDocument>(v),
+              deserialize<_i45.PublicDocument>(v),
             ),
           )
           as T;
     }
     try {
-      return _i43.Protocol().deserialize<T>(data, t);
+      return _i46.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i44.Protocol().deserialize<T>(data, t);
+      return _i47.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -456,22 +480,25 @@ class Protocol extends _i1.SerializationManager {
       _i15.DocumentVersion => 'DocumentVersion',
       _i16.DocumentVersionList => 'DocumentVersionList',
       _i17.DocumentVersionStatus => 'DocumentVersionStatus',
-      _i18.MediaAsset => 'MediaAsset',
-      _i19.MediaAssetMetadataStatus => 'MediaAssetMetadataStatus',
-      _i20.MigrationHistory => 'MigrationHistory',
-      _i21.PaginatedApiKeys => 'PaginatedApiKeys',
-      _i22.PaginatedDocumentVersions => 'PaginatedDocumentVersions',
-      _i23.PaginatedDocuments => 'PaginatedDocuments',
-      _i24.PaginatedMediaAssets => 'PaginatedMediaAssets',
-      _i25.PaginatedMigrationHistories => 'PaginatedMigrationHistories',
-      _i26.PaginatedProjects => 'PaginatedProjects',
-      _i27.PaginatedUsers => 'PaginatedUsers',
-      _i28.Project => 'Project',
-      _i29.ProjectMember => 'ProjectMember',
-      _i30.ProjectRole => 'ProjectRole',
-      _i31.PublicDocument => 'PublicDocument',
-      _i32.PublishedDocument => 'PublishedDocument',
-      _i33.User => 'User',
+      _i18.Invite => 'Invite',
+      _i19.InvitePreview => 'InvitePreview',
+      _i20.InviteResult => 'InviteResult',
+      _i21.MediaAsset => 'MediaAsset',
+      _i22.MediaAssetMetadataStatus => 'MediaAssetMetadataStatus',
+      _i23.MigrationHistory => 'MigrationHistory',
+      _i24.PaginatedApiKeys => 'PaginatedApiKeys',
+      _i25.PaginatedDocumentVersions => 'PaginatedDocumentVersions',
+      _i26.PaginatedDocuments => 'PaginatedDocuments',
+      _i27.PaginatedMediaAssets => 'PaginatedMediaAssets',
+      _i28.PaginatedMigrationHistories => 'PaginatedMigrationHistories',
+      _i29.PaginatedProjects => 'PaginatedProjects',
+      _i30.PaginatedUsers => 'PaginatedUsers',
+      _i31.Project => 'Project',
+      _i32.ProjectMember => 'ProjectMember',
+      _i33.ProjectRole => 'ProjectRole',
+      _i34.PublicDocument => 'PublicDocument',
+      _i35.PublishedDocument => 'PublishedDocument',
+      _i36.User => 'User',
       _ => null,
     };
   }
@@ -518,44 +545,50 @@ class Protocol extends _i1.SerializationManager {
         return 'DocumentVersionList';
       case _i17.DocumentVersionStatus():
         return 'DocumentVersionStatus';
-      case _i18.MediaAsset():
+      case _i18.Invite():
+        return 'Invite';
+      case _i19.InvitePreview():
+        return 'InvitePreview';
+      case _i20.InviteResult():
+        return 'InviteResult';
+      case _i21.MediaAsset():
         return 'MediaAsset';
-      case _i19.MediaAssetMetadataStatus():
+      case _i22.MediaAssetMetadataStatus():
         return 'MediaAssetMetadataStatus';
-      case _i20.MigrationHistory():
+      case _i23.MigrationHistory():
         return 'MigrationHistory';
-      case _i21.PaginatedApiKeys():
+      case _i24.PaginatedApiKeys():
         return 'PaginatedApiKeys';
-      case _i22.PaginatedDocumentVersions():
+      case _i25.PaginatedDocumentVersions():
         return 'PaginatedDocumentVersions';
-      case _i23.PaginatedDocuments():
+      case _i26.PaginatedDocuments():
         return 'PaginatedDocuments';
-      case _i24.PaginatedMediaAssets():
+      case _i27.PaginatedMediaAssets():
         return 'PaginatedMediaAssets';
-      case _i25.PaginatedMigrationHistories():
+      case _i28.PaginatedMigrationHistories():
         return 'PaginatedMigrationHistories';
-      case _i26.PaginatedProjects():
+      case _i29.PaginatedProjects():
         return 'PaginatedProjects';
-      case _i27.PaginatedUsers():
+      case _i30.PaginatedUsers():
         return 'PaginatedUsers';
-      case _i28.Project():
+      case _i31.Project():
         return 'Project';
-      case _i29.ProjectMember():
+      case _i32.ProjectMember():
         return 'ProjectMember';
-      case _i30.ProjectRole():
+      case _i33.ProjectRole():
         return 'ProjectRole';
-      case _i31.PublicDocument():
+      case _i34.PublicDocument():
         return 'PublicDocument';
-      case _i32.PublishedDocument():
+      case _i35.PublishedDocument():
         return 'PublishedDocument';
-      case _i33.User():
+      case _i36.User():
         return 'User';
     }
-    className = _i43.Protocol().getClassNameForObject(data);
+    className = _i46.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
-    className = _i44.Protocol().getClassNameForObject(data);
+    className = _i47.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
@@ -616,61 +649,70 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'DocumentVersionStatus') {
       return deserialize<_i17.DocumentVersionStatus>(data['data']);
     }
+    if (dataClassName == 'Invite') {
+      return deserialize<_i18.Invite>(data['data']);
+    }
+    if (dataClassName == 'InvitePreview') {
+      return deserialize<_i19.InvitePreview>(data['data']);
+    }
+    if (dataClassName == 'InviteResult') {
+      return deserialize<_i20.InviteResult>(data['data']);
+    }
     if (dataClassName == 'MediaAsset') {
-      return deserialize<_i18.MediaAsset>(data['data']);
+      return deserialize<_i21.MediaAsset>(data['data']);
     }
     if (dataClassName == 'MediaAssetMetadataStatus') {
-      return deserialize<_i19.MediaAssetMetadataStatus>(data['data']);
+      return deserialize<_i22.MediaAssetMetadataStatus>(data['data']);
     }
     if (dataClassName == 'MigrationHistory') {
-      return deserialize<_i20.MigrationHistory>(data['data']);
+      return deserialize<_i23.MigrationHistory>(data['data']);
     }
     if (dataClassName == 'PaginatedApiKeys') {
-      return deserialize<_i21.PaginatedApiKeys>(data['data']);
+      return deserialize<_i24.PaginatedApiKeys>(data['data']);
     }
     if (dataClassName == 'PaginatedDocumentVersions') {
-      return deserialize<_i22.PaginatedDocumentVersions>(data['data']);
+      return deserialize<_i25.PaginatedDocumentVersions>(data['data']);
     }
     if (dataClassName == 'PaginatedDocuments') {
-      return deserialize<_i23.PaginatedDocuments>(data['data']);
+      return deserialize<_i26.PaginatedDocuments>(data['data']);
     }
     if (dataClassName == 'PaginatedMediaAssets') {
-      return deserialize<_i24.PaginatedMediaAssets>(data['data']);
+      return deserialize<_i27.PaginatedMediaAssets>(data['data']);
     }
     if (dataClassName == 'PaginatedMigrationHistories') {
-      return deserialize<_i25.PaginatedMigrationHistories>(data['data']);
+      return deserialize<_i28.PaginatedMigrationHistories>(data['data']);
     }
     if (dataClassName == 'PaginatedProjects') {
-      return deserialize<_i26.PaginatedProjects>(data['data']);
+      return deserialize<_i29.PaginatedProjects>(data['data']);
     }
     if (dataClassName == 'PaginatedUsers') {
-      return deserialize<_i27.PaginatedUsers>(data['data']);
+      return deserialize<_i30.PaginatedUsers>(data['data']);
     }
     if (dataClassName == 'Project') {
-      return deserialize<_i28.Project>(data['data']);
+      return deserialize<_i31.Project>(data['data']);
     }
     if (dataClassName == 'ProjectMember') {
-      return deserialize<_i29.ProjectMember>(data['data']);
+      return deserialize<_i32.ProjectMember>(data['data']);
     }
     if (dataClassName == 'ProjectRole') {
-      return deserialize<_i30.ProjectRole>(data['data']);
+      return deserialize<_i33.ProjectRole>(data['data']);
     }
     if (dataClassName == 'PublicDocument') {
-      return deserialize<_i31.PublicDocument>(data['data']);
+      return deserialize<_i34.PublicDocument>(data['data']);
     }
     if (dataClassName == 'PublishedDocument') {
-      return deserialize<_i32.PublishedDocument>(data['data']);
+      return deserialize<_i35.PublishedDocument>(data['data']);
     }
     if (dataClassName == 'User') {
-      return deserialize<_i33.User>(data['data']);
+      return deserialize<_i36.User>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i43.Protocol().deserializeByClassName(data);
+      return _i46.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i44.Protocol().deserializeByClassName(data);
+      return _i47.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -685,10 +727,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i43.Protocol().mapRecordToJson(record);
+      return _i46.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i44.Protocol().mapRecordToJson(record);
+      return _i47.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

@@ -1122,6 +1122,8 @@ class EndpointPublicContent extends _i1.EndpointRef {
       );
 
   /// Returns the default published document for each document type.
+  /// If no document of a given type is flagged as default, falls back to the
+  /// most recently published document of that type.
   _i2.Future<Map<String, _i25.PublicDocument>> getDefaultContents() =>
       caller.callServerEndpoint<Map<String, _i25.PublicDocument>>(
         'publicContent',

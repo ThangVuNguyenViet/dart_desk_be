@@ -1,0 +1,11 @@
+### server-only DTO returned by InviteEndpoint.previewInvite
+class: InvitePreview
+fields:
+  clientId: UuidValue
+  clientName: String
+  email: String
+  role: ClientRole
+  inviterName: String
+  inviterEmail: String
+  expiresAt: DateTime
+  hasExistingAccount: bool
