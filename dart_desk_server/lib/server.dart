@@ -1,5 +1,6 @@
 import 'dart:io' show Directory;
 
+import 'package:dart_desk_server/src/services/email_sender.dart';
 import 'package:dart_desk_server/src/services/email_service.dart';
 import 'package:dart_desk_server/src/web/configure_web_routes.dart';
 import 'package:serverpod/serverpod.dart';
@@ -44,6 +45,9 @@ void run(List<String> args, {List<DartDeskPlugin> plugins = const []}) async {
 
   // Initialize email service from SMTP passwords.
   _emailService = _initEmailService(pod);
+  if (_emailService != null) {
+    EmailSenderRegistry.set(SmtpEmailSender(_emailService!));
+  }
 
   // Initialize CRDT service with node ID from passwords.yaml
   final nodeId = pod.getPassword('crdtNodeId') ?? 'postgres-main';
@@ -260,14 +264,14 @@ Future<void> _sendEmail({
   required String text,
   required String html,
 }) async {
-  final service = _emailService;
-  if (service == null) {
-    session.log('[EmailIdp] smtpHost not configured — skipping SMTP send', level: LogLevel.warning);
+  final sender = EmailSenderRegistry.get();
+  if (sender == null) {
+    session.log('[EmailIdp] EmailSender not configured — skipping send', level: LogLevel.warning);
     return;
   }
 
   try {
-    await service.send(to: to, subject: subject, text: text, html: html);
+    await sender.send(to: to, subject: subject, text: text, html: html);
     session.log('[EmailIdp] Email sent to $to', level: LogLevel.info);
   } catch (e) {
     session.log('[EmailIdp] Failed to send email to $to: $e', level: LogLevel.error);
