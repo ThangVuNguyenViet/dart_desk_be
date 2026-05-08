@@ -88,3 +88,42 @@ migration's `definition.sql`:
   (`clients_slug_active_idx`, `documents_project_type_slug_active_idx`,
   `published_docs_project_type_slug_active_idx`,
   `projects_slug_active_idx`, `users_client_email_active_idx`).
+
+## ⚠️ Serverpod maintenance-role migrations exit 0 on failure (in production/staging)
+
+`dart bin/main.dill --role maintenance --apply-migrations` is the right tool
+for a blocking pre-start migration step (it's a documented Serverpod role).
+But Serverpod 3.5.0-beta.5 only converts a migration failure into a non-zero
+exit when `runMode == development`:
+
+```dart
+// serverpod-3.5.0-beta.5/lib/src/server/serverpod.dart:_applyMigrations
+} catch (e, stackTrace) {
+  verified = false;
+  _reportException(e, stackTrace, message: 'Failed to apply database migrations.');
+}
+if (!verified) {
+  if (config.runMode == ServerpodRunMode.development) {
+    throw ExitException(1);   // production/staging fall through silently
+  }
+}
+```
+
+In `production`/`staging` the failure is logged (`ERROR: Failed to apply
+migration <name>.` / `ERROR: Failed to apply database migrations.`) but
+the process exits 0, so any deploy gate that trusts the exit code lets the
+new binary start against a half-migrated schema.
+
+**Workaround in `dart_desk_cloud/deploy/aws/scripts/run_migrations`**: after
+running maintenance role, grep `migrations.log` for those error markers and
+exit 1 if found. See cloud PR #21 (2026-05-08).
+
+**Real-world impact**: 2026-05-08 outage — the `api_keys_fk_0` repair
+migration failed against orphan rows, Serverpod logged + exited 0, the new
+binary started without `add-invites` applied, and `inviteMember` returned
+500. Fixed by deleting orphans, re-running maintenance migrations manually,
+restarting serverpod.
+
+If a future Serverpod upgrade fixes this upstream (the lenient behavior is
+intended for `dart run bin/main.dart` during dev, not for maintenance-role
+deploys), the grep guard becomes redundant but harmless.
